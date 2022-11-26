@@ -1,26 +1,33 @@
-FROM node:18
+FROM node:18-alpine as development
 
-# we need to install pnpm
-RUN npm install -g pnpm
-
-# specify working directory in the image
 WORKDIR /usr/src/app
-
-# copy from local to directory
-COPY package*.json ./
-
+# copy package.json and package-lock.json to the container
+COPY --chown=node:node package*.json ./
 # install the deps
-RUN pnpm install
+RUN pnpm ci
+# copy
+COPY --chown=node:node . .
+USER node
 
-# copy all from local to working dir in the image
-# (will be copied to /usr/src/app/...)
-COPY . .
+###########################################################
 
-# build the typescript files
+FROM node:18-alpine as build
+
+WORKDIR /usr/src/app
+COPY --chown=node:node package*.json ./
+# in order to run 'nest build' we must have 'nest' installed which is a dev dependency
+COPY --chown=node:node --from=development /usr/src/app/node_modules ./node_modules
+COPY --chown=node:node . . 
 RUN pnpm run build
+ENV NODE_ENV production
+RUN pnpm ci --only=production && pnpm cache clean --force
+USER node
 
-# command to the container upon spinning up
+###########################################################
+
+FROM node:18-alpine as production
+
+COPY --chown=node:node --from=build /usr/src/app/node_modules ./node_modules
+COPY --chown=node:node --from=build /usr/src/app/dist ./dist
 CMD ["node", "dist/main.js"]
-
-
 
