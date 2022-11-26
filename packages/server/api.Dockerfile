@@ -7,7 +7,7 @@ WORKDIR /usr/src/app
 COPY --chown=node:node package.json ./
 COPY --chown=node:node pnpm-lock.yaml ./
 # install the deps
-RUN pnpm ci
+RUN pnpm install --frozen-lockfile
 # copy app sauce
 COPY --chown=node:node . .
 USER node
@@ -23,7 +23,7 @@ COPY --chown=node:node --from=development /usr/src/app/node_modules ./node_modul
 COPY --chown=node:node . . 
 RUN pnpm run build
 ENV NODE_ENV production
-RUN pnpm ci --only=production && pnpm cache clean --force
+RUN pnpm install --frozen-lockfile --only=production && pnpm cache clean --force
 USER node
 
 ###########################################################
