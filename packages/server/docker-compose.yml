@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      dockerfile: api.Dockerfile
+      context: .
+      target: development
+    volumes:
+      - .:/usr/src/app
+    env_file:
+      - .env
+    command: pnpm run start:dev
+    ports:
+      - ${PORT}:${PORT}
