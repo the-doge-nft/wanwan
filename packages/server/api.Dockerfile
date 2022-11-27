@@ -1,16 +1,17 @@
 FROM node:18-alpine as development
 
 # we need pnpm first
+# ENV NODE_ENV development
 RUN npm install -g pnpm
 WORKDIR /usr/src/app
 # copy package.json and package-lock.json to the container
 COPY --chown=node:node package.json ./
 COPY --chown=node:node pnpm-lock.yaml ./
-# install the deps
-RUN pnpm install --frozen-lockfile
 # copy app sauce
 COPY --chown=node:node . .
-USER node
+
+# install the deps
+RUN pnpm install
 
 ###########################################################
 
