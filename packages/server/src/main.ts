@@ -6,7 +6,7 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const port = app.get(ConfigService).get('port');
-  Logger.log(`api server listeneing on port: ${port}`);
+  Logger.log(`listeneing on port: ${port}`);
   await app.listen(port);
 }
 bootstrap();
