@@ -55,11 +55,18 @@ down() {
     docker-compose down --remove-orphans -v
 }
 
+clean() {
+    echo "cleaning docker"
+    docker system prune
+}
+
 usage() {
     cat <<HELP_USAGE
 Usage:
     dev-local.sh up:
         spins up containers for local development
+        
+        --build: rebuilds the containers (this will be necessary if any new dependencies are added)
 
     dev-local.sh down:
         pulls down local development containers

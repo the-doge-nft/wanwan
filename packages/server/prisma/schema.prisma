@@ -10,9 +10,9 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Tweets {
-  id        Int      @id @default(autoincrement())
-  content   String
-  published Boolean? @default(false)
-  createdAt DateTime @default(now())
+model Users {
+  id           Int      @id @default(autoincrement())
+  address      String
+  createdAt    DateTime @default(now())
+  lastSignedIn DateTime
 }

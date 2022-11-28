@@ -1,14 +1,34 @@
-import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { CacheModule, Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { redisStore } from 'cache-manager-redis-store';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import configuration from './config/config';
+import configuration, { Configuration } from './config/config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       load: [() => configuration],
+    }),
+    CacheModule.registerAsync<any>({
+      isGlobal: true,
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService<Configuration>) => {
+        const redisConfig = await configService.get('redis');
+        const store = await redisStore({
+          ttl: 60,
+          password: redisConfig.password,
+          socket: {
+            host: redisConfig.host,
+            port: redisConfig.port,
+            passphrase: redisConfig.password,
+            rejectUnauthorized: true,
+          },
+        });
+        return { store: () => store };
+      },
+      inject: [ConfigService],
     }),
   ],
   controllers: [AppController],
