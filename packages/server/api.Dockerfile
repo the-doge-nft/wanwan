@@ -9,6 +9,8 @@ COPY --chown=node:node package.json ./
 COPY --chown=node:node pnpm-lock.yaml ./
 # copy app sauce
 COPY --chown=node:node . .
+# generate prisma client
+RUN npx run prisma:generate
 
 # install the deps
 RUN pnpm install
