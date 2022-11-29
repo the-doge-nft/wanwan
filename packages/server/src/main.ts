@@ -1,4 +1,4 @@
-import { Logger } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import * as createRedisStore from 'connect-redis';
@@ -31,6 +31,8 @@ async function bootstrap() {
       },
     }),
   );
+
+  app.useGlobalPipes(new ValidationPipe());
 
   const port = configService.get('port');
   Logger.log(`listening on port: ${port}`);
