@@ -60,13 +60,18 @@ spinDownApiMaybe() {
 }
 
 down() {
-    echo "bringing down db, redis, & api"
+    spacedEcho "bringing down db, redis, & api"
     docker-compose down --remove-orphans -v
 }
 
-clean() {
-    echo "cleaning docker"
-    docker system prune
+pushDb() {
+    spacedEcho "pushing db"
+    pnpm prisma:push
+}
+
+seedDb() {
+    spacedEcho "seeding db"
+    pnpm prisma:seed
 }
 
 usage() {
@@ -79,6 +84,12 @@ Usage:
 
     dev-local.sh down:
         pulls down local development containers
+
+    dev-local.sh dbpush:
+        push changes to db without creating a prisma migration - NOTE: this should be used for prototyping in development only
+
+    dev-local.sh dbseed:
+        seed data located in prisma/seed.ts to local database
 HELP_USAGE
     exit 0
 }
@@ -91,6 +102,10 @@ elif [[ $1 == "up" ]]; then
     else
         up
     fi
+elif [[ $1 == "dbpush" ]]; then
+    pushDb
+elif [[ $1 == "dbseed" ]]; then
+    seedDb
 else
     usage
 fi

@@ -10,7 +10,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Users {
+model User {
   id           Int      @id @default(autoincrement())
   address      String
   createdAt    DateTime @default(now())
