@@ -28,6 +28,7 @@ removePreviousBuildMaybe() {
 
 up() {
     removePreviousBuildMaybe
+    spinDownApiMaybe
 
     spacedEcho "spinning up db"
     docker-compose up -d postgres
@@ -48,6 +49,14 @@ up() {
 
     spacedEcho "listening to logs"
     docker-compose logs -f
+}
+
+spinDownApiMaybe() {
+    # https://serverfault.com/questions/789601/check-is-container-service-running-with-docker-compose
+    if [ "$(docker ps -a | grep meme-api)" ]; then
+        spacedEcho "api is up, spinning down first"
+        docker-compose stop api
+    fi
 }
 
 down() {

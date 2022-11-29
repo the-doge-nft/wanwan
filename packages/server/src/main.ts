@@ -16,7 +16,7 @@ async function bootstrap() {
   //   }),
   // );
   const port = app.get(ConfigService).get('port');
-  Logger.log(`listeneing on port: ${port}`);
+  Logger.log(`listening on port: ${port}`);
   await app.listen(port);
 }
 bootstrap();
