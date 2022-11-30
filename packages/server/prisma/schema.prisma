@@ -11,8 +11,63 @@ datasource db {
 }
 
 model User {
-  id           Int      @id @default(autoincrement())
-  address      String
-  createdAt    DateTime @default(now())
-  lastSignedIn DateTime
+  id              Int           @id @default(autoincrement())
+  address         String
+  description     String?
+  externalUrl     String?
+  twitterUsername String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @default(now())
+  lastSignedInAt  DateTime
+  deletedAt       DateTime?
+  memes           Meme[]
+  media           Media[]
+  competitions    Competition[]
+}
+
+model Meme {
+  id             Int          @id @default(autoincrement())
+  name           String?
+  description    String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @default(now())
+  deletedAt      DateTime?
+  userId         Int
+  user           User         @relation(fields: [userId], references: [id])
+  mediaId        Int
+  media          Media        @relation(fields: [mediaId], references: [id])
+  MemeSubmission Submission[]
+}
+
+model Media {
+  id               Int      @id @default(autoincrement())
+  width            Int
+  height           Int
+  filename         String
+  filesize         Int
+  s3Bucket         String
+  uploadedByUserId Int
+  user             User     @relation(fields: [uploadedByUserId], references: [id])
+  meme             Meme[]
+  createdAt        DateTime @default(now())
+}
+
+model Competition {
+  id                 Int          @id @default(autoincrement())
+  createdByUserId    Int
+  user               User         @relation(fields: [createdByUserId], references: [id])
+  description        String?
+  maxUserSubmissions Int
+  endsAt             DateTime
+  submissions        Submission[]
+}
+
+model Submission {
+  id            Int         @id @default(autoincrement())
+  memeId        Int
+  meme          Meme        @relation(fields: [memeId], references: [id])
+  competitionId Int
+  competition   Competition @relation(fields: [competitionId], references: [id])
+  createdAt     DateTime    @default(now())
+  deletedAt     DateTime?
 }
