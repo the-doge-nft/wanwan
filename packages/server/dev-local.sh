@@ -27,8 +27,6 @@ __spinDownApiMaybe() {
     if [ $(__getApiContainerId) ]; then
         __spacedEcho "api is up, spinning down first"
         docker-compose stop api
-    else
-        echo "its not running!"
     fi
 }
 
@@ -44,7 +42,7 @@ __depsUp() {
     docker-compose up -d redis
 }
 
-__runWithContainerId() {
+__runInApiContainer() {
     local API_ID=$(__getApiContainerId)
     if [[ $API_ID ]]; then
         docker exec -it $API_ID $1
@@ -60,7 +58,7 @@ up() {
     __depsUp
 
     __spacedEcho "spinning up api"
-    if [[ "${1-false}" == true ]]; then
+    if [[ "${1-'no'}" == "--build" ]]; then
         __spacedEcho "building api image"
         docker-compose up --build -d api
     else
@@ -78,20 +76,20 @@ down() {
 
 dbPush() {
     __spacedEcho "pushing db"
-    pnpm prisma:push
+    __runInApiContainer "pnpm prisma:push"
 }
 
 dbSeed() {
     __spacedEcho "seeding db"
-    pnpm prisma:seed
+    __runInApiContainer "pnpm prisma:seed"
 }
 
 repl() {
-    __runWithContainerId "pnpm run start:repl"
+    __runInApiContainer "pnpm run start:repl"
 }
 
 test() {
-    __runWithContainerId "pnpm run test"
+    __runInApiContainer "pnpm run test"
 }
 
 usage() {
@@ -127,7 +125,7 @@ case $1 in
 
 "up")
     if [[ "${2-""}" == "--build" ]]; then
-        up true
+        up "--build"
     else
         up
     fi

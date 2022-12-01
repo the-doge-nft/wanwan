@@ -4,6 +4,8 @@ import { redisStore } from 'cache-manager-redis-store';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import configuration, { Configuration } from './config/config';
+import { PrismaService } from './prisma.service';
+import { UserService } from './user/user.service';
 
 @Module({
   imports: [
@@ -32,6 +34,6 @@ import configuration, { Configuration } from './config/config';
     }),
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, PrismaService, UserService],
 })
 export class AppModule {}
