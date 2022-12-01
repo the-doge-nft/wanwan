@@ -44,6 +44,16 @@ __depsUp() {
     docker-compose up -d redis
 }
 
+__runWithContainerId() {
+    local API_ID=$(__getApiContainerId)
+    if [[ $API_ID ]]; then
+        docker exec -it $API_ID $1
+    else
+        echo "api container is not running, please run ./dev-local.sh up"
+        return 1
+    fi
+}
+
 up() {
     __removePreviousBuildMaybe
     __spinDownApiMaybe
@@ -77,12 +87,11 @@ dbSeed() {
 }
 
 repl() {
-    local API_ID=$(__getApiContainerId)
-    if [[ $API_ID ]]; then
-        docker exec -it $API_ID pnpm run start:repl
-    else
-        echo "API container must be up! please run ./dev-local.sh up first"
-    fi
+    __runWithContainerId "pnpm run start:repl"
+}
+
+test() {
+    __runWithContainerId "pnpm run test"
 }
 
 usage() {
@@ -104,6 +113,9 @@ Usage:
 
     dev-local.sh repl:
         start a REPL for super dev powers. read more here: https://docs.nestjs.com/recipes/repl
+
+    dev-local.sh test:
+        run unit tests
 HELP_USAGE
     exit 0
 }
@@ -131,6 +143,10 @@ case $1 in
 
 "repl")
     repl
+    ;;
+
+"test")
+    test
     ;;
 
 "--help")
