@@ -11,20 +11,23 @@ datasource db {
 }
 
 model User {
-  id              Int           @id @default(autoincrement())
-  address         String        @unique
-  description     String?
-  externalUrl     String?
-  twitterUsername String?
-  isVerified      Boolean       @default(false)
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @default(now())
-  lastAuthedAt    DateTime
-  deletedAt       DateTime?
-  memes           Meme[]
-  media           Media[]
-  competitions    Competition[]
-  Vote            Vote[]
+  id                  Int                 @id @default(autoincrement())
+  address             String              @unique
+  description         String?
+  externalUrl         String?
+  twitterUsername     String?
+  isVerified          Boolean             @default(false)
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @default(now())
+  lastAuthedAt        DateTime
+  deletedAt           DateTime?
+  isSuperAdmin        Boolean             @default(false)
+  memes               Meme[]
+  media               Media[]
+  competitions        Competition[]
+  votes               Vote[]
+  competitionCurators CompeitionCurator[]
+  Reward              Reward[]
 }
 
 model Meme {
@@ -39,12 +42,12 @@ model Meme {
   mediaId     Int          @unique
   media       Media        @relation(fields: [mediaId], references: [id])
   submissions Submission[]
-  Vote        Vote[]
-  Comment     Comment[]
+  votes       Vote[]
+  comments    Comment[]
 }
 
 model Competition {
-  id                 Int          @id @default(autoincrement())
+  id                 Int                 @id @default(autoincrement())
   name               String
   description        String?
   maxUserSubmissions Int
@@ -52,9 +55,22 @@ model Competition {
   createdAt          DateTime
   updatedAt          DateTime
   createdById        Int
-  user               User         @relation(fields: [createdById], references: [id])
+  user               User                @relation(fields: [createdById], references: [id])
   submissions        Submission[]
-  Reward             Reward[]
+  rewards            Reward[]
+  curators           CompeitionCurator[]
+}
+
+model CompeitionCurator {
+  id            Int         @id @default(autoincrement())
+  competitionId Int
+  compeition    Competition @relation(fields: [competitionId], references: [id])
+  userId        Int
+  user          User        @relation(fields: [userId], references: [id])
+  createdAt     DateTime    @default(now())
+  deletedAt     DateTime?
+
+  @@unique([competitionId, userId])
 }
 
 model Media {
@@ -106,12 +122,13 @@ model Comment {
 }
 
 model Reward {
-  id              Int         @id @default(autoincrement())
-  txId            String      @unique
-  competitionId   Int
-  competition     Competition @relation(fields: [competitionId], references: [id])
-  receiverAddress String
-  tokenType       String
-  tokenAmount     Int
-  tokenIds        Int[]
+  id            Int         @id @default(autoincrement())
+  txId          String      @unique
+  competitionId Int
+  competition   Competition @relation(fields: [competitionId], references: [id])
+  receivedById  Int
+  recevier      User        @relation(fields: [receivedById], references: [id])
+  tokenType     String
+  tokenAmount   Int
+  tokenIds      Int[]
 }
