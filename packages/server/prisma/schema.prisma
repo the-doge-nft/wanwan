@@ -12,54 +12,62 @@ datasource db {
 
 model User {
   id              Int           @id @default(autoincrement())
-  address         String
+  address         String        @unique
   description     String?
   externalUrl     String?
   twitterUsername String?
+  isVerified      Boolean       @default(false)
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @default(now())
-  lastSignedInAt  DateTime
+  lastAuthedAt    DateTime
   deletedAt       DateTime?
   memes           Meme[]
   media           Media[]
   competitions    Competition[]
+  Vote            Vote[]
 }
 
 model Meme {
-  id             Int          @id @default(autoincrement())
-  name           String?
-  description    String?
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @default(now())
-  deletedAt      DateTime?
-  userId         Int
-  user           User         @relation(fields: [userId], references: [id])
-  mediaId        Int
-  media          Media        @relation(fields: [mediaId], references: [id])
-  MemeSubmission Submission[]
-}
-
-model Media {
-  id               Int      @id @default(autoincrement())
-  width            Int
-  height           Int
-  filename         String
-  filesize         Int
-  s3Bucket         String
-  uploadedByUserId Int
-  user             User     @relation(fields: [uploadedByUserId], references: [id])
-  meme             Meme[]
-  createdAt        DateTime @default(now())
+  id          Int          @id @default(autoincrement())
+  name        String?
+  description String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @default(now())
+  deletedAt   DateTime?
+  createdById Int
+  user        User         @relation(fields: [createdById], references: [id])
+  mediaId     Int          @unique
+  media       Media        @relation(fields: [mediaId], references: [id])
+  submissions Submission[]
+  Vote        Vote[]
+  Comment     Comment[]
 }
 
 model Competition {
   id                 Int          @id @default(autoincrement())
-  createdByUserId    Int
-  user               User         @relation(fields: [createdByUserId], references: [id])
+  name               String
   description        String?
   maxUserSubmissions Int
   endsAt             DateTime
+  createdAt          DateTime
+  updatedAt          DateTime
+  createdById        Int
+  user               User         @relation(fields: [createdById], references: [id])
   submissions        Submission[]
+  Reward             Reward[]
+}
+
+model Media {
+  id           Int      @id @default(autoincrement())
+  width        Int
+  height       Int
+  filename     String
+  filesize     Int
+  s3BucketName String
+  createdById  Int
+  createdAt    DateTime @default(now())
+  user         User     @relation(fields: [createdById], references: [id])
+  meme         Meme?
 }
 
 model Submission {
@@ -70,4 +78,40 @@ model Submission {
   competition   Competition @relation(fields: [competitionId], references: [id])
   createdAt     DateTime    @default(now())
   deletedAt     DateTime?
+
+  @@unique([memeId, competitionId])
+}
+
+model Vote {
+  id            Int      @id @default(autoincrement())
+  competitionId Int
+  createdById   Int
+  user          User     @relation(fields: [createdById], references: [id])
+  memeId        Int
+  meme          Meme     @relation(fields: [memeId], references: [id])
+  score         Int      @default(0)
+  createdAt     DateTime
+  updatedAt     DateTime
+
+  @@unique([createdById, memeId, competitionId])
+}
+
+model Comment {
+  id              Int      @id @default(autoincrement())
+  memeId          Int
+  meme            Meme     @relation(fields: [memeId], references: [id])
+  parentCommentId Int?     @unique
+  parent          Comment? @relation("CommentHistory", fields: [parentCommentId], references: [id])
+  child           Comment? @relation("CommentHistory")
+}
+
+model Reward {
+  id              Int         @id @default(autoincrement())
+  txId            String      @unique
+  competitionId   Int
+  competition     Competition @relation(fields: [competitionId], references: [id])
+  receiverAddress String
+  tokenType       String
+  tokenAmount     Int
+  tokenIds        Int[]
 }
