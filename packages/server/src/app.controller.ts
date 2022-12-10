@@ -2,11 +2,12 @@ import {
   Body,
   Controller,
   Get,
+  Logger,
   Post,
   Session,
   UnauthorizedException,
 } from '@nestjs/common';
-import { SiweMessage } from 'siwe';
+import { generateNonce, SiweMessage } from 'siwe';
 import { AppService } from './app.service';
 import { SiweDto } from './dto/siwe.dto';
 import { InvalidNonceError } from './error/InvalidNonce.error';
@@ -14,6 +15,7 @@ import { UserService } from './user/user.service';
 
 @Controller()
 export class AppController {
+  private readonly logger = new Logger(AppController.name);
   constructor(
     private readonly appService: AppService,
     private readonly userService: UserService,
@@ -52,5 +54,14 @@ export class AppController {
       }
     }
     return { success: true };
+  }
+
+  @Get('/auth/nonce')
+  async getNonce(@Session() session: any = {}) {
+    session.nonce = generateNonce();
+    console.log('app', session);
+    return {
+      nonce: session.nonce,
+    };
   }
 }

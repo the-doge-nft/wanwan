@@ -45,7 +45,7 @@ __depsUp() {
 __runInApiContainer() {
     local API_ID=$(__getApiContainerId)
     if [[ $API_ID ]]; then
-        docker exec -it $API_ID $1
+        docker exec -it $API_ID "$@"
     else
         echo "api container is not running, please run ./dev-local.sh up"
         return 1
@@ -76,20 +76,29 @@ down() {
 
 dbPush() {
     __spacedEcho "pushing db"
-    __runInApiContainer "pnpm prisma:push"
+    __runInApiContainer pnpm prisma:push
 }
 
 dbSeed() {
     __spacedEcho "seeding db"
-    __runInApiContainer "pnpm prisma:seed"
+    __runInApiContainer pnpm prisma:seed
 }
 
 repl() {
-    __runInApiContainer "pnpm run start:repl"
+    __runInApiContainer pnpm start:repl
 }
 
 test() {
-    __runInApiContainer "pnpm run test"
+    __runInApiContainer pnpm test
+}
+
+e2e() {
+    __runInApiContainer pnpm test:e2e
+}
+
+exec() {
+    echo "$@"
+    __runInApiContainer "$@"
 }
 
 usage() {
@@ -145,6 +154,14 @@ case $1 in
 
 "test")
     test
+    ;;
+
+"e2e")
+    e2e
+    ;;
+
+"exec")
+    exec "${@:2}"
     ;;
 
 "--help")

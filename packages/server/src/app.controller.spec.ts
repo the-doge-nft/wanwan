@@ -20,5 +20,9 @@ describe('AppController', () => {
     it('should return "Hello World!"', () => {
       expect(appController.getHello()).toBe('Hello World!');
     });
+
+    // it('should generate a nonce and return in session', () => {
+    //   const ret = await appController.getNonce();
+    // });
   });
 });
