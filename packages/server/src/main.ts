@@ -5,13 +5,14 @@ import * as createRedisStore from 'connect-redis';
 import * as session from 'express-session';
 import { createClient } from 'redis';
 import { AppModule } from './app.module';
-import { Configuration } from './config/config';
+import { Config } from './config/config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  const configService = app.get(ConfigService<Configuration>);
+  const configService = app.get(ConfigService<Config>);
+  const redisConfig = configService.get<Config['redis']>('redis');
+  const sessionConfig = configService.get<Config['session']>('session');
 
-  const redisConfig = configService.get<Configuration['redis']>('redis');
   const redisClient = createClient({
     url: `redis://:${redisConfig.password}@${redisConfig.host}:${redisConfig.port}`,
     legacyMode: true,
@@ -21,8 +22,8 @@ async function bootstrap() {
   app.use(
     session({
       store: new RedisStore({ client: redisClient }),
-      name: 'meme-api-test',
-      secret: 'my-secret',
+      name: sessionConfig.name,
+      secret: sessionConfig.secret,
       resave: true,
       saveUninitialized: true,
       cookie: {

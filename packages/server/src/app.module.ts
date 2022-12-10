@@ -3,7 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { redisStore } from 'cache-manager-redis-store';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import configuration, { Configuration } from './config/config';
+import config, { Config } from './config/config';
 import { PrismaService } from './prisma.service';
 import { UserService } from './user/user.service';
 
@@ -11,12 +11,12 @@ import { UserService } from './user/user.service';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [() => configuration],
+      load: [() => config],
     }),
     CacheModule.registerAsync<any>({
       isGlobal: true,
       imports: [ConfigModule],
-      useFactory: async (configService: ConfigService<Configuration>) => {
+      useFactory: async (configService: ConfigService<Config>) => {
         const redisConfig = await configService.get('redis');
         const store = await redisStore({
           ttl: 60,

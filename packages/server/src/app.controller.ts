@@ -31,11 +31,12 @@ export class AppController {
     return this.userService.findMany();
   }
 
-  @Post('/auth')
+  @Post('/auth/verify')
   async postAuth(
     @Body() { message, signature }: SiweDto,
-    @Session() session: any,
+    @Session() session: any = {},
   ) {
+    console.log(message, signature);
     try {
       const siweMessage = new SiweMessage(message);
       const fields = await siweMessage.validate(signature);
@@ -46,6 +47,7 @@ export class AppController {
       session.siwe = fields;
       session.cookie.expires = new Date(fields.expirationTime);
     } catch (e) {
+      console.error(e);
       switch (e) {
         case InvalidNonceError:
           throw new UnauthorizedException(e.message);
@@ -59,7 +61,6 @@ export class AppController {
   @Get('/auth/nonce')
   async getNonce(@Session() session: any = {}) {
     session.nonce = generateNonce();
-    console.log('app', session);
     return {
       nonce: session.nonce,
     };

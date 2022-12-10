@@ -2,11 +2,13 @@ import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ethers, Wallet } from 'ethers';
 import { SiweMessage } from 'siwe';
-import * as request from 'supertest';
+import * as superRequest from 'supertest';
 import { AppModule } from './../src/app.module';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
+  let server: any;
+  let request: any;
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -15,10 +17,12 @@ describe('AppController (e2e)', () => {
 
     app = moduleFixture.createNestApplication();
     await app.init();
+    server = app.getHttpServer();
+    request = superRequest(server);
   });
 
   const getNonceReq = () => {
-    return request(app.getHttpServer()).get('/auth/nonce').expect(200);
+    return request.get('/auth/nonce').expect(200);
   };
 
   const getWallet = () => {
@@ -36,8 +40,8 @@ describe('AppController (e2e)', () => {
   }) => {
     const address = wallet.address;
     const message = new SiweMessage({
-      domain: 'test',
-      uri: 'test',
+      // domain: 'test',
+      uri: 'http://secretmemeproject.com',
       version: '1',
       chainId: 1,
       address,
@@ -53,10 +57,7 @@ describe('AppController (e2e)', () => {
   };
 
   it('/ (GET)', () => {
-    return request(app.getHttpServer())
-      .get('/')
-      .expect(200)
-      .expect('Hello World!');
+    return request.get('/').expect(200).expect('Hello World!');
   });
 
   it('/auth/nonce (GET)', () => {
@@ -66,18 +67,19 @@ describe('AppController (e2e)', () => {
   });
 
   it('/auth/verify (POST)', () => {
-    return getNonceReq().then(async ({ body: { nonce } }) => {
+    return getNonceReq().then(async (res) => {
+      const nonce = res.body.nonce;
       const wallet = getWallet();
       const { message, signature } = await getSiweMessage({
         wallet,
         statement: 'Sign in with Ethereum',
         nonce,
       });
-      request(app.getHttpServer())
+      console.log(message, signature);
+      return request
         .post('/auth/verify')
         .send({ message, signature })
         .expect(200);
-      console.log(message, signature);
     });
   });
 
