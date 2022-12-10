@@ -43,11 +43,13 @@ describe('AppController (e2e)', () => {
     nonce: string;
   }) => {
     const address = wallet.address;
+    const uri = 'http://secretmemeproject.com';
+    const domain = 'secretmemeproject.com';
     const message = new SiweMessage({
-      // domain: 'test',
-      uri: 'http://secretmemeproject.com',
       version: '1',
       chainId: 1,
+      domain,
+      uri,
       address,
       statement,
       nonce,
@@ -71,19 +73,30 @@ describe('AppController (e2e)', () => {
   });
 
   it('/auth/verify (POST)', () => {
-    return getNonceReq().then(async (res) => {
-      const nonce = res.body.nonce;
+    return getNonceReq().then(async ({ body: { nonce } }) => {
       const wallet = getWallet();
       const { message, signature } = await getSiweMessage({
         wallet,
         statement: 'Sign in with Ethereum',
         nonce,
       });
-      console.log(message, signature);
       return request
         .post('/auth/verify')
         .send({ message, signature })
-        .expect(200);
+        .expect(201);
+    });
+  });
+
+  it('tests authentication', () => {
+    return getNonceReq().then(async ({ body: { nonce } }) => {
+      const wallet = getWallet();
+      const { message, signature } = await getSiweMessage({
+        wallet,
+        statement: 'Sign in with Ethereum',
+        nonce,
+      });
+      request.post('/auth/verify').send({ message, signature }).expect(201);
+      return request.get('/test').expect(200);
     });
   });
 
