@@ -1,9 +1,11 @@
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ethers, Wallet } from 'ethers';
+
 import { SiweMessage } from 'siwe';
 import * as superRequest from 'supertest';
 import { AppModule } from './../src/app.module';
+import { getExpressRedisSession } from './../src/middleware/session';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
@@ -16,9 +18,11 @@ describe('AppController (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
+    app.use(getExpressRedisSession(app));
     await app.init();
     server = app.getHttpServer();
-    request = superRequest(server);
+    // agent will persist sessions for us
+    request = superRequest.agent(server);
   });
 
   const getNonceReq = () => {

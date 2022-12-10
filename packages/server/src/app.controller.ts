@@ -34,9 +34,8 @@ export class AppController {
   @Post('/auth/verify')
   async postAuth(
     @Body() { message, signature }: SiweDto,
-    @Session() session: any = {},
+    @Session() session: any,
   ) {
-    console.log(message, signature);
     try {
       const siweMessage = new SiweMessage(message);
       const fields = await siweMessage.validate(signature);
@@ -59,7 +58,7 @@ export class AppController {
   }
 
   @Get('/auth/nonce')
-  async getNonce(@Session() session: any = {}) {
+  async getNonce(@Session() session: any) {
     session.nonce = generateNonce();
     return {
       nonce: session.nonce,
