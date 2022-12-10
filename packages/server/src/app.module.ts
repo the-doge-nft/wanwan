@@ -3,6 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { redisStore } from 'cache-manager-redis-store';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { AuthModule } from './auth/auth.module';
 import config, { Config } from './config/config';
 import { PrismaService } from './prisma.service';
 import { UserService } from './user/user.service';
@@ -32,6 +33,7 @@ import { UserService } from './user/user.service';
       },
       inject: [ConfigService],
     }),
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService, UserService],

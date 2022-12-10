@@ -100,7 +100,7 @@ describe('AppController (e2e)', () => {
         .send({ message, signature })
         .expect(201)
         .then((res) => {
-          return agent.get('/test').withCredentials().expect(200);
+          return agent.get('/test').expect(200);
         });
     });
   });
