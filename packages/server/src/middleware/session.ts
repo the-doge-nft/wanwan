@@ -20,8 +20,8 @@ export function getExpressRedisSession(app: INestApplication): any {
     store: new RedisStore({ client: redisClient }),
     name: sessionConfig.name,
     secret: sessionConfig.secret,
-    resave: true,
-    saveUninitialized: true,
+    resave: false,
+    saveUninitialized: false,
     cookie: {
       secure: false,
       sameSite: true,

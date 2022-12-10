@@ -14,6 +14,8 @@ import { SiweDto } from './dto/siwe.dto';
 import { InvalidNonceError } from './error/InvalidNonce.error';
 import { UserService } from './user/user.service';
 
+type SessionType = Session & { nonce: string; siwe: any };
+
 @Controller()
 export class AppController {
   private readonly logger = new Logger(AppController.name);
@@ -32,23 +34,30 @@ export class AppController {
     return this.userService.findMany();
   }
 
+  @Get('/auth/nonce')
+  async getNonce(@_Session() session: SessionType) {
+    session.nonce = generateNonce();
+    return {
+      nonce: session.nonce,
+    };
+  }
+
   @Post('/auth/verify')
   async postAuth(
     @Body() { message, signature }: SiweDto,
-    @_Session() session: Session,
+    @_Session() session: SessionType,
   ) {
     try {
       const siweMessage = new SiweMessage(message);
       const fields = await siweMessage.validate(signature);
 
-      // @ts-ignore
       if (fields.nonce !== session.nonce) {
         throw new InvalidNonceError();
       }
-      // @ts-ignore
       session.siwe = fields;
-      session.cookie.expires = new Date(fields.expirationTime);
-      return session.save(() => ({ success: true }));
+      // session.cookie.expires = new Date(fields.expirationTime);
+      console.log('/auth/verify session', session);
+      return { success: true, session };
     } catch (e) {
       this.logger.error(e);
       switch (e) {
@@ -60,17 +69,9 @@ export class AppController {
     }
   }
 
-  @Get('/auth/nonce')
-  async getNonce(@_Session() session: any) {
-    session.nonce = generateNonce();
-    return {
-      nonce: session.nonce,
-    };
-  }
-
   @Get('/test')
-  async getTest(@_Session() session: any) {
-    console.log('app', session);
+  async getTest(@_Session() session: SessionType) {
+    console.log('GET /test', session);
     return { success: true };
   }
 }

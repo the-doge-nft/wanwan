@@ -10,7 +10,7 @@ import { getExpressRedisSession } from './../src/middleware/session';
 describe('AppController (e2e)', () => {
   let app: INestApplication;
   let server: any;
-  let request: any;
+  let agent: any;
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -22,11 +22,11 @@ describe('AppController (e2e)', () => {
     await app.init();
     server = app.getHttpServer();
     // agent will persist sessions for us
-    request = superRequest.agent(server);
+    agent = superRequest.agent(server);
   });
 
   const getNonceReq = () => {
-    return request.get('/auth/nonce').expect(200);
+    return agent.get('/auth/nonce').expect(200);
   };
 
   const getWallet = () => {
@@ -63,7 +63,7 @@ describe('AppController (e2e)', () => {
   };
 
   it('/ (GET)', () => {
-    return request.get('/').expect(200).expect('Hello World!');
+    return agent.get('/').expect(200).expect('Hello World!');
   });
 
   it('/auth/nonce (GET)', () => {
@@ -80,7 +80,7 @@ describe('AppController (e2e)', () => {
         statement: 'Sign in with Ethereum',
         nonce,
       });
-      return request
+      return agent
         .post('/auth/verify')
         .send({ message, signature })
         .expect(201);
@@ -95,8 +95,13 @@ describe('AppController (e2e)', () => {
         statement: 'Sign in with Ethereum',
         nonce,
       });
-      request.post('/auth/verify').send({ message, signature }).expect(201);
-      return request.get('/test').expect(200);
+      return agent
+        .post('/auth/verify')
+        .send({ message, signature })
+        .expect(201)
+        .then((res) => {
+          return agent.get('/test').withCredentials().expect(200);
+        });
     });
   });
 
