@@ -86,7 +86,7 @@ describe('AppController (e2e)', () => {
     });
   });
 
-  it('tests authentication', () => {
+  it('/user (GET)', () => {
     return getNonceReq().then(async ({ body: { nonce } }) => {
       const wallet = getWallet();
       const { message, signature } = await getSiweMessage({
@@ -98,8 +98,14 @@ describe('AppController (e2e)', () => {
         .post('/auth/verify')
         .send({ message, signature })
         .expect(201)
-        .then((res) => {
-          return agent.get('/test').expect(200);
+        .then(() => {
+          return agent
+            .get('/user')
+            .expect(200)
+            .then((res) => {
+              const { user } = res.body;
+              expect(wallet.address).toBe(user.address);
+            });
         });
     });
   });
