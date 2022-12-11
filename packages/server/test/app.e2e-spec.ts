@@ -21,7 +21,6 @@ describe('AppController (e2e)', () => {
     app.use(getExpressRedisSession(app));
     await app.init();
     server = app.getHttpServer();
-    // agent will persist sessions for us
     agent = superRequest.agent(server);
   });
 
