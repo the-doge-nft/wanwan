@@ -10,6 +10,7 @@ export interface Config {
   port: number;
   appEnv: AppEnv;
   aws: {
+    region: string;
     accessKey: string;
     secretAccessKey: string;
   };
@@ -27,6 +28,7 @@ export interface Config {
 const configSchema = Joi.object<Config>({
   port: Joi.number().integer().required(),
   aws: Joi.object({
+    region: Joi.string(),
     accessKey: Joi.string(),
     secretAcessKey: Joi.toString(),
   }),
@@ -48,6 +50,7 @@ const config: Config = {
   port: parseInt(process.env.PORT) || 3000,
   appEnv: (process.env.APP_ENV as AppEnv) || AppEnv.development,
   aws: {
+    region: process.env.AWS_REGION,
     accessKey: process.env.AWS_ACCESS_KEY,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
   },

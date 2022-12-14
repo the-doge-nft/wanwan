@@ -11,7 +11,7 @@ export class S3Service {
   constructor(private readonly config: ConfigService<Config>) {
     const awsConfig = this.config.get<Config['aws']>('aws');
     this.client = new AWS.S3({
-      region: 'us-east-1',
+      region: awsConfig.region,
       credentials: {
         accessKeyId: awsConfig.accessKey,
         secretAccessKey: awsConfig.secretAccessKey,
