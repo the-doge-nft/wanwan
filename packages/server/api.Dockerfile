@@ -1,8 +1,9 @@
 FROM node:18-alpine as development
 
 # we need pnpm first
-# ENV NODE_ENV development
 RUN npm install -g pnpm
+# https://github.com/prisma/prisma/issues/14073
+RUN apk add --update --no-cache openssl1.1-compat
 WORKDIR /usr/src/app
 # copy package.json and package-lock.json to the container
 COPY --chown=node:node package.json ./

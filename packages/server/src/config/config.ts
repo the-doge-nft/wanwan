@@ -9,6 +9,10 @@ export enum AppEnv {
 export interface Config {
   port: number;
   appEnv: AppEnv;
+  aws: {
+    accessKey: string;
+    secretAccessKey: string;
+  };
   session: {
     secret: string;
     name: string;
@@ -22,6 +26,10 @@ export interface Config {
 
 const configSchema = Joi.object<Config>({
   port: Joi.number().integer().required(),
+  aws: Joi.object({
+    accessKey: Joi.string(),
+    secretAcessKey: Joi.toString(),
+  }),
   appEnv: Joi.string()
     .valid(AppEnv.development, AppEnv.staging, AppEnv.test)
     .required(),
@@ -39,6 +47,10 @@ const configSchema = Joi.object<Config>({
 const config: Config = {
   port: parseInt(process.env.PORT) || 3000,
   appEnv: (process.env.APP_ENV as AppEnv) || AppEnv.development,
+  aws: {
+    accessKey: process.env.AWS_ACCESS_KEY,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  },
   session: {
     secret: process.env.SESSION_SECRET,
     name: process.env.SESSION_NAME,

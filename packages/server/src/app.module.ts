@@ -8,6 +8,7 @@ import config, { Config } from './config/config';
 import { PrismaService } from './prisma.service';
 import { UserService } from './user/user.service';
 import { UserController } from './user/user.controller';
+import { S3Service } from './s3/s3.service';
 
 @Module({
   imports: [
@@ -37,6 +38,6 @@ import { UserController } from './user/user.controller';
     AuthModule,
   ],
   controllers: [AppController, UserController],
-  providers: [AppService, PrismaService, UserService],
+  providers: [AppService, PrismaService, UserService, S3Service],
 })
 export class AppModule {}

@@ -61,32 +61,7 @@ describe('AppController (e2e)', () => {
     };
   };
 
-  it('/ (GET)', () => {
-    return agent.get('/').expect(200).expect('Hello World!');
-  });
-
-  it('/auth/nonce (GET)', () => {
-    return getNonceReq().expect((res) => {
-      expect(res.body.nonce).toBeDefined();
-    });
-  });
-
-  it('/auth/verify (POST)', () => {
-    return getNonceReq().then(async ({ body: { nonce } }) => {
-      const wallet = getWallet();
-      const { message, signature } = await getSiweMessage({
-        wallet,
-        statement: 'Sign in with Ethereum',
-        nonce,
-      });
-      return agent
-        .post('/auth/verify')
-        .send({ message, signature })
-        .expect(201);
-    });
-  });
-
-  it('/user (GET)', () => {
+  const getNewUser = () => {
     return getNonceReq().then(async ({ body: { nonce } }) => {
       const wallet = getWallet();
       const { message, signature } = await getSiweMessage({
@@ -98,16 +73,40 @@ describe('AppController (e2e)', () => {
         .post('/auth/verify')
         .send({ message, signature })
         .expect(201)
-        .then(() => {
-          return agent
-            .get('/user')
-            .expect(200)
-            .then((res) => {
-              const { user } = res.body;
-              expect(wallet.address).toBe(user.address);
-            });
+        .then((res) => {
+          return { res, wallet };
         });
     });
+  };
+
+  it('/ (GET)', () => {
+    return agent.get('/').expect(200).expect('Hello World!');
+  });
+
+  it('/auth/nonce (GET)', () => {
+    return getNonceReq().expect((res) => {
+      expect(res.body.nonce).toBeDefined();
+    });
+  });
+
+  it('/auth/verify (POST)', () => {
+    return getNewUser();
+  });
+
+  it('/user (GET)', async () => {
+    const { wallet } = await getNewUser();
+    return agent
+      .get('/user')
+      .expect(200)
+      .then((res) => {
+        const { user } = res.body;
+        expect(wallet.address).toBe(user.address);
+      });
+  });
+
+  it('/post (POST)', async () => {
+    const { wallet } = await getNewUser();
+    return agent.post('/upload').attach('file', 'test/fixtures/avatar.png');
   });
 
   afterAll(async () => {
