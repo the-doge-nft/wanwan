@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import fs from 'fs';
+import sizeOf from 'image-size';
 import { PrismaService } from './../prisma.service';
 import { S3Service } from './../s3/s3.service';
 
@@ -23,14 +24,19 @@ export class MediaService {
   );
 
   async create(file: Express.Multer.File, createdById: number) {
-    // const s3 = await this.s3.putObject();
+    const s3 = await this.s3.putObject({
+      bucket: 'TEST',
+      key: `${createdById}-${file.filename}-${new Date().toISOString()}`,
+      body: file.stream,
+    });
+    const dimensions = sizeOf(file.destination);
     const media = await this.prisma.media.create({
       data: {
-        width: 100,
-        height: 100,
+        width: dimensions.width,
+        height: dimensions.height,
         filename: file.filename,
         filesize: file.size,
-        s3BucketName: 'test',
+        s3BucketName: 'TEST',
         createdById,
       },
     });
