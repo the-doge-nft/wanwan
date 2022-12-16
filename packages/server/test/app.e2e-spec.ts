@@ -104,7 +104,7 @@ describe('AppController (e2e)', () => {
       });
   });
 
-  it('/post (POST)', async () => {
+  it('/meme (POST)', async () => {
     const { wallet } = await getNewUser();
     return agent.post('/upload').attach('file', 'test/fixtures/avatar.png');
   });

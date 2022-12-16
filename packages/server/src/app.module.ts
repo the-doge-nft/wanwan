@@ -9,6 +9,8 @@ import { PrismaService } from './prisma.service';
 import { UserService } from './user/user.service';
 import { UserController } from './user/user.controller';
 import { S3Service } from './s3/s3.service';
+import { MediaService } from './media/media.service';
+import { MemeService } from './meme/meme.service';
 
 @Module({
   imports: [
@@ -38,6 +40,6 @@ import { S3Service } from './s3/s3.service';
     AuthModule,
   ],
   controllers: [AppController, UserController],
-  providers: [AppService, PrismaService, UserService, S3Service],
+  providers: [AppService, PrismaService, UserService, S3Service, MediaService, MemeService],
 })
 export class AppModule {}

@@ -28,10 +28,10 @@ export interface Config {
 const configSchema = Joi.object<Config>({
   port: Joi.number().integer().required(),
   aws: Joi.object({
-    region: Joi.string(),
-    accessKey: Joi.string(),
-    secretAcessKey: Joi.toString(),
-  }),
+    region: Joi.string().required(),
+    accessKey: Joi.string().required(),
+    secretAccessKey: Joi.string().required(),
+  }).required(),
   appEnv: Joi.string()
     .valid(AppEnv.development, AppEnv.staging, AppEnv.test)
     .required(),
