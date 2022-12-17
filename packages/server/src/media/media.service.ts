@@ -3,10 +3,9 @@ import { ConfigService } from '@nestjs/config';
 import { unlinkSync } from 'fs';
 import sizeOf from 'image-size';
 import { join } from 'path';
-import { Config } from './../../dist/src/config/config.d';
+import { Config } from '../config/config';
 import { PrismaService } from './../prisma.service';
 import { S3Service } from './../s3/s3.service';
-
 @Injectable()
 export class MediaService {
   private readonly logger = new Logger(MediaService.name);
@@ -32,14 +31,17 @@ export class MediaService {
     const key = `${createdById}-${file.filename}-${
       new Date().toISOString().split('T')[0]
     }.${file.originalname.split('.')[file.originalname.split('.').length - 1]}`;
-    const s3 = await this.s3.putObject({
+
+    await this.s3.putObject({
       body: file.stream,
       bucket,
       key,
     });
+
     const filePath =
       join(__dirname, '..', '..', file.destination) + file.filename;
     const dimensions = sizeOf(filePath);
+
     const media = await this.prisma.media.create({
       data: {
         width: dimensions.width,

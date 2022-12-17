@@ -124,7 +124,10 @@ describe('AppController (e2e)', () => {
       .post('/meme')
       .field('name', 'TESS')
       .field('description', 'memesbruh')
-      .attach('file', 'test/fixtures/avatar.png');
+      .attach('file', 'test/fixtures/avatar.png')
+      .expect((res) => {
+        console.log(res.body);
+      });
   });
 
   afterAll(async () => {
