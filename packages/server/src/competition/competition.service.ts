@@ -31,11 +31,11 @@ export class CompetitionService {
         create: { address, lastAuthedAt: new Date() },
         update: {},
       });
-      console.log('user', user);
       await this.prisma.compeitionCurator.create({
         data: { competitionId: comp.id, userId: user.id },
       });
     }
+    return comp;
   }
 
   findMany(args: Prisma.CompetitionFindManyArgs) {

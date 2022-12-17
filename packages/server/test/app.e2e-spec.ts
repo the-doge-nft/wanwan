@@ -93,6 +93,31 @@ describe('AppController (e2e)', () => {
     }));
   };
 
+  const postCompetition = async ({
+    name = 'A Brand New Compeition',
+    description = 'Test this out',
+    maxUserSubmissions = 1,
+    endsAt = new Date(),
+  } = {}) => {
+    const { wallet } = await getNewUser();
+    return agent
+      .post('/competition')
+      .send({
+        name,
+        description,
+        maxUserSubmissions,
+        endsAt,
+        curators: [wallet.address],
+      })
+      .expect((res) => {
+        const { body } = res;
+        expect(body.name).toEqual(name);
+        expect(body.description).toEqual(description);
+        expect(body.maxUserSubmissions).toEqual(maxUserSubmissions);
+        expect(body.endsAt).toEqual(endsAt.toISOString());
+      });
+  };
+
   // it('/ (GET)', () => {
   //   return agent.get('/').expect(200).expect('Hello World!');
   // });
@@ -159,13 +184,13 @@ describe('AppController (e2e)', () => {
   // });
 
   it('/competition (POST)', async () => {
-    const { wallet } = await getNewUser();
-    return agent.post('/competition').send({
-      name: 'A Brand New Competition',
-      description: 'Test this competition out yo',
-      maxUserSubmissions: 1,
-      endsAt: new Date(),
-      curators: [wallet.address],
+    await postCompetition();
+  });
+
+  it('/competition (GET)', async () => {
+    await postCompetition();
+    return agent.get('/competition').expect((res) => {
+      expect(res.body.length).toBeGreaterThan(0);
     });
   });
 
