@@ -11,6 +11,7 @@ import { UserController } from './user/user.controller';
 import { S3Service } from './s3/s3.service';
 import { MediaService } from './media/media.service';
 import { MemeService } from './meme/meme.service';
+import { CompetitionService } from './competition/competition.service';
 
 @Module({
   imports: [
@@ -40,6 +41,6 @@ import { MemeService } from './meme/meme.service';
     AuthModule,
   ],
   controllers: [AppController, UserController],
-  providers: [AppService, PrismaService, UserService, S3Service, MediaService, MemeService],
+  providers: [AppService, PrismaService, UserService, S3Service, MediaService, MemeService, CompetitionService],
 })
 export class AppModule {}

@@ -52,8 +52,8 @@ model Competition {
   description        String?
   maxUserSubmissions Int
   endsAt             DateTime
-  createdAt          DateTime
-  updatedAt          DateTime
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @default(now())
   createdById        Int
   user               User                @relation(fields: [createdById], references: [id])
   submissions        Submission[]

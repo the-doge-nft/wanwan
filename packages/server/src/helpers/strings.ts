@@ -8,3 +8,7 @@ export const isValidEthereumAddress = (address: string) => {
     return false;
   }
 };
+
+export const formatEthereumAddress = (address: string) => {
+  return ethers.utils.getAddress(address);
+};

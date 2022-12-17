@@ -13,6 +13,7 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AppService } from './app.service';
 import { AuthGuard } from './auth/auth.guard';
+import { CompetitionService } from './competition/competition.service';
 import { CompetitionDto } from './dto/competition.dto';
 import { MemeDto } from './dto/meme.dto';
 import { AuthenticatedRequest } from './interface';
@@ -25,6 +26,7 @@ export class AppController {
   constructor(
     private readonly app: AppService,
     private readonly meme: MemeService,
+    private readonly compeition: CompetitionService,
   ) {}
 
   @Get()
@@ -52,5 +54,18 @@ export class AppController {
 
   @Post('competition')
   @UseGuards(AuthGuard)
-  createCompetition(@Body() competition: CompetitionDto) {}
+  createCompetition(
+    @Body() competition: CompetitionDto,
+    @Req() { user }: AuthenticatedRequest,
+  ) {
+    return this.compeition.create({
+      ...competition,
+      creator: user,
+    });
+  }
+
+  @Get('competition')
+  getCompetition() {
+    return this.compeition.findMany({});
+  }
 }

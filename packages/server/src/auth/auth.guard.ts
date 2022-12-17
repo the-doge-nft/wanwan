@@ -1,4 +1,5 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import { formatEthereumAddress } from '../helpers/strings';
 import { UserService } from './../user/user.service';
 
 @Injectable()
@@ -13,9 +14,10 @@ export class AuthGuard implements CanActivate {
       return false;
     }
 
+    const formattedAddress = formatEthereumAddress(address);
     const user = await this.user.upsert({
-      where: { address },
-      create: { address, lastAuthedAt: new Date() },
+      where: { address: formattedAddress },
+      create: { address: formattedAddress, lastAuthedAt: new Date() },
       update: {},
     });
     request.user = user;
