@@ -13,6 +13,7 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AppService } from './app.service';
 import { AuthGuard } from './auth/auth.guard';
+import { CompetitionDto } from './dto/competition.dto';
 import { MemeDto } from './dto/meme.dto';
 import { AuthenticatedRequest } from './interface';
 import { MemeService } from './meme/meme.service';
@@ -36,30 +37,20 @@ export class AppController {
   @UseInterceptors(
     FileInterceptor('file', {
       dest: 'uploads/',
-      // fileFilter: (req, file, cb) => {
-      //   console.log(req.files);
-      //   console.log(file);
-      //   if (MediaService.supportedMediaMimeTypes.includes(file.mimetype)) {
-      //     cb(null, true);
-      //   } else {
-      //     cb(
-      //       new BadRequestException(
-      //         `Invalid mimetype. Only the following are accepted: ${MediaService.supportedMimeTypeString}`,
-      //       ),
-      //       false,
-      //     );
-      //   }
-      // },
     }),
   )
   uploadFile(
     @Body() meme: MemeDto,
-    @Req() req: AuthenticatedRequest,
+    @Req() { user }: AuthenticatedRequest,
     @UploadedFile(
       new ParseFilePipe({ validators: [new MemeMediaFileValidator()] }),
     )
     file: Express.Multer.File,
   ) {
-    return this.meme.create(file, { ...meme, createdById: req.user.id });
+    return this.meme.create(file, { ...meme, createdById: user.id });
   }
+
+  @Post('competition')
+  @UseGuards(AuthGuard)
+  createCompetition(@Body() competition: CompetitionDto) {}
 }
