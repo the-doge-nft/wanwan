@@ -66,6 +66,8 @@ export class AppController {
 
   @Get('competition')
   getCompetition() {
-    return this.compeition.findMany({});
+    return this.compeition.findMany({
+      include: { curators: { include: { user: true } } },
+    });
   }
 }

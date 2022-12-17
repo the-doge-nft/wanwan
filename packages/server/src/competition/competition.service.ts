@@ -11,6 +11,8 @@ export class CompetitionService {
     private readonly user: UserService,
   ) {}
 
+  private afterGetCompetition(competition: any) {}
+
   async create({ curators, creator, ...competition }: any) {
     const comp = await this.prisma.competition.create({
       data: { ...competition, createdById: creator.id },

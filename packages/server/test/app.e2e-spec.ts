@@ -190,7 +190,9 @@ describe('AppController (e2e)', () => {
   it('/competition (GET)', async () => {
     await postCompetition();
     return agent.get('/competition').expect((res) => {
-      expect(res.body.length).toBeGreaterThan(0);
+      const { body } = res;
+      body.forEach((comp) => console.log(comp));
+      expect(body.length).toBeGreaterThan(0);
     });
   });
 
