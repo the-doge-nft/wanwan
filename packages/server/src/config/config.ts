@@ -13,6 +13,7 @@ export interface Config {
     region: string;
     accessKey: string;
     secretAccessKey: string;
+    mediaBucketName: string;
   };
   session: {
     secret: string;
@@ -31,6 +32,7 @@ const configSchema = Joi.object<Config>({
     region: Joi.string().required(),
     accessKey: Joi.string().required(),
     secretAccessKey: Joi.string().required(),
+    mediaBucketName: Joi.string().required(),
   }).required(),
   appEnv: Joi.string()
     .valid(AppEnv.development, AppEnv.staging, AppEnv.test)
@@ -53,6 +55,7 @@ const config: Config = {
     region: process.env.AWS_REGION,
     accessKey: process.env.AWS_ACCESS_KEY,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    mediaBucketName: process.env.AWS_MEDIA_BUCKET_NAME,
   },
   session: {
     secret: process.env.SESSION_SECRET,

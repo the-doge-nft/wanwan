@@ -1,6 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
-import fs from 'fs';
+import { ConfigService } from '@nestjs/config';
+import { unlinkSync } from 'fs';
 import sizeOf from 'image-size';
+import { join } from 'path';
+import { Config } from './../../dist/src/config/config.d';
 import { PrismaService } from './../prisma.service';
 import { S3Service } from './../s3/s3.service';
 
@@ -11,6 +14,7 @@ export class MediaService {
   constructor(
     private readonly s3: S3Service,
     private readonly prisma: PrismaService,
+    private readonly config: ConfigService<Config>,
   ) {}
 
   static supportedMedia = [
@@ -24,25 +28,31 @@ export class MediaService {
   );
 
   async create(file: Express.Multer.File, createdById: number) {
+    const bucket = this.config.get('aws').mediaBucketName;
+    const key = `${createdById}-${file.filename}-${
+      new Date().toISOString().split('T')[0]
+    }.${file.originalname.split('.')[file.originalname.split('.').length - 1]}`;
     const s3 = await this.s3.putObject({
-      bucket: 'TEST',
-      key: `${createdById}-${file.filename}-${new Date().toISOString()}`,
       body: file.stream,
+      bucket,
+      key,
     });
-    const dimensions = sizeOf(file.destination);
+    const filePath =
+      join(__dirname, '..', '..', file.destination) + file.filename;
+    const dimensions = sizeOf(filePath);
     const media = await this.prisma.media.create({
       data: {
         width: dimensions.width,
         height: dimensions.height,
-        filename: file.filename,
+        filename: key,
         filesize: file.size,
-        s3BucketName: 'TEST',
+        s3BucketName: bucket,
         createdById,
       },
     });
 
     // remove from the system
-    await fs.unlinkSync(file.destination);
+    await unlinkSync(filePath);
     return media;
   }
 }
