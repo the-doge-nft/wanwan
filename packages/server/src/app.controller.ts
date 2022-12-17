@@ -1,9 +1,9 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Get,
   Logger,
+  ParseFilePipe,
   Post,
   Req,
   UploadedFile,
@@ -15,8 +15,8 @@ import { AppService } from './app.service';
 import { AuthGuard } from './auth/auth.guard';
 import { MemeDto } from './dto/meme.dto';
 import { AuthenticatedRequest } from './interface';
-import { MediaService } from './media/media.service';
 import { MemeService } from './meme/meme.service';
+import MemeMediaFileValidator from './validator/meme-media-file.validator';
 
 @Controller()
 export class AppController {
@@ -27,8 +27,8 @@ export class AppController {
   ) {}
 
   @Get()
-  getHello(): string {
-    return this.app.getHello();
+  getIndex(): string {
+    return this.app.getIndex();
   }
 
   @Post('meme')
@@ -36,19 +36,29 @@ export class AppController {
   @UseInterceptors(
     FileInterceptor('file', {
       dest: 'uploads/',
-      fileFilter: (req, file, cb) => {
-        if (MediaService.supportedMediaMimeTypes.includes(file.mimetype)) {
-          cb(null, true);
-        } else {
-          cb(new BadRequestException(), false);
-        }
-      },
+      // fileFilter: (req, file, cb) => {
+      //   console.log(req.files);
+      //   console.log(file);
+      //   if (MediaService.supportedMediaMimeTypes.includes(file.mimetype)) {
+      //     cb(null, true);
+      //   } else {
+      //     cb(
+      //       new BadRequestException(
+      //         `Invalid mimetype. Only the following are accepted: ${MediaService.supportedMimeTypeString}`,
+      //       ),
+      //       false,
+      //     );
+      //   }
+      // },
     }),
   )
   uploadFile(
-    @UploadedFile() file: Express.Multer.File,
     @Body() meme: MemeDto,
     @Req() req: AuthenticatedRequest,
+    @UploadedFile(
+      new ParseFilePipe({ validators: [new MemeMediaFileValidator()] }),
+    )
+    file: Express.Multer.File,
   ) {
     return this.meme.create(file, { ...meme, createdById: req.user.id });
   }

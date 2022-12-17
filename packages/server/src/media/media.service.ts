@@ -22,9 +22,11 @@ export class MediaService {
     { extension: '.gif', mimeType: 'image/gif' },
     { extension: '.svg', mimeType: 'image/svg+xml' },
   ];
-  static supportedMediaMimeTypes = MediaService.supportedMedia.map(
-    (item) => item.mimeType,
-  );
+  // static supportedMediaMimeTypes = MediaService.supportedMedia.map(
+  //   (item) => item.mimeType,
+  // );
+  // static supportedMimeTypeString =
+  //   MediaService.supportedMediaMimeTypes.join(', ');
 
   async create(file: Express.Multer.File, createdById: number) {
     const bucket = this.config.get('aws').mediaBucketName;

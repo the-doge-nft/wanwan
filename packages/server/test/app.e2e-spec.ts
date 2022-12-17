@@ -86,6 +86,13 @@ describe('AppController (e2e)', () => {
     });
   };
 
+  const mockS3PutObject = () => {
+    jest.spyOn(s3Service, 'putObject').mockImplementationOnce(async () => ({
+      ETag: '1b2cf535f27731c974343645a3985328',
+      $metadata: { httpStatusCode: 200 },
+    }));
+  };
+
   // it('/ (GET)', () => {
   //   return agent.get('/').expect(200).expect('Hello World!');
   // });
@@ -111,23 +118,45 @@ describe('AppController (e2e)', () => {
   //     });
   // });
 
-  it('/meme (POST)', async () => {
-    const { wallet } = await getNewUser();
-    jest.spyOn(s3Service, 'putObject').mockImplementationOnce(async () => ({
-      Expiration: '',
-      ETag: '1b2cf535f27731c974343645a3985328',
-      ContentLength: 0,
-      VersionId: '1.0',
-      $metadata: { httpStatusCode: 200 },
-    }));
+  // it('/meme (POST)', async () => {
+  //   const { wallet } = await getNewUser();
+  //   mockS3PutObject();
+  //   return agent
+  //     .post('/meme')
+  //     .field('name', 'TESS')
+  //     .field('description', 'memesbruh')
+  //     .attach('file', 'test/fixtures/avatar.png')
+  //     .expect(200)
+  //     .expect((res) => {
+  //       console.log(res.body);
+  //     });
+  // });
+
+  it('/meme (POST) throws invalid mimetype', async () => {
+    await getNewUser();
+    mockS3PutObject();
     return agent
       .post('/meme')
-      .field('name', 'TESS')
-      .field('description', 'memesbruh')
-      .attach('file', 'test/fixtures/avatar.png')
+      .field('name', 'this meme should be rejected')
+      .attach('file', 'test/fixtures/house.webp')
+      .expect(400)
       .expect((res) => {
-        console.log(res.body);
+        expect(res.body.message).toEqual(
+          'Invalid mimetype. Only the following are accepted: image/jpeg, image/png, image/gif, image/svg+xml',
+        );
       });
+  });
+
+  it('/meme (POST) throws multiple files', async () => {
+    await getNewUser();
+    mockS3PutObject();
+    return agent
+      .post('/meme')
+      .field('name', 'this meme should be rejected')
+      .attach('file', 'test/fixtures/avatar.png')
+      .attach('file', 'test/fixtures/avatar.png')
+      .expect(400)
+      .expect((res) => console.log(res.body));
   });
 
   afterAll(async () => {
