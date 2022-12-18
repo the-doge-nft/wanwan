@@ -1,4 +1,9 @@
-import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import {
+  CanActivate,
+  ExecutionContext,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { formatEthereumAddress } from '../helpers/strings';
 import { UserService } from './../user/user.service';
 
@@ -11,7 +16,7 @@ export class AuthGuard implements CanActivate {
     const address = request.session?.siwe?.address;
 
     if (!address) {
-      return false;
+      throw new UnauthorizedException();
     }
 
     const formattedAddress = formatEthereumAddress(address);

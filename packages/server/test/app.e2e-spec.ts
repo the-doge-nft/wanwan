@@ -146,17 +146,27 @@ describe('AppController (e2e)', () => {
   });
 
   it('/meme (POST)', async () => {
+    const details = { name: 'TEST', description: 'memesbruh' };
     await getNewUser();
     mockS3PutObject();
     return agent
       .post('/meme')
-      .field('name', 'TESS')
-      .field('description', 'memesbruh')
+      .field('name', details.name)
+      .field('description', details.description)
       .attach('file', 'test/fixtures/avatar.png')
       .expect(201)
       .expect((res) => {
-        console.log(res.body);
+        const { body } = res;
+        expect(body.name).toEqual(details.name);
+        expect(body.description).toEqual(details.description);
       });
+  });
+
+  it('/meme (POST) not authenticated', async () => {
+    return agent
+      .post('/meme')
+      .attach('file', 'test/fixtures/avatar.png')
+      .expect(401);
   });
 
   it('/meme (POST) throws invalid mimetype', async () => {
