@@ -1,9 +1,8 @@
-FROM node:18-alpine as development
+# https://github.com/prisma/prisma/issues/16553#issuecomment-1353302617
+FROM node:18.12.1-alpine3.16 as development
 
 # we need pnpm first
 RUN npm install -g pnpm
-# https://github.com/prisma/prisma/issues/14073
-RUN apk add --update --no-cache openssl1.1-compat
 WORKDIR /usr/src/app
 # copy package.json and package-lock.json to the container
 COPY --chown=node:node package.json ./
@@ -18,7 +17,7 @@ RUN pnpm install
 
 ###########################################################
 
-FROM node:18-alpine as build
+FROM node:18.12.1-alpine3.16 as build
 WORKDIR /usr/src/app
 COPY --chown=node:node package.json ./
 COPY --chown=node:node pnpm-lock.yaml ./
@@ -32,7 +31,7 @@ USER node
 
 ###########################################################
 
-FROM node:18-alpine as production
+FROM node:18.12.1-alpine3.16 as production
 COPY --chown=node:node --from=build /usr/src/app/node_modules ./node_modules
 COPY --chown=node:node --from=build /usr/src/app/dist ./dist
 CMD ["node", "dist/main.js"]
