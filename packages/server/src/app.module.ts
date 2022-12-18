@@ -12,6 +12,7 @@ import { S3Service } from './s3/s3.service';
 import { MediaService } from './media/media.service';
 import { MemeService } from './meme/meme.service';
 import { CompetitionService } from './competition/competition.service';
+import { CommentService } from './comment/comment.service';
 
 @Module({
   imports: [
@@ -41,6 +42,6 @@ import { CompetitionService } from './competition/competition.service';
     AuthModule,
   ],
   controllers: [AppController, UserController],
-  providers: [AppService, PrismaService, UserService, S3Service, MediaService, MemeService, CompetitionService],
+  providers: [AppService, PrismaService, UserService, S3Service, MediaService, MemeService, CompetitionService, CommentService],
 })
 export class AppModule {}

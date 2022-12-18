@@ -23,7 +23,7 @@ export class AuthGuard implements CanActivate {
     const user = await this.user.upsert({
       where: { address: formattedAddress },
       create: { address: formattedAddress, lastAuthedAt: new Date() },
-      update: {},
+      update: { lastAuthedAt: new Date() },
     });
     request.user = user;
     return true;

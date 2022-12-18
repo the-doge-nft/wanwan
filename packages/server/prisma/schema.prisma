@@ -28,6 +28,7 @@ model User {
   votes               Vote[]
   competitionCurators CompeitionCurator[]
   Reward              Reward[]
+  Comment             Comment[]
 }
 
 model Meme {
@@ -113,12 +114,18 @@ model Vote {
 }
 
 model Comment {
-  id              Int      @id @default(autoincrement())
+  id              Int       @id @default(autoincrement())
+  body            String
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @default(now())
+  deletedAt       DateTime?
+  createdById     Int
+  user            User      @relation(fields: [createdById], references: [id])
   memeId          Int
-  meme            Meme     @relation(fields: [memeId], references: [id])
-  parentCommentId Int?     @unique
-  parent          Comment? @relation("CommentHistory", fields: [parentCommentId], references: [id])
-  child           Comment? @relation("CommentHistory")
+  meme            Meme      @relation(fields: [memeId], references: [id])
+  parentCommentId Int?      @unique
+  parent          Comment?  @relation("CommentHistory", fields: [parentCommentId], references: [id])
+  child           Comment?  @relation("CommentHistory")
 }
 
 model Reward {
