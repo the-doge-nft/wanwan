@@ -120,70 +120,70 @@ describe('AppController (e2e)', () => {
       });
   };
 
-  // it('/ (GET)', () => {
-  //   return agent.get('/').expect(200).expect('Hello World!');
-  // });
+  it('/ (GET)', () => {
+    return agent.get('/').expect(200).expect('Hello World!');
+  });
 
-  // it('/auth/nonce (GET)', () => {
-  //   return getNonceReq().expect((res) => {
-  //     expect(res.body.nonce).toBeDefined();
-  //   });
-  // });
+  it('/auth/nonce (GET)', () => {
+    return getNonceReq().expect((res) => {
+      expect(res.body.nonce).toBeDefined();
+    });
+  });
 
-  // it('/auth/verify (POST)', () => {
-  //   return getNewUser();
-  // });
+  it('/auth/verify (POST)', () => {
+    return getNewUser();
+  });
 
-  // it('/user (GET)', async () => {
-  //   const { wallet } = await getNewUser();
-  //   return agent
-  //     .get('/user')
-  //     .expect(200)
-  //     .then((res) => {
-  //       const { user } = res.body;
-  //       expect(wallet.address).toBe(user.address);
-  //     });
-  // });
+  it('/user (GET)', async () => {
+    const { wallet } = await getNewUser();
+    return agent
+      .get('/user')
+      .expect(200)
+      .then((res) => {
+        const { user } = res.body;
+        expect(wallet.address).toBe(user.address);
+      });
+  });
 
-  // it('/meme (POST)', async () => {
-  //   await getNewUser();
-  //   mockS3PutObject();
-  //   return agent
-  //     .post('/meme')
-  //     .field('name', 'TESS')
-  //     .field('description', 'memesbruh')
-  //     .attach('file', 'test/fixtures/avatar.png')
-  //     .expect(201)
-  //     .expect((res) => {
-  //       console.log(res.body);
-  //     });
-  // });
+  it('/meme (POST)', async () => {
+    await getNewUser();
+    mockS3PutObject();
+    return agent
+      .post('/meme')
+      .field('name', 'TESS')
+      .field('description', 'memesbruh')
+      .attach('file', 'test/fixtures/avatar.png')
+      .expect(201)
+      .expect((res) => {
+        console.log(res.body);
+      });
+  });
 
-  // it('/meme (POST) throws invalid mimetype', async () => {
-  //   await getNewUser();
-  //   mockS3PutObject();
-  //   return agent
-  //     .post('/meme')
-  //     .field('name', 'this meme should be rejected')
-  //     .attach('file', 'test/fixtures/house.webp')
-  //     .expect(400)
-  //     .expect((res) => {
-  //       expect(res.body.message).toEqual(
-  //         'Invalid mimetype. Only the following are accepted: image/jpeg, image/png, image/gif, image/svg+xml',
-  //       );
-  //     });
-  // });
+  it('/meme (POST) throws invalid mimetype', async () => {
+    await getNewUser();
+    mockS3PutObject();
+    return agent
+      .post('/meme')
+      .field('name', 'this meme should be rejected')
+      .attach('file', 'test/fixtures/house.webp')
+      .expect(400)
+      .expect((res) => {
+        expect(res.body.message).toEqual(
+          'Invalid mimetype. Only the following are accepted: image/jpeg, image/png, image/gif, image/svg+xml',
+        );
+      });
+  });
 
-  // it('/meme (POST) throws multiple files', async () => {
-  //   await getNewUser();
-  //   mockS3PutObject();
-  //   return agent
-  //     .post('/meme')
-  //     .field('name', 'this meme should be rejected')
-  //     .attach('file', 'test/fixtures/avatar.png')
-  //     .attach('file', 'test/fixtures/avatar.png')
-  //     .expect(400);
-  // });
+  it('/meme (POST) throws multiple files', async () => {
+    await getNewUser();
+    mockS3PutObject();
+    return agent
+      .post('/meme')
+      .field('name', 'this meme should be rejected')
+      .attach('file', 'test/fixtures/avatar.png')
+      .attach('file', 'test/fixtures/avatar.png')
+      .expect(400);
+  });
 
   it('/competition (POST)', async () => {
     const { wallet } = await getNewUser();
