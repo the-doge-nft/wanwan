@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { Competition, Prisma, User } from '@prisma/client';
 import { formatEthereumAddress } from './../helpers/strings';
 import { PrismaService } from './../prisma.service';
 import { UserService } from './../user/user.service';
@@ -11,7 +11,19 @@ export class CompetitionService {
     private readonly user: UserService,
   ) {}
 
-  private afterGetCompetition(competition: any) {}
+  private afterGetCompetition(
+    competition: Array<Prisma.CompetitionGetPayload<Prisma.CompetitionArgs>>,
+  ) {
+    return competition.map((comp) => {
+      const data: { curators?: { user: User }[] } & Competition = {
+        ...comp,
+      };
+      const userCurators = [];
+      data?.curators.forEach((item) => userCurators.push(item.user));
+      data.curators = userCurators;
+      return data;
+    });
+  }
 
   async create({ curators, creator, ...competition }: any) {
     const comp = await this.prisma.competition.create({
@@ -40,7 +52,9 @@ export class CompetitionService {
     return comp;
   }
 
-  findMany(args: Prisma.CompetitionFindManyArgs) {
-    return this.prisma.competition.findMany(args);
+  async findMany(args: Prisma.CompetitionFindManyArgs) {
+    return this.afterGetCompetition(
+      await this.prisma.competition.findMany(args),
+    );
   }
 }

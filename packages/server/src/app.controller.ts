@@ -68,6 +68,7 @@ export class AppController {
   getCompetition() {
     return this.compeition.findMany({
       include: { curators: { include: { user: true } } },
+      orderBy: { createdAt: 'desc' },
     });
   }
 }

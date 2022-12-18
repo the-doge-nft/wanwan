@@ -93,13 +93,15 @@ describe('AppController (e2e)', () => {
     }));
   };
 
-  const postCompetition = async ({
-    name = 'A Brand New Compeition',
-    description = 'Test this out',
-    maxUserSubmissions = 1,
-    endsAt = new Date(),
-  } = {}) => {
-    const { wallet } = await getNewUser();
+  const postCompetition = async (
+    wallet: Wallet,
+    {
+      name = 'A Brand New Compeition',
+      description = 'Test this out',
+      maxUserSubmissions = 1,
+      endsAt = new Date(),
+    } = {},
+  ) => {
     return agent
       .post('/competition')
       .send({
@@ -184,16 +186,41 @@ describe('AppController (e2e)', () => {
   // });
 
   it('/competition (POST)', async () => {
-    await postCompetition();
+    const { wallet } = await getNewUser();
+    await postCompetition(wallet);
   });
 
   it('/competition (GET)', async () => {
-    await postCompetition();
-    return agent.get('/competition').expect((res) => {
-      const { body } = res;
-      body.forEach((comp) => console.log(comp));
-      expect(body.length).toBeGreaterThan(0);
-    });
+    const { wallet } = await getNewUser();
+    const details = {
+      name: 'Cool Competition',
+      description: 'Checkout this sick competition',
+      maxUserSubmissions: 1,
+      endsAt: new Date(),
+    };
+    await postCompetition(wallet, details);
+    return agent
+      .get('/competition')
+      .expect(200)
+      .expect((res) => {
+        const { body } = res;
+        expect(body.length).toBeGreaterThan(0);
+
+        const competition = body[0];
+        const curators = competition.curators;
+
+        expect(curators.length).toEqual(1);
+        expect(curators[0].address).toEqual(wallet.address);
+        expect(curators[0].isSuperAdmin).toEqual(false);
+        expect(curators[0].isVerified).toEqual(false);
+
+        expect(competition.name).toEqual(details.name);
+        expect(competition.description).toEqual(details.description);
+        expect(competition.maxUserSubmissions).toEqual(
+          details.maxUserSubmissions,
+        );
+        expect(competition.endsAt).toEqual(details.endsAt.toISOString());
+      });
   });
 
   afterAll(async () => {
