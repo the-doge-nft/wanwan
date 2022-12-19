@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   Logger,
+  Param,
   ParseFilePipe,
   Post,
   Req,
@@ -18,6 +19,7 @@ import { CompetitionService } from './competition/competition.service';
 import CommentDto from './dto/comment.dto';
 import { CompetitionDto } from './dto/competition.dto';
 import { MemeDto } from './dto/meme.dto';
+import MemeIdDto from './dto/memeId.dto';
 import { AuthenticatedRequest } from './interface';
 import { MemeService } from './meme/meme.service';
 import MemeMediaFileValidator from './validator/meme-media-file.validator';
@@ -55,10 +57,24 @@ export class AppController {
     return this.meme.create(file, { ...meme, createdById: user.id });
   }
 
-  @Post('meme/comment')
+  @Post('meme/:id/comment')
   @UseGuards(AuthGuard)
-  postComment(@Body() comment: CommentDto) {
-    return this.comment.create({ data: comment });
+  postComment(
+    @Body() comment: CommentDto,
+    @Req() { user }: AuthenticatedRequest,
+    @Param() { id }: MemeIdDto,
+  ) {
+    console.log('debug:: meme id', id, typeof id);
+    return this.comment.create({
+      ...comment,
+      createdById: user.id,
+      memeId: id,
+    });
+  }
+
+  @Get('meme/:id/comment')
+  getComment(@Param() { id }: MemeIdDto) {
+    return this.comment.getByMemeId(id);
   }
 
   @Post('competition')

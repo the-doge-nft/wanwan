@@ -8,7 +8,12 @@ import { getExpressRedisSession } from './middleware/session';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.use(getExpressRedisSession(app));
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      transformOptions: { enableImplicitConversion: true },
+    }),
+  );
 
   const port = app.get<ConfigService>(ConfigService<Config>).get('port');
   Logger.log(`listening on port: ${port}`);

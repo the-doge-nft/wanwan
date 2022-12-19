@@ -5,7 +5,14 @@ import { PrismaService } from './../prisma.service';
 @Injectable()
 export class CommentService {
   constructor(private readonly prisma: PrismaService) {}
-  create(args: Prisma.CommentCreateArgs) {
-    return this.prisma.comment.create(args);
+  create(data: Prisma.CommentCreateArgs['data']) {
+    return this.prisma.comment.create({ data });
+  }
+
+  getByMemeId(memeId: number) {
+    return this.prisma.comment.findMany({
+      where: { memeId },
+      orderBy: { createdAt: 'desc' },
+    });
   }
 }

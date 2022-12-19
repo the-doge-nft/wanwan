@@ -84,6 +84,11 @@ dbSeed() {
     __runInApiContainer pnpm prisma:seed
 }
 
+dbGenerate() {
+    __spacedEcho "generating prisma client"
+    __runInApiContainer pnpm prisma:generate
+}
+
 repl() {
     __runInApiContainer pnpm start:repl
 }
@@ -146,6 +151,10 @@ case $1 in
 
 "dbseed")
     dbSeed
+    ;;
+
+"dbgenerate")
+    dbGenerate
     ;;
 
 "repl")
