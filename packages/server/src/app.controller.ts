@@ -13,7 +13,9 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AppService } from './app.service';
 import { AuthGuard } from './auth/auth.guard';
+import { CommentService } from './comment/comment.service';
 import { CompetitionService } from './competition/competition.service';
+import CommentDto from './dto/comment.dto';
 import { CompetitionDto } from './dto/competition.dto';
 import { MemeDto } from './dto/meme.dto';
 import { AuthenticatedRequest } from './interface';
@@ -27,6 +29,7 @@ export class AppController {
     private readonly app: AppService,
     private readonly meme: MemeService,
     private readonly compeition: CompetitionService,
+    private readonly comment: CommentService,
   ) {}
 
   @Get()
@@ -50,6 +53,12 @@ export class AppController {
     file: Express.Multer.File,
   ) {
     return this.meme.create(file, { ...meme, createdById: user.id });
+  }
+
+  @Post('meme/comment')
+  @UseGuards(AuthGuard)
+  postComment(@Body() comment: CommentDto) {
+    return this.comment.create({ data: comment });
   }
 
   @Post('competition')
