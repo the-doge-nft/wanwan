@@ -1,7 +1,9 @@
-import { IsNotEmpty, IsNumber } from 'class-validator';
+import { Transform, Type } from 'class-transformer';
+import { IsInt } from 'class-validator';
 
 export default class MemeIdDto {
-  @IsNotEmpty()
-  @IsNumber()
+  @Transform(({ value }) => parseInt(value))
+  @Type(() => Number)
+  @IsInt()
   id: number;
 }

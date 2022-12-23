@@ -1,262 +1,180 @@
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ethers, Wallet } from 'ethers';
-import { S3Service } from './../src/s3/s3.service';
 
-import { SiweMessage } from 'siwe';
 import * as superRequest from 'supertest';
+import { getExpressRedisSession } from '../src/middleware/session';
+import getValidationPipe from '../src/middleware/validation';
 import { AppModule } from './../src/app.module';
-import { getExpressRedisSession } from './../src/middleware/session';
+import {
+  getNewUser,
+  getNonceReq,
+  mockS3PutObject,
+  postComment,
+  postCompetition,
+  postMeme,
+} from './helpers';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
   let server: any;
-  let agent: any;
-  let s3Service: S3Service;
+  let superAgent: superRequest.SuperAgentTest;
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
-    s3Service = moduleFixture.get<S3Service>(S3Service);
+
+    // mock all s3 put object requests used for storing media
+    mockS3PutObject(moduleFixture);
 
     app = moduleFixture.createNestApplication();
 
     // grab our middleware
     app.use(getExpressRedisSession(app));
+    app.useGlobalPipes(getValidationPipe());
+
     await app.init();
     server = app.getHttpServer();
-
-    // grab a superagent
-    agent = superRequest.agent(server);
+    superAgent = superRequest.agent(server);
   });
 
-  const getNonceReq = () => {
-    return agent.get('/auth/nonce').expect(200);
-  };
+  it('/ (GET)', () => {
+    return superAgent.get('/').expect(200).expect('Hello World!');
+  });
 
-  const getWallet = (): ethers.Wallet => {
-    return ethers.Wallet.createRandom();
-  };
-
-  const getSiweMessage = async ({
-    wallet,
-    statement,
-    nonce,
-  }: {
-    wallet: Wallet;
-    statement: string;
-    nonce: string;
-  }) => {
-    const address = wallet.address;
-    const uri = 'http://secretmemeproject.com';
-    const domain = 'secretmemeproject.com';
-    const message = new SiweMessage({
-      version: '1',
-      chainId: 1,
-      domain,
-      uri,
-      address,
-      statement,
-      nonce,
+  it('/auth/nonce (GET)', () => {
+    return getNonceReq(superAgent).expect((res) => {
+      expect(res.body.nonce).toBeDefined();
     });
-    const preparedMessage = message.prepareMessage();
-    const signature = await wallet.signMessage(preparedMessage);
-    return {
-      signature,
-      message: preparedMessage,
-    };
-  };
+  });
 
-  const getNewUser = () => {
-    return getNonceReq().then(async ({ body: { nonce } }) => {
-      const wallet = getWallet();
-      const { message, signature } = await getSiweMessage({
-        wallet,
-        statement: 'Sign in with Ethereum',
-        nonce,
-      });
-      return agent
-        .post('/auth/verify')
-        .send({ message, signature })
-        .expect(201)
-        .then((res) => {
-          return { res, wallet };
-        });
-    });
-  };
+  it('/auth/verify (POST)', () => {
+    return getNewUser(superAgent);
+  });
 
-  const mockS3PutObject = () => {
-    jest.spyOn(s3Service, 'putObject').mockImplementationOnce(async () => ({
-      ETag: '1b2cf535f27731c974343645a3985328',
-      $metadata: { httpStatusCode: 200 },
-    }));
-  };
-
-  const postCompetition = async (
-    wallet: Wallet,
-    {
-      name = 'A Brand New Compeition',
-      description = 'Test this out',
-      maxUserSubmissions = 1,
-      endsAt = new Date(),
-    } = {},
-  ) => {
+  it('/user (GET)', async () => {
+    const { agent, wallet } = await getNewUser(superAgent);
     return agent
-      .post('/competition')
-      .send({
-        name,
-        description,
-        maxUserSubmissions,
-        endsAt,
-        curators: [wallet.address],
-      })
+      .get('/user')
+      .expect(200)
+      .then((res) => {
+        const { user } = res.body;
+        expect(wallet.address).toBe(user.address);
+      });
+  });
+
+  it('/meme (POST)', async () => {
+    const details = {
+      name: 'TEST',
+      description: 'memesbruh',
+      pathToImage: 'test/fixtures/avatar.png',
+    };
+    const { agent } = await getNewUser(superAgent);
+    return postMeme(agent, details)
+      .expect(201)
       .expect((res) => {
         const { body } = res;
-        expect(body.name).toEqual(name);
-        expect(body.description).toEqual(description);
-        expect(body.maxUserSubmissions).toEqual(maxUserSubmissions);
-        expect(body.endsAt).toEqual(endsAt.toISOString());
+        expect(body.name).toEqual(details.name);
+        expect(body.description).toEqual(details.description);
       });
-  };
+  });
 
-  const postMeme = ({
-    name = 'Sick meme',
-    description = 'Check it out',
-    pathToImage = 'test/fixtures/avatar.png',
-  } = {}) => {
-    return agent
-      .post('/meme')
-      .field('name', name)
-      .field('description', description)
-      .attach('file', pathToImage);
-  };
+  it('/meme (POST) not authenticated', async () => {
+    return postMeme(superAgent).expect(401);
+  });
 
-  // it('/ (GET)', () => {
-  //   return agent.get('/').expect(200).expect('Hello World!');
-  // });
+  it('/meme (POST) throws invalid mimetype', async () => {
+    const details = {
+      name: 'FAILURE',
+      description: 'this should be rejected',
+      pathToImage: 'test/fixtures/house.webp',
+    };
+    const { agent } = await getNewUser(superAgent);
+    return postMeme(agent, details)
+      .expect(400)
+      .expect((res) => {
+        expect(res.body.message).toEqual(
+          'Invalid mimetype. Only the following are accepted: image/jpeg, image/png, image/gif, image/svg+xml',
+        );
+      });
+  });
 
-  // it('/auth/nonce (GET)', () => {
-  //   return getNonceReq().expect((res) => {
-  //     expect(res.body.nonce).toBeDefined();
-  //   });
-  // });
-
-  // it('/auth/verify (POST)', () => {
-  //   return getNewUser();
-  // });
-
-  // it('/user (GET)', async () => {
-  //   const { wallet } = await getNewUser();
-  //   return agent
-  //     .get('/user')
-  //     .expect(200)
-  //     .then((res) => {
-  //       const { user } = res.body;
-  //       expect(wallet.address).toBe(user.address);
-  //     });
-  // });
-
-  // it('/meme (POST)', async () => {
-  //   const details = {
-  //     name: 'TEST',
-  //     description: 'memesbruh',
-  //     pathToImage: 'test/fixtures/avatar.png',
-  //   };
-  //   await getNewUser();
-  //   mockS3PutObject();
-  //   return postMeme(details)
-  //     .expect(201)
-  //     .expect((res) => {
-  //       const { body } = res;
-  //       expect(body.name).toEqual(details.name);
-  //       expect(body.description).toEqual(details.description);
-  //     });
-  // });
-
-  // it('/meme (POST) not authenticated', async () => {
-  //   return postMeme().expect(401);
-  // });
-
-  // it('/meme (POST) throws invalid mimetype', async () => {
-  //   const details = {
-  //     name: 'FAILURE',
-  //     description: 'this should be rejected',
-  //     pathToImage: 'test/fixtures/house.webp',
-  //   };
-  //   await getNewUser();
-  //   mockS3PutObject();
-  //   return postMeme(details)
-  //     .expect(400)
-  //     .expect((res) => {
-  //       expect(res.body.message).toEqual(
-  //         'Invalid mimetype. Only the following are accepted: image/jpeg, image/png, image/gif, image/svg+xml',
-  //       );
-  //     });
-  // });
-
-  // it('/meme (POST) throws multiple files', async () => {
-  //   await getNewUser();
-  //   mockS3PutObject();
-  //   return postMeme().attach('file', 'test/fixtures/avatar.png').expect(400);
-  // });
+  it('/meme (POST) throws multiple files', async () => {
+    const { agent } = await getNewUser(superAgent);
+    return postMeme(agent)
+      .attach('file', 'test/fixtures/avatar.png')
+      .expect(400);
+  });
 
   it('/meme/:id/comment (POST) posts comment on meme', async () => {
-    await getNewUser();
-    mockS3PutObject();
-    return postMeme()
+    const { agent } = await getNewUser(superAgent);
+    return postMeme(agent)
       .expect(201)
       .then((_res) => {
         const { body } = _res;
-        console.log('got body from posted meme', body);
-        return agent
-          .post(`/meme/${body.id}/comment`)
-          .send({ body: 'Check out my comment yo' })
-          .expect(201)
-          .expect((res) => {
-            const { body: commentBody } = res;
-            return console.log('got comment body', commentBody);
-          });
+        return postComment(agent, {
+          memeId: body.id,
+          body: 'Dope meme bruh',
+        }).expect(201);
       });
   });
 
-  // it('/competition (POST)', async () => {
-  //   const { wallet } = await getNewUser();
-  //   await postCompetition(wallet);
-  // });
+  it('/meme/:id/comment (POST) posts comment and replies', async () => {
+    const { agent } = await getNewUser(superAgent);
+    return postMeme(agent)
+      .expect(201)
+      .then((res) => {
+        const { body } = res;
+        return postComment(agent, {
+          memeId: body.id,
+          body: 'check it out yuh',
+        }).then((res) => {
+          return postComment(agent, {
+            memeId: body.id,
+            body: 'reply to your dank meme comment',
+            parentCommentId: res.body.id,
+          }).then((res) => console.log(res.body));
+        });
+      });
+  });
 
-  // it('/competition (GET)', async () => {
-  //   const { wallet } = await getNewUser();
-  //   const details = {
-  //     name: 'Cool Competition',
-  //     description: 'Checkout this sick competition',
-  //     maxUserSubmissions: 1,
-  //     endsAt: new Date(),
-  //   };
-  //   await postCompetition(wallet, details);
-  //   return agent
-  //     .get('/competition')
-  //     .expect(200)
-  //     .expect((res) => {
-  //       const { body } = res;
-  //       expect(body.length).toBeGreaterThan(0);
+  it('/competition (POST)', async () => {
+    const user = await getNewUser(superAgent);
+    await postCompetition(user.agent, user.wallet).expect(201);
+  });
 
-  //       const competition = body[0];
-  //       const curators = competition.curators;
+  it('/competition (GET)', async () => {
+    const { agent, wallet } = await getNewUser(superAgent);
+    const details = {
+      name: 'Cool Competition',
+      description: 'Checkout this sick competition',
+      maxUserSubmissions: 1,
+      endsAt: new Date(),
+    };
+    await postCompetition(agent, wallet, details);
+    return agent
+      .get('/competition')
+      .expect(200)
+      .expect((res) => {
+        const { body } = res;
+        expect(body.length).toBeGreaterThan(0);
 
-  //       expect(curators.length).toEqual(1);
-  //       expect(curators[0].address).toEqual(wallet.address);
-  //       expect(curators[0].isSuperAdmin).toEqual(false);
-  //       expect(curators[0].isVerified).toEqual(false);
+        const competition = body[0];
+        const curators = competition.curators;
 
-  //       expect(competition.name).toEqual(details.name);
-  //       expect(competition.description).toEqual(details.description);
-  //       expect(competition.maxUserSubmissions).toEqual(
-  //         details.maxUserSubmissions,
-  //       );
-  //       expect(competition.endsAt).toEqual(details.endsAt.toISOString());
-  //     });
-  // });
+        expect(curators.length).toEqual(1);
+        expect(curators[0].address).toEqual(wallet.address);
+        expect(curators[0].isSuperAdmin).toEqual(false);
+        expect(curators[0].isVerified).toEqual(false);
+
+        expect(competition.name).toEqual(details.name);
+        expect(competition.description).toEqual(details.description);
+        expect(competition.maxUserSubmissions).toEqual(
+          details.maxUserSubmissions,
+        );
+        expect(competition.endsAt).toEqual(details.endsAt.toISOString());
+      });
+  });
 
   afterAll(async () => {
     await app.close();

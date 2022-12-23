@@ -60,11 +60,10 @@ export class AppController {
   @Post('meme/:id/comment')
   @UseGuards(AuthGuard)
   postComment(
+    @Param() { id }: MemeIdDto,
     @Body() comment: CommentDto,
     @Req() { user }: AuthenticatedRequest,
-    @Param() { id }: MemeIdDto,
   ) {
-    console.log('debug:: meme id', id, typeof id);
     return this.comment.create({
       ...comment,
       createdById: user.id,
