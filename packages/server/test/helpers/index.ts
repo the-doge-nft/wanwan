@@ -1,12 +1,11 @@
 import { TestingModule } from '@nestjs/testing';
 import { ethers, Wallet } from 'ethers';
 import { SiweMessage } from 'siwe';
+import * as superRequest from 'supertest';
 import { SuperAgentTest } from 'supertest';
 import { S3Service } from '../../src/s3/s3.service';
 
-export const getNonceReq = (agent: SuperAgentTest) => {
-  return agent.get('/auth/nonce').expect(200);
-};
+export const getAgent = (server: any) => superRequest.agent(server);
 
 const getWallet = (): ethers.Wallet => {
   return ethers.Wallet.createRandom();
@@ -41,9 +40,25 @@ const getSiweMessage = async ({
   };
 };
 
+export const getNonceReq = (
+  server: any,
+): Promise<{
+  res: superRequest.Response;
+  agent: superRequest.SuperAgentTest;
+}> => {
+  const agent = getAgent(server);
+  return agent.get('/auth/nonce').then((res) => {
+    return { res, agent };
+  });
+};
+
 //@next type annotations for return
-export const getNewUser = (agent: SuperAgentTest): any => {
-  return getNonceReq(agent).then(async ({ body: { nonce } }) => {
+export const getNewUser = (server: any): any => {
+  return getNonceReq(server).then(async ({ res, agent }) => {
+    expect(res.status).toEqual(200);
+    const {
+      body: { nonce },
+    } = res;
     const wallet = getWallet();
     const { message, signature } = await getSiweMessage({
       wallet,
@@ -55,7 +70,7 @@ export const getNewUser = (agent: SuperAgentTest): any => {
       .send({ message, signature })
       .expect(201)
       .then((res) => {
-        return { agent: agent, wallet };
+        return { agent, wallet, user: res.body };
       });
   });
 };
@@ -79,22 +94,13 @@ export const postCompetition = (
     endsAt = new Date(),
   } = {},
 ): any => {
-  return agent
-    .post('/competition')
-    .send({
-      name,
-      description,
-      maxUserSubmissions,
-      endsAt,
-      curators: [wallet.address],
-    })
-    .expect((res) => {
-      const { body } = res;
-      expect(body.name).toEqual(name);
-      expect(body.description).toEqual(description);
-      expect(body.maxUserSubmissions).toEqual(maxUserSubmissions);
-      expect(body.endsAt).toEqual(endsAt.toISOString());
-    });
+  return agent.post('/competition').send({
+    name,
+    description,
+    maxUserSubmissions,
+    endsAt,
+    curators: [wallet.address],
+  });
 };
 
 export const postMeme = (

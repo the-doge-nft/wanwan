@@ -6,6 +6,7 @@ import { getExpressRedisSession } from '../src/middleware/session';
 import getValidationPipe from '../src/middleware/validation';
 import { AppModule } from './../src/app.module';
 import {
+  getAgent,
   getNewUser,
   getNonceReq,
   mockS3PutObject,
@@ -17,7 +18,6 @@ import {
 describe('AppController (e2e)', () => {
   let app: INestApplication;
   let server: any;
-  let superAgent: superRequest.SuperAgentTest;
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -35,25 +35,28 @@ describe('AppController (e2e)', () => {
 
     await app.init();
     server = app.getHttpServer();
-    superAgent = superRequest.agent(server);
   });
 
   it('/ (GET)', () => {
-    return superAgent.get('/').expect(200).expect('Hello World!');
+    return superRequest
+      .agent(server)
+      .get('/')
+      .expect(200)
+      .expect('Hello World!');
   });
 
   it('/auth/nonce (GET)', () => {
-    return getNonceReq(superAgent).expect((res) => {
+    return getNonceReq(server).then(({ res }) => {
       expect(res.body.nonce).toBeDefined();
     });
   });
 
   it('/auth/verify (POST)', () => {
-    return getNewUser(superAgent);
+    return getNewUser(server);
   });
 
   it('/user (GET)', async () => {
-    const { agent, wallet } = await getNewUser(superAgent);
+    const { agent, wallet } = await getNewUser(server);
     return agent
       .get('/user')
       .expect(200)
@@ -69,7 +72,7 @@ describe('AppController (e2e)', () => {
       description: 'memesbruh',
       pathToImage: 'test/fixtures/avatar.png',
     };
-    const { agent } = await getNewUser(superAgent);
+    const { agent } = await getNewUser(server);
     return postMeme(agent, details)
       .expect(201)
       .expect((res) => {
@@ -80,7 +83,7 @@ describe('AppController (e2e)', () => {
   });
 
   it('/meme (POST) not authenticated', async () => {
-    return postMeme(superAgent).expect(401);
+    return postMeme(getAgent(server)).expect(401);
   });
 
   it('/meme (POST) throws invalid mimetype', async () => {
@@ -89,7 +92,7 @@ describe('AppController (e2e)', () => {
       description: 'this should be rejected',
       pathToImage: 'test/fixtures/house.webp',
     };
-    const { agent } = await getNewUser(superAgent);
+    const { agent } = await getNewUser(server);
     return postMeme(agent, details)
       .expect(400)
       .expect((res) => {
@@ -100,14 +103,14 @@ describe('AppController (e2e)', () => {
   });
 
   it('/meme (POST) throws multiple files', async () => {
-    const { agent } = await getNewUser(superAgent);
+    const { agent } = await getNewUser(server);
     return postMeme(agent)
       .attach('file', 'test/fixtures/avatar.png')
       .expect(400);
   });
 
   it('/meme/:id/comment (POST) posts comment on meme', async () => {
-    const { agent } = await getNewUser(superAgent);
+    const { agent } = await getNewUser(server);
     return postMeme(agent)
       .expect(201)
       .then((_res) => {
@@ -120,7 +123,7 @@ describe('AppController (e2e)', () => {
   });
 
   it('/meme/:id/comment (POST) posts comment and replies', async () => {
-    const { agent } = await getNewUser(superAgent);
+    const { agent } = await getNewUser(server);
     return postMeme(agent)
       .expect(201)
       .then((res) => {
@@ -139,42 +142,55 @@ describe('AppController (e2e)', () => {
   });
 
   it('/competition (POST)', async () => {
-    const user = await getNewUser(superAgent);
+    const user = await getNewUser(server);
     await postCompetition(user.agent, user.wallet).expect(201);
   });
 
   it('/competition (GET)', async () => {
-    const { agent, wallet } = await getNewUser(superAgent);
+    const { agent, wallet } = await getNewUser(server);
     const details = {
       name: 'Cool Competition',
       description: 'Checkout this sick competition',
       maxUserSubmissions: 1,
       endsAt: new Date(),
     };
-    await postCompetition(agent, wallet, details);
-    return agent
-      .get('/competition')
-      .expect(200)
-      .expect((res) => {
-        const { body } = res;
-        expect(body.length).toBeGreaterThan(0);
+    postCompetition(agent, wallet, details).expect((res) => {
+      const { body } = res;
+      expect(body.name).toEqual(details.name);
+      expect(body.description).toEqual(details.description);
+      expect(body.maxUserSubmissions).toEqual(details.maxUserSubmissions);
+      expect(body.endsAt).toEqual(details.endsAt.toISOString());
+      return agent
+        .get('/competition')
+        .expect(200)
+        .expect((res) => {
+          const { body } = res;
+          expect(body.length).toBeGreaterThan(0);
 
-        const competition = body[0];
-        const curators = competition.curators;
+          const competition = body.filter((item) => item.id === res.id)[0];
+          const curators = competition.curators;
 
-        expect(curators.length).toEqual(1);
-        expect(curators[0].address).toEqual(wallet.address);
-        expect(curators[0].isSuperAdmin).toEqual(false);
-        expect(curators[0].isVerified).toEqual(false);
+          expect(curators.length).toEqual(1);
+          expect(curators[0].address).toEqual(wallet.address);
+          expect(curators[0].isSuperAdmin).toEqual(false);
+          expect(curators[0].isVerified).toEqual(false);
 
-        expect(competition.name).toEqual(details.name);
-        expect(competition.description).toEqual(details.description);
-        expect(competition.maxUserSubmissions).toEqual(
-          details.maxUserSubmissions,
-        );
-        expect(competition.endsAt).toEqual(details.endsAt.toISOString());
-      });
+          expect(competition.name).toEqual(details.name);
+          expect(competition.description).toEqual(details.description);
+          expect(competition.maxUserSubmissions).toEqual(
+            details.maxUserSubmissions,
+          );
+          expect(competition.endsAt).toEqual(details.endsAt.toISOString());
+        });
+    });
   });
+
+  // it('/submission', async () => {
+  // const user = await getNewUser(server);
+  // await postCompetition(user.agent, user.wallet).then(
+  //   ({ body: compeition }) => {},
+  // );
+  // });
 
   afterAll(async () => {
     await app.close();
