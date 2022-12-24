@@ -1,9 +1,7 @@
-import { TestingModule } from '@nestjs/testing';
 import { ethers, Wallet } from 'ethers';
 import { SiweMessage } from 'siwe';
 import * as superRequest from 'supertest';
 import { SuperAgentTest } from 'supertest';
-import { S3Service } from '../../src/s3/s3.service';
 
 export const getAgent = (server: any) => superRequest.agent(server);
 
@@ -75,14 +73,6 @@ export const getNewUser = (server: any): any => {
   });
 };
 
-export const mockS3PutObject = (testingModule: TestingModule) => {
-  const s3Service = testingModule.get<S3Service>(S3Service);
-  jest.spyOn(s3Service, 'putObject').mockImplementation(async () => ({
-    ETag: '1b2cf535f27731c974343645a3985328',
-    $metadata: { httpStatusCode: 200 },
-  }));
-};
-
 //@next type annotations for return
 export const postCompetition = (
   agent: SuperAgentTest,
@@ -134,4 +124,11 @@ export const postComment = (
         expect(commentBody.parentCommentId).toEqual(parentCommentId);
       }
     });
+};
+
+export const postSubmission = (
+  agent: SuperAgentTest,
+  { memeId, competitionId }: { memeId: number; competitionId: number },
+) => {
+  return agent.post('/submission').send({ memeId, competitionId });
 };

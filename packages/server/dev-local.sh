@@ -128,6 +128,12 @@ Usage:
 
     dev-local.sh test:
         run unit tests
+
+    dev-local.sh e2e:
+        run integration tests
+
+    dev-local.sh exec:
+        run a comand in the api docker container
 HELP_USAGE
     exit 0
 }

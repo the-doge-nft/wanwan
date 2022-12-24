@@ -18,10 +18,12 @@ import { CommentService } from './comment/comment.service';
 import { CompetitionService } from './competition/competition.service';
 import CommentDto from './dto/comment.dto';
 import { CompetitionDto } from './dto/competition.dto';
+import IdDto from './dto/id.dto';
 import { MemeDto } from './dto/meme.dto';
-import MemeIdDto from './dto/memeId.dto';
+import SubmissionDto from './dto/submission.dto';
 import { AuthenticatedRequest } from './interface';
 import { MemeService } from './meme/meme.service';
+import { SubmissionService } from './submission/submission.service';
 import MemeMediaFileValidator from './validator/meme-media-file.validator';
 
 @Controller()
@@ -30,8 +32,9 @@ export class AppController {
   constructor(
     private readonly app: AppService,
     private readonly meme: MemeService,
-    private readonly compeition: CompetitionService,
+    private readonly competition: CompetitionService,
     private readonly comment: CommentService,
+    private readonly submission: SubmissionService,
   ) {}
 
   @Get()
@@ -60,7 +63,7 @@ export class AppController {
   @Post('meme/:id/comment')
   @UseGuards(AuthGuard)
   postComment(
-    @Param() { id }: MemeIdDto,
+    @Param() { id }: IdDto,
     @Body() comment: CommentDto,
     @Req() { user }: AuthenticatedRequest,
   ) {
@@ -72,7 +75,7 @@ export class AppController {
   }
 
   @Get('meme/:id/comment')
-  getComment(@Param() { id }: MemeIdDto) {
+  getComment(@Param() { id }: IdDto) {
     return this.comment.getByMemeId(id);
   }
 
@@ -82,7 +85,7 @@ export class AppController {
     @Body() competition: CompetitionDto,
     @Req() { user }: AuthenticatedRequest,
   ) {
-    return this.compeition.create({
+    return this.competition.create({
       ...competition,
       creator: user,
     });
@@ -90,14 +93,23 @@ export class AppController {
 
   @Get('competition')
   getCompetition() {
-    return this.compeition.findMany({
+    return this.competition.findMany({
       include: { curators: { include: { user: true } } },
       orderBy: { createdAt: 'desc' },
     });
   }
 
+  @Get('compeition/:id/meme')
+  getCompeitionMemes(@Param() { id }: IdDto) {
+    return this.meme.getByCompetitionId(id);
+  }
+
   @Post('submission')
-  postSubmission() {
-    return {};
+  postSubmission(
+    @Body() submission: SubmissionDto,
+    @Req() { user }: AuthenticatedRequest,
+  ) {
+    //@next validation for if user can submit this meme / maxUserSubmissions
+    return this.submission.create({ data: { ...submission } });
   }
 }

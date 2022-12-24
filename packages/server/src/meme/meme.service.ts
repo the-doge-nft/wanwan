@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { Meme, Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma.service';
 import { MediaService } from './../media/media.service';
 
@@ -9,6 +9,10 @@ export class MemeService {
     private readonly prisma: PrismaService,
     private readonly media: MediaService,
   ) {}
+
+  private addExtras(items: Meme[]) {
+    return items.map((item) => item);
+  }
 
   async create(
     file: Express.Multer.File,
@@ -26,5 +30,29 @@ export class MemeService {
         mediaId: media.id,
       },
     });
+  }
+
+  getByCompetitionId(competitionId: number) {
+    return this.prisma.submission.findMany({
+      where: { competitionId },
+      include: {
+        meme: {
+          include: {
+            media: true,
+          },
+        },
+      },
+    });
+  }
+
+  async findMany(args: Prisma.MemeFindManyArgs) {
+    return this.addExtras(
+      await this.prisma.meme.findMany({
+        ...args,
+        include: {
+          media: true,
+        },
+      }),
+    );
   }
 }

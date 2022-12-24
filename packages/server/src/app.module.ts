@@ -4,15 +4,16 @@ import { redisStore } from 'cache-manager-redis-store';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
+import { CommentService } from './comment/comment.service';
+import { CompetitionService } from './competition/competition.service';
 import config, { Config } from './config/config';
-import { PrismaService } from './prisma.service';
-import { UserService } from './user/user.service';
-import { UserController } from './user/user.controller';
-import { S3Service } from './s3/s3.service';
 import { MediaService } from './media/media.service';
 import { MemeService } from './meme/meme.service';
-import { CompetitionService } from './competition/competition.service';
-import { CommentService } from './comment/comment.service';
+import { PrismaService } from './prisma.service';
+import { S3Service } from './s3/s3.service';
+import { UserController } from './user/user.controller';
+import { UserService } from './user/user.service';
+import { SubmissionService } from './submission/submission.service';
 
 @Module({
   imports: [
@@ -42,6 +43,16 @@ import { CommentService } from './comment/comment.service';
     AuthModule,
   ],
   controllers: [AppController, UserController],
-  providers: [AppService, PrismaService, UserService, S3Service, MediaService, MemeService, CompetitionService, CommentService],
+  providers: [
+    AppService,
+    PrismaService,
+    UserService,
+    S3Service,
+    MediaService,
+    MemeService,
+    CompetitionService,
+    CommentService,
+    SubmissionService,
+  ],
 })
 export class AppModule {}

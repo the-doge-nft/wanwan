@@ -1,11 +1,13 @@
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { postMeme } from './helpers/index';
+import { S3Service } from './../src/s3/s3.service';
+import { postSubmission } from './helpers/index';
 
 import { getExpressRedisSession } from '../src/middleware/session';
 import getValidationPipe from '../src/middleware/validation';
 import { AppModule } from './../src/app.module';
-import { getNewUser, mockS3PutObject, postCompetition } from './helpers';
+import S3Fixture from './fixtures/services/s3.service.fixture';
+import { getNewUser, postCompetition, postMeme } from './helpers';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
@@ -14,10 +16,10 @@ describe('AppController (e2e)', () => {
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
-    }).compile();
-
-    // mock all s3 put object requests used for storing media
-    mockS3PutObject(moduleFixture);
+    })
+      .overrideProvider(S3Service)
+      .useValue(S3Fixture)
+      .compile();
 
     app = moduleFixture.createNestApplication();
 
@@ -138,63 +140,77 @@ describe('AppController (e2e)', () => {
   //   await postCompetition(user.agent, user.wallet).expect(201);
   // });
 
-  // it('/competition (GET)', async () => {
-  //   const { agent, wallet } = await getNewUser(server);
-  //   const details = {
-  //     name: 'Cool Competition',
-  //     description: 'Checkout this sick competition',
-  //     maxUserSubmissions: 1,
-  //     endsAt: new Date(),
-  //   };
-  //   postCompetition(agent, wallet, details).expect((res) => {
-  //     const { body } = res;
-  //     expect(body.name).toEqual(details.name);
-  //     expect(body.description).toEqual(details.description);
-  //     expect(body.maxUserSubmissions).toEqual(details.maxUserSubmissions);
-  //     expect(body.endsAt).toEqual(details.endsAt.toISOString());
-  //     return agent
-  //       .get('/competition')
-  //       .expect(200)
-  //       .expect((res) => {
-  //         const { body } = res;
-  //         expect(body.length).toBeGreaterThan(0);
+  it('/competition (GET)', async () => {
+    const { agent, wallet } = await getNewUser(server);
+    const details = {
+      name: 'Cool Competition',
+      description: 'Checkout this sick competition',
+      maxUserSubmissions: 1,
+      endsAt: new Date(),
+    };
+    postCompetition(agent, wallet, details).expect((res) => {
+      const { body } = res;
+      expect(body.name).toEqual(details.name);
+      expect(body.description).toEqual(details.description);
+      expect(body.maxUserSubmissions).toEqual(details.maxUserSubmissions);
+      expect(body.endsAt).toEqual(details.endsAt.toISOString());
+      return agent
+        .get('/competition')
+        .expect(200)
+        .expect((res) => {
+          const { body } = res;
+          expect(body.length).toBeGreaterThan(0);
 
-  //         const competition = body.filter((item) => item.id === res.id)[0];
-  //         const curators = competition.curators;
+          const competition = body.filter((item) => item.id === res.id)[0];
+          const curators = competition.curators;
 
-  //         expect(curators.length).toEqual(1);
-  //         expect(curators[0].address).toEqual(wallet.address);
-  //         expect(curators[0].isSuperAdmin).toEqual(false);
-  //         expect(curators[0].isVerified).toEqual(false);
+          expect(curators.length).toEqual(1);
+          expect(curators[0].address).toEqual(wallet.address);
+          expect(curators[0].isSuperAdmin).toEqual(false);
+          expect(curators[0].isVerified).toEqual(false);
 
-  //         expect(competition.name).toEqual(details.name);
-  //         expect(competition.description).toEqual(details.description);
-  //         expect(competition.maxUserSubmissions).toEqual(
-  //           details.maxUserSubmissions,
-  //         );
-  //         expect(competition.endsAt).toEqual(details.endsAt.toISOString());
-  //       });
-  //   });
-  // });
+          expect(competition.name).toEqual(details.name);
+          expect(competition.description).toEqual(details.description);
+          expect(competition.maxUserSubmissions).toEqual(
+            details.maxUserSubmissions,
+          );
+          expect(competition.endsAt).toEqual(details.endsAt.toISOString());
+        });
+    });
+  });
 
-  it('/submission', async () => {
+  it('/submission (POST)', async () => {
+    jest.setTimeout(25000);
     const user1 = await getNewUser(server);
     const user2 = await getNewUser(server);
-
     const user3 = await getNewUser(server);
-    await postCompetition(user1.agent, user1.wallet, {
+
+    return postCompetition(user1.agent, user1.wallet, {
       name: 'The Doge NFT',
       description: 'For the Doge NFT',
       maxUserSubmissions: 2,
       endsAt: new Date(),
       curators: [user1.wallet.address, user2.wallet.address],
-    }).then(({ body: compeition }) => {
-      console.log('competition', compeition);
-
-      postMeme(user3.agent).then((res) => {
-        user3.agent.post();
+    })
+      .expect(201)
+      .then(({ body: competition }) => {
+        return postMeme(user3.agent)
+          .expect(201)
+          .then(({ body: meme }) => {
+            return postSubmission(user3.agent, {
+              competitionId: competition.id,
+              memeId: meme.id,
+            })
+              .expect(201)
+              .then(({ body: sub }) => {
+                return user3.agent
+                  .get(`/compeition/${competition.id}/meme`)
+                  .then((res) => {
+                    return console.log(res.body);
+                  });
+              });
+          });
       });
-    });
   });
 
   afterAll(async () => {
