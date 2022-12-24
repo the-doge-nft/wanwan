@@ -95,4 +95,9 @@ export class AppController {
       orderBy: { createdAt: 'desc' },
     });
   }
+
+  @Post('submission')
+  postSubmission() {
+    return {};
+  }
 }

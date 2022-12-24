@@ -92,6 +92,7 @@ export const postCompetition = (
     description = 'Test this out',
     maxUserSubmissions = 1,
     endsAt = new Date(),
+    curators = [wallet.address],
   } = {},
 ): any => {
   return agent.post('/competition').send({
@@ -99,7 +100,7 @@ export const postCompetition = (
     description,
     maxUserSubmissions,
     endsAt,
-    curators: [wallet.address],
+    curators,
   });
 };
 
