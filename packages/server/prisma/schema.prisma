@@ -29,6 +29,7 @@ model User {
   competitionCurators CompeitionCurator[]
   Reward              Reward[]
   Comment             Comment[]
+  Submission          Submission[]
 }
 
 model Meme {
@@ -95,6 +96,8 @@ model Submission {
   competition   Competition @relation(fields: [competitionId], references: [id])
   createdAt     DateTime    @default(now())
   deletedAt     DateTime?
+  createdById   Int
+  user          User        @relation(fields: [createdById], references: [id])
 
   @@unique([memeId, competitionId])
 }

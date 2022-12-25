@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { Meme, Prisma } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma.service';
+import { MemeWithMedia } from './../interface/index';
 import { MediaService } from './../media/media.service';
 
 @Injectable()
@@ -10,8 +11,18 @@ export class MemeService {
     private readonly media: MediaService,
   ) {}
 
-  private addExtras(items: Meme[]) {
-    return items.map((item) => item);
+  private get defaultInclude() {
+    return {
+      media: true,
+    };
+  }
+
+  private addExtra(item: MemeWithMedia) {
+    return { ...item };
+  }
+
+  private addExtras(memes: Array<MemeWithMedia>) {
+    return memes.map((item) => this.addExtra(item));
   }
 
   async create(
@@ -22,37 +33,59 @@ export class MemeService {
     >,
   ) {
     const media = await this.media.create(file, meme.createdById);
-    return this.prisma.meme.create({
-      data: {
-        name: meme.name,
-        description: meme.description,
-        createdById: meme.createdById,
-        mediaId: media.id,
-      },
-    });
+    return this.addExtra(
+      (await this.prisma.meme.create({
+        data: {
+          name: meme.name,
+          description: meme.description,
+          createdById: meme.createdById,
+          mediaId: media.id,
+        },
+        include: this.defaultInclude,
+      })) as MemeWithMedia,
+    );
   }
 
-  getByCompetitionId(competitionId: number) {
-    return this.prisma.submission.findMany({
+  // @next move to submission service?
+  async getByCompetitionId(competitionId: number) {
+    const subsWithMemes = await this.prisma.submission.findMany({
       where: { competitionId },
       include: {
         meme: {
-          include: {
-            media: true,
-          },
+          include: this.defaultInclude,
+        },
+      },
+      orderBy: {
+        meme: {
+          createdAt: 'desc',
         },
       },
     });
+    const memesWithMedia: MemeWithMedia[] = subsWithMemes.map((item) => ({
+      ...item.meme,
+    }));
+    return this.addExtras(memesWithMedia);
   }
 
-  async findMany(args: Prisma.MemeFindManyArgs) {
+  async findMany(args?: Prisma.MemeFindManyArgs) {
     return this.addExtras(
       await this.prisma.meme.findMany({
         ...args,
-        include: {
-          media: true,
-        },
+        include: this.defaultInclude,
       }),
     );
+  }
+
+  async findFirst(args?: Prisma.MemeFindFirstArgs) {
+    return this.addExtra(
+      await this.prisma.meme.findFirst({
+        ...args,
+        include: this.defaultInclude,
+      }),
+    );
+  }
+
+  async getMemeBelongsToUser(id: number, createdById: number) {
+    return !!(await this.findFirst({ where: { id, createdById } }));
   }
 }

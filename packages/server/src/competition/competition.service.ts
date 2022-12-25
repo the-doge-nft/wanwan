@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { Competition, Prisma, User } from '@prisma/client';
+import { Prisma } from '@prisma/client';
+import { CompetitionWithCuratorUsers } from '../interface';
 import { formatEthereumAddress } from './../helpers/strings';
 import { PrismaService } from './../prisma.service';
 import { UserService } from './../user/user.service';
@@ -11,23 +12,31 @@ export class CompetitionService {
     private readonly user: UserService,
   ) {}
 
-  private afterGetCompetition(
-    competition: Array<Prisma.CompetitionGetPayload<Prisma.CompetitionArgs>>,
-  ) {
-    return competition.map((comp) => {
-      const data: { curators?: { user: User }[] } & Competition = {
-        ...comp,
-      };
-      const userCurators = [];
-      data?.curators.forEach((item) => userCurators.push(item.user));
-      data.curators = userCurators;
-      return data;
-    });
+  private get defaultInclude(): Prisma.CompetitionInclude {
+    return {
+      curators: {
+        include: {
+          user: true,
+        },
+      },
+    };
+  }
+
+  private addExtra(competition: CompetitionWithCuratorUsers) {
+    return {
+      ...competition,
+      curators: competition?.curators.map((item) => item.user),
+    };
+  }
+
+  private addExtras(competitions: Array<CompetitionWithCuratorUsers>) {
+    return competitions.map((item) => this.addExtra(item));
   }
 
   async create({ curators, creator, ...competition }: any) {
     const comp = await this.prisma.competition.create({
       data: { ...competition, createdById: creator.id },
+      include: this.defaultInclude,
     });
     const formattedCurators: string[] = Array.from(
       new Set(curators.map((address) => formatEthereumAddress(address))),
@@ -49,12 +58,24 @@ export class CompetitionService {
         data: { competitionId: comp.id, userId: user.id },
       });
     }
-    return comp;
+    return this.addExtra(comp as CompetitionWithCuratorUsers);
   }
 
-  async findMany(args: Prisma.CompetitionFindManyArgs) {
-    return this.afterGetCompetition(
-      await this.prisma.competition.findMany(args),
+  async findMany(args?: Prisma.CompetitionFindManyArgs) {
+    return this.addExtras(
+      (await this.prisma.competition.findMany({
+        ...args,
+        include: this.defaultInclude,
+      })) as CompetitionWithCuratorUsers[],
+    );
+  }
+
+  async findFirst(args?: Prisma.CompetitionFindFirstArgs) {
+    return this.addExtra(
+      (await this.prisma.competition.findFirst({
+        ...args,
+        include: this.defaultInclude,
+      })) as CompetitionWithCuratorUsers,
     );
   }
 }

@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
@@ -94,22 +95,43 @@ export class AppController {
   @Get('competition')
   getCompetition() {
     return this.competition.findMany({
-      include: { curators: { include: { user: true } } },
       orderBy: { createdAt: 'desc' },
     });
   }
 
-  @Get('compeition/:id/meme')
-  getCompeitionMemes(@Param() { id }: IdDto) {
+  @Get('competition/:id/meme')
+  getCompetitionMemes(@Param() { id }: IdDto) {
     return this.meme.getByCompetitionId(id);
   }
 
   @Post('submission')
-  postSubmission(
+  @UseGuards(AuthGuard)
+  async postSubmission(
     @Body() submission: SubmissionDto,
     @Req() { user }: AuthenticatedRequest,
   ) {
-    //@next validation for if user can submit this meme / maxUserSubmissions
-    return this.submission.create({ data: { ...submission } });
+    if (!(await this.meme.getMemeBelongsToUser(submission.memeId, user.id))) {
+      throw new BadRequestException('Meme not found');
+    }
+
+    const competition = await this.competition.findFirst({
+      where: { id: submission.competitionId },
+    });
+    if (!competition) {
+      throw new BadRequestException('Competition not found');
+    }
+
+    const userSubmissions = await this.submission.findMany({
+      where: { createdById: user.id, competitionId: competition.id },
+    });
+    if (competition.maxUserSubmissions === userSubmissions.length) {
+      throw new BadRequestException(
+        'You can not submit more memes to this competiion',
+      );
+    }
+
+    return this.submission.create({
+      data: { ...submission, createdById: user.id },
+    });
   }
 }

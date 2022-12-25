@@ -140,47 +140,48 @@ describe('AppController (e2e)', () => {
   //   await postCompetition(user.agent, user.wallet).expect(201);
   // });
 
-  it('/competition (GET)', async () => {
-    const { agent, wallet } = await getNewUser(server);
-    const details = {
-      name: 'Cool Competition',
-      description: 'Checkout this sick competition',
-      maxUserSubmissions: 1,
-      endsAt: new Date(),
-    };
-    postCompetition(agent, wallet, details).expect((res) => {
-      const { body } = res;
-      expect(body.name).toEqual(details.name);
-      expect(body.description).toEqual(details.description);
-      expect(body.maxUserSubmissions).toEqual(details.maxUserSubmissions);
-      expect(body.endsAt).toEqual(details.endsAt.toISOString());
-      return agent
-        .get('/competition')
-        .expect(200)
-        .expect((res) => {
-          const { body } = res;
-          expect(body.length).toBeGreaterThan(0);
+  // it('/competition (GET)', async () => {
+  //   const { agent, wallet } = await getNewUser(server);
+  //   const details = {
+  //     name: 'Cool Competition',
+  //     description: 'Checkout this sick competition',
+  //     maxUserSubmissions: 1,
+  //     endsAt: new Date(),
+  //   };
+  //   postCompetition(agent, wallet, details).expect((res) => {
+  //     const { body } = res;
+  //     expect(body.name).toEqual(details.name);
+  //     expect(body.description).toEqual(details.description);
+  //     expect(body.maxUserSubmissions).toEqual(details.maxUserSubmissions);
+  //     expect(body.endsAt).toEqual(details.endsAt.toISOString());
+  //     return agent
+  //       .get('/competition')
+  //       .expect(200)
+  //       .expect((res) => {
+  //         const { body } = res;
+  //         expect(body.length).toBeGreaterThan(0);
 
-          const competition = body.filter((item) => item.id === res.id)[0];
-          const curators = competition.curators;
+  //         const competition = body.filter((item) => item.id === res.id)[0];
+  //         const curators = competition.curators;
 
-          expect(curators.length).toEqual(1);
-          expect(curators[0].address).toEqual(wallet.address);
-          expect(curators[0].isSuperAdmin).toEqual(false);
-          expect(curators[0].isVerified).toEqual(false);
+  //         expect(curators.length).toEqual(1);
+  //         expect(curators[0].address).toEqual(wallet.address);
+  //         expect(curators[0].isSuperAdmin).toEqual(false);
+  //         expect(curators[0].isVerified).toEqual(false);
 
-          expect(competition.name).toEqual(details.name);
-          expect(competition.description).toEqual(details.description);
-          expect(competition.maxUserSubmissions).toEqual(
-            details.maxUserSubmissions,
-          );
-          expect(competition.endsAt).toEqual(details.endsAt.toISOString());
-        });
-    });
-  });
+  //         expect(competition.name).toEqual(details.name);
+  //         expect(competition.description).toEqual(details.description);
+  //         expect(competition.maxUserSubmissions).toEqual(
+  //           details.maxUserSubmissions,
+  //         );
+  //         expect(competition.endsAt).toEqual(details.endsAt.toISOString());
+  //       });
+  //   });
+  // });
 
   it('/submission (POST)', async () => {
-    jest.setTimeout(25000);
+    jest.setTimeout(30000);
+
     const user1 = await getNewUser(server);
     const user2 = await getNewUser(server);
     const user3 = await getNewUser(server);
@@ -197,16 +198,24 @@ describe('AppController (e2e)', () => {
         return postMeme(user3.agent)
           .expect(201)
           .then(({ body: meme }) => {
+            console.log('meme', meme);
             return postSubmission(user3.agent, {
               competitionId: competition.id,
               memeId: meme.id,
             })
               .expect(201)
-              .then(({ body: sub }) => {
+              .then(() => {
                 return user3.agent
-                  .get(`/compeition/${competition.id}/meme`)
-                  .then((res) => {
-                    return console.log(res.body);
+                  .get(`/competition/${competition.id}/meme`)
+                  .expect(200)
+                  .then(({ body: competitionMemes }) => {
+                    expect(competitionMemes.length).toBeGreaterThan(0);
+                    const expectedMeme = competitionMemes.filter(
+                      (item) => item.id === meme.id,
+                    )[0];
+                    console.log('expected meme', expectedMeme);
+                    expect(meme.name).toEqual(expectedMeme.name);
+                    expect(meme.description).toEqual(expectedMeme.descripition);
                   });
               });
           });
