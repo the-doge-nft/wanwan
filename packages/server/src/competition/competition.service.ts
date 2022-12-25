@@ -58,7 +58,7 @@ export class CompetitionService {
         data: { competitionId: comp.id, userId: user.id },
       });
     }
-    return this.addExtra(comp as CompetitionWithCuratorUsers);
+    return this.findFirst({ where: { id: comp.id } });
   }
 
   async findMany(args?: Prisma.CompetitionFindManyArgs) {

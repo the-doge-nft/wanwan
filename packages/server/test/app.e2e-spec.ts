@@ -1,13 +1,12 @@
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { S3Service } from './../src/s3/s3.service';
-import { postSubmission } from './helpers/index';
 
 import { getExpressRedisSession } from '../src/middleware/session';
 import getValidationPipe from '../src/middleware/validation';
 import { AppModule } from './../src/app.module';
 import S3Fixture from './fixtures/services/s3.service.fixture';
-import { getNewUser, postCompetition, postMeme } from './helpers';
+import TestUser from './helpers/TestUser';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
@@ -182,44 +181,86 @@ describe('AppController (e2e)', () => {
   it('/submission (POST)', async () => {
     jest.setTimeout(30000);
 
-    const user1 = await getNewUser(server);
-    const user2 = await getNewUser(server);
-    const user3 = await getNewUser(server);
+    const user1 = new TestUser(server);
+    await user1.auth();
+    console.log('user 1 wallet address', user1.address);
 
-    return postCompetition(user1.agent, user1.wallet, {
-      name: 'The Doge NFT',
-      description: 'For the Doge NFT',
-      maxUserSubmissions: 2,
-      endsAt: new Date(),
-      curators: [user1.wallet.address, user2.wallet.address],
-    })
+    const user2 = new TestUser(server);
+    await user2.auth();
+
+    const user3 = new TestUser(server);
+    await user3.auth();
+
+    return user1
+      .postCompetition({
+        name: 'The Doge NFT',
+        description: 'For the Doge NFT',
+        endsAt: new Date(),
+        maxUserSubmissions: 2,
+        curators: [user1.address, user2.address],
+      })
       .expect(201)
       .then(({ body: competition }) => {
-        return postMeme(user3.agent)
+        console.log('competition', competition);
+        return user3
+          .postMeme({
+            name: 'Sick meme',
+            description: 'check it out',
+            pathToFile: 'test/fixtures/avatar.png',
+          })
           .expect(201)
           .then(({ body: meme }) => {
-            console.log('meme', meme);
-            return postSubmission(user3.agent, {
-              competitionId: competition.id,
-              memeId: meme.id,
-            })
+            return user3
+              .postSubmission({
+                competitionId: competition.id,
+                memeId: meme.id,
+              })
               .expect(201)
               .then(() => {
-                return user3.agent
-                  .get(`/competition/${competition.id}/meme`)
-                  .expect(200)
+                return user3
+                  .getCompetitionMemes(competition.id)
                   .then(({ body: competitionMemes }) => {
                     expect(competitionMemes.length).toBeGreaterThan(0);
                     const expectedMeme = competitionMemes.filter(
                       (item) => item.id === meme.id,
                     )[0];
-                    console.log('expected meme', expectedMeme);
-                    expect(meme.name).toEqual(expectedMeme.name);
-                    expect(meme.description).toEqual(expectedMeme.descripition);
+                    expect(meme).toEqual(expectedMeme);
                   });
               });
           });
       });
+
+    // return postCompetition(user1.agent, user1.wallet, {
+    //   name: 'The Doge NFT',
+    //   description: 'For the Doge NFT',
+    //   maxUserSubmissions: 2,
+    //   endsAt: new Date(),
+    //   curators: [user1.wallet.address, user2.wallet.address],
+    // })
+    //   .expect(201)
+    //   .then(({ body: competition }) => {
+    //     return postMeme(user3.agent)
+    //       .expect(201)
+    //       .then(({ body: meme }) => {
+    //         return postSubmission(user3.agent, {
+    //           competitionId: competition.id,
+    //           memeId: meme.id,
+    //         })
+    //           .expect(201)
+    //           .then(() => {
+    //             return user3.agent
+    //               .get(`/competition/${competition.id}/meme`)
+    //               .expect(200)
+    //               .then(({ body: competitionMemes }) => {
+    //                 expect(competitionMemes.length).toBeGreaterThan(0);
+    //                 const expectedMeme = competitionMemes.filter(
+    //                   (item) => item.id === meme.id,
+    //                 )[0];
+    //                 expect(meme).toEqual(expectedMeme);
+    //               });
+    //           });
+    //       });
+    //   });
   });
 
   afterAll(async () => {
