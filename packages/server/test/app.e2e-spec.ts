@@ -226,57 +226,59 @@ describe('AppController (e2e)', () => {
     });
   });
 
-  // it('/submission (POST)', async () => {
-  //   jest.setTimeout(30000);
+  it('/submission (POST)', async () => {
+    jest.setTimeout(30000);
 
-  //   const user1 = new TestUser(server);
-  //   await user1.auth();
-  //   console.log('user 1 wallet address', user1.address);
+    const user1 = await TestUser.createAuthed(server);
+    const user2 = await TestUser.createAuthed(server);
+    const user3 = await TestUser.createAuthed(server);
 
-  //   const user2 = new TestUser(server);
-  //   await user2.auth();
-
-  //   const user3 = new TestUser(server);
-  //   await user3.auth();
-
-  //   return user1
-  //     .postCompetition({
-  //       name: 'The Doge NFT',
-  //       description: 'For the Doge NFT',
-  //       endsAt: new Date(),
-  //       maxUserSubmissions: 2,
-  //       curators: [user1.address, user2.address],
-  //     })
-  //     .expect(201)
-  //     .then(({ body: competition }) => {
-  //       console.log('competition', competition);
-  //       return user3
-  //         .postMeme({
-  //           name: 'Sick meme',
-  //           description: 'check it out',
-  //           pathToFile: 'test/fixtures/avatar.png',
-  //         })
-  //         .expect(201)
-  //         .then(({ body: meme }) => {
-  //           return user3
-  //             .postSubmission({
-  //               competitionId: competition.id,
-  //               memeId: meme.id,
-  //             })
-  //             .expect(201)
-  //             .then(() => {
-  //               return user3
-  //                 .getCompetitionMemes(competition.id)
-  //                 .then(({ body: competitionMemes }) => {
-  //                   expect(competitionMemes.length).toBeGreaterThan(0);
-  //                   const expectedMeme = competitionMemes.filter(
-  //                     (item) => item.id === meme.id,
-  //                   )[0];
-  //                   expect(meme).toEqual(expectedMeme);
-  //                 });
-  //             });
-  //         });
-  //     });
+    return user1
+      .postCompetition({
+        name: 'The Doge NFT',
+        description: 'For the Doge NFT',
+        endsAt: new Date(),
+        maxUserSubmissions: 2,
+        curators: [user1.address, user2.address],
+      })
+      .expect(201)
+      .then(({ body: competition }) => {
+        return user3
+          .postMeme({
+            name: 'Sick meme',
+            description: 'check it out',
+            pathToFile: 'test/fixtures/avatar.png',
+          })
+          .expect(201)
+          .then(({ body: meme }) => {
+            return user3
+              .postSubmission({
+                competitionId: competition.id,
+                memeId: meme.id,
+              })
+              .expect(201)
+              .then(() => {
+                return user3
+                  .getCompetitionMemes(competition.id)
+                  .then(({ body: competitionMemes }) => {
+                    competitionMemes.forEach((meme) => {
+                      memeKeys.forEach((key) =>
+                        expect(meme).toHaveProperty(key),
+                      );
+                      mediaKeys.forEach((key) =>
+                        expect(meme.media).toHaveProperty(key),
+                      );
+                    });
+                    expect(competitionMemes.length).toBeGreaterThan(0);
+                    const expectedMeme = competitionMemes.filter(
+                      (item) => item.id === meme.id,
+                    )[0];
+                    expect(meme).toEqual(expectedMeme);
+                  });
+              });
+          });
+      });
+  });
 
   // return postCompetition(user1.agent, user1.wallet, {
   //   name: 'The Doge NFT',
