@@ -1,10 +1,13 @@
+import { TokenType } from '@prisma/client';
 import { Type } from 'class-transformer';
 import {
   ArrayNotEmpty,
   IsArray,
   IsDateString,
+  IsEnum,
   IsInt,
   IsNotEmpty,
+  IsNotEmptyObject,
   IsOptional,
   IsString,
   Validate,
@@ -21,8 +24,9 @@ class EthereumAddressValidator implements ValidatorConstraintInterface {
   }
 }
 class CurrencyDto {
-  @IsString()
-  type: string;
+  @IsNotEmpty()
+  @IsEnum(TokenType)
+  type: TokenType;
 
   @IsString()
   contractAddress: string;
@@ -32,10 +36,12 @@ class CurrencyDto {
   tokenId: number;
 }
 
-class RewardsDto {
+export class RewardsDto {
+  @IsNotEmpty()
   @IsInt()
   competitionRank: number;
 
+  @IsNotEmptyObject()
   @ValidateNested()
   @Type(() => CurrencyDto)
   currency: CurrencyDto;
@@ -68,5 +74,5 @@ export class CompetitionDto {
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => RewardsDto)
-  rewards?: RewardsDto[];
+  rewards: RewardsDto[];
 }

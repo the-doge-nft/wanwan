@@ -147,14 +147,15 @@ model Reward {
   currencyId      Int
   currency        Currency    @relation(fields: [currencyId], references: [id])
   competitionRank Int
+  currencyTokenId Int?
+  currencyAmount  String
 }
 
 model Currency {
   id              Int       @id @default(autoincrement())
   type            TokenType
-  contractAddress String
-  tokenId         Int?
-  amountUnits     String
+  contractAddress String    @unique
   units           Int
+  symbol          String
   Reward          Reward[]
 }

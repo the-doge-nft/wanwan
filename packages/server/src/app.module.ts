@@ -16,6 +16,7 @@ import { UserService } from './user/user.service';
 import { VoteService } from './vote/vote.service';
 import { AlchemyService } from './alchemy/alchemy.service';
 import { RewardService } from './reward/reward.service';
+import { CurrencyService } from './currency/currency.service';
 
 @Module({
   imports: [
@@ -58,6 +59,7 @@ import { RewardService } from './reward/reward.service';
     VoteService,
     AlchemyService,
     RewardService,
+    CurrencyService,
   ],
 })
 export class AppModule {}
