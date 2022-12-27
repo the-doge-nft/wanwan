@@ -55,6 +55,9 @@ export class CompetitionService {
 
   private async upsertRewards(rewards: RewardsDto[]) {
     for (const reward of rewards) {
+      // @next check balance and make sure creator is holding minimum amount of reward posted
+      // if is not erc20 then there must be a token id
+
       const currency = await this.currency.findFirst({
         where: { contractAddress: reward.currency.contractAddress },
       });

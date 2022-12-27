@@ -45,6 +45,14 @@ export class RewardsDto {
   @ValidateNested()
   @Type(() => CurrencyDto)
   currency: CurrencyDto;
+
+  @IsOptional()
+  @IsInt()
+  currencyTokenId?: number;
+
+  @IsNotEmpty()
+  @IsString()
+  currencyAmount: string;
 }
 
 export class CompetitionDto {
