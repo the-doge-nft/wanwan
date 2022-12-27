@@ -151,14 +151,21 @@ export class AppController {
   async postVote(
     @Body() vote: VoteDto,
     @Req() { user }: AuthenticatedRequest,
-    @Param() { id }: IdDto,
+    @Param() { id: competitionId }: IdDto,
   ) {
     if (!(await this.alchemy.getIsPixelHolder(user.address))) {
       throw new BadRequestException('You must hold a pixel to vote');
     }
-    // @next check if authed user is holding a pixel, if not do not allow the vote
-    return this.vote.create({
-      data: { ...vote, competitionId: id, createdById: user.id },
+    return this.vote.upsert({
+      where: {
+        createdById_memeId_competitionId: {
+          createdById: user.id,
+          memeId: vote.memeId,
+          competitionId,
+        },
+      },
+      create: { ...vote, competitionId, createdById: user.id },
+      update: { score: vote.score },
     });
   }
 }

@@ -13,6 +13,7 @@ import {
   mediaKeys,
   memeKeys,
   userKeys,
+  voteKeys,
 } from './helpers/expectedKeys';
 import TestUser from './helpers/TestUser';
 
@@ -293,20 +294,29 @@ describe('AppController (e2e)', () => {
         maxUserSubmissions: 1,
       })
       .then(({ body: competition }) => {
-        return user2.postMeme().then(({ body: meme }) => {
-          return user2
-            .postSubmission({
-              memeId: meme.id,
-              competitionId: competition.id,
-            })
-            .then(() => {
-              return user3.postVote({
-                competitionId: competition.id,
+        return user2
+          .postMeme()
+          .expect(201)
+          .then(({ body: meme }) => {
+            return user2
+              .postSubmission({
                 memeId: meme.id,
-                score: 1,
+                competitionId: competition.id,
+              })
+              .expect(201)
+              .then(() => {
+                return user3
+                  .postVote({
+                    competitionId: competition.id,
+                    memeId: meme.id,
+                    score: 1,
+                  })
+                  .expect(200)
+                  .expect(({ body: vote }) => {
+                    voteKeys.forEach((key) => expect(vote).toHaveProperty(key));
+                  });
               });
-            });
-        });
+          });
       });
   });
 

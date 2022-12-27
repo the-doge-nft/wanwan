@@ -9,4 +9,8 @@ export class VoteService {
   create(args: Prisma.VoteCreateArgs) {
     return this.prisma.vote.create(args);
   }
+
+  upsert(args: Prisma.VoteUpsertArgs) {
+    return this.prisma.vote.upsert(args);
+  }
 }

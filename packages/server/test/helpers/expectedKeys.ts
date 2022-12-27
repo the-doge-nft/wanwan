@@ -55,3 +55,13 @@ export const competitionKeys = [
   'updatedAt',
   'createdById',
 ];
+
+export const voteKeys = [
+  'id',
+  'comeptitionId',
+  'createdById',
+  'memeId',
+  'score',
+  'createdAt',
+  'deletedAt',
+];

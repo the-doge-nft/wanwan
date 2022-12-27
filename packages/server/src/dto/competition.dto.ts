@@ -1,3 +1,4 @@
+import { Type } from 'class-transformer';
 import {
   ArrayNotEmpty,
   IsArray,
@@ -7,6 +8,7 @@ import {
   IsOptional,
   IsString,
   Validate,
+  ValidateNested,
   ValidatorConstraint,
   ValidatorConstraintInterface,
 } from 'class-validator';
@@ -17,6 +19,26 @@ class EthereumAddressValidator implements ValidatorConstraintInterface {
   validate(values: string[] = []): boolean {
     return values.every(isValidEthereumAddress);
   }
+}
+class CurrencyDto {
+  @IsString()
+  type: string;
+
+  @IsString()
+  contractAddress: string;
+
+  @IsOptional()
+  @IsInt()
+  tokenId: number;
+}
+
+class RewardsDto {
+  @IsInt()
+  competitionRank: number;
+
+  @ValidateNested()
+  @Type(() => CurrencyDto)
+  currency: CurrencyDto;
 }
 
 export class CompetitionDto {
@@ -42,4 +64,9 @@ export class CompetitionDto {
     message: 'Not a valid ethereum address',
   })
   curators: string[];
+
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => RewardsDto)
+  rewards?: RewardsDto[];
 }

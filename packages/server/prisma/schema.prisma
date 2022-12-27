@@ -131,14 +131,30 @@ model Comment {
   child           Comment?  @relation("CommentHistory")
 }
 
+enum TokenType {
+  ERC721
+  ERC1155
+  ERC20
+}
+
 model Reward {
-  id            Int         @id @default(autoincrement())
-  txId          String      @unique
-  competitionId Int
-  competition   Competition @relation(fields: [competitionId], references: [id])
-  receivedById  Int
-  recevier      User        @relation(fields: [receivedById], references: [id])
-  tokenType     String
-  tokenAmount   Int
-  tokenIds      Int[]
+  id              Int         @id @default(autoincrement())
+  txId            String      @unique
+  competitionId   Int
+  competition     Competition @relation(fields: [competitionId], references: [id])
+  receivedById    Int
+  recevier        User        @relation(fields: [receivedById], references: [id])
+  currencyId      Int
+  currency        Currency    @relation(fields: [currencyId], references: [id])
+  competitionRank Int
+}
+
+model Currency {
+  id              Int       @id @default(autoincrement())
+  type            TokenType
+  contractAddress String
+  tokenId         Int?
+  amountUnits     String
+  units           Int
+  Reward          Reward[]
 }

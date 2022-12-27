@@ -15,6 +15,7 @@ import { SubmissionService } from './submission/submission.service';
 import { UserService } from './user/user.service';
 import { VoteService } from './vote/vote.service';
 import { AlchemyService } from './alchemy/alchemy.service';
+import { RewardService } from './reward/reward.service';
 
 @Module({
   imports: [
@@ -56,6 +57,7 @@ import { AlchemyService } from './alchemy/alchemy.service';
     SubmissionService,
     VoteService,
     AlchemyService,
+    RewardService,
   ],
 })
 export class AppModule {}
