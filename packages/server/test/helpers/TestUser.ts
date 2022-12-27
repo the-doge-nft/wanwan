@@ -123,7 +123,9 @@ export default class TestUser {
     memeId: number;
     score: number;
   }) {
-    return this.agent.post('/vote');
+    return this.agent
+      .post(`/competition/${competitionId}`)
+      .send({ memeId, score });
   }
 
   static async createAuthed(server) {

@@ -14,6 +14,7 @@ import { S3Service } from './s3/s3.service';
 import { SubmissionService } from './submission/submission.service';
 import { UserService } from './user/user.service';
 import { VoteService } from './vote/vote.service';
+import { AlchemyService } from './alchemy/alchemy.service';
 
 @Module({
   imports: [
@@ -54,6 +55,7 @@ import { VoteService } from './vote/vote.service';
     CommentService,
     SubmissionService,
     VoteService,
+    AlchemyService,
   ],
 })
 export class AppModule {}

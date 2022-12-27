@@ -13,6 +13,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { AlchemyService } from './alchemy/alchemy.service';
 import { AppService } from './app.service';
 import { AuthGuard } from './auth/auth.guard';
 import { CommentService } from './comment/comment.service';
@@ -39,6 +40,7 @@ export class AppController {
     private readonly comment: CommentService,
     private readonly submission: SubmissionService,
     private readonly vote: VoteService,
+    private readonly alchemy: AlchemyService,
   ) {}
 
   @Get()
@@ -151,6 +153,9 @@ export class AppController {
     @Req() { user }: AuthenticatedRequest,
     @Param() { id }: IdDto,
   ) {
+    if (!(await this.alchemy.getIsPixelHolder(user.address))) {
+      throw new BadRequestException('You must hold a pixel to vote');
+    }
     // @next check if authed user is holding a pixel, if not do not allow the vote
     return this.vote.create({
       data: { ...vote, competitionId: id, createdById: user.id },

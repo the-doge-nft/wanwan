@@ -24,6 +24,7 @@ export interface Config {
     port: number;
     password: string;
   };
+  alchemyApiKey: string;
 }
 
 const configSchema = Joi.object<Config>({
@@ -46,6 +47,7 @@ const configSchema = Joi.object<Config>({
     port: Joi.number().required(),
     password: Joi.string().required(),
   }).required(),
+  alchemyApiKey: Joi.string(),
 });
 
 const config: Config = {
@@ -66,6 +68,7 @@ const config: Config = {
     port: parseInt(process.env.REDIS_PORT),
     password: process.env.REDIS_PASSWORD,
   },
+  alchemyApiKey: process.env.ALCHEMY_API_KEY,
 };
 
 class MissingEnvVarError extends Error {}
