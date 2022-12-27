@@ -110,8 +110,8 @@ model Vote {
   memeId        Int
   meme          Meme     @relation(fields: [memeId], references: [id])
   score         Int      @default(0)
-  createdAt     DateTime
-  updatedAt     DateTime
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @default(now())
 
   @@unique([createdById, memeId, competitionId])
 }

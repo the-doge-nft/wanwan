@@ -102,7 +102,7 @@ export default class TestUser {
       .send({ body, parentCommentId });
   }
 
-  postSubmission(args: { memeId: string; competitionId: number }) {
+  postSubmission(args: { memeId: number; competitionId: number }) {
     return this.agent.post('/submission').send(args);
   }
 
@@ -112,6 +112,18 @@ export default class TestUser {
 
   getUser() {
     return this.agent.get('/user');
+  }
+
+  postVote({
+    competitionId,
+    memeId,
+    score,
+  }: {
+    competitionId: number;
+    memeId: number;
+    score: number;
+  }) {
+    return this.agent.post('/vote');
   }
 
   static async createAuthed(server) {

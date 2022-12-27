@@ -22,10 +22,12 @@ import { CompetitionDto } from './dto/competition.dto';
 import IdDto from './dto/id.dto';
 import { MemeDto } from './dto/meme.dto';
 import SubmissionDto from './dto/submission.dto';
+import VoteDto from './dto/vote.dto';
 import { AuthenticatedRequest } from './interface';
 import { MemeService } from './meme/meme.service';
 import { SubmissionService } from './submission/submission.service';
 import MemeMediaFileValidator from './validator/meme-media-file.validator';
+import { VoteService } from './vote/vote.service';
 
 @Controller()
 export class AppController {
@@ -36,11 +38,18 @@ export class AppController {
     private readonly competition: CompetitionService,
     private readonly comment: CommentService,
     private readonly submission: SubmissionService,
+    private readonly vote: VoteService,
   ) {}
 
   @Get()
   getIndex(): string {
     return this.app.getIndex();
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('user')
+  getUser(@Req() { user }: AuthenticatedRequest) {
+    return user;
   }
 
   @Post('meme')
@@ -135,9 +144,16 @@ export class AppController {
     });
   }
 
+  @Post('competition/:id/vote')
   @UseGuards(AuthGuard)
-  @Get('user')
-  getUser(@Req() { user }: AuthenticatedRequest) {
-    return user;
+  async postVote(
+    @Body() vote: VoteDto,
+    @Req() { user }: AuthenticatedRequest,
+    @Param() { id }: IdDto,
+  ) {
+    // @next check if authed user is holding a pixel, if not do not allow the vote
+    return this.vote.create({
+      data: { ...vote, competitionId: id, createdById: user.id },
+    });
   }
 }

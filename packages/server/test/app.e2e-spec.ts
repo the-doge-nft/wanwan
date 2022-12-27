@@ -280,38 +280,35 @@ describe('AppController (e2e)', () => {
       });
   });
 
-  // return postCompetition(user1.agent, user1.wallet, {
-  //   name: 'The Doge NFT',
-  //   description: 'For the Doge NFT',
-  //   maxUserSubmissions: 2,
-  //   endsAt: new Date(),
-  //   curators: [user1.wallet.address, user2.wallet.address],
-  // })
-  //   .expect(201)
-  //   .then(({ body: competition }) => {
-  //     return postMeme(user3.agent)
-  //       .expect(201)
-  //       .then(({ body: meme }) => {
-  //         return postSubmission(user3.agent, {
-  //           competitionId: competition.id,
-  //           memeId: meme.id,
-  //         })
-  //           .expect(201)
-  //           .then(() => {
-  //             return user3.agent
-  //               .get(`/competition/${competition.id}/meme`)
-  //               .expect(200)
-  //               .then(({ body: competitionMemes }) => {
-  //                 expect(competitionMemes.length).toBeGreaterThan(0);
-  //                 const expectedMeme = competitionMemes.filter(
-  //                   (item) => item.id === meme.id,
-  //                 )[0];
-  //                 expect(meme).toEqual(expectedMeme);
-  //               });
-  //           });
-  //       });
-  //   });
-  // });
+  it('/vote POST', async () => {
+    const user1 = await TestUser.createAuthed(server);
+    const user2 = await TestUser.createAuthed(server);
+    const user3 = await TestUser.createAuthed(server);
+    return user1
+      .postCompetition({
+        name: 'Another meme competition',
+        description: 'Checkout this sick competition',
+        endsAt: new Date(),
+        curators: [user1.address],
+        maxUserSubmissions: 1,
+      })
+      .then(({ body: competition }) => {
+        return user2.postMeme().then(({ body: meme }) => {
+          return user2
+            .postSubmission({
+              memeId: meme.id,
+              competitionId: competition.id,
+            })
+            .then(() => {
+              return user3.postVote({
+                competitionId: competition.id,
+                memeId: meme.id,
+                score: 1,
+              });
+            });
+        });
+      });
+  });
 
   afterAll(async () => {
     await app.close();

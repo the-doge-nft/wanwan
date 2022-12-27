@@ -13,6 +13,7 @@ import { PrismaService } from './prisma.service';
 import { S3Service } from './s3/s3.service';
 import { SubmissionService } from './submission/submission.service';
 import { UserService } from './user/user.service';
+import { VoteService } from './vote/vote.service';
 
 @Module({
   imports: [
@@ -52,6 +53,7 @@ import { UserService } from './user/user.service';
     CompetitionService,
     CommentService,
     SubmissionService,
+    VoteService,
   ],
 })
 export class AppModule {}
