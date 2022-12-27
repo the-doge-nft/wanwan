@@ -134,4 +134,10 @@ export class AppController {
       data: { ...submission, createdById: user.id },
     });
   }
+
+  @UseGuards(AuthGuard)
+  @Get('user')
+  getUser(@Req() { user }: AuthenticatedRequest) {
+    return user;
+  }
 }

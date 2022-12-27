@@ -11,9 +11,8 @@ import { MediaService } from './media/media.service';
 import { MemeService } from './meme/meme.service';
 import { PrismaService } from './prisma.service';
 import { S3Service } from './s3/s3.service';
-import { UserController } from './user/user.controller';
-import { UserService } from './user/user.service';
 import { SubmissionService } from './submission/submission.service';
+import { UserService } from './user/user.service';
 
 @Module({
   imports: [
@@ -42,7 +41,7 @@ import { SubmissionService } from './submission/submission.service';
     }),
     AuthModule,
   ],
-  controllers: [AppController, UserController],
+  controllers: [AppController],
   providers: [
     AppService,
     PrismaService,

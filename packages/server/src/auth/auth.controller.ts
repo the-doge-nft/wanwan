@@ -1,4 +1,5 @@
 import { Controller, Get, Logger } from '@nestjs/common';
+import { UserService } from './../user/user.service';
 
 import {
   Body,
@@ -17,7 +18,9 @@ type SessionType = Session & { nonce: string; siwe: any };
 export class AuthController {
   private readonly logger = new Logger(AuthController.name);
 
-  @Get('/nonce')
+  constructor(private readonly user: UserService) {}
+
+  @Get('nonce')
   async getNonce(@_Session() session: SessionType) {
     session.nonce = generateNonce();
     return {
@@ -25,7 +28,7 @@ export class AuthController {
     };
   }
 
-  @Post('/verify')
+  @Post('login')
   async postAuth(
     @Body() { message, signature }: SiweDto,
     @_Session() session: SessionType,
@@ -38,8 +41,15 @@ export class AuthController {
         throw new InvalidNonceError();
       }
       session.siwe = fields;
+      const { address } = session.siwe;
+
       // session.cookie.expires = new Date(fields.expirationTime);
-      return { success: true, session };
+
+      return this.user.upsert({
+        where: { address },
+        update: { lastAuthedAt: new Date() },
+        create: { lastAuthedAt: new Date(), address },
+      });
     } catch (e) {
       this.logger.error(e);
       switch (e) {

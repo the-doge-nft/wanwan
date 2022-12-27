@@ -37,7 +37,7 @@ export default class TestUser {
     };
   }
 
-  private getNonceReq() {
+  getAuthNonce() {
     return this.agent.get('/auth/nonce');
   }
 
@@ -46,20 +46,16 @@ export default class TestUser {
   }
 
   auth(): any {
-    return this.getNonceReq().then(async (res) => {
-      expect(res.status).toEqual(200);
-      const {
-        body: { nonce },
-      } = res;
-      const { message, signature } = await this.getSiweMessage({
-        statement: 'Sign in with Ethereum',
-        nonce,
+    return this.getAuthNonce()
+      .expect(200)
+      .then((res) => {
+        return this.getSiweMessage({
+          statement: 'Sign in with Ethereum',
+          nonce: res.body.nonce,
+        }).then(({ message, signature }) => {
+          return this.agent.post('/auth/login').send({ message, signature });
+        });
       });
-      return this.agent
-        .post('/auth/verify')
-        .send({ message, signature })
-        .expect(201);
-    });
   }
 
   postCompetition(params: {
@@ -72,7 +68,17 @@ export default class TestUser {
     return this.agent.post('/competition').send(params);
   }
 
-  postMeme(params: { name: string; description: string; pathToFile: string }) {
+  getCompetition() {
+    return this.agent.get('/competition');
+  }
+
+  postMeme(
+    params: { name: string; description: string; pathToFile: string } = {
+      name: 'test',
+      description: 'test',
+      pathToFile: 'test/fixtures/avatar.png',
+    },
+  ) {
     return this.agent
       .post('/meme')
       .field('name', params.name)
@@ -102,5 +108,15 @@ export default class TestUser {
 
   getCompetitionMemes(id: number) {
     return this.agent.get(`/competition/${id}/meme`);
+  }
+
+  getUser() {
+    return this.agent.get('/user');
+  }
+
+  static async createAuthed(server) {
+    const user = new this(server);
+    await user.auth();
+    return user;
   }
 }
