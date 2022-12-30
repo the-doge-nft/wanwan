@@ -10,6 +10,8 @@ import {
   IsNotEmptyObject,
   IsOptional,
   IsString,
+  Max,
+  Min,
   Validate,
   ValidateNested,
   ValidatorConstraint,
@@ -23,6 +25,16 @@ class EthereumAddressValidator implements ValidatorConstraintInterface {
     return values.every(isValidEthereumAddress);
   }
 }
+
+@ValidatorConstraint({ name: 'uniqueCompetitionRank' })
+class UniqueCompetitionRank implements ValidatorConstraintInterface {
+  validate(value: RewardsDto[]): boolean | Promise<boolean> {
+    const ranks = value.map((item) => item.competitionRank);
+    const unique = Array.from(new Set(ranks));
+    return ranks.length == unique.length;
+  }
+}
+
 class CurrencyDto {
   @IsNotEmpty()
   @IsEnum(TokenType)
@@ -30,15 +42,13 @@ class CurrencyDto {
 
   @IsString()
   contractAddress: string;
-
-  @IsOptional()
-  @IsInt()
-  tokenId: number;
 }
 
 export class RewardsDto {
   @IsNotEmpty()
   @IsInt()
+  @Min(1)
+  @Max(3)
   competitionRank: number;
 
   @IsNotEmptyObject()
@@ -81,6 +91,9 @@ export class CompetitionDto {
 
   @IsArray()
   @ValidateNested({ each: true })
+  @Validate(UniqueCompetitionRank, {
+    message: 'Rewards competition rank must be unique',
+  })
   @Type(() => RewardsDto)
   rewards: RewardsDto[];
 }

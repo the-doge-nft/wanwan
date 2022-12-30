@@ -1,6 +1,11 @@
 import { ethers, Wallet } from 'ethers';
 import { SiweMessage } from 'siwe';
+import CommentDto from 'src/dto/comment.dto';
+import SubmissionDto from 'src/dto/submission.dto';
+import VoteDto from 'src/dto/vote.dto';
 import * as superRequest from 'supertest';
+import { CompetitionDto } from '../../src/dto/competition.dto';
+import { MemeDto } from '../../src/dto/meme.dto';
 
 export default class TestUser {
   private readonly wallet: Wallet;
@@ -58,13 +63,7 @@ export default class TestUser {
       });
   }
 
-  postCompetition(params: {
-    name: string;
-    description: string;
-    endsAt: Date;
-    curators: string[];
-    maxUserSubmissions: number;
-  }) {
+  postCompetition(params: CompetitionDto) {
     return this.agent.post('/competition').send(params);
   }
 
@@ -73,7 +72,7 @@ export default class TestUser {
   }
 
   postMeme(
-    params: { name: string; description: string; pathToFile: string } = {
+    params: MemeDto & { pathToFile: string } = {
       name: 'test',
       description: 'test',
       pathToFile: 'test/fixtures/avatar.png',
@@ -87,22 +86,17 @@ export default class TestUser {
   }
 
   postComment(
-    {
-      memeId,
-      body,
-      parentCommentId,
-    }: {
-      body: string;
-      memeId: number;
-      parentCommentId?: number;
-    } = { body: 'Sick', memeId: 0 },
+    { memeId, body, parentCommentId }: CommentDto & { memeId: number } = {
+      body: 'Sick',
+      memeId: 0,
+    },
   ) {
     return this.agent
       .post(`/meme/${memeId}/comment`)
       .send({ body, parentCommentId });
   }
 
-  postSubmission(args: { memeId: number; competitionId: number }) {
+  postSubmission(args: SubmissionDto) {
     return this.agent.post('/submission').send(args);
   }
 
@@ -118,11 +112,7 @@ export default class TestUser {
     competitionId,
     memeId,
     score,
-  }: {
-    competitionId: number;
-    memeId: number;
-    score: number;
-  }) {
+  }: VoteDto & { competitionId; number }) {
     return this.agent
       .post(`/competition/${competitionId}`)
       .send({ memeId, score });
