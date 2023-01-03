@@ -169,13 +169,30 @@ describe('AppController (e2e)', () => {
         rewards: [
           {
             competitionRank: 1,
-            currency: { type: 'ERC1155', contractAddress: '' },
-            currencyAmount: '2',
+            currency: {
+              type: 'ERC721',
+              contractAddress: '0x07887Ee0Bd24E774903963d50cF4Ec6a0a16977D',
+              amount: '10',
+              tokenId: '10',
+            },
           },
           {
             competitionRank: 2,
-            currency: { type: 'ERC20', contractAddress: '' },
-            currencyAmount: '2',
+            currency: {
+              type: 'ERC20',
+              contractAddress: '0xBAac2B4491727D78D2b78815144570b9f2Fe8899',
+              amount: '69696969.69',
+              tokenId: '43',
+            },
+          },
+          {
+            competitionRank: 3,
+            currency: {
+              type: 'ERC1155',
+              contractAddress: '',
+              amount: '1',
+              tokenId: '145',
+            },
           },
         ],
       })

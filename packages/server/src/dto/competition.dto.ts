@@ -1,5 +1,5 @@
 import { TokenType } from '@prisma/client';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
   ArrayNotEmpty,
   IsArray,
@@ -14,15 +14,23 @@ import {
   Min,
   Validate,
   ValidateNested,
+  ValidationArguments,
   ValidatorConstraint,
   ValidatorConstraintInterface,
 } from 'class-validator';
-import { isValidEthereumAddress } from './../helpers/strings';
+import {
+  formatEthereumAddress,
+  isValidEthereumAddress,
+} from './../helpers/strings';
 
 @ValidatorConstraint({ name: 'ethereumAddressValidator' })
 class EthereumAddressValidator implements ValidatorConstraintInterface {
   validate(values: string[] = []): boolean {
     return values.every(isValidEthereumAddress);
+  }
+
+  defaultMessage(): string {
+    return 'Not a valid ethereum address';
   }
 }
 
@@ -33,6 +41,28 @@ class UniqueCompetitionRank implements ValidatorConstraintInterface {
     const unique = Array.from(new Set(ranks));
     return ranks.length == unique.length;
   }
+
+  defaultMessage() {
+    return 'Rewards competition rank must be unique';
+  }
+}
+
+@ValidatorConstraint({ name: 'nftTokensTokenIdRequired' })
+class NftTokensTokenIdRequired implements ValidatorConstraintInterface {
+  validate(
+    value: number | undefined,
+    validationArguments: ValidationArguments,
+  ): boolean | Promise<boolean> {
+    const { type } = validationArguments.object as CurrencyDto;
+    return !(
+      (type === TokenType.ERC1155 || type === TokenType.ERC721) &&
+      !value
+    );
+  }
+
+  defaultMessage() {
+    return 'ERC1155 and ERC721 must have currency.tokenId specified';
+  }
 }
 
 class CurrencyDto {
@@ -42,6 +72,14 @@ class CurrencyDto {
 
   @IsString()
   contractAddress: string;
+
+  @IsString()
+  @Validate(NftTokensTokenIdRequired)
+  tokenId?: string;
+
+  @IsNotEmpty()
+  @IsString()
+  amount: string;
 }
 
 export class RewardsDto {
@@ -55,14 +93,6 @@ export class RewardsDto {
   @ValidateNested()
   @Type(() => CurrencyDto)
   currency: CurrencyDto;
-
-  @IsOptional()
-  @IsInt()
-  currencyTokenId?: number;
-
-  @IsNotEmpty()
-  @IsString()
-  currencyAmount: string;
 }
 
 export class CompetitionDto {
@@ -84,16 +114,15 @@ export class CompetitionDto {
 
   @IsArray()
   @ArrayNotEmpty()
-  @Validate(EthereumAddressValidator, {
-    message: 'Not a valid ethereum address',
-  })
+  @Validate(EthereumAddressValidator)
+  @Transform(({ value }: { value: string[] }) =>
+    value.map((address) => formatEthereumAddress(address)),
+  )
   curators: string[];
 
   @IsArray()
   @ValidateNested({ each: true })
-  @Validate(UniqueCompetitionRank, {
-    message: 'Rewards competition rank must be unique',
-  })
+  @Validate(UniqueCompetitionRank)
   @Type(() => RewardsDto)
   rewards: RewardsDto[];
 }

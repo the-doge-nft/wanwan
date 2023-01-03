@@ -17,6 +17,7 @@ import { VoteService } from './vote/vote.service';
 import { AlchemyService } from './alchemy/alchemy.service';
 import { RewardService } from './reward/reward.service';
 import { CurrencyService } from './currency/currency.service';
+import { CompetitionCuratorService } from './competition-curator/competition-curator.service';
 
 @Module({
   imports: [
@@ -60,6 +61,7 @@ import { CurrencyService } from './currency/currency.service';
     AlchemyService,
     RewardService,
     CurrencyService,
+    CompetitionCuratorService,
   ],
 })
 export class AppModule {}

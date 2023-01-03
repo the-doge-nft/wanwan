@@ -1,10 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma, User } from '@prisma/client';
+import { Competition, Prisma, User } from '@prisma/client';
 import { CurrencyService } from '../currency/currency.service';
 import { CompetitionDto, RewardsDto } from '../dto/competition.dto';
 import { CompetitionWithCuratorUsers } from '../interface';
-import { AlchemyService } from './../alchemy/alchemy.service';
-import { formatEthereumAddress } from './../helpers/strings';
+import { CompetitionCuratorService } from './../competition-curator/competition-curator.service';
 import { PrismaService } from './../prisma.service';
 import { RewardService } from './../reward/reward.service';
 import { UserService } from './../user/user.service';
@@ -15,8 +14,8 @@ export class CompetitionService {
     private readonly prisma: PrismaService,
     private readonly user: UserService,
     private readonly currency: CurrencyService,
-    private readonly alchemy: AlchemyService,
     private readonly reward: RewardService,
+    private readonly competitionCurator: CompetitionCuratorService,
   ) {}
 
   private get defaultInclude(): Prisma.CompetitionInclude {
@@ -34,42 +33,6 @@ export class CompetitionService {
     };
   }
 
-  private formatCurators(curators: string[]) {
-    return Array.from(
-      new Set(curators.map((address) => formatEthereumAddress(address))),
-    );
-  }
-
-  private async upsertCurators(competitionId: number, curators: string[]) {
-    for (const address of curators) {
-      const user = await this.user.upsert({
-        where: { address },
-        create: { address, lastAuthedAt: new Date() },
-        update: {},
-      });
-      await this.prisma.compeitionCurator.create({
-        data: { competitionId, userId: user.id },
-      });
-    }
-  }
-
-  private async upsertRewards(rewards: RewardsDto[]) {
-    for (const reward of rewards) {
-      // @next check balance and make sure creator is holding minimum amount of reward posted
-      // if is not erc20 then there must be a token id
-
-      const currency = await this.currency.findFirst({
-        where: { contractAddress: reward.currency.contractAddress },
-      });
-      if (!currency) {
-        /* @next
-          - check if currency is 721, 1155, or 20
-          - create with units + symbol
-        */
-      }
-    }
-  }
-
   private addExtra(competition: CompetitionWithCuratorUsers) {
     return {
       ...competition,
@@ -81,21 +44,57 @@ export class CompetitionService {
     return competitions.map((item) => this.addExtra(item));
   }
 
+  private async upsertRewards(competition: Competition, rewards: RewardsDto[]) {
+    for (const reward of rewards) {
+      const { contractAddress, type } = reward.currency;
+      const currency = await this.currency.findFirst({
+        where: {
+          contractAddress,
+          type,
+        },
+      });
+      if (!currency) {
+        /* @next
+          - check if currency is 721, 1155, or 20
+          - create with units + symbol
+        */
+      }
+      await this.reward.upsert({ where: { competitionId: competition.id } });
+    }
+  }
+
   async create({
     curators,
     creator,
     rewards,
     ...competition
   }: CompetitionDto & { creator: User }) {
+    // check if creator is custodying the rewards
+    if (
+      !(await this.reward.getIsAddressCustodyingRewards(
+        creator.address,
+        rewards,
+      ))
+    ) {
+      throw new Error(
+        'You must be holding the rewards to create a competition',
+      );
+    }
+
+    // create our competition
     const comp = await this.prisma.competition.create({
       data: { ...competition, createdById: creator.id },
       include: this.defaultInclude,
     });
-    await this.upsertCurators(
-      comp.id,
-      this.formatCurators([...curators, creator.address]),
-    );
-    await this.upsertRewards(rewards);
+
+    // upsert curators
+    await this.competitionCurator.upsert(comp.id, [
+      ...curators,
+      creator.address,
+    ]);
+
+    // upsert rewards
+    await this.upsertRewards(comp, rewards);
     return this.findFirst({ where: { id: comp.id } });
   }
 

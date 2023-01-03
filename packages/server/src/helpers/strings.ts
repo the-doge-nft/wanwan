@@ -9,6 +9,5 @@ export const isValidEthereumAddress = (address: string) => {
   }
 };
 
-export const formatEthereumAddress = (address: string) => {
-  return ethers.utils.getAddress(address);
-};
+export const formatEthereumAddress = (address: string) =>
+  ethers.utils.getAddress(address);
