@@ -18,8 +18,14 @@ export default function App({ Component, pageProps }: AppProps) {
   const [authStatus, setAuthStatus] = useState<AuthenticationStatus>("loading");
   const getAuthStatus = useCallback(() => {
     http
-      .get("/user")
-      .then(() => setAuthStatus("authenticated"))
+      .get("/auth/isLoggedIn")
+      .then(({ data: isLoggedIn }) => {
+        if (isLoggedIn) {
+          setAuthStatus("authenticated");
+        } else {
+          setAuthStatus("unauthenticated");
+        }
+      })
       .catch((e) => setAuthStatus("unauthenticated"));
   }, []);
   useEffect(() => {

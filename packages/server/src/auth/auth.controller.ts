@@ -1,5 +1,4 @@
-import { Controller, Get, Logger, Req, UseGuards } from '@nestjs/common';
-import { AuthenticatedRequest } from './../interface/index';
+import { Controller, Get, Logger, UseGuards } from '@nestjs/common';
 import { UserService } from './../user/user.service';
 
 import {
@@ -44,6 +43,7 @@ export class AuthController {
       session.siwe = fields;
       const { address } = session.siwe;
 
+      // @next -- we need to expire the cookie at some point
       // session.cookie.expires = new Date(fields.expirationTime);
 
       return this.user.upsert({
@@ -62,12 +62,14 @@ export class AuthController {
     }
   }
 
+  @Get('isLoggedIn')
+  getAuthStatus(@SessionDeco() session: SessionType) {
+    return !!session?.siwe?.address;
+  }
+
   @UseGuards(AuthGuard)
   @Get('logout')
-  async postLogout(
-    @SessionDeco() session: SessionType,
-    @Req() req: AuthenticatedRequest,
-  ) {
+  async postLogout(@SessionDeco() session: SessionType) {
     return new Promise((resolve) => {
       session.destroy(() => resolve({ success: true }));
     });
