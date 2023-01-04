@@ -62,7 +62,7 @@ export class AuthController {
     }
   }
 
-  @Get('isLoggedIn')
+  @Get('status')
   getAuthStatus(@SessionDeco() session: SessionType) {
     return !!session?.siwe?.address;
   }

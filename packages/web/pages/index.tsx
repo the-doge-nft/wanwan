@@ -1,19 +1,15 @@
-import {
-  useAccountModal,
-  useChainModal,
-  useConnectModal,
-} from "@rainbow-me/rainbowkit";
 import "@rainbow-me/rainbowkit/styles.css";
+import { GetServerSideProps } from "next";
 import Head from "next/head";
-import { ConnectButton } from "../components/Button/Button";
 import { css } from "../helpers/css";
 import AppLayout from "../layouts/App.layout";
+import http from "../services/http";
 
-export default function Home() {
-  // const session = useSession();
-  const { openChainModal } = useChainModal();
-  const { openAccountModal } = useAccountModal();
-  const { openConnectModal } = useConnectModal();
+interface HomeProps {
+  competitions: any[];
+}
+
+const Home: React.FC<HomeProps> = ({ competitions }) => {
   return (
     <AppLayout>
       <Head>
@@ -21,17 +17,22 @@ export default function Home() {
         <meta name="description" content="Meme2Earn" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className={css("bg-gray-300")}>
-        <div className={css("text-center")}>meme2earn</div>
-        <div className={css("flex", "justify-center", "items-center", "mt-8")}>
-          <ConnectButton>Connect</ConnectButton>
+      <main className={css()}>
+        <div className={css("flex", "justify-center", "items-center")}>
+          check it out
         </div>
-        {/* <div className={css("flex", "flex-col", "gap-4")}>
-          <Button onClick={openChainModal}>open chain modal</Button>
-          <Button onClick={openAccountModal}>open account modal</Button>
-          <Button onClick={openConnectModal}>open connect modal</Button>
-        </div> */}
+        <div>{JSON.stringify(competitions)}</div>
       </main>
     </AppLayout>
   );
-}
+};
+
+export const getServerSideProps: GetServerSideProps<HomeProps> = async (
+  context
+) => {
+  const { data: competitions } = await http.get<any[]>("/competition");
+  console.log(competitions);
+  return { props: { competitions } };
+};
+
+export default Home;

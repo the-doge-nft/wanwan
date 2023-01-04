@@ -5,7 +5,7 @@ export default function Document() {
   return (
     <Html>
       <Head title={"Meme2Earn"} />
-      <body className={css("font-ComicNeue", "mr-0")}>
+      <body className={css("font-ComicNeue", "mr-0", "bg-slate-200")}>
         <Main />
         <NextScript />
       </body>

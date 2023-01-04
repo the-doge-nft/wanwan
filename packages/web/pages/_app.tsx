@@ -18,7 +18,7 @@ export default function App({ Component, pageProps }: AppProps) {
   const [authStatus, setAuthStatus] = useState<AuthenticationStatus>("loading");
   const getAuthStatus = useCallback(() => {
     http
-      .get("/auth/isLoggedIn")
+      .get("/auth/status")
       .then(({ data: isLoggedIn }) => {
         if (isLoggedIn) {
           setAuthStatus("authenticated");

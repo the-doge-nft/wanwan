@@ -93,7 +93,7 @@ export class AppController {
 
   @Post('competition')
   @UseGuards(AuthGuard)
-  createCompetition(
+  postCompetition(
     @Body() competition: CompetitionDto,
     @Req() { user }: AuthenticatedRequest,
   ) {

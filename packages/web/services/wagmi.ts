@@ -13,7 +13,7 @@ import { isProduction, vars } from "./../environment/vars";
 import http from "./http";
 
 export const { chains, provider, webSocketProvider } = configureChains(
-  isProduction() ? [mainnet] : [goerli, mainnet],
+  isProduction() ? [mainnet] : [goerli],
   [alchemyProvider({ apiKey: vars.AlchemyKey }), publicProvider()]
 );
 

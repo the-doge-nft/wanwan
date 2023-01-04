@@ -116,7 +116,7 @@ export default class TestUser {
     competitionId,
     memeId,
     score,
-  }: VoteDto & { competitionId; number }) {
+  }: VoteDto & { competitionId: number }) {
     return this.agent
       .post(`/competition/${competitionId}`)
       .send({ memeId, score });
