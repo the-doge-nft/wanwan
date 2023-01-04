@@ -3,6 +3,7 @@ import { PropsWithChildren, useState } from "react";
 import { useDisconnect } from "wagmi";
 import { css } from "../../helpers/css";
 import Dropdown from "../Dropdown/Dropdown";
+import Link from "../Link/Link";
 
 enum ButtonType {
   Primary = "primary",
@@ -108,43 +109,40 @@ export const ConnectButton: React.FC<
                         <Button type={type}>{account.displayName}</Button>
                       }
                     >
-                      {/* <Dropdown.Item> */}
-                      {/* <Link
-                          bold
-                          block
-                          href={`/profile/${account.address}`}
-                          size={LinkSize.xl}
-                        >
+                      <Dropdown.Item>
+                        <Link href={`/profile/${account.address}`}>
                           Profile
-                        </Link> */}
-                      {/* </Dropdown.Item> */}
-                      <div>
+                        </Link>
+                      </Dropdown.Item>
+                      <div className={css("mt-2")}>
                         <Dropdown.Item>
-                          <div
-                            onClick={() => disconnect()}
-                            className={css("cursor-pointer", "text-right")}
-                          >
-                            Disconnect
-                          </div>
-                        </Dropdown.Item>
-                        <Dropdown.Item>
-                          <div
+                          <button
                             className={css(
                               "flex",
-                              "items-center",
-                              "space-x-2",
-                              "cursor-pointer",
                               "justify-between",
-                              "text-gray-500",
-                              "text-xs"
+                              "text-xs",
+                              "w-full"
                             )}
-                            onClick={openChainModal}
+                            onClick={() => disconnect()}
                           >
-                            <div>network:</div>
-                            <div className={css("flex", "items-center")}>
-                              {chain.name}
+                            <div>Disconnect</div>
+                            <div
+                              className={css(
+                                "flex",
+                                "items-center",
+                                "space-x-1",
+                                "justify-between",
+                                "text-gray-500",
+                                "text-xs"
+                              )}
+                              onClick={openChainModal}
+                            >
+                              <div>net:</div>
+                              <div className={css("flex", "items-center")}>
+                                {chain.name}
+                              </div>
                             </div>
-                          </div>
+                          </button>
                         </Dropdown.Item>
                       </div>
                     </Dropdown>
