@@ -63,6 +63,10 @@ export default class TestUser {
       });
   }
 
+  logout() {
+    return this.agent.get('/auth/logout');
+  }
+
   postCompetition(params: CompetitionDto) {
     return this.agent.post('/competition').send(params);
   }

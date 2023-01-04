@@ -43,8 +43,9 @@ const Dropdown = ({
           "mt-3",
           "px-2",
           "py-1",
-          "border-2",
-          "rounded-lg"
+          "border-[1px]",
+          "rounded-lg",
+          "bg-gray-200"
         )}
       >
         {children}

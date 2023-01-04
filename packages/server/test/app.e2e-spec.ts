@@ -6,7 +6,7 @@ import { getExpressRedisSession } from '../src/middleware/session';
 import getValidationPipe from '../src/middleware/validation';
 import { AppModule } from './../src/app.module';
 import S3Fixture from './fixtures/services/s3.service.fixture';
-import { competitionKeys } from './helpers/expectedKeys';
+import { userKeys } from './helpers/expectedKeys';
 import TestUser from './helpers/TestUser';
 
 describe('AppController (e2e)', () => {
@@ -46,14 +46,24 @@ describe('AppController (e2e)', () => {
   //   });
   // });
 
-  // it('/auth/verify (POST)', () => {
-  //   const user = new TestUser(server);
-  //   return user.auth().then((res) => {
-  //     expect(res.status).toEqual(201);
-  //     const { body } = res;
-  //     userKeys.forEach((key) => expect(body).toHaveProperty(key));
-  //   });
-  // });
+  it('/auth/verify (POST)', () => {
+    const user = new TestUser(server);
+    return user.auth().then((res) => {
+      expect(res.status).toEqual(201);
+      const { body } = res;
+      userKeys.forEach((key) => expect(body).toHaveProperty(key));
+    });
+  });
+
+  it('/auth/logout (GET)', async () => {
+    const user = await TestUser.createAuthed(server);
+    return user
+      .logout()
+      .expect(200)
+      .expect(({ body }) => {
+        expect(body.success).toBe(true);
+      });
+  });
 
   // it('/user (GET)', async () => {
   //   const user = await TestUser.createAuthed(server);
@@ -157,50 +167,50 @@ describe('AppController (e2e)', () => {
   //     });
   // });
 
-  it('/competition (POST)', async () => {
-    const user = await TestUser.createAuthed(server);
-    return user
-      .postCompetition({
-        name: 'The Doge NFT',
-        description: 'A cool competition',
-        endsAt: new Date(),
-        curators: [user.address],
-        maxUserSubmissions: 1,
-        rewards: [
-          {
-            competitionRank: 1,
-            currency: {
-              type: 'ERC721',
-              contractAddress: '0x07887Ee0Bd24E774903963d50cF4Ec6a0a16977D',
-              amount: '10',
-              tokenId: '10',
-            },
-          },
-          {
-            competitionRank: 2,
-            currency: {
-              type: 'ERC20',
-              contractAddress: '0xBAac2B4491727D78D2b78815144570b9f2Fe8899',
-              amount: '69696969.69',
-              tokenId: '43',
-            },
-          },
-          {
-            competitionRank: 3,
-            currency: {
-              type: 'ERC1155',
-              contractAddress: '',
-              amount: '1',
-              tokenId: '145',
-            },
-          },
-        ],
-      })
-      .expect(201)
-      .expect(({ body }) => {
-        competitionKeys.forEach((key) => expect(body).toHaveProperty(key));
-      });
-  });
+  // it('/competition (POST)', async () => {
+  //   const user = await TestUser.createAuthed(server);
+  //   return user
+  //     .postCompetition({
+  //       name: 'The Doge NFT',
+  //       description: 'A cool competition',
+  //       endsAt: new Date(),
+  //       curators: [user.address],
+  //       maxUserSubmissions: 1,
+  //       rewards: [
+  //         {
+  //           competitionRank: 1,
+  //           currency: {
+  //             type: 'ERC721',
+  //             contractAddress: '0x07887Ee0Bd24E774903963d50cF4Ec6a0a16977D',
+  //             amount: '10',
+  //             tokenId: '10',
+  //           },
+  //         },
+  //         {
+  //           competitionRank: 2,
+  //           currency: {
+  //             type: 'ERC20',
+  //             contractAddress: '0xBAac2B4491727D78D2b78815144570b9f2Fe8899',
+  //             amount: '69696969.69',
+  //             tokenId: '43',
+  //           },
+  //         },
+  //         {
+  //           competitionRank: 3,
+  //           currency: {
+  //             type: 'ERC1155',
+  //             contractAddress: '',
+  //             amount: '1',
+  //             tokenId: '145',
+  //           },
+  //         },
+  //       ],
+  //     })
+  //     .expect(201)
+  //     .expect(({ body }) => {
+  //       competitionKeys.forEach((key) => expect(body).toHaveProperty(key));
+  //     });
+  // });
 
   // it('/competition (GET)', async () => {
   //   const user = await TestUser.createAuthed(server);

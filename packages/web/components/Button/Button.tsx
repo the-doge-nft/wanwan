@@ -1,6 +1,5 @@
 import { ConnectButton as RainbowConnectButton } from "@rainbow-me/rainbowkit";
-import { useRouter } from "next/router";
-import { PropsWithChildren, useEffect, useState } from "react";
+import { PropsWithChildren, useState } from "react";
 import { useDisconnect } from "wagmi";
 import { css } from "../../helpers/css";
 import Dropdown from "../Dropdown/Dropdown";
@@ -53,19 +52,25 @@ const Button: React.FC<PropsWithChildren<ButtonProps>> = ({
 export const ConnectButton: React.FC<
   PropsWithChildren<{ type?: ButtonType }>
 > = ({ type = ButtonType.Primary }) => {
-  const router = useRouter();
   const { disconnect } = useDisconnect();
   const [isDropDownOpen, setIsDropDownOpen] = useState(false);
-
-  useEffect(() => {
-    if (isDropDownOpen) {
-      setIsDropDownOpen(false);
-    }
-  }, [router.pathname]);
   return (
     <>
       <RainbowConnectButton.Custom>
-        {({ account, chain, openChainModal, openConnectModal, mounted }) => {
+        {({
+          account,
+          chain,
+          openChainModal,
+          openConnectModal,
+          mounted,
+          authenticationStatus,
+        }) => {
+          const shouldRenderConnect =
+            !mounted ||
+            !account ||
+            !chain ||
+            authenticationStatus === "loading" ||
+            authenticationStatus === "unauthenticated";
           return (
             <div
               {...(!mounted && {
@@ -78,7 +83,7 @@ export const ConnectButton: React.FC<
               })}
             >
               {(() => {
-                if (!mounted || !account || !chain) {
+                if (shouldRenderConnect) {
                   return (
                     <Button type={type} onClick={openConnectModal}>
                       connect
@@ -95,7 +100,7 @@ export const ConnectButton: React.FC<
                 }
 
                 return (
-                  <div style={{ display: "flex", gap: 12 }}>
+                  <div>
                     <Dropdown
                       open={isDropDownOpen}
                       onOpenChange={setIsDropDownOpen}
@@ -113,16 +118,11 @@ export const ConnectButton: React.FC<
                           Profile
                         </Link> */}
                       {/* </Dropdown.Item> */}
-                      <div className={css("mt-5", "text-base")}>
+                      <div>
                         <Dropdown.Item>
                           <div
                             onClick={() => disconnect()}
-                            className={css(
-                              "cursor-pointer",
-                              "text-right",
-                              "font-bold"
-                              // linkStyles
-                            )}
+                            className={css("cursor-pointer", "text-right")}
                           >
                             Disconnect
                           </div>
@@ -134,9 +134,7 @@ export const ConnectButton: React.FC<
                               "items-center",
                               "space-x-2",
                               "cursor-pointer",
-                              "justify-between",
-                              "font-bold"
-                              // linkStyles
+                              "justify-between"
                             )}
                             onClick={openChainModal}
                           >

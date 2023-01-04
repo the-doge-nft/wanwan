@@ -10,6 +10,13 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.use(getExpressRedisSession(app));
   app.useGlobalPipes(getValidationPipe());
+  app.enableCors({
+    origin: true,
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    preflightContinue: false,
+    credentials: true,
+    allowedHeaders: 'Content-Type, Accept',
+  });
 
   const port = app.get<ConfigService>(ConfigService<Config>).get('port');
   Logger.log(`listening on port: ${port}`);

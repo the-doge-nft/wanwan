@@ -5,6 +5,7 @@ import { isProduction, isStaging } from "./vars";
 
 export interface Env {
   app: { name: string };
+  api: { baseUrl: string };
 }
 
 let env: Env = devEnv;
