@@ -214,7 +214,7 @@ describe('AppController (e2e)', () => {
             competitionRank: 3,
             currency: {
               type: 'ERC1155',
-              contractAddress: '',
+              contractAddress: '0xBAac2B4491727D78D2b78815144570b9f2Fe8899',
               amount: '1',
               tokenId: '145',
             },
@@ -237,41 +237,44 @@ describe('AppController (e2e)', () => {
       curators: [user.address],
       rewards: [],
     };
-    return user.postCompetition(details).expect(({ body: competitionBody }) => {
-      expect(competitionBody.name).toEqual(details.name);
-      expect(competitionBody.description).toEqual(details.description);
-      expect(competitionBody.maxUserSubmissions).toEqual(
-        details.maxUserSubmissions,
-      );
-      expect(competitionBody.endsAt).toEqual(details.endsAt.toISOString());
-      return user
-        .getCompetition()
-        .expect(200)
-        .expect(({ body }) => {
-          expect(body.length).toBeGreaterThan(0);
+    return user
+      .postCompetition(details)
+      .expect(201)
+      .expect(({ body: competitionBody }) => {
+        expect(competitionBody.name).toEqual(details.name);
+        expect(competitionBody.description).toEqual(details.description);
+        expect(competitionBody.maxUserSubmissions).toEqual(
+          details.maxUserSubmissions,
+        );
+        expect(competitionBody.endsAt).toEqual(details.endsAt.toISOString());
+        return user
+          .getCompetition()
+          .expect(200)
+          .expect(({ body }) => {
+            expect(body.length).toBeGreaterThan(0);
 
-          const competition = body.filter(
-            (item) => item.id === competitionBody.id,
-          )[0];
-          competitionKeys.forEach((key) =>
-            expect(competition).toHaveProperty(key),
-          );
+            const competition = body.filter(
+              (item) => item.id === competitionBody.id,
+            )[0];
+            competitionKeys.forEach((key) =>
+              expect(competition).toHaveProperty(key),
+            );
 
-          const curators = competition.curators;
+            const curators = competition.curators;
 
-          expect(curators.length).toEqual(1);
-          expect(curators[0].address).toEqual(user.address);
-          expect(curators[0].isSuperAdmin).toEqual(false);
-          expect(curators[0].isVerified).toEqual(false);
+            expect(curators.length).toEqual(1);
+            expect(curators[0].address).toEqual(user.address);
+            expect(curators[0].isSuperAdmin).toEqual(false);
+            expect(curators[0].isVerified).toEqual(false);
 
-          expect(competition.name).toEqual(details.name);
-          expect(competition.description).toEqual(details.description);
-          expect(competition.maxUserSubmissions).toEqual(
-            details.maxUserSubmissions,
-          );
-          expect(competition.endsAt).toEqual(details.endsAt.toISOString());
-        });
-    });
+            expect(competition.name).toEqual(details.name);
+            expect(competition.description).toEqual(details.description);
+            expect(competition.maxUserSubmissions).toEqual(
+              details.maxUserSubmissions,
+            );
+            expect(competition.endsAt).toEqual(details.endsAt.toISOString());
+          });
+      });
   });
 
   it('/submission (POST)', async () => {

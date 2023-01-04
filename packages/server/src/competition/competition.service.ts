@@ -88,10 +88,10 @@ export class CompetitionService {
     });
 
     // upsert curators
-    await this.competitionCurator.upsert(comp.id, [
-      ...curators,
-      creator.address,
-    ]);
+    await this.competitionCurator.upsert(
+      comp.id,
+      Array.from(new Set([...curators, creator.address])),
+    );
 
     // upsert rewards
     await this.upsertRewards(comp, rewards);

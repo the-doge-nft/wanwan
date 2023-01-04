@@ -72,6 +72,16 @@ export class AppController {
     return this.meme.create(file, { ...meme, createdById: user.id });
   }
 
+  @Get('meme')
+  getMeme() {
+    return this.meme.findMany();
+  }
+
+  @Get('meme/:id')
+  getMemeById(@Param() { id }: IdDto) {
+    return this.meme.findFirst({ where: { id } });
+  }
+
   @Post('meme/:id/comment')
   @UseGuards(AuthGuard)
   postComment(

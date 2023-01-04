@@ -134,7 +134,9 @@ export const ConnectButton: React.FC<
                               "items-center",
                               "space-x-2",
                               "cursor-pointer",
-                              "justify-between"
+                              "justify-between",
+                              "text-gray-500",
+                              "text-xs"
                             )}
                             onClick={openChainModal}
                           >

@@ -1,6 +1,7 @@
 import { Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { Config } from './config/config';
 import { getExpressRedisSession } from './middleware/session';
@@ -17,6 +18,14 @@ async function bootstrap() {
     credentials: true,
     allowedHeaders: 'Content-Type, Accept',
   });
+
+  const swaggerConfig = new DocumentBuilder()
+    .setTitle('Meme2Earn')
+    .setDescription('Meme2Earn API')
+    .setVersion('1.0')
+    .build();
+  const document = SwaggerModule.createDocument(app, swaggerConfig);
+  SwaggerModule.setup('api', app, document);
 
   const port = app.get<ConfigService>(ConfigService<Config>).get('port');
   Logger.log(`listening on port: ${port}`);

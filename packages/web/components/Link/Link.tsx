@@ -57,7 +57,11 @@ export enum LinkSize {
   lg = "lg",
 }
 
-const baseLinkStyles = css("hover:underline", "hover:cursor-pointer");
+const baseLinkStyles = css(
+  "hover:underline",
+  "hover:cursor-pointer",
+  "max-w-full"
+);
 
 const linkTypeStyles = {
   [LinkType.Primary]: css("text-red-700", "hover:text-red-600", baseLinkStyles),
