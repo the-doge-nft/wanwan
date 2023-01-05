@@ -26,6 +26,7 @@ import SubmissionDto from './dto/submission.dto';
 import VoteDto from './dto/vote.dto';
 import { AuthenticatedRequest } from './interface';
 import { MemeService } from './meme/meme.service';
+import { ProfileService } from './profile/profile.service';
 import { SubmissionService } from './submission/submission.service';
 import MemeMediaFileValidator from './validator/meme-media-file.validator';
 import { VoteService } from './vote/vote.service';
@@ -41,6 +42,7 @@ export class AppController {
     private readonly submission: SubmissionService,
     private readonly vote: VoteService,
     private readonly alchemy: AlchemyService,
+    private readonly profile: ProfileService,
   ) {}
 
   @Get()
@@ -177,5 +179,10 @@ export class AppController {
       create: { ...vote, competitionId, createdById: user.id },
       update: { score: vote.score },
     });
+  }
+
+  @Get('profile/:addressOrEns')
+  async getProfile(@Param() { addressOrEns }: { addressOrEns: string }) {
+    return this.profile.get(addressOrEns);
   }
 }

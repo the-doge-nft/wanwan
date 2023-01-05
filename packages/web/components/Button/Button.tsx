@@ -116,16 +116,20 @@ export const ConnectButton: React.FC<
                       </Dropdown.Item>
                       <div className={css("mt-2")}>
                         <Dropdown.Item>
-                          <button
+                          <div
                             className={css(
                               "flex",
                               "justify-between",
                               "text-xs",
                               "w-full"
                             )}
-                            onClick={() => disconnect()}
                           >
-                            <div>Disconnect</div>
+                            <button
+                              className={css("hover:underline")}
+                              onClick={() => disconnect()}
+                            >
+                              Disconnect
+                            </button>
                             <div
                               className={css(
                                 "flex",
@@ -135,14 +139,13 @@ export const ConnectButton: React.FC<
                                 "text-gray-500",
                                 "text-xs"
                               )}
-                              onClick={openChainModal}
                             >
                               <div>net:</div>
                               <div className={css("flex", "items-center")}>
                                 {chain.name}
                               </div>
                             </div>
-                          </button>
+                          </div>
                         </Dropdown.Item>
                       </div>
                     </Dropdown>

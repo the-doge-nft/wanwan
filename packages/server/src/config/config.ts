@@ -1,6 +1,7 @@
 import * as Joi from 'joi';
 
 export enum AppEnv {
+  production = 'production',
   development = 'development',
   staging = 'staging',
   test = 'test',
@@ -24,7 +25,14 @@ export interface Config {
     port: number;
     password: string;
   };
-  alchemyApiKey: string;
+  alchemy: {
+    apiKey: string;
+    wsEndpoint: string;
+    httpEndpoint: string;
+  };
+  sentry: {
+    dns: string;
+  };
 }
 
 const configSchema = Joi.object<Config>({
@@ -47,7 +55,14 @@ const configSchema = Joi.object<Config>({
     port: Joi.number().required(),
     password: Joi.string().required(),
   }).required(),
-  alchemyApiKey: Joi.string(),
+  alchemy: Joi.object({
+    apiKey: Joi.string(),
+    wsEndpoint: Joi.string(),
+    httpEndpoint: Joi.string(),
+  }),
+  sentry: Joi.object({
+    dns: Joi.string(),
+  }),
 });
 
 const config: Config = {
@@ -68,7 +83,14 @@ const config: Config = {
     port: parseInt(process.env.REDIS_PORT),
     password: process.env.REDIS_PASSWORD,
   },
-  alchemyApiKey: process.env.ALCHEMY_API_KEY,
+  alchemy: {
+    apiKey: process.env.ALCHEMY_API_KEY,
+    wsEndpoint: process.env.ALCHEMY_WS_ENDPOINT,
+    httpEndpoint: process.env.ALCHEMY_HTTP_ENDPOINT,
+  },
+  sentry: {
+    dns: process.env.SENTRY_DNS,
+  },
 };
 
 class MissingEnvVarError extends Error {}

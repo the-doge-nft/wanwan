@@ -13,4 +13,8 @@ export class UserService {
   findMany(args?: Prisma.UserFindManyArgs) {
     return this.prisma.user.findMany(args);
   }
+
+  findFirst(args?: Prisma.UserFindFirstArgs) {
+    return this.prisma.user.findFirst(args);
+  }
 }

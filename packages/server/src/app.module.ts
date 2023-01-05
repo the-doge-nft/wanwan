@@ -1,29 +1,40 @@
 import { CacheModule, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { SentryModule } from '@travelerdev/nestjs-sentry';
 import { redisStore } from 'cache-manager-redis-store';
+import { AlchemyService } from './alchemy/alchemy.service';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { CommentService } from './comment/comment.service';
+import { CompetitionCuratorService } from './competition-curator/competition-curator.service';
 import { CompetitionService } from './competition/competition.service';
 import config, { Config } from './config/config';
+import { CurrencyService } from './currency/currency.service';
+import { EthersService } from './ethers/ethers.service';
 import { MediaService } from './media/media.service';
 import { MemeService } from './meme/meme.service';
 import { PrismaService } from './prisma.service';
+import { ProfileService } from './profile/profile.service';
+import { RewardService } from './reward/reward.service';
 import { S3Service } from './s3/s3.service';
 import { SubmissionService } from './submission/submission.service';
 import { UserService } from './user/user.service';
 import { VoteService } from './vote/vote.service';
-import { AlchemyService } from './alchemy/alchemy.service';
-import { RewardService } from './reward/reward.service';
-import { CurrencyService } from './currency/currency.service';
-import { CompetitionCuratorService } from './competition-curator/competition-curator.service';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       load: [() => config],
+    }),
+    SentryModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (config: ConfigService<Config>) => ({
+        dsn: config.get('sentry').dns,
+        debug: true,
+      }),
+      inject: [ConfigService],
     }),
     CacheModule.registerAsync<any>({
       isGlobal: true,
@@ -62,6 +73,8 @@ import { CompetitionCuratorService } from './competition-curator/competition-cur
     RewardService,
     CurrencyService,
     CompetitionCuratorService,
+    ProfileService,
+    EthersService,
   ],
 })
 export class AppModule {}

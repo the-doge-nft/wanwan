@@ -17,8 +17,8 @@ const Home: React.FC<HomeProps> = ({ competitions, memes }) => {
   return (
     <AppLayout>
       <Head>
-        <title>Meme2Earn</title>
-        <meta name="description" content="Meme2Earn" />
+        <title>mank</title>
+        <meta name="description" content="whatever" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={css()}>

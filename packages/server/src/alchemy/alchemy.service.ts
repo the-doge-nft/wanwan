@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Alchemy, GetNftsForOwnerOptions, Network } from 'alchemy-sdk';
 import { Config } from '../config/config';
+import { AppEnv } from './../config/config';
 
 @Injectable()
 export class AlchemyService {
@@ -9,9 +10,13 @@ export class AlchemyService {
   private pixelContractAddress = '';
 
   constructor(private readonly config: ConfigService<Config>) {
+    const network =
+      this.config.get('appEnv') === AppEnv.production
+        ? Network.ETH_MAINNET
+        : Network.ETH_GOERLI;
     this.alchemy = new Alchemy({
-      apiKey: this.config.get('alchemyApiKey'),
-      network: Network.ETH_MAINNET,
+      apiKey: this.config.get('alchemy').apiKey,
+      network,
     });
   }
 
@@ -43,4 +48,6 @@ export class AlchemyService {
       ...options,
     });
   }
+
+  getEnsFromAddress(address: string) {}
 }
