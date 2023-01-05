@@ -1,6 +1,7 @@
 import { PropsWithChildren } from "react";
 import Button from "../components/Button/Button";
 import Code from "../components/Code/Code";
+import Dropdown from "../components/Dropdown/Dropdown";
 import Pane, { PaneType } from "../components/Pane/Pane";
 import { css } from "../helpers/css";
 import AppLayout from "../layouts/App.layout";
@@ -48,6 +49,15 @@ const Components = () => {
                 🙁🙁🙁
               </Pane>
             </Variant>
+          </div>
+        </SubComponent>
+        <SubComponent title={"Dropdown"}>
+          <div className={css("flex", "justify-center")}>
+            <Dropdown trigger={<Button>Dropdown</Button>}>
+              <Dropdown.Item>1: Memes</Dropdown.Item>
+              <Dropdown.Item>2: Competitions</Dropdown.Item>
+              <Dropdown.Item>3: Rewards</Dropdown.Item>
+            </Dropdown>
           </div>
         </SubComponent>
         <SubComponent title={"Code"}>

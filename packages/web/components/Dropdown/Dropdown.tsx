@@ -1,4 +1,5 @@
 import * as RadixDropdown from "@radix-ui/react-dropdown-menu";
+import { PropsWithChildren } from "react";
 import { css } from "../../helpers/css";
 
 interface DropdownProps {
@@ -33,7 +34,7 @@ const Dropdown = ({
   return (
     <RadixDropdown.Root open={open} onOpenChange={onOpenChange}>
       <RadixDropdown.Trigger asChild>
-        <div>{trigger}</div>
+        <div className={css("inline-block")}>{trigger}</div>
       </RadixDropdown.Trigger>
       <RadixDropdown.Content
         style={{ minWidth: "200px", boxShadow: "0px 0px 10px rgba(0,0,0,0.1)" }}
@@ -56,11 +57,13 @@ const Dropdown = ({
 };
 
 interface ItemProps {
-  children: JSX.Element;
   className?: string;
 }
 
-const Item = ({ children, className }: ItemProps) => {
+const Item: React.FC<PropsWithChildren<ItemProps>> = ({
+  children,
+  className,
+}) => {
   return (
     <RadixDropdown.Item
       className={css(className, "outline-0")}
