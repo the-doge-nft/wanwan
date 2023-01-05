@@ -9,11 +9,11 @@ import { configureChains, createClient, goerli, mainnet } from "wagmi";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
 import env from "../environment";
-import { isProduction, vars } from "./../environment/vars";
+import { isProd, vars } from "./../environment/vars";
 import http from "./http";
 
 export const { chains, provider, webSocketProvider } = configureChains(
-  isProduction() ? [mainnet] : [goerli],
+  isProd() ? [mainnet] : [goerli],
   [alchemyProvider({ apiKey: vars.AlchemyKey }), publicProvider()]
 );
 

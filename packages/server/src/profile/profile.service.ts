@@ -7,6 +7,12 @@ import {
 import { PrismaService } from './../prisma.service';
 import { UserService } from './../user/user.service';
 
+export class NameNotFoundError extends Error {
+  constructor() {
+    super('Invalid name');
+  }
+}
+
 @Injectable()
 export class ProfileService {
   constructor(
@@ -16,15 +22,21 @@ export class ProfileService {
   ) {}
   async get(addressOrEns: string) {
     const isAddress = isValidEthereumAddress(addressOrEns);
-    const avatar = await this.ethers.getAvatar(addressOrEns);
-    let ens: null | string;
+    let avatar: null | string;
+    let ens: null | string = addressOrEns;
     let address: string;
     if (isAddress) {
-      console.log('hit');
       address = formatEthereumAddress(addressOrEns);
       ens = await this.ethers.getEnsName(address);
+      if (ens) {
+        avatar = await this.ethers.getAvatar(ens);
+      }
     } else {
-      address = await this.ethers.getEnsName(addressOrEns);
+      address = await this.ethers.resolveName(addressOrEns);
+      if (!address) {
+        throw new NameNotFoundError();
+      }
+      avatar = await this.ethers.getAvatar(addressOrEns);
     }
     const user = await this.user.findFirst({ where: { address } });
     return { ens, address, avatar, user };

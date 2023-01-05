@@ -62,3 +62,10 @@ export interface Meme {
   mediaId: number;
   media: Media;
 }
+
+export interface ProfileI {
+  ens: null | string;
+  address: string;
+  avatar: string;
+  user: User;
+}

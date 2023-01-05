@@ -1,7 +1,7 @@
 import devEnv from "./development";
 import productionEnv from "./production";
 import stagingEnv from "./staging";
-import { isProduction, isStaging } from "./vars";
+import { isProd, isStaging } from "./vars";
 
 export interface Env {
   app: { name: string };
@@ -11,7 +11,7 @@ export interface Env {
 let env: Env = devEnv;
 if (isStaging()) {
   env = stagingEnv;
-} else if (isProduction()) {
+} else if (isProd()) {
   env = productionEnv;
 }
 

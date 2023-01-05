@@ -50,11 +50,10 @@ const assertVars = () => {
 };
 assertVars();
 
-export const isProduction = () =>
+export const isProd = () =>
   vars.NodeEnv === "production" && vars.AppEnv === AppEnv.Production;
 
 export const isStaging = () =>
   vars.NodeEnv === "production" && vars.AppEnv === AppEnv.Staging;
 
-export const isDevelopment = () =>
-  vars.NodeEnv === "development" && vars.AppEnv === AppEnv.Development;
+export const isDev = () => vars.NodeEnv === "development";
