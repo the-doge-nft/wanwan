@@ -1,6 +1,6 @@
 import NextLink from "next/link";
 import React from "react";
-import { GoLinkExternal } from "react-icons/go";
+import { BsArrowUpRight } from "react-icons/bs";
 import { css } from "../../helpers/css";
 
 interface LinkProps {
@@ -20,25 +20,24 @@ const Link: React.FC<LinkProps> = ({
   size = LinkSize.sm,
   onClick,
 }: LinkProps) => {
-  const styles = css(linkTypeStyles[type], linkSizeStyles[size]);
-  const conditionalStyles = css("inline-flex");
+  const styles = css(linkTypeStyles[type], linkSizeStyles[size], "inline-flex");
 
   return (
     <>
       {isExternal ? (
         <a
           href={href}
-          className={css(styles, "items-center", conditionalStyles)}
+          className={css(styles, "items-center")}
           target={isExternal ? "_blank" : "_self"}
           rel={"noreferrer"}
           onClick={onClick}
         >
           {children && children}
-          {isExternal && <GoLinkExternal size={15} className={css("ml-2")} />}
+          {isExternal && <BsArrowUpRight size={14} className={css("ml-0.5")} />}
         </a>
       ) : (
         <NextLink href={href}>
-          <span className={css(styles, conditionalStyles)} onClick={onClick}>
+          <span className={css(styles)} onClick={onClick}>
             {children && children}
           </span>
         </NextLink>

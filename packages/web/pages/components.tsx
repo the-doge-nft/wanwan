@@ -61,7 +61,7 @@ const Components = () => {
         <SubComponent title={"Code"}>
           <Code>
             {JSON.stringify({
-              media: { url: "https://dopememe.com" },
+              media: { url: "https://here.com" },
               name: "mank",
               width: 100,
               height: 150,

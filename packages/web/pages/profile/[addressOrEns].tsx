@@ -1,7 +1,9 @@
 import { GetServerSideProps } from "next";
 import Code from "../../components/Code/Code";
 import Dev from "../../components/Dev/Dev";
+import Link from "../../components/Link/Link";
 import { css } from "../../helpers/css";
+import { abbreviate, getEtherscanURL } from "../../helpers/strings";
 import { ProfileI } from "../../interfaces";
 import AppLayout from "../../layouts/App.layout";
 import http from "../../services/http";
@@ -18,8 +20,10 @@ const Profile: React.FC<ProfileProps> = ({ profile }) => {
           <div className={css("flex", "flex-col", "items-center")}>
             <div
               className={css(
-                "h-[150px]",
-                "w-[150px]",
+                "h-[100px]",
+                "w-[100px]",
+                "sm:h-[150px]",
+                "sm:w-[150px]",
                 "bg-center",
                 "bg-no-repeat",
                 "bg-contain",
@@ -36,7 +40,17 @@ const Profile: React.FC<ProfileProps> = ({ profile }) => {
                   : {}
               }
             />
-            <div>{profile.ens}</div>
+            <div className={css("mt-1", "flex", "flex-col", "items-center")}>
+              <div>{profile.ens}</div>
+              {profile.address && (
+                <Link
+                  isExternal
+                  href={getEtherscanURL(profile.address, "address")}
+                >
+                  {abbreviate(profile.address)}
+                </Link>
+              )}
+            </div>
           </div>
         </div>
         <Dev>

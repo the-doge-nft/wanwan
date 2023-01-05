@@ -29,7 +29,11 @@ export class EthersService implements OnModuleInit {
   }
 
   async onModuleInit() {
-    this.initWS();
+    try {
+      this.initWS();
+    } catch (e) {
+      console.error(e);
+    }
   }
 
   initWS() {
