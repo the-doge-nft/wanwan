@@ -1,31 +1,44 @@
-import { TfiClose } from "react-icons/tfi";
-import { toast } from "react-toastify";
+import { IoCloseOutline } from "react-icons/io5";
+import { cssTransition, toast } from "react-toastify";
 import { isDev } from "../../environment/vars";
 import { css } from "../../helpers/css";
 
-const toastBaseStyles = css("!rounded-none", "text-sm", "!text-white");
+const transition = cssTransition({
+  enter: "flex",
+  exit: "hidden",
+});
+
+const toastBaseStyles = css(
+  "!rounded-none",
+  "text-sm",
+  "!text-white",
+  "border-[1px]",
+  "border-black"
+);
 
 const CloseButton = () => (
-  <div className={css("text-white")}>
-    <TfiClose size={18} />
+  <div className={css("text-black")}>
+    <IoCloseOutline size={20} />
   </div>
 );
 
 export const successToast = (message: string) => {
   toast(message, {
     type: "success",
-    className: css(toastBaseStyles, "!bg-green-600"),
+    className: css(toastBaseStyles, "!bg-slate-200", "!text-black"),
     icon: false,
     closeButton: <CloseButton />,
+    transition,
   });
 };
 
 export const errorToast = (message: string) => {
   toast(message, {
     type: "error",
-    className: css(toastBaseStyles, "!bg-red-600"),
+    className: css(toastBaseStyles, "!bg-red-800"),
     icon: false,
     closeButton: <CloseButton />,
+    transition,
   });
 };
 
@@ -35,6 +48,7 @@ export const warningToast = (message: string) => {
     className: css(toastBaseStyles, "!bg-yellow-600"),
     icon: false,
     closeButton: <CloseButton />,
+    transition,
   });
 };
 
@@ -56,6 +70,7 @@ export const debugToast = (message: string) => {
         ),
         icon: false,
         closeButton: <CloseButton />,
+        transition,
       }
     );
   }

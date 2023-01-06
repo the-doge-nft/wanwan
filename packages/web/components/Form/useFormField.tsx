@@ -5,7 +5,7 @@ import { composeValidators, required, ValidatorFunction } from "./validation";
 export const useFormField = (
   name: string,
   validate?: ValidatorFunction[] | ValidatorFunction,
-  initialValue: string | number = "",
+  defaultValue: string | number = "",
   isCheckbox: boolean = false
 ) => {
   const isRequired = Array.isArray(validate)
@@ -25,7 +25,8 @@ export const useFormField = (
 
   const { input, meta } = useField(name, {
     validate: validators,
-    initialValue: initialValue,
+    initialValue: defaultValue,
+    defaultValue: defaultValue,
     type: isCheckbox ? "checkbox" : "input",
     /*
             without below parse fn, empty string input's keys are removed from the form state,

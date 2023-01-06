@@ -50,7 +50,7 @@ export default function App({ Component, pageProps }: AppProps) {
           <Component {...pageProps} />
           <ToastContainer
             position={"bottom-right"}
-            autoClose={false}
+            autoClose={5000}
             hideProgressBar
           />
         </RainbowKitProvider>

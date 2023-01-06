@@ -18,6 +18,7 @@ interface ButtonProps {
   onClick?: () => void;
   type?: ButtonType;
   size?: ButtonSize;
+  submit?: boolean;
 }
 
 const buttonTypeStyles = {
@@ -37,11 +38,13 @@ const buttonSizeStyles = {
 const Button: React.FC<PropsWithChildren<ButtonProps>> = ({
   children,
   onClick,
+  submit,
   type = ButtonType.Primary,
   size = ButtonSize.sm,
 }) => {
   return (
     <button
+      type={submit ? "submit" : "button"}
       onClick={onClick}
       className={css(buttonTypeStyles[type], buttonSizeStyles[size])}
     >

@@ -3,10 +3,10 @@ import { useField } from "react-final-form";
 import { css } from "../../helpers/css";
 import { ValidatorFunction } from "./validation";
 
-export interface BaseInputProps {
+export interface BaseFormInputProps {
   name: string;
-  value: string | number;
-  onChange: (value: any) => void;
+  value?: string | number;
+  onChange?: (value: any) => void;
   label?: string;
   validate?: ValidatorFunction[] | ValidatorFunction;
   description?: string;
@@ -15,7 +15,7 @@ export interface BaseInputProps {
 export const BaseInvalidInputStyle = css("border-2", "border-red-700");
 
 interface FormControlProps
-  extends Pick<BaseInputProps, "label" | "name" | "description"> {
+  extends Pick<BaseFormInputProps, "label" | "name" | "description"> {
   children: any;
   isRequired: boolean;
 }
@@ -34,7 +34,11 @@ const FormControl = ({
   return (
     <div className={css("w-full")}>
       {label && (
-        <FormLabel isRequired={isRequired} isInvalid={isInvalid}>
+        <FormLabel
+          mb={!description}
+          isRequired={isRequired}
+          isInvalid={isInvalid}
+        >
           {label}
         </FormLabel>
       )}
@@ -50,12 +54,13 @@ const FormControl = ({
 };
 
 export const FormLabel: React.FC<
-  PropsWithChildren<{ isInvalid: boolean; isRequired: boolean }>
-> = ({ children, isInvalid, isRequired }) => {
+  PropsWithChildren<{ isInvalid: boolean; isRequired: boolean; mb?: boolean }>
+> = ({ children, isInvalid, isRequired, mb = true }) => {
   return (
     <div
-      className={css("mb-1", "text-neutral-400", {
+      className={css("text-xs", {
         flex: isRequired,
+        "mb-0.5": mb,
       })}
     >
       {isRequired && (
@@ -76,7 +81,7 @@ export const FormDescription: React.FC<PropsWithChildren<{}>> = ({
   children,
 }) => {
   return (
-    <div className={css("text-sm", "text-neutral-500", "mb-1")}>{children}</div>
+    <div className={css("text-xs", "text-slate-700", "mb-0.5")}>{children}</div>
   );
 };
 

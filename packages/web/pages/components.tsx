@@ -2,7 +2,10 @@ import { PropsWithChildren } from "react";
 import ButtonDemo from "../components/Button/Button.demo";
 import CodeDemo from "../components/Code/Code.demo";
 import DropdownDemo from "../components/Dropdown/Dropdown.demo";
+import FormDemo from "../components/Form/Form.demo";
+import InputDemo from "../components/Input/Input.demo";
 import PaneDemo from "../components/Pane/Pane.demo";
+import SpinnerDemo from "../components/Spinner/Spinner.demo";
 import ToastDemo from "../components/Toast/Toast.demo";
 import { css } from "../helpers/css";
 import AppLayout from "../layouts/App.layout";
@@ -19,12 +22,11 @@ export const SubComponent: React.FC<PropsWithChildren<{ title?: string }>> = ({
   );
 };
 
-export const Variant: React.FC<PropsWithChildren<{ title: string }>> = ({
-  title,
-  children,
-}) => {
+export const Variant: React.FC<
+  PropsWithChildren<{ title: string; block?: boolean; className?: string }>
+> = ({ title, children, block, className }) => {
   return (
-    <div>
+    <div className={css({ "w-full": block }, className)}>
       <div className={css("text-xs", "text-gray-600", "mb-1")}>v: {title}</div>
       {children}
     </div>
@@ -40,6 +42,9 @@ const Components = () => {
         <DropdownDemo />
         <CodeDemo />
         <ToastDemo />
+        <SpinnerDemo />
+        <InputDemo />
+        <FormDemo />
       </div>
     </AppLayout>
   );
