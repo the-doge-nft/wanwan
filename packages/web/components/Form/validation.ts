@@ -1,6 +1,8 @@
 import { FieldState } from "final-form";
 import { isValidHttpUrl } from "../../helpers/strings";
 
+export type Validator = ValidatorFunction[] | ValidatorFunction;
+
 export type ValidatorFunction = (
   value: any,
   allValues: Object,

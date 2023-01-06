@@ -22,14 +22,9 @@ const FormDemo = () => {
                   defaultValue={"test"}
                   label={"<text>"}
                 />
-                <NumberInput
-                  name={"number"}
-                  label={"<number>"}
-                  description={"description"}
-                />
+                <NumberInput name={"number"} label={"<number>"} />
                 <MediaInput
-                  label={"Media"}
-                  description={"description"}
+                  label={"<media>"}
                   name={"media"}
                   onDropAccepted={() => {}}
                 />

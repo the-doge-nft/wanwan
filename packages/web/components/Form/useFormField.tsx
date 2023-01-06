@@ -1,10 +1,10 @@
 import { useEffect } from "react";
 import { useField } from "react-final-form";
-import { composeValidators, required, ValidatorFunction } from "./validation";
+import { composeValidators, required, Validator } from "./validation";
 
 export const useFormField = (
   name: string,
-  validate?: ValidatorFunction[] | ValidatorFunction,
+  validate?: Validator,
   defaultValue: string | number = "",
   isCheckbox: boolean = false
 ) => {
