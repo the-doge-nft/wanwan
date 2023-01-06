@@ -3,8 +3,8 @@ import { css } from "../../helpers/css";
 import { jsonify } from "../../helpers/strings";
 import { SubComponent, Variant } from "../../pages/components";
 import Button from "../Button/Button";
-import Code from "../Code/Code";
 import Form from "./Form";
+import MediaInput from "./MediaInput";
 import NumberInput from "./NumberInput";
 import TextInput from "./TextInput";
 
@@ -16,18 +16,26 @@ const FormDemo = () => {
         <div className={css("grow", "shrink-0", "flex", "justify-center")}>
           <Variant title={"Uncontrolled"}>
             <Form onSubmit={async (values) => alert(jsonify(values))}>
-              <TextInput
-                name={"text"}
-                defaultValue={"test"}
-                label={"<text label>"}
-              />
-              <NumberInput
-                name={"number"}
-                label={"<number label>"}
-                description={"description"}
-              />
-              <div className={css("flex", "justify-center", "mt-4")}>
-                <Button submit>submit</Button>
+              <div className={css("flex", "flex-col", "gap-2")}>
+                <TextInput
+                  name={"text"}
+                  defaultValue={"test"}
+                  label={"<text>"}
+                />
+                <NumberInput
+                  name={"number"}
+                  label={"<number>"}
+                  description={"description"}
+                />
+                <MediaInput
+                  label={"Media"}
+                  description={"description"}
+                  name={"media"}
+                  onDropAccepted={() => {}}
+                />
+                <div className={css("flex", "justify-center", "mt-4")}>
+                  <Button submit>submit</Button>
+                </div>
               </div>
             </Form>
           </Variant>
@@ -44,7 +52,6 @@ const FormDemo = () => {
                 <Button submit>submit</Button>
               </div>
             </Form>
-            <Code className={css()}>{jsonify({ textInput })}</Code>
           </Variant>
         </div>
       </div>

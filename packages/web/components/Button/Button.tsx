@@ -4,6 +4,7 @@ import { useDisconnect } from "wagmi";
 import { css } from "../../helpers/css";
 import Dropdown from "../Dropdown/Dropdown";
 import Link from "../Link/Link";
+import Spinner from "../Spinner/Spinner";
 
 enum ButtonType {
   Primary = "primary",
@@ -19,6 +20,8 @@ interface ButtonProps {
   type?: ButtonType;
   size?: ButtonSize;
   submit?: boolean;
+  disabled?: boolean;
+  isLoading?: boolean;
 }
 
 const buttonTypeStyles = {
@@ -41,14 +44,38 @@ const Button: React.FC<PropsWithChildren<ButtonProps>> = ({
   submit,
   type = ButtonType.Primary,
   size = ButtonSize.sm,
+  disabled = false,
+  isLoading = false,
 }) => {
   return (
     <button
+      disabled={disabled || isLoading}
       type={submit ? "submit" : "button"}
       onClick={onClick}
-      className={css(buttonTypeStyles[type], buttonSizeStyles[size])}
+      className={css(
+        buttonTypeStyles[type],
+        buttonSizeStyles[size],
+        "relative",
+        "disabled:cursor-not-allowed"
+      )}
     >
       {children}
+      {isLoading && (
+        <div
+          className={css(
+            "absolute",
+            "w-full",
+            "h-full",
+            "inset-0",
+            "flex",
+            "items-center",
+            "justify-center",
+            "bg-gray-200"
+          )}
+        >
+          <Spinner />
+        </div>
+      )}
     </button>
   );
 };

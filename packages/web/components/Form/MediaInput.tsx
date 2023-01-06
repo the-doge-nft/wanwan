@@ -108,7 +108,7 @@ const MediaInput = observer(
             {...getRootProps()}
             style={{ minHeight }}
             className={css(
-              "border-2",
+              "border-[1px]",
               "border-dashed",
               "flex",
               "relative",
@@ -119,7 +119,7 @@ const MediaInput = observer(
               "p-7",
               {
                 "border-red-700": isError && !isDragActive,
-                "border-neutral-900": !isError && !isDragActive,
+                "border-slate-600": !isError && !isDragActive,
                 "border-neutral-600": isDragActive,
                 "cursor-pointer": !noClick,
                 "cursor-default": noClick,
@@ -136,7 +136,7 @@ const MediaInput = observer(
                   "text-neutral-700"
                 )}
               >
-                <div className={css("text-base")}>
+                <div className={css("text-sm")}>
                   accepted:{" "}
                   {objectKeys(acceptedMimeToExtensionMap).map(
                     (mime, index, arr) => {
@@ -150,16 +150,14 @@ const MediaInput = observer(
                     }
                   )}
                 </div>
-                <div className={css("mt-2", "text-base")}>
+                <div className={css("mt-0.5", "text-sm")}>
                   Max Size: {bytesToSize(MAX_SIZE_MEDIA_BYTES)}
                 </div>
-                <Button
-                  disabled={disabled}
-                  className={css("mt-5")}
-                  onClick={() => open()}
-                >
-                  Select File
-                </Button>
+                <div className={css("mt-5")}>
+                  <Button disabled={disabled} onClick={() => open()}>
+                    Select File
+                  </Button>
+                </div>
               </div>
             )}
             {value && (
