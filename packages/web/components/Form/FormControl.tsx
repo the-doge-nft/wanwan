@@ -12,7 +12,7 @@ export interface BaseFormInputProps {
   description?: string;
 }
 
-export const BaseInvalidInputStyle = css("border-2", "border-red-700");
+export const BaseInvalidInputStyle = css("border-2", "!border-red-700");
 
 interface FormControlProps
   extends Pick<BaseFormInputProps, "label" | "name" | "description"> {
@@ -65,7 +65,7 @@ export const FormLabel: React.FC<
     >
       {isRequired && (
         <span
-          className={css("mr-1", "text-sm", {
+          className={css("mr-0.5", "text-sm", {
             "text-red-500": isInvalid,
           })}
         >

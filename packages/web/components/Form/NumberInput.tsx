@@ -1,5 +1,9 @@
+import { css } from "../../helpers/css";
 import Input, { BaseInputProps } from "../Input/Input";
-import FormControl, { BaseFormInputProps } from "./FormControl";
+import FormControl, {
+  BaseFormInputProps,
+  BaseInvalidInputStyle,
+} from "./FormControl";
 import { useControlledFormField, useFormField } from "./useFormField";
 
 interface NumberInputProps
@@ -30,6 +34,9 @@ const NumberInput = ({
         {...rest}
         type={"number"}
         value={value}
+        className={css({
+          [BaseInvalidInputStyle]: meta.error && meta.touched,
+        })}
         onChange={(value) => {
           input.onChange(value);
           if (onChange) {

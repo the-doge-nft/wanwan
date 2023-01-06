@@ -7,6 +7,7 @@ import Form from "./Form";
 import MediaInput from "./MediaInput";
 import NumberInput from "./NumberInput";
 import TextInput from "./TextInput";
+import { required } from "./validation";
 
 const FormDemo = () => {
   const [textInput, setTextInput] = useState("");
@@ -18,15 +19,21 @@ const FormDemo = () => {
             <Form onSubmit={async (values) => alert(jsonify(values))}>
               <div className={css("flex", "flex-col", "gap-2")}>
                 <TextInput
+                  validate={required}
                   name={"text"}
                   defaultValue={"test"}
                   label={"<text>"}
                 />
-                <NumberInput name={"number"} label={"<number>"} />
+                <NumberInput
+                  validate={required}
+                  name={"number"}
+                  label={"<number>"}
+                />
                 <MediaInput
                   label={"<media>"}
                   name={"media"}
                   onDropAccepted={() => {}}
+                  validate={required}
                 />
                 <div className={css("flex", "justify-center", "mt-4")}>
                   <Button submit>submit</Button>

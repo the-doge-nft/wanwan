@@ -16,8 +16,10 @@ const toastBaseStyles = css(
   "border-black"
 );
 
-const CloseButton = () => (
-  <div className={css("text-black")}>
+const CloseButton: React.FC<{ color?: "black" | "white" }> = ({
+  color = "white",
+}) => (
+  <div className={css(`text-${color}`)}>
     <IoCloseOutline size={20} />
   </div>
 );
@@ -27,7 +29,7 @@ export const successToast = (message: string) => {
     type: "success",
     className: css(toastBaseStyles, "!bg-slate-200", "!text-black"),
     icon: false,
-    closeButton: <CloseButton />,
+    closeButton: <CloseButton color={"black"} />,
     transition,
   });
 };
