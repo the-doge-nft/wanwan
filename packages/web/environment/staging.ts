@@ -1,6 +1,6 @@
 import { Env } from ".";
 const env: Env = {
-  app: { name: "Staging Meme2Earn" },
+  app: { name: "[STAGING] Mank" },
   api: { baseUrl: "" },
 };
 

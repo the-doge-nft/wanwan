@@ -1,18 +1,31 @@
 import { GetServerSideProps } from "next";
+import { useRouter } from "next/router";
+import { useMemo } from "react";
+import { Submit } from "../../components/Button/Button";
 import Code from "../../components/Code/Code";
 import Dev from "../../components/Dev/Dev";
+import Form from "../../components/Form/Form";
+import MediaInput from "../../components/Form/MediaInput";
+import TextInput from "../../components/Form/TextInput";
+import { required } from "../../components/Form/validation";
 import Link from "../../components/Link/Link";
 import { css } from "../../helpers/css";
 import { abbreviate, getEtherscanURL } from "../../helpers/strings";
 import { ProfileI } from "../../interfaces";
 import AppLayout from "../../layouts/App.layout";
 import http from "../../services/http";
+import ProfileStore from "../../store/Profile.store";
 
 interface ProfileProps {
   profile: ProfileI;
 }
 
 const Profile: React.FC<ProfileProps> = ({ profile }) => {
+  const {
+    query: { addressOrEns },
+  } = useRouter();
+  console.log(addressOrEns);
+  const store = useMemo(() => new ProfileStore(), [addressOrEns]);
   return (
     <AppLayout>
       <div>
@@ -53,6 +66,17 @@ const Profile: React.FC<ProfileProps> = ({ profile }) => {
             </div>
           </div>
         </div>
+        <Form onSubmit={(values) => store.onMemeSubmit(values)}>
+          <TextInput name={"name"} label={"Name"} />
+          <TextInput name={"description"} label={"Description"} />
+          <MediaInput
+            name={"file"}
+            validate={required}
+            onDropAccepted={(file) => store.onFileDrop(file)}
+            onClear={() => store.onFileClear()}
+          />
+          <Submit />
+        </Form>
         <Dev>
           <Code className={css("mt-11")}>{JSON.stringify(profile)}</Code>
         </Dev>

@@ -18,7 +18,7 @@ export class MemeService {
   }
 
   private addExtra(item: MemeWithMedia) {
-    return { ...item };
+    return { ...item, media: this.media.addExtra(item.media) };
   }
 
   private addExtras(memes: Array<MemeWithMedia>) {

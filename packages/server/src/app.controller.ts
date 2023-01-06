@@ -80,7 +80,7 @@ export class AppController {
   }
 
   @Get('meme/:id')
-  getMemeById(@Param() { id }: IdDto) {
+  async getMemeById(@Param() { id }: IdDto) {
     return this.meme.findFirst({ where: { id } });
   }
 

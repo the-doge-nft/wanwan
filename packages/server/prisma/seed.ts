@@ -23,6 +23,10 @@ async function seedUsers() {
       address: '0x901e7cbA2605CD3C125dFeD78d139A26bEf23325',
       lastAuthedAt: new Date(),
     },
+    {
+      address: '0x23d52C74fe2969092d39A70af5Cf1b1a6fcB8264',
+      lastAuthedAt: new Date(),
+    },
   ];
   const dbUsers = [];
   for (const user of seedUsers) {
@@ -35,6 +39,33 @@ async function seedUsers() {
     );
   }
   return dbUsers;
+}
+
+async function seedMemes() {
+  console.log('🌱🌱🌱seeding memes🌱🌱🌱');
+  const users = await prisma.user.findMany();
+
+  const media: Prisma.MediaCreateArgs['data'] = {
+    width: 100,
+    height: 100,
+    filename: 'test',
+    filesize: 100,
+    s3BucketName: '',
+    createdById: users[0].id,
+  };
+
+  // const seedMemes: Prisma.MemeCreateInput[] = [
+  //   {
+  //     name: 'dope meme',
+  //     description: 'not a dope meme',
+  //   },
+  // ];
+  const dbMemes = [];
+  for (const user of users) {
+  }
+  // for (const meme of seedMemes) {
+  //   dbMemes.push(await prisma.meme.create({ data: meme }));
+  // }
 }
 
 async function seedCompetitions() {

@@ -14,7 +14,7 @@ export interface FileWithPreview extends File {
 }
 
 export interface MediaInputProps {
-  onDropAccepted: (file: File) => void;
+  onDropAccepted?: (file: File) => void;
   onClear?: () => void;
   renderIsDropActive?: () => React.ReactNode;
   validate?: Validator;
@@ -77,7 +77,9 @@ const MediaInput: React.FC<MediaInputProps> = ({
     }
     const file = files[0];
     setPreview(URL.createObjectURL(file));
-    onDropAccepted(file);
+    if (onDropAccepted) {
+      onDropAccepted(file);
+    }
   }, []);
 
   useEffect(() => {

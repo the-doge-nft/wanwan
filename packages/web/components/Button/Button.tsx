@@ -80,6 +80,10 @@ const Button: React.FC<PropsWithChildren<ButtonProps>> = ({
   );
 };
 
+export const Submit: React.FC<PropsWithChildren> = ({ children }) => {
+  return <Button submit>{children ? children : "Submit"}</Button>;
+};
+
 export const ConnectButton: React.FC<
   PropsWithChildren<{ type?: ButtonType }>
 > = ({ type = ButtonType.Primary }) => {

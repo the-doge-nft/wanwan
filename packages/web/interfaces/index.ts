@@ -49,6 +49,7 @@ export interface Media {
   s3BucketName: string;
   createdById: number;
   createdAt: DatetimeString;
+  url: string;
 }
 
 export interface Meme {

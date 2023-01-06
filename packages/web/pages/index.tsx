@@ -3,6 +3,7 @@ import { GetServerSideProps } from "next";
 import Head from "next/head";
 import Link from "../components/Link/Link";
 import Pane, { PaneType } from "../components/Pane/Pane";
+import env from "../environment";
 import { css } from "../helpers/css";
 import { Competition, Meme } from "../interfaces";
 import AppLayout from "../layouts/App.layout";
@@ -17,7 +18,7 @@ const Home: React.FC<HomeProps> = ({ competitions, memes }) => {
   return (
     <AppLayout>
       <Head>
-        <title>mank</title>
+        <title>{env.app.name}</title>
         <meta name="description" content="whatever" />
         <link rel="icon" href="/favicon.ico" />
       </Head>

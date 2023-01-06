@@ -1,3 +1,4 @@
+import env from "../../environment";
 import { css } from "../../helpers/css";
 import { ConnectButton } from "../Button/Button";
 import Link from "../Link/Link";
@@ -27,7 +28,7 @@ const Header = () => {
           "font-bold"
         )}
       >
-        meme2earn
+        {env.app.name}
       </div>
       <div>
         <ConnectButton />
