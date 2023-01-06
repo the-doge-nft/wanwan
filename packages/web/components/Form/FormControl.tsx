@@ -45,7 +45,7 @@ const FormControl = ({
       {description && <FormDescription>{description}</FormDescription>}
       {children}
       {isInvalid && (
-        <div className={css("text-red-500", "text-sm", "mt-1")}>
+        <div className={css("text-red-500", "text-xs", "mt-0.5")}>
           {meta.error}
         </div>
       )}
@@ -59,6 +59,7 @@ export const FormLabel: React.FC<
   return (
     <div
       className={css("text-xs", {
+        "text-red-500": isInvalid,
         flex: isRequired,
         "mb-0.5": mb,
       })}
