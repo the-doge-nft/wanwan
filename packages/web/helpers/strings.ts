@@ -14,3 +14,15 @@ export const getEtherscanURL = (address: string, type: "tx" | "address") => {
   }
   return link;
 };
+
+export const jsonify = (toString: any) => JSON.stringify(toString);
+
+export const isValidHttpUrl = (value: string) => {
+  let url;
+  try {
+    url = new URL(value);
+  } catch (_) {
+    return false;
+  }
+  return url.protocol === "http:" || url.protocol === "https:";
+};

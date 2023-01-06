@@ -1,12 +1,13 @@
 import { PropsWithChildren } from "react";
-import Button from "../components/Button/Button";
-import Code from "../components/Code/Code";
-import Dropdown from "../components/Dropdown/Dropdown";
-import Pane, { PaneType } from "../components/Pane/Pane";
+import ButtonDemo from "../components/Button/Button.demo";
+import CodeDemo from "../components/Code/Code.demo";
+import DropdownDemo from "../components/Dropdown/Dropdown.demo";
+import PaneDemo from "../components/Pane/Pane.demo";
+import ToastDemo from "../components/Toast/Toast.demo";
 import { css } from "../helpers/css";
 import AppLayout from "../layouts/App.layout";
 
-const SubComponent: React.FC<PropsWithChildren<{ title?: string }>> = ({
+export const SubComponent: React.FC<PropsWithChildren<{ title?: string }>> = ({
   children,
   title,
 }) => {
@@ -18,7 +19,7 @@ const SubComponent: React.FC<PropsWithChildren<{ title?: string }>> = ({
   );
 };
 
-const Variant: React.FC<PropsWithChildren<{ title: string }>> = ({
+export const Variant: React.FC<PropsWithChildren<{ title: string }>> = ({
   title,
   children,
 }) => {
@@ -34,46 +35,11 @@ const Components = () => {
   return (
     <AppLayout>
       <div className={css("flex", "flex-col", "gap-5")}>
-        <SubComponent title={"Button"}>
-          <Variant title={"Primary"}>
-            <Button onClick={() => alert("Check it out")}>Click me</Button>
-          </Variant>
-        </SubComponent>
-        <SubComponent title={"Pane"}>
-          <div className={css("flex", "flex-col", "gap-2")}>
-            <Variant title={"Primary"}>
-              <Pane title={"What is meme2earn?"}>😊😊😊</Pane>
-            </Variant>
-            <Variant title={"Secondary"}>
-              <Pane type={PaneType.Secondary} title={"Competitions"}>
-                🙁🙁🙁
-              </Pane>
-            </Variant>
-          </div>
-        </SubComponent>
-        <SubComponent title={"Dropdown"}>
-          <Dropdown trigger={<Button>Dropdown</Button>}>
-            <Dropdown.Item>1: Memes</Dropdown.Item>
-            <Dropdown.Item>2: Competitions</Dropdown.Item>
-            <Dropdown.Item>3: Rewards</Dropdown.Item>
-          </Dropdown>
-        </SubComponent>
-        <SubComponent title={"Code"}>
-          <Code>
-            {JSON.stringify({
-              media: { url: "https://here.com" },
-              name: "mank",
-              width: 100,
-              height: 150,
-              votes: [
-                {
-                  score: 1,
-                  address: "0xd801d86C10e2185a8FCBccFB7D7baF0A6C5B6BD5",
-                },
-              ],
-            })}
-          </Code>
-        </SubComponent>
+        <ButtonDemo />
+        <PaneDemo />
+        <DropdownDemo />
+        <CodeDemo />
+        <ToastDemo />
       </div>
     </AppLayout>
   );

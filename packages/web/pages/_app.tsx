@@ -7,6 +7,8 @@ import {
 import "@rainbow-me/rainbowkit/styles.css";
 import type { AppProps } from "next/app";
 import { useCallback, useEffect, useState } from "react";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { WagmiConfig } from "wagmi";
 import env from "../environment";
 import http from "../services/http";
@@ -46,6 +48,11 @@ export default function App({ Component, pageProps }: AppProps) {
           theme={theme}
         >
           <Component {...pageProps} />
+          <ToastContainer
+            position={"bottom-right"}
+            autoClose={false}
+            hideProgressBar
+          />
         </RainbowKitProvider>
       </RainbowKitAuthenticationProvider>
     </WagmiConfig>
