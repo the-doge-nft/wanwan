@@ -41,7 +41,7 @@ async function seedUsers() {
 }
 
 async function seedMemes() {
-  console.log('🌱🌱🌱seeding a meme for each user🌱🌱🌱');
+  console.log('🌱🌱🌱seeding memes🌱🌱🌱');
   const users = await prisma.user.findMany();
   if (users.length === 0) {
     throw new Error('Must seed users first.');
