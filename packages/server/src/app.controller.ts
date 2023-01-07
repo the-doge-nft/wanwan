@@ -76,7 +76,7 @@ export class AppController {
 
   @Get('meme')
   getMeme() {
-    return this.meme.findMany();
+    return this.meme.findMany({ orderBy: { createdAt: 'desc' } });
   }
 
   @Get('meme/:id')

@@ -1,12 +1,11 @@
 import { Prisma, PrismaClient } from '@prisma/client';
+import { getRandomIntInclusive } from '../src/helpers/numbers';
 
 const prisma = new PrismaClient();
 
 async function main() {
-  const users = await seedUsers();
-  console.log('users', users);
-  // const competitions = await seedCompetitions();
-  // console.log('competitions', competitions);
+  await seedUsers();
+  await seedMemes();
 }
 
 async function seedUsers() {
@@ -42,30 +41,48 @@ async function seedUsers() {
 }
 
 async function seedMemes() {
-  console.log('🌱🌱🌱seeding memes🌱🌱🌱');
+  console.log('🌱🌱🌱seeding a meme for each user🌱🌱🌱');
   const users = await prisma.user.findMany();
+  if (users.length === 0) {
+    throw new Error('Must seed users first.');
+  }
 
-  const media: Prisma.MediaCreateArgs['data'] = {
-    width: 100,
-    height: 100,
-    filename: 'test',
-    filesize: 100,
-    s3BucketName: '',
-    createdById: users[0].id,
-  };
+  const media: Omit<Prisma.MediaCreateArgs['data'], 'user'>[] = [
+    {
+      width: 160,
+      height: 160,
+      filename: '1-9abe42fb6870cc1de2d3b3fe8b6d5e70-2023-01-07.png',
+      filesize: 34574,
+      s3BucketName: 'dev-meme-media',
+    },
+    {
+      width: 1019,
+      height: 1080,
+      filename: '1-51dc414ddaf78cbd229dff1a8684504c-2023-01-07.jpg',
+      filesize: 128748,
+      s3BucketName: 'dev-meme-media',
+    },
+  ];
 
-  // const seedMemes: Prisma.MemeCreateInput[] = [
-  //   {
-  //     name: 'dope meme',
-  //     description: 'not a dope meme',
-  //   },
-  // ];
   const dbMemes = [];
   for (const user of users) {
+    const dbMedia = await prisma.media.create({
+      data: {
+        ...media[getRandomIntInclusive(0, media.length - 1)],
+        createdById: user.id as number,
+      },
+    });
+    dbMemes.push(
+      await prisma.meme.create({
+        data: {
+          name: 'A good meme',
+          description: 'Description of a good meme',
+          mediaId: dbMedia.id,
+          createdById: user.id,
+        },
+      }),
+    );
   }
-  // for (const meme of seedMemes) {
-  //   dbMemes.push(await prisma.meme.create({ data: meme }));
-  // }
 }
 
 async function seedCompetitions() {

@@ -18,6 +18,7 @@ export class MediaService {
   }
 
   private getS3Url(media: Media) {
+    // @next CDN
     // https://dev-meme-media.s3.us-east-2.amazonaws.com/1-0cd6cce944fddb2e285dca0acd8103c2-2023-01-06.jpeg
     return `https://${media.s3BucketName}.s3.${this.awsRegion}.amazonaws.com/${media.filename}`;
   }
@@ -51,12 +52,11 @@ export class MediaService {
       join(__dirname, '..', '..', '..', file.destination) + file.filename;
     const { width, height } = sizeOf(filePath);
 
-    const awsRes = await this.s3.putObject({
+    await this.s3.putObject({
       body: readFileSync(filePath),
       bucket,
       key: filename,
     });
-    this.logger.log(JSON.stringify(awsRes, undefined, 2));
 
     const media = await this.prisma.media.create({
       data: {
