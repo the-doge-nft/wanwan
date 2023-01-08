@@ -25,6 +25,7 @@ import { MemeDto } from './dto/meme.dto';
 import SubmissionDto from './dto/submission.dto';
 import VoteDto from './dto/vote.dto';
 import { AuthenticatedRequest } from './interface';
+import { MediaService } from './media/media.service';
 import { MemeService } from './meme/meme.service';
 import { ProfileService } from './profile/profile.service';
 import { SubmissionService } from './submission/submission.service';
@@ -56,6 +57,23 @@ export class AppController {
     return user;
   }
 
+  @Get('media/requirements')
+  getMediaRequirements() {
+    const mimeTypeToExtensionMap = {};
+    MediaService.supportedMedia.forEach((item) => {
+      const extension = item.extension;
+      if (Array.isArray(extension)) {
+        mimeTypeToExtensionMap[item.mimeType] = extension;
+      } else {
+        mimeTypeToExtensionMap[item.mimeType] = [extension];
+      }
+    });
+    return {
+      maxSizeBytes: MediaService.MAX_SIZE_MEDIA_BYTES,
+      mimeTypeToExtensionMap,
+    };
+  }
+
   @Post('meme')
   @UseGuards(AuthGuard)
   @UseInterceptors(
@@ -66,6 +84,7 @@ export class AppController {
   uploadFile(
     @Body() meme: MemeDto,
     @Req() { user }: AuthenticatedRequest,
+    // @next max size validator from MediaService.MAX_SIZE_MEDIA_BYTES
     @UploadedFile(
       new ParseFilePipe({ validators: [new MemeMediaFileValidator()] }),
     )

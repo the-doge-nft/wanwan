@@ -47,6 +47,7 @@ async function seedMemes() {
     throw new Error('Must seed users first.');
   }
 
+  // @next better media
   const media: Omit<Prisma.MediaCreateArgs['data'], 'user'>[] = [
     {
       width: 160,

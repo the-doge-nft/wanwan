@@ -70,3 +70,8 @@ export interface ProfileI {
   avatar: string;
   user: User;
 }
+
+export interface MediaRequirements {
+  maxSizeBytes: number;
+  mimeTypeToExtensionMap: { [key: string]: string[] };
+}

@@ -20,18 +20,13 @@ export interface MediaInputProps {
   validate?: Validator;
   disabled?: boolean;
   noClick?: boolean;
-
+  maxSizeBytes: number;
+  acceptedMimeToExtension: { [key: string]: string[] };
   name: string;
   description?: string;
   label?: string;
   value?: File | null;
 }
-
-export const MAX_SIZE_MEDIA_BYTES = 2097152;
-const acceptedMimeToExtensionMap = {
-  "image/jpeg": [".jpeg", ".jpg"],
-  "image/png": [".png"],
-};
 
 const MediaInput: React.FC<MediaInputProps> = ({
   onDropAccepted,
@@ -44,6 +39,8 @@ const MediaInput: React.FC<MediaInputProps> = ({
   label,
   noClick,
   value,
+  maxSizeBytes,
+  acceptedMimeToExtension,
 }) => {
   const [preview, setPreview] = useState<string | null>(null);
 
@@ -61,9 +58,7 @@ const MediaInput: React.FC<MediaInputProps> = ({
     fileRejections.forEach((file) => {
       file.errors.forEach((error) => {
         if (error.code === "file-too-large") {
-          errorToast(
-            `File must be smaller than ${bytesToSize(MAX_SIZE_MEDIA_BYTES)}`
-          );
+          errorToast(`File must be smaller than ${bytesToSize(maxSizeBytes)}`);
         } else {
           errorToast(error.message);
         }
@@ -90,9 +85,9 @@ const MediaInput: React.FC<MediaInputProps> = ({
     onDropRejected,
     maxFiles,
     onDropAccepted: _onDropAccepted,
-    maxSize: MAX_SIZE_MEDIA_BYTES,
+    maxSize: maxSizeBytes,
     disabled: disabled,
-    accept: acceptedMimeToExtensionMap,
+    accept: acceptedMimeToExtension,
     multiple: false,
     onDrop: onDrop,
     noClick: noClick,
@@ -155,20 +150,18 @@ const MediaInput: React.FC<MediaInputProps> = ({
               <div className={css("text-center")}>
                 <div className={css("text-xs")}>
                   accepted:{" "}
-                  {objectKeys(acceptedMimeToExtensionMap).map(
+                  {objectKeys(acceptedMimeToExtension).map(
                     (mime, index, arr) => {
                       if (index === arr.length - 1) {
-                        return (
-                          ", " + acceptedMimeToExtensionMap[mime].join(", ")
-                        );
+                        return ", " + acceptedMimeToExtension[mime].join(", ");
                       } else {
-                        return acceptedMimeToExtensionMap[mime].join(", ");
+                        return acceptedMimeToExtension[mime].join(", ");
                       }
                     }
                   )}
                 </div>
                 <div className={css("mt-0.5", "text-xs")}>
-                  Max Size: {bytesToSize(MAX_SIZE_MEDIA_BYTES)}
+                  Max Size: {bytesToSize(maxSizeBytes)}
                 </div>
               </div>
             </div>

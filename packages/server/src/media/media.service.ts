@@ -45,6 +45,8 @@ export class MediaService {
     { extension: '.svg', mimeType: 'image/svg+xml' },
   ];
 
+  static MAX_SIZE_MEDIA_BYTES = 2097152;
+
   async create(file: Express.Multer.File, createdById: number) {
     const bucket = this.config.get('aws').mediaBucketName;
     const filename = this.getFileName(file, createdById);
