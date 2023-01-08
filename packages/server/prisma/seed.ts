@@ -50,17 +50,31 @@ async function seedMemes() {
   // @next better media
   const media: Omit<Prisma.MediaCreateArgs['data'], 'user'>[] = [
     {
-      width: 160,
-      height: 160,
-      filename: '1-9abe42fb6870cc1de2d3b3fe8b6d5e70-2023-01-07.png',
-      filesize: 34574,
+      width: 400,
+      height: 300,
+      filename: '1-ebef25c1d2cbf497be192f7cbc2bb8bc-2023-01-08.gif',
+      filesize: 299380,
       s3BucketName: 'dev-meme-media',
     },
     {
-      width: 1019,
-      height: 1080,
-      filename: '1-51dc414ddaf78cbd229dff1a8684504c-2023-01-07.jpg',
-      filesize: 128748,
+      width: 945,
+      height: 862,
+      filename: '1-a2d8c31bc5eb0197467c195c0961577d-2023-01-08.jpeg',
+      filesize: 36527,
+      s3BucketName: 'dev-meme-media',
+    },
+    {
+      width: 1227,
+      height: 812,
+      filename: '1-d2efb3910860923a11690221eb236eb8-2023-01-08.jpg',
+      filesize: 90603,
+      s3BucketName: 'dev-meme-media',
+    },
+    {
+      width: 648,
+      height: 900,
+      filename: '1-57fe5ee999b91a92426b2cc80ac68825-2023-01-08.png',
+      filesize: 440559,
       s3BucketName: 'dev-meme-media',
     },
   ];
