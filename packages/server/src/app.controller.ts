@@ -4,6 +4,7 @@ import {
   Controller,
   Get,
   Logger,
+  MaxFileSizeValidator,
   Param,
   ParseFilePipe,
   Post,
@@ -84,9 +85,15 @@ export class AppController {
   uploadFile(
     @Body() meme: MemeDto,
     @Req() { user }: AuthenticatedRequest,
-    // @next max size validator from MediaService.MAX_SIZE_MEDIA_BYTES
     @UploadedFile(
-      new ParseFilePipe({ validators: [new MemeMediaFileValidator()] }),
+      new ParseFilePipe({
+        validators: [
+          new MemeMediaFileValidator(),
+          new MaxFileSizeValidator({
+            maxSize: MediaService.MAX_SIZE_MEDIA_BYTES,
+          }),
+        ],
+      }),
     )
     file: Express.Multer.File,
   ) {
