@@ -10,7 +10,7 @@ interface LinkProps {
   type?: LinkType;
   size?: LinkSize;
   onClick?: () => void;
-  block?: boolean;
+  className?: string;
 }
 
 const Link: React.FC<LinkProps> = ({
@@ -20,13 +20,13 @@ const Link: React.FC<LinkProps> = ({
   type = LinkType.Primary,
   size = LinkSize.sm,
   onClick,
-  block = false,
+  className,
 }: LinkProps) => {
   const styles = css(
     linkTypeStyles[type],
     linkSizeStyles[size],
     "inline-block",
-    { "w-full": block, "inline-flex": !block }
+    className
   );
 
   return (

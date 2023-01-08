@@ -5,7 +5,7 @@ import { useCallback } from "react";
 import AsyncWrap from "../components/dsl/AsyncWrap/AsyncWrap";
 import Link from "../components/dsl/Link/Link";
 import Pane, { PaneType } from "../components/dsl/Pane/Pane";
-import MemePreview from "../components/MemePreview/MemePreview";
+import MemeLink from "../components/MemeLink/MemeLink";
 import env from "../environment";
 import { css } from "../helpers/css";
 import { Competition, Meme } from "../interfaces";
@@ -35,7 +35,7 @@ const Home: React.FC<HomeProps> = ({ competitions, memes }) => {
       </Head>
       <main className={css()}>
         <div className={css("flex", "flex-col", "gap-4")}>
-          <Pane title={"Competitions"}>
+          <Pane title={"competitions"}>
             <div className={css("flex", "flex-col", "gap-4")}>
               <AsyncWrap
                 isLoading={false}
@@ -48,7 +48,7 @@ const Home: React.FC<HomeProps> = ({ competitions, memes }) => {
               </AsyncWrap>
             </div>
           </Pane>
-          <Pane title={"Recent"} type={PaneType.Secondary}>
+          <Pane title={"recent memes"} type={PaneType.Secondary}>
             <div
               className={css("grid", "grid-rows-[min-content]", "gap-4", "p-2")}
               style={{
@@ -61,9 +61,7 @@ const Home: React.FC<HomeProps> = ({ competitions, memes }) => {
                 renderNoData={() => renderNoDataFound("memes")}
               >
                 {memes.map((meme) => (
-                  <Link key={`meme-${meme.id}`} href={`/meme/${meme.id}`} block>
-                    <MemePreview {...meme} />
-                  </Link>
+                  <MemeLink key={`meme-${meme.id}`} {...meme} />
                 ))}
               </AsyncWrap>
             </div>

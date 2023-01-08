@@ -1,18 +1,33 @@
+import { css } from "../../../helpers/css";
 import { Demo } from "../Demo";
+import { Variant } from "../Variant";
 import AspectRatio from "./AspectRatio";
 
 const AspectRatioDemo = () => {
   return (
     <Demo title="AspectRatio">
-      <AspectRatio
-        ratio={0.75}
-        style={{
-          maxWidth: "300px",
-          backgroundImage:
-            "url(https://c1.staticflickr.com/4/3896/14550191836_cc0675d906.jpg)",
-          backgroundSize: "cover",
-        }}
-      />
+      <div className={css("flex")}>
+        <Variant title={"3:4"} className={css("grow")}>
+          <AspectRatio
+            ratio={0.75}
+            style={{
+              backgroundImage:
+                "url(https://c1.staticflickr.com/4/3896/14550191836_cc0675d906.jpg)",
+            }}
+            className={css("max-w-[300px]", "bg-cover", "bg-no-repeat")}
+          />
+        </Variant>
+        <Variant title={"3:4"} className={css("grow")}>
+          <AspectRatio
+            ratio={0.75}
+            className={css("max-w-[300px]", "bg-cover", "bg-no-repeat")}
+            style={{
+              backgroundImage:
+                "url(https://c1.staticflickr.com/4/3896/14550191836_cc0675d906.jpg)",
+            }}
+          />
+        </Variant>
+      </div>
     </Demo>
   );
 };

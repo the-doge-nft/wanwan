@@ -54,6 +54,7 @@ const Profile: React.FC<ProfileProps> = ({ profile }) => {
                 <Link
                   isExternal
                   href={getEtherscanURL(profile.address, "address")}
+                  className={css("inline-flex")}
                 >
                   {abbreviate(profile.address)}
                 </Link>
