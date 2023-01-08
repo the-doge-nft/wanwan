@@ -34,6 +34,8 @@ const FormDemo = () => {
                   name={"media"}
                   onDropAccepted={() => {}}
                   validate={required}
+                  maxSizeBytes={1000000}
+                  acceptedMimeToExtension={{ "image/jpg": [".jpg"] }}
                 />
                 <div className={css("flex", "justify-center", "mt-4")}>
                   <Button submit>submit</Button>

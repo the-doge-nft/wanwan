@@ -66,7 +66,7 @@ const Item: React.FC<PropsWithChildren<ItemProps>> = ({
 }) => {
   return (
     <RadixDropdown.Item
-      className={css(className, "outline-0")}
+      className={css(className, "outline-0", "text-sm")}
       style={{ boxShadow: "none" }}
     >
       {children}

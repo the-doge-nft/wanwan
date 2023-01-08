@@ -1,4 +1,6 @@
 import { PropsWithChildren } from "react";
+import AsyncListWrapDemo from "../components/AsyncListWrap/AsyncListWrap.demo";
+import AsyncWrapDemo from "../components/AsyncWrap/AsyncWrap.demo";
 import ButtonDemo from "../components/Button/Button.demo";
 import CodeDemo from "../components/Code/Code.demo";
 import DropdownDemo from "../components/Dropdown/Dropdown.demo";
@@ -45,6 +47,8 @@ const Components = () => {
         <SpinnerDemo />
         <InputDemo />
         <FormDemo />
+        <AsyncWrapDemo />
+        <AsyncListWrapDemo />
       </div>
     </AppLayout>
   );

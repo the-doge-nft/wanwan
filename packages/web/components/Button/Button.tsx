@@ -34,7 +34,7 @@ const buttonTypeStyles = {
 };
 
 const buttonSizeStyles = {
-  [ButtonSize.sm]: css("p-0.5", "px-1", "rounded-sm", "text-base"),
+  [ButtonSize.sm]: css("p-0.5", "px-1", "rounded-sm", "text-sm"),
   [ButtonSize.lg]: css("p-3"),
 };
 
@@ -56,7 +56,8 @@ const Button: React.FC<PropsWithChildren<ButtonProps>> = ({
         buttonTypeStyles[type],
         buttonSizeStyles[size],
         "relative",
-        "disabled:cursor-not-allowed"
+        "disabled:cursor-not-allowed",
+        "outline-0"
       )}
     >
       {children}
