@@ -6,6 +6,7 @@ import ButtonDemo from "../components/Button/Button.demo";
 import CodeDemo from "../components/Code/Code.demo";
 import DropdownDemo from "../components/Dropdown/Dropdown.demo";
 import FormDemo from "../components/Form/Form.demo";
+import InfiniteScrollDemo from "../components/InfiniteScroll/InfiniteScroll.demo";
 import InputDemo from "../components/Input/Input.demo";
 import PaneDemo from "../components/Pane/Pane.demo";
 import SpinnerDemo from "../components/Spinner/Spinner.demo";
@@ -51,6 +52,7 @@ const Components = () => {
         <AsyncWrapDemo />
         <AsyncListWrapDemo />
         <AccordionDemo />
+        <InfiniteScrollDemo />
       </div>
     </AppLayout>
   );

@@ -15,6 +15,7 @@ specifiers:
   eslint-config-next: 13.0.5
   ethers: ^5.7.2
   final-form: ^4.20.7
+  lodash: ^4.17.21
   mobx: ^6.7.0
   mobx-react-lite: ^3.4.0
   next: 13.0.5
@@ -46,6 +47,7 @@ dependencies:
   eslint-config-next: 13.0.5_hsf322ms6xhhd4b5ne6lb74y4a
   ethers: 5.7.2
   final-form: 4.20.7
+  lodash: 4.17.21
   mobx: 6.7.0
   mobx-react-lite: 3.4.0_jofyzmwkboewm6mjrhi25mngky
   next: 13.0.5_biqbaboplfbrettd7655fr4n2y
