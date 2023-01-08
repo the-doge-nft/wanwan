@@ -1,4 +1,4 @@
-import Link from "../components/Link/Link";
+import Link from "../components/dsl/Link/Link";
 import { css } from "../helpers/css";
 import AppLayout from "../layouts/App.layout";
 

@@ -1,5 +1,5 @@
 import { GetServerSideProps } from "next";
-import Code from "../../components/Code/Code";
+import Code from "../../components/dsl/Code/Code";
 import { css } from "../../helpers/css";
 import { jsonify } from "../../helpers/strings";
 import { Meme } from "../../interfaces";

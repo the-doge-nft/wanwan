@@ -1,11 +1,11 @@
 import { observer } from "mobx-react-lite";
 import { useEffect, useMemo } from "react";
 import CreateMemeStore from "../../store/CreateMeme.store";
-import { Submit } from "../Button/Button";
-import Form from "../Form/Form";
-import MediaInput from "../Form/MediaInput";
-import TextInput from "../Form/TextInput";
-import { required } from "../Form/validation";
+import { Submit } from "../dsl/Button/Button";
+import Form from "../DSL/Form/Form";
+import MediaInput from "../DSL/Form/MediaInput";
+import TextInput from "../DSL/Form/TextInput";
+import { required } from "../dsl/Form/validation";
 
 const CreateMeme = observer(() => {
   const store = useMemo(() => new CreateMemeStore(), []);

@@ -1,10 +1,10 @@
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 import { useMemo } from "react";
-import Code from "../../components/Code/Code";
 import CreateMeme from "../../components/CreateMeme/CreateMeme";
-import Dev from "../../components/Dev/Dev";
-import Link from "../../components/Link/Link";
+import Code from "../../components/dsl/Code/Code";
+import Dev from "../../components/dsl/Dev/Dev";
+import Link from "../../components/dsl/Link/Link";
 import { css } from "../../helpers/css";
 import { abbreviate, getEtherscanURL } from "../../helpers/strings";
 import { ProfileI } from "../../interfaces";
