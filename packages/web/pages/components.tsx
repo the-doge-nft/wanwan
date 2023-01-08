@@ -1,5 +1,6 @@
 import { PropsWithChildren } from "react";
 import AccordionDemo from "../components/Accordion/Accordion.demo";
+import AspectRatioDemo from "../components/AspectRatio/AspectRatio.demo";
 import AsyncListWrapDemo from "../components/AsyncListWrap/AsyncListWrap.demo";
 import AsyncWrapDemo from "../components/AsyncWrap/AsyncWrap.demo";
 import ButtonDemo from "../components/Button/Button.demo";
@@ -53,6 +54,7 @@ const Components = () => {
         <AsyncListWrapDemo />
         <AccordionDemo />
         <InfiniteScrollDemo />
+        <AspectRatioDemo />
       </div>
     </AppLayout>
   );

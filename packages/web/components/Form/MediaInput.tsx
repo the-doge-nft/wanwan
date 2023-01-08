@@ -67,6 +67,7 @@ const MediaInput: React.FC<MediaInputProps> = ({
   }, []);
 
   const _onDropAccepted = useCallback((files: File[]) => {
+    console.log("on drop accepted", files);
     if (files.length > maxFiles) {
       throw Error("Only 1 file is allowed");
     }

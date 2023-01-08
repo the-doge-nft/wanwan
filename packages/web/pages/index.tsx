@@ -1,6 +1,9 @@
 import "@rainbow-me/rainbowkit/styles.css";
 import { GetServerSideProps } from "next";
 import Head from "next/head";
+import { useCallback } from "react";
+import AspectRatio from "../components/AspectRatio/AspectRatio";
+import AsyncWrap from "../components/AsyncWrap/AsyncWrap";
 import Link from "../components/Link/Link";
 import Pane, { PaneType } from "../components/Pane/Pane";
 import env from "../environment";
@@ -15,6 +18,14 @@ interface HomeProps {
 }
 
 const Home: React.FC<HomeProps> = ({ competitions, memes }) => {
+  const renderNoDataFound = useCallback(
+    (whatWasNotFound: string) => (
+      <div className={css("text-xs", "py-8", "text-center", "text-slate-500")}>
+        No {whatWasNotFound}
+      </div>
+    ),
+    []
+  );
   return (
     <AppLayout>
       <Head>
@@ -26,16 +37,28 @@ const Home: React.FC<HomeProps> = ({ competitions, memes }) => {
         <div className={css("flex", "flex-col", "gap-4")}>
           <Pane title={"Competitions"}>
             <div className={css("flex", "flex-col", "gap-4")}>
-              {competitions.map((comp) => (
-                <CompetitionLink key={`competition-${comp.id}`} {...comp} />
-              ))}
+              <AsyncWrap
+                isLoading={false}
+                hasData={competitions.length > 0}
+                renderNoData={() => renderNoDataFound("competitions")}
+              >
+                {competitions.map((comp) => (
+                  <CompetitionLink key={`competition-${comp.id}`} {...comp} />
+                ))}
+              </AsyncWrap>
             </div>
           </Pane>
           <Pane title={"Recent"} type={PaneType.Secondary}>
             <div className={css("flex", "flex-col", "gap-4")}>
-              {memes.map((item) => (
-                <MemeLink key={`meme-${item.id}`} {...item} />
-              ))}
+              <AsyncWrap
+                isLoading={false}
+                hasData={memes.length > 0}
+                renderNoData={() => renderNoDataFound("memes")}
+              >
+                {memes.map((item) => (
+                  <MemeLink key={`meme-${item.id}`} {...item} />
+                ))}
+              </AsyncWrap>
             </div>
           </Pane>
         </div>
@@ -66,8 +89,22 @@ const CompetitionLink: React.FC<Competition> = ({ ...competition }) => {
 const MemeLink: React.FC<Meme> = ({ ...meme }) => {
   return (
     <Link href={`/meme/${meme.id}`}>
-      <div className={css("break-words", "text-xs")}>
-        {JSON.stringify(meme)}
+      <div className={css("flex", "flex-col")}>
+        <AspectRatio
+          className={css(
+            "max-w-[300px]",
+            "bg-contain",
+            "bg-center",
+            "bg-no-repeat"
+          )}
+          ratio={`${meme.media.width}/${meme.media.height}`}
+          style={{
+            backgroundImage: `url(${meme.media.url})`,
+          }}
+        />
+        <div className={css("break-words", "text-xs")}>
+          {JSON.stringify(meme)}
+        </div>
       </div>
     </Link>
   );
