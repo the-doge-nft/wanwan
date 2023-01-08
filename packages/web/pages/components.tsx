@@ -1,4 +1,5 @@
 import { PropsWithChildren } from "react";
+import AccordionDemo from "../components/Accordion/Accordion.demo";
 import AsyncListWrapDemo from "../components/AsyncListWrap/AsyncListWrap.demo";
 import AsyncWrapDemo from "../components/AsyncWrap/AsyncWrap.demo";
 import ButtonDemo from "../components/Button/Button.demo";
@@ -49,6 +50,7 @@ const Components = () => {
         <FormDemo />
         <AsyncWrapDemo />
         <AsyncListWrapDemo />
+        <AccordionDemo />
       </div>
     </AppLayout>
   );
