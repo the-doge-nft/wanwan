@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { useMemo } from "react";
 import CreateMeme from "../../components/CreateMeme/CreateMeme";
 import Code from "../../components/dsl/Code/Code";
-import Dev from "../../components/dsl/Dev/Dev";
+import { DevToggle } from "../../components/dsl/Dev/Dev";
 import Link from "../../components/dsl/Link/Link";
 import { css } from "../../helpers/css";
 import { abbreviate, getEtherscanURL } from "../../helpers/strings";
@@ -63,9 +63,9 @@ const Profile: React.FC<ProfileProps> = ({ profile }) => {
           </div>
         </div>
         <CreateMeme />
-        <Dev>
+        <DevToggle>
           <Code className={css("mt-11")}>{JSON.stringify(profile)}</Code>
-        </Dev>
+        </DevToggle>
       </div>
     </AppLayout>
   );

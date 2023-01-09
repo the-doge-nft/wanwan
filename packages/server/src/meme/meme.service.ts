@@ -14,6 +14,7 @@ export class MemeService {
   private get defaultInclude() {
     return {
       media: true,
+      user: true,
     };
   }
 

@@ -62,6 +62,7 @@ export interface Meme {
   createdById: number;
   mediaId: number;
   media: Media;
+  user: User;
 }
 
 export interface ProfileI {
@@ -74,4 +75,16 @@ export interface ProfileI {
 export interface MediaRequirements {
   maxSizeBytes: number;
   mimeTypeToExtensionMap: { [key: string]: string[] };
+}
+
+export interface Comment {
+  body: string;
+  createdAt: DatetimeString;
+  createdById: number;
+  deletedAt: DatetimeString | null;
+  id: number;
+  memeId: number;
+  parentCommentId: number | null;
+  updatedAt: DatetimeString;
+  user: User;
 }

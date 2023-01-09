@@ -30,7 +30,7 @@ const Header = () => {
       >
         {env.app.name}
       </div>
-      <div>
+      <div className={css("z-10")}>
         <ConnectButton />
       </div>
     </div>
