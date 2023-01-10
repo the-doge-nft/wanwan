@@ -2,7 +2,7 @@ import DSLPage from "../components/DSL/DSL.page";
 import { css } from "../helpers/css";
 import AppLayout from "../layouts/App.layout";
 
-const Components = () => {
+const DSL = () => {
   return (
     <AppLayout>
       <div className={css("flex", "flex-col", "gap-5")}>
@@ -12,4 +12,4 @@ const Components = () => {
   );
 };
 
-export default Components;
+export default DSL;

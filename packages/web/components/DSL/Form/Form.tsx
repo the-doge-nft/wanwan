@@ -9,11 +9,13 @@ import { DevToggle } from "../Dev/Dev";
 
 interface FormProps {
   onSubmit: (data: Record<string, any>, form: FormApi) => Promise<any>;
+  className?: string;
 }
 
 const Form: React.FC<PropsWithChildren<FormProps>> = ({
   children,
   onSubmit,
+  className,
 }) => {
   // @next add error middleware in axios http helper
   const apiErrorMiddleware = (data: Record<string, any>, form: FormApi) => {
@@ -34,7 +36,9 @@ const Form: React.FC<PropsWithChildren<FormProps>> = ({
       render={({ handleSubmit, values, errors }) => {
         return (
           <>
-            <form onSubmit={handleSubmit}>{children}</form>
+            <form className={className} onSubmit={handleSubmit}>
+              {children}
+            </form>
             <DevToggle>
               <div>
                 <div>values</div>

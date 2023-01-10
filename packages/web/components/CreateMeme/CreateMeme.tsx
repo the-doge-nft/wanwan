@@ -1,5 +1,6 @@
 import { observer } from "mobx-react-lite";
 import { useEffect, useMemo } from "react";
+import { css } from "../../helpers/css";
 import CreateMemeStore from "../../store/CreateMeme.store";
 import { Submit } from "../dsl/Button/Button";
 import Form from "../DSL/Form/Form";
@@ -13,7 +14,11 @@ const CreateMeme = observer(() => {
     store.init();
   }, []);
   return (
-    <Form onSubmit={(values) => store.onMemeSubmit(values)}>
+    <Form
+      onSubmit={(values) => store.onMemeSubmit(values)}
+      className={css("border-[1px]", "border-slate-500", "p-2")}
+    >
+      <div>Create meme</div>
       <TextInput name={"name"} label={"Name"} />
       <TextInput name={"description"} label={"Description"} />
       {store.mimeTypeToExtension && (

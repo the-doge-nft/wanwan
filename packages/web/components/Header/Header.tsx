@@ -5,7 +5,7 @@ import Link from "../dsl/Link/Link";
 
 const navItems = [
   { name: "home", link: "/" },
-  { name: "dsl", link: "/components" },
+  { name: "dsl", link: "/dsl" },
 ];
 
 const Header = () => {

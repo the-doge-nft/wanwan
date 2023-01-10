@@ -126,9 +126,9 @@ model Comment {
   user            User      @relation(fields: [createdById], references: [id])
   memeId          Int
   meme            Meme      @relation(fields: [memeId], references: [id])
-  parentCommentId Int?      @unique
+  parentCommentId Int?
   parent          Comment?  @relation("CommentHistory", fields: [parentCommentId], references: [id])
-  child           Comment?  @relation("CommentHistory")
+  child           Comment[] @relation("CommentHistory")
 }
 
 enum TokenType {

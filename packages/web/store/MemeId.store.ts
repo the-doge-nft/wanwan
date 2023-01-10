@@ -19,14 +19,13 @@ export default class MemeIdStore {
     this.comments = data;
   }
 
-  async onCommentSubmit({
-    parentCommentId,
-    body,
-  }: {
-    parentCommentId: number;
-    body: string;
-  }) {
+  async onCommentSubmit(body: string) {
     await http.post(`/meme/${this.id}/comment`, { body });
+    this.getComments();
+  }
+
+  async onParentCommentSubmit(body: string, parentCommentId: number) {
+    await http.post(`/meme/${this.id}/comment`, { parentCommentId, body });
     this.getComments();
   }
 }
