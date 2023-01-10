@@ -10,7 +10,7 @@ enum ButtonType {
   Primary = "primary",
 }
 
-enum ButtonSize {
+export enum ButtonSize {
   sm = "small",
   lg = "large",
 }
@@ -34,8 +34,8 @@ const buttonTypeStyles = {
 };
 
 const buttonSizeStyles = {
-  [ButtonSize.sm]: css("p-0.5", "px-1", "rounded-sm", "text-sm"),
-  [ButtonSize.lg]: css("p-3"),
+  [ButtonSize.sm]: css("py-0.5", "px-1", "rounded-sm", "text-sm"),
+  [ButtonSize.lg]: css("px-2", "py-1", "rounded-sm"),
 };
 
 const Button: React.FC<PropsWithChildren<ButtonProps>> = ({
@@ -86,8 +86,10 @@ export const Submit: React.FC<PropsWithChildren> = ({ children }) => {
 };
 
 export const ConnectButton: React.FC<
-  PropsWithChildren<{ type?: ButtonType }>
-> = ({ type = ButtonType.Primary }) => {
+  PropsWithChildren<
+    Pick<ButtonProps, "type" | "size"> & { onConnectClick?: () => void }
+  >
+> = ({ type = ButtonType.Primary, size = ButtonSize.sm, onConnectClick }) => {
   const { disconnect } = useDisconnect();
   const [isDropDownOpen, setIsDropDownOpen] = useState(false);
   return (
@@ -121,7 +123,14 @@ export const ConnectButton: React.FC<
               {(() => {
                 if (shouldRenderConnect) {
                   return (
-                    <Button type={type} onClick={openConnectModal}>
+                    <Button
+                      size={size}
+                      type={type}
+                      onClick={() => {
+                        openConnectModal();
+                        onConnectClick && onConnectClick();
+                      }}
+                    >
                       connect
                     </Button>
                   );
@@ -129,7 +138,7 @@ export const ConnectButton: React.FC<
 
                 if (chain.unsupported) {
                   return (
-                    <Button type={type} onClick={openChainModal}>
+                    <Button size={size} type={type} onClick={openChainModal}>
                       Wrong network
                     </Button>
                   );

@@ -10,6 +10,7 @@ import { useEffect } from "react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { WagmiConfig } from "wagmi";
+import Modals from "../components/Modals/Modals";
 import env from "../environment";
 import { chains, client, createRainbowAuthAdapter } from "../services/wagmi";
 import AppStore from "../store/App.store";
@@ -40,6 +41,7 @@ const App = observer(({ Component, pageProps }: AppProps) => {
             autoClose={5000}
             hideProgressBar
           />
+          <Modals />
         </RainbowKitProvider>
       </RainbowKitAuthenticationProvider>
     </WagmiConfig>

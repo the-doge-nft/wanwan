@@ -1,6 +1,7 @@
 import { makeObservable, observable } from "mobx";
 import { Comment } from "../interfaces";
 import http from "../services/http";
+import AppStore from "./App.store";
 
 export default class MemeIdStore {
   @observable
@@ -20,12 +21,16 @@ export default class MemeIdStore {
   }
 
   async onCommentSubmit(body: string) {
-    await http.post(`/meme/${this.id}/comment`, { body });
-    this.getComments();
+    return AppStore.auth.runOrAuthPrompt(async () => {
+      await http.post(`/meme/${this.id}/comment`, { body });
+      this.getComments();
+    });
   }
 
   async onParentCommentSubmit(body: string, parentCommentId: number) {
-    await http.post(`/meme/${this.id}/comment`, { parentCommentId, body });
-    this.getComments();
+    return AppStore.auth.runOrAuthPrompt(async () => {
+      await http.post(`/meme/${this.id}/comment`, { parentCommentId, body });
+      this.getComments();
+    });
   }
 }

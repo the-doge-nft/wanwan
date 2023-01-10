@@ -8,6 +8,7 @@ import DropdownDemo from "./Dropdown/Dropdown.demo";
 import FormDemo from "./Form/Form.demo";
 import InfiniteScrollDemo from "./InfiniteScroll/InfiniteScroll.demo";
 import InputDemo from "./Input/Input.demo";
+import ModalDemo from "./Modal/Modal.demo";
 import PaneDemo from "./Pane/Pane.demo";
 import SpinnerDemo from "./Spinner/Spinner.demo";
 import ToastDemo from "./Toast/Toast.demo";
@@ -28,6 +29,7 @@ const DSLPage = () => {
       <AccordionDemo />
       <InfiniteScrollDemo />
       <AspectRatioDemo />
+      <ModalDemo />
     </>
   );
 };

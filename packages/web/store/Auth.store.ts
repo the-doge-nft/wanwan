@@ -1,6 +1,7 @@
 import { AuthenticationStatus } from "@rainbow-me/rainbowkit";
 import { makeObservable, observable } from "mobx";
 import http from "../services/http";
+import AppStore from "./App.store";
 
 export default class AuthStore {
   @observable
@@ -24,5 +25,13 @@ export default class AuthStore {
         console.error(e);
         this.status = "unauthenticated";
       });
+  }
+
+  runOrAuthPrompt(fn: () => void) {
+    if (this.status === "authenticated") {
+      fn();
+    } else {
+      AppStore.modals.isAuthModalOpen = true;
+    }
   }
 }
