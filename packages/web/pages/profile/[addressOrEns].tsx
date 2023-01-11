@@ -69,6 +69,13 @@ const Profile: React.FC<ProfileProps> = ({ profile }) => {
           >
             + Meme
           </Button>
+          <Button
+            onClick={() =>
+              (AppStore.modals.isCreateCompetitionModalOpen = true)
+            }
+          >
+            + Competition
+          </Button>
         </div>
         <DevToggle>
           <Code className={css("mt-11")}>{JSON.stringify(profile)}</Code>

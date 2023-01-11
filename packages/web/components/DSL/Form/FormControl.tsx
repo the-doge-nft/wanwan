@@ -13,7 +13,7 @@ export interface BaseFormInputProps {
 }
 
 export const BaseInvalidInputStyle = css("border-2", "!border-red-700");
-
+const errorTextCss = css("text-red-500");
 interface FormControlProps
   extends Pick<BaseFormInputProps, "label" | "name" | "description"> {
   children: any;
@@ -42,10 +42,12 @@ const FormControl = ({
           {label}
         </FormLabel>
       )}
-      {description && <FormDescription>{description}</FormDescription>}
+      {description && (
+        <FormDescription isInvalid={isInvalid}>{description}</FormDescription>
+      )}
       {children}
       {isInvalid && (
-        <div className={css("text-red-500", "text-xs", "mt-0.5")}>
+        <div className={css(errorTextCss, "text-xs", "mt-0.5")}>
           {meta.error}
         </div>
       )}
@@ -58,31 +60,30 @@ export const FormLabel: React.FC<
 > = ({ children, isInvalid, isRequired, mb = true }) => {
   return (
     <div
-      className={css("text-xs", {
-        "text-red-500": isInvalid,
+      className={css("text-xs", "text-black", {
+        [errorTextCss]: isInvalid,
         flex: isRequired,
         "mb-0.5": mb,
       })}
     >
-      {isRequired && (
-        <span
-          className={css("mr-0.5", "text-sm", {
-            "text-red-500": isInvalid,
-          })}
-        >
-          *
-        </span>
-      )}
+      {isRequired && "*"}
       {children}
     </div>
   );
 };
 
-export const FormDescription: React.FC<PropsWithChildren<{}>> = ({
-  children,
-}) => {
+export const FormDescription: React.FC<
+  PropsWithChildren<{ isInvalid?: boolean }>
+> = ({ children, isInvalid }) => {
   return (
-    <div className={css("text-xs", "text-slate-700", "mb-0.5")}>{children}</div>
+    <div
+      className={css("text-xs", "mb-0.5", "italic", {
+        "text-red-400": isInvalid,
+        "text-slate-800": !isInvalid,
+      })}
+    >
+      {children}
+    </div>
   );
 };
 

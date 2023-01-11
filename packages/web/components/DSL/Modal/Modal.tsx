@@ -30,7 +30,7 @@ const Modal: React.FC<PropsWithChildren<ModalProps>> = ({
           style={{ transform: "translate(-50%, -50%)", maxWidth: "450px" }}
           className={css(
             "bg-white",
-            "rounded-sm",
+            "rounded-none",
             "top-1/2",
             "left-1/2",
             "fixed",

@@ -22,6 +22,7 @@ interface ButtonProps {
   submit?: boolean;
   disabled?: boolean;
   isLoading?: boolean;
+  block?: boolean;
 }
 
 const buttonTypeStyles = {
@@ -46,6 +47,7 @@ const Button: React.FC<PropsWithChildren<ButtonProps>> = ({
   size = ButtonSize.sm,
   disabled = false,
   isLoading = false,
+  block,
 }) => {
   return (
     <button
@@ -57,7 +59,8 @@ const Button: React.FC<PropsWithChildren<ButtonProps>> = ({
         buttonSizeStyles[size],
         "relative",
         "disabled:cursor-not-allowed",
-        "outline-0"
+        "outline-0",
+        { "w-full": block }
       )}
     >
       {children}

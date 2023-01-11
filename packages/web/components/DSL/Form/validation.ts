@@ -1,5 +1,8 @@
 import { FieldState } from "final-form";
-import { isValidHttpUrl } from "../../../helpers/strings";
+import {
+  isValidEthereumAddress,
+  isValidHttpUrl,
+} from "../../../helpers/strings";
 
 export type Validator = ValidatorFunction[] | ValidatorFunction;
 
@@ -20,10 +23,12 @@ const mustBeANumber = (value: any) =>
   isNaN(value) ? "Must be a number" : undefined;
 
 const minValue = (min: any) => (value: any) =>
-  isNaN(value) || value >= min ? undefined : "Must be greater than";
+  isNaN(value) || value >= min ? undefined : `Must be greater than ${min}`;
 
 const maxValue = (max: any, customString?: string) => (value: any) => {
-  const stringToReturn = customString ? customString : "Must be less than";
+  const stringToReturn = customString
+    ? customString
+    : `Must be less than ${max}`;
   return isNaN(value) || value <= max ? undefined : stringToReturn;
 };
 
@@ -38,6 +43,14 @@ const maxDecimalPlaces = (max: number) => (value: any) => {
     }
   }
   return undefined;
+};
+
+export const isEthereumAddress = (value: any) => {
+  if (isValidEthereumAddress(value)) {
+    return undefined;
+  } else {
+    return "Must be a valid Ethereum address";
+  }
 };
 
 const composeValidators =

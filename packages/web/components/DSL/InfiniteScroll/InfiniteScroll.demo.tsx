@@ -11,7 +11,7 @@ const InfiniteScrollDemo = () => {
   const [height, setHeight] = useState(500);
   const [fullPageHasMoreData, setFullPageHasMoreData] = useState(false);
   return (
-    <Demo title={"Infinte Scroll Demo"}>
+    <Demo title={"InfinteScroll"}>
       <Variant title={"Scroll By Container"}>
         <InfiniteScroll
           dataLength={dataLength}
@@ -40,8 +40,10 @@ const InfiniteScrollDemo = () => {
           <Button
             onClick={() => {
               setFullPageHasMoreData(!fullPageHasMoreData);
-              setDataLength(0);
-              setFullScrollHeight(200);
+              setTimeout(() => {
+                setDataLength(0);
+                setFullScrollHeight(200);
+              }, 500);
             }}
           >
             {fullPageHasMoreData

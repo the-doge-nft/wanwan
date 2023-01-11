@@ -9,6 +9,7 @@ import {
   IsNotEmpty,
   IsNotEmptyObject,
   IsOptional,
+  IsPositive,
   IsString,
   Max,
   Min,
@@ -106,6 +107,8 @@ export class CompetitionDto {
 
   @IsNotEmpty()
   @IsInt()
+  @IsPositive()
+  @Min(1)
   maxUserSubmissions: number;
 
   @IsNotEmpty()

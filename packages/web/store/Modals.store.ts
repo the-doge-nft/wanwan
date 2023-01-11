@@ -6,6 +6,9 @@ export default class ModalsStore {
   @observable
   isCreateMemeModalOpen = false;
 
+  @observable
+  isCreateCompetitionModalOpen = false;
+
   constructor() {
     makeObservable(this);
   }

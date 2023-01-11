@@ -8,7 +8,7 @@ const AsyncWrapDemo = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [hasData, setHasData] = useState(false);
   return (
-    <Demo title={"Async Wrap"}>
+    <Demo title={"AsyncWrap"}>
       <div className={css("grid", "grid-cols-3")}>
         <div className={css("col-span-2")}>
           <AsyncWrap isLoading={isLoading} hasData={hasData}>

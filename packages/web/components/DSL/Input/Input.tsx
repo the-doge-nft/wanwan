@@ -14,16 +14,7 @@ interface ValueNoDefaultValue extends Pick<NativeTextFieldProps, "value"> {
   defaultValue?: never;
 }
 
-interface NumberInputProps
-  extends Pick<NativeTextFieldProps, "type" | "max" | "min"> {
-  type: "number";
-}
-
-interface OtherInputProps extends Pick<NativeTextFieldProps, "type"> {}
-
 type ValueProps = DefaultValueNoValue | ValueNoDefaultValue;
-type TypeProps = NumberInputProps | OtherInputProps;
-
 export interface BaseInputProps
   extends Pick<
     NativeTextFieldProps,
@@ -35,10 +26,10 @@ export interface BaseInputProps
   name?: string;
   block?: boolean;
   className?: string;
-  type?: "text" | "textarea" | "number";
+  type?: "text" | "textarea" | "number" | "date";
 }
 
-export type InputProps = BaseInputProps & ValueProps & TypeProps;
+export type InputProps = BaseInputProps & ValueProps;
 
 const textFieldBaseStyles = css(
   "text-black",
@@ -68,7 +59,9 @@ const Input = ({
   const isTextArea = type === "textarea";
   const Component = isTextArea ? "textarea" : "input";
   return (
-    <div className={css("relative", { block: block, "inline-block": !block })}>
+    <div
+      className={css("relative", { "w-full": block, "inline-block": !block })}
+    >
       <Component
         {...rest}
         value={value}

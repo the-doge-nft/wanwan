@@ -1,3 +1,4 @@
+import { utils } from "ethers/lib/ethers";
 import { isDev, isStaging } from "../environment/vars";
 
 export const abbreviate = (input: string, spaces = 4) => {
@@ -26,3 +27,15 @@ export const isValidHttpUrl = (value: string) => {
   }
   return url.protocol === "http:" || url.protocol === "https:";
 };
+
+export const isValidEthereumAddress = (address: string) => {
+  try {
+    utils.getAddress(address);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
+export const formatEthereumAddress = (address: string) =>
+  utils.getAddress(address);

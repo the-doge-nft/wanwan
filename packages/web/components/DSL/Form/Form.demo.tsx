@@ -4,6 +4,7 @@ import { jsonify } from "../../../helpers/strings";
 import Button from "../Button/Button";
 import { Demo } from "../Demo";
 import { Variant } from "../Variant";
+import DateInput from "./DateInput";
 import Form from "./Form";
 import MediaInput from "./MediaInput";
 import NumberInput from "./NumberInput";
@@ -12,6 +13,7 @@ import { required } from "./validation";
 
 const FormDemo = () => {
   const [textInput, setTextInput] = useState("");
+  const [dateInput, setDateInput] = useState(new Date());
   return (
     <Demo title={"Form"}>
       <div className={css("flex", "justify-between")}>
@@ -36,8 +38,9 @@ const FormDemo = () => {
                   onDropAccepted={() => {}}
                   validate={required}
                   maxSizeBytes={1000000}
-                  acceptedMimeToExtension={{ "image/jpg": [".jpg"] }}
+                  acceptedMimeToExtension={{ "image/jpg": [".jpg", ".jpeg"] }}
                 />
+                <DateInput name={"date"} label={"<date>"} validate={required} />
                 <div className={css("flex", "justify-center", "mt-4")}>
                   <Button submit>submit</Button>
                 </div>
@@ -49,9 +52,16 @@ const FormDemo = () => {
           <Variant title={"Controlled"}>
             <Form onSubmit={async (values) => alert(jsonify(values))}>
               <TextInput
+                label={"<text>"}
                 name={"textInput"}
                 value={textInput}
                 onChange={setTextInput}
+              />
+              <DateInput
+                name={"date"}
+                label={"<date>"}
+                value={dateInput.toString()}
+                onChange={setDateInput}
               />
               <div className={css("flex", "justify-center", "mt-4")}>
                 <Button submit>submit</Button>

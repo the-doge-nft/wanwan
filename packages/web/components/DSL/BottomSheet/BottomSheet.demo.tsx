@@ -8,7 +8,7 @@ const BottomSheetDemo = () => {
   const [open, setOpen] = useState(false);
   const sheetRef = useRef<BottomSheetRef>(null);
   return (
-    <Demo title={"Bottom Sheet"}>
+    <Demo title={"BottomSheet"}>
       <div>
         <Button
           onClick={() => {

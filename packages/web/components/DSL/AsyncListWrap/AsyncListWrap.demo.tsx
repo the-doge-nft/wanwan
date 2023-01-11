@@ -5,7 +5,7 @@ import AsyncListWrap from "./AsyncListWrap";
 
 const AsyncListWrapDemo = () => {
   return (
-    <Demo title={"Async List Wrap"}>
+    <Demo title={"AsyncListWrap"}>
       <Variant title={"Default List Wrap"}>
         <AsyncListWrap isLoading={true} hasData={false} />
       </Variant>

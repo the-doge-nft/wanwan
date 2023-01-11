@@ -8,12 +8,7 @@ import { useControlledFormField, useFormField } from "./useFormField";
 
 interface TextInputProps
   extends BaseFormInputProps,
-    Pick<
-      InputProps,
-      "placeholder" | "block" | "disabled" | "type" | "defaultValue"
-    > {
-  type?: "text" | "textarea";
-}
+    Pick<InputProps, "placeholder" | "block" | "disabled" | "defaultValue"> {}
 
 const TextInput = ({
   name,
@@ -22,7 +17,6 @@ const TextInput = ({
   label,
   validate,
   description,
-  type = "text",
   ...rest
 }: TextInputProps) => {
   const { input, meta, isRequired } = useFormField(name, validate);
@@ -37,7 +31,8 @@ const TextInput = ({
       <Input
         {...input}
         {...rest}
-        type={type}
+        type={"text"}
+        value={input.value}
         className={css({
           [BaseInvalidInputStyle]: meta.error && meta.touched,
         })}

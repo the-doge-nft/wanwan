@@ -6,20 +6,28 @@ import FormControl, {
 } from "./FormControl";
 import { useControlledFormField, useFormField } from "./useFormField";
 
-interface NumberInputProps
+interface DateInputProps
   extends BaseFormInputProps,
-    Pick<BaseInputProps, "max" | "min" | "placeholder" | "block"> {}
+    Pick<
+      BaseInputProps,
+      "max" | "min" | "placeholder" | "block" | "defaultValue"
+    > {}
 
-const NumberInput = ({
+const DateInput = ({
   name,
   value,
   onChange,
   label,
   validate,
   description,
+  defaultValue,
   ...rest
-}: NumberInputProps) => {
-  const { input, meta, isRequired } = useFormField(name, validate);
+}: DateInputProps) => {
+  const { input, meta, isRequired } = useFormField(
+    name,
+    validate,
+    defaultValue as string
+  );
   useControlledFormField(input.onChange, value);
   return (
     <FormControl
@@ -31,7 +39,7 @@ const NumberInput = ({
       <Input
         {...input}
         {...rest}
-        type={"number"}
+        type={"date"}
         value={input.value}
         className={css({
           [BaseInvalidInputStyle]: meta.error && meta.touched,
@@ -47,4 +55,4 @@ const NumberInput = ({
   );
 };
 
-export default NumberInput;
+export default DateInput;
