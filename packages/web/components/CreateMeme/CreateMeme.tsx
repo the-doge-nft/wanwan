@@ -1,39 +1,53 @@
 import { observer } from "mobx-react-lite";
-import { useEffect, useMemo } from "react";
 import { css } from "../../helpers/css";
-import CreateMemeStore from "../../store/CreateMeme.store";
+import AppStore from "../../store/App.store";
+import CreateMemeStore, { CreateMemeView } from "../../store/CreateMeme.store";
 import { Submit } from "../DSL/Button/Button";
 import Form from "../DSL/Form/Form";
 import MediaInput from "../DSL/Form/MediaInput";
 import TextInput from "../DSL/Form/TextInput";
 import { required } from "../DSL/Form/validation";
 
-const CreateMeme = observer(() => {
-  const store = useMemo(() => new CreateMemeStore(), []);
-  useEffect(() => {
-    store.init();
-  }, []);
-  return (
-    <Form
-      onSubmit={(values) => store.onMemeSubmit(values)}
-      className={css("border-[1px]", "border-slate-500", "p-2")}
-    >
-      <div>Create meme</div>
-      <TextInput name={"name"} label={"Name"} />
-      <TextInput name={"description"} label={"Description"} />
-      {store.mimeTypeToExtension && (
-        <MediaInput
-          name={"file"}
-          validate={required}
-          onDropAccepted={(file) => store.onFileDrop(file)}
-          onClear={() => store.onFileClear()}
-          maxSizeBytes={store.maxSizeBytes}
-          acceptedMimeToExtension={store.mimeTypeToExtension}
-        />
-      )}
-      <Submit />
-    </Form>
-  );
-});
+const CreateMeme: React.FC<{ store: CreateMemeStore }> = observer(
+  ({ store }) => {
+    return (
+      <>
+        {store.currentView === CreateMemeView.Create && (
+          <CreateMemeForm store={store} />
+        )}
+        {store.currentView === CreateMemeView.Success && <Success />}
+      </>
+    );
+  }
+);
+
+const CreateMemeForm: React.FC<{ store: CreateMemeStore }> = observer(
+  ({ store }) => {
+    return (
+      <Form onSubmit={(values) => store.onMemeSubmit(values)}>
+        <div className={css("flex", "flex-col", "gap-2")}>
+          <TextInput block name={"name"} label={"Name"} />
+          <TextInput block name={"description"} label={"Description"} />
+          {AppStore.settings.mimeTypeToExtension && (
+            <MediaInput
+              label={"Media"}
+              name={"file"}
+              validate={required}
+              onDropAccepted={(file) => store.onFileDrop(file)}
+              onClear={() => store.onFileClear()}
+              maxSizeBytes={AppStore.settings.maxSizeBytes}
+              acceptedMimeToExtension={AppStore.settings.mimeTypeToExtension}
+            />
+          )}
+          <Submit isLoading={store.isSubmitLoading} />
+        </div>
+      </Form>
+    );
+  }
+);
+
+const Success = () => {
+  return <div>Success!</div>;
+};
 
 export default CreateMeme;

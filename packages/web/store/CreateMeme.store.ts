@@ -1,30 +1,38 @@
 import { computed, makeObservable, observable } from "mobx";
-import { MediaRequirements } from "../interfaces";
 import http from "../services/http";
+import { EmptyClass } from "../services/mixins";
+import { Navigable } from "../services/mixins/navigable";
 
-export default class CreateMemeStore {
+export enum CreateMemeView {
+  Create = "Create",
+  Success = "Success",
+}
+
+export default class CreateMemeStore extends Navigable(EmptyClass) {
   @observable
   private file: File | null = null;
 
   @observable
-  private mediaRequirements: MediaRequirements | null = null;
-
-  async init() {
-    const { data } = await http.get<MediaRequirements>("/media/requirements");
-    this.mediaRequirements = data;
-  }
+  isSubmitLoading = false;
 
   constructor() {
+    super();
     makeObservable(this);
+    this.currentView = CreateMemeView.Create;
   }
 
-  onMemeSubmit(values: any) {
+  async onMemeSubmit(values: any) {
+    this.isSubmitLoading = true;
+
     const formData = new FormData();
     if (!this.file) throw new Error("No file");
     formData.append("file", this.file);
     if (values.name) formData.append("name", values.name);
     if (values.description) formData.append("description", values.description);
-    return http.post("/meme", formData);
+
+    await http.post("/meme", formData);
+    this.isSubmitLoading = false;
+    this.currentView = CreateMemeView.Success;
   }
 
   onFileDrop(file: File) {
@@ -36,14 +44,14 @@ export default class CreateMemeStore {
   }
 
   @computed
-  get maxSizeBytes() {
-    return this.mediaRequirements ? this.mediaRequirements.maxSizeBytes : 0;
-  }
-
-  @computed
-  get mimeTypeToExtension() {
-    return this.mediaRequirements
-      ? this.mediaRequirements.mimeTypeToExtensionMap
-      : null;
+  get title() {
+    switch (this.currentView) {
+      case CreateMemeView.Create:
+        return "Create Meme";
+      case CreateMemeView.Success:
+        return "Meme Created";
+      default:
+        return "";
+    }
   }
 }

@@ -22,8 +22,3 @@ body {
     overflow-x: hidden;
 }
 
-[data-rk] {
-    flex-grow: 1;
-    display: grid;
-}
-

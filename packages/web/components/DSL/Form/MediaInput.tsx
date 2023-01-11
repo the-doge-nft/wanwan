@@ -128,9 +128,7 @@ const MediaInput: React.FC<MediaInputProps> = ({
           {isDragActive && (
             <>
               {renderIsDropActive && renderIsDropActive()}
-              {!renderIsDropActive && (
-                <div className={css("text-xs")}>drop it like its hot</div>
-              )}
+              {!renderIsDropActive && <div className={css("text-xs")}>wow</div>}
             </>
           )}
           {!isDragActive && !preview && (

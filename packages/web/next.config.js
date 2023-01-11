@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true,
+  // https://github.com/stipsan/react-spring-bottom-sheet/issues/210
+  reactStrictMode: false,
   swcMinify: true,
 };
 

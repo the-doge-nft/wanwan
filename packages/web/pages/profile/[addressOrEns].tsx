@@ -1,7 +1,7 @@
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 import { useMemo } from "react";
-import CreateMeme from "../../components/CreateMeme/CreateMeme";
+import Button from "../../components/DSL/Button/Button";
 import Code from "../../components/DSL/Code/Code";
 import { DevToggle } from "../../components/DSL/Dev/Dev";
 import Link from "../../components/DSL/Link/Link";
@@ -10,6 +10,7 @@ import { abbreviate, getEtherscanURL } from "../../helpers/strings";
 import { ProfileI } from "../../interfaces";
 import AppLayout from "../../layouts/App.layout";
 import http from "../../services/http";
+import AppStore from "../../store/App.store";
 import ProfileStore from "../../store/Profile.store";
 
 interface ProfileProps {
@@ -62,7 +63,13 @@ const Profile: React.FC<ProfileProps> = ({ profile }) => {
             </div>
           </div>
         </div>
-        <CreateMeme />
+        <div>
+          <Button
+            onClick={() => (AppStore.modals.isCreateMemeModalOpen = true)}
+          >
+            + Meme
+          </Button>
+        </div>
         <DevToggle>
           <Code className={css("mt-11")}>{JSON.stringify(profile)}</Code>
         </DevToggle>
