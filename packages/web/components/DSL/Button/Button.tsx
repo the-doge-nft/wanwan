@@ -2,7 +2,8 @@ import { ConnectButton as RainbowConnectButton } from "@rainbow-me/rainbowkit";
 import { PropsWithChildren, useState } from "react";
 import { useDisconnect } from "wagmi";
 import { css } from "../../../helpers/css";
-import Dropdown from "../Dropdown/Dropdown";
+import AppStore from "../../../store/App.store";
+import Dropdown, { DropdownItem } from "../Dropdown/Dropdown";
 import Link from "../Link/Link";
 import Spinner from "../Spinner/Spinner";
 
@@ -163,13 +164,36 @@ export const ConnectButton: React.FC<
                         <Button type={type}>{account.displayName}</Button>
                       }
                     >
-                      <Dropdown.Item>
+                      <DropdownItem>
                         <Link href={`/profile/${account.address}`}>
                           Profile
                         </Link>
-                      </Dropdown.Item>
+                      </DropdownItem>
+                      {AppStore.auth.isAuthed && (
+                        <div className={css("my-2")}>
+                          <DropdownItem>
+                            <div className={css("flex", "flex-col", "gap-2")}>
+                              <Button
+                                onClick={() =>
+                                  (AppStore.modals.isCreateMemeModalOpen = true)
+                                }
+                              >
+                                + Meme
+                              </Button>
+                              <Button
+                                onClick={() =>
+                                  (AppStore.modals.isCreateCompetitionModalOpen =
+                                    true)
+                                }
+                              >
+                                + Competition
+                              </Button>
+                            </div>
+                          </DropdownItem>
+                        </div>
+                      )}
                       <div className={css("mt-2")}>
-                        <Dropdown.Item>
+                        <DropdownItem>
                           <div
                             className={css(
                               "flex",
@@ -200,7 +224,7 @@ export const ConnectButton: React.FC<
                               </div>
                             </div>
                           </div>
-                        </Dropdown.Item>
+                        </DropdownItem>
                       </div>
                     </Dropdown>
                   </div>

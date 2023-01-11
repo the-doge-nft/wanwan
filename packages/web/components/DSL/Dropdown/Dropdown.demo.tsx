@@ -1,14 +1,14 @@
 import Button from "../Button/Button";
 import { Demo } from "../Demo";
-import Dropdown from "./Dropdown";
+import Dropdown, { DropdownItem } from "./Dropdown";
 
 const DropdownDemo = () => {
   return (
     <Demo title={"Dropdown"}>
       <Dropdown trigger={<Button>Dropdown</Button>}>
-        <Dropdown.Item>1: Memes</Dropdown.Item>
-        <Dropdown.Item>2: Competitions</Dropdown.Item>
-        <Dropdown.Item>3: Rewards</Dropdown.Item>
+        <DropdownItem>1: Memes</DropdownItem>
+        <DropdownItem>2: Competitions</DropdownItem>
+        <DropdownItem>3: Rewards</DropdownItem>
       </Dropdown>
     </Demo>
   );

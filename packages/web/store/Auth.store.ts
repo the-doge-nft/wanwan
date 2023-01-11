@@ -1,5 +1,5 @@
 import { AuthenticationStatus } from "@rainbow-me/rainbowkit";
-import { makeObservable, observable } from "mobx";
+import { computed, makeObservable, observable } from "mobx";
 import http from "../services/http";
 import AppStore from "./App.store";
 
@@ -33,5 +33,10 @@ export default class AuthStore {
     } else {
       AppStore.modals.isAuthModalOpen = true;
     }
+  }
+
+  @computed
+  get isAuthed() {
+    return this.status === "authenticated";
   }
 }

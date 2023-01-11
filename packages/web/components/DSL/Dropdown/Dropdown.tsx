@@ -4,7 +4,6 @@ import { css } from "../../../helpers/css";
 
 interface DropdownProps {
   trigger: JSX.Element;
-  children: JSX.Element | JSX.Element[];
   open?: boolean;
   onOpenChange?: (value: boolean) => void;
   type?: DropdownType;
@@ -24,13 +23,13 @@ const styleToTypeMap = {
   [DropdownType.White]: css("bg-black", "text-white", "border-blue-700"),
 };
 
-const Dropdown = ({
+const Dropdown: React.FC<PropsWithChildren<DropdownProps>> = ({
   trigger,
   children,
   open,
   onOpenChange,
   type = DropdownType.Primary,
-}: DropdownProps) => {
+}) => {
   return (
     <RadixDropdown.Root open={open} onOpenChange={onOpenChange}>
       <RadixDropdown.Trigger asChild>
@@ -60,7 +59,7 @@ interface ItemProps {
   className?: string;
 }
 
-const Item: React.FC<PropsWithChildren<ItemProps>> = ({
+export const DropdownItem: React.FC<PropsWithChildren<ItemProps>> = ({
   children,
   className,
 }) => {
@@ -74,5 +73,4 @@ const Item: React.FC<PropsWithChildren<ItemProps>> = ({
   );
 };
 
-Dropdown.Item = Item;
 export default Dropdown;
