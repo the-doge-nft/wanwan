@@ -9,6 +9,8 @@ export enum CreateCompetitionView {
 }
 
 export default class CreateCompetitionStore extends Navigable(EmptyClass) {
+  CREATOR_INPUT_PREFIX = "creator";
+
   @observable
   private _curatorsCount = 0;
 

@@ -39,8 +39,26 @@ const MemeLink: React.FC<MemePreviewProps> = ({ ...meme }) => {
         </div>
       </Link>
       <div className={css("text-xs")}>
-        <div className={css("font-bold")}>{meme.name}</div>
-        <div className={css("text-slate-700")}>{meme.description}</div>
+        <div
+          className={css(
+            "font-bold",
+            "whitespace-nowrap",
+            "overflow-hidden",
+            "overflow-ellipsis"
+          )}
+        >
+          {meme.name}
+        </div>
+        <div
+          className={css(
+            "text-slate-700",
+            "whitespace-nowrap",
+            "overflow-hidden",
+            "overflow-ellipsis"
+          )}
+        >
+          {meme.description}
+        </div>
       </div>
     </div>
   );

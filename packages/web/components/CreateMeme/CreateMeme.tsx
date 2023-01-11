@@ -26,8 +26,18 @@ const CreateMemeForm: React.FC<{ store: CreateMemeStore }> = observer(
     return (
       <Form onSubmit={(values) => store.onMemeSubmit(values)}>
         <div className={css("flex", "flex-col", "gap-2")}>
-          <TextInput block name={"name"} label={"Name"} />
-          <TextInput block name={"description"} label={"Description"} />
+          <TextInput
+            block
+            name={"name"}
+            label={"Name"}
+            disabled={store.isSubmitLoading}
+          />
+          <TextInput
+            block
+            name={"description"}
+            label={"Description"}
+            disabled={store.isSubmitLoading}
+          />
           {AppStore.settings.mimeTypeToExtension && (
             <MediaInput
               label={"Media"}
@@ -37,9 +47,12 @@ const CreateMemeForm: React.FC<{ store: CreateMemeStore }> = observer(
               onClear={() => store.onFileClear()}
               maxSizeBytes={AppStore.settings.maxSizeBytes}
               acceptedMimeToExtension={AppStore.settings.mimeTypeToExtension}
+              disabled={store.isSubmitLoading}
             />
           )}
-          <Submit isLoading={store.isSubmitLoading} />
+          <div className={css("mt-4")}>
+            <Submit block isLoading={store.isSubmitLoading} />
+          </div>
         </div>
       </Form>
     );

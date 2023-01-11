@@ -3,8 +3,8 @@ import { observer } from "mobx-react-lite";
 import { GetServerSideProps } from "next";
 import Head from "next/head";
 import { useCallback, useEffect, useMemo } from "react";
+import CompetitionLink from "../components/CompetitionLink/CompetitionLink";
 import AsyncWrap from "../components/DSL/AsyncWrap/AsyncWrap";
-import Link from "../components/DSL/Link/Link";
 import Pane, { PaneType } from "../components/DSL/Pane/Pane";
 import MemeLink from "../components/MemeLink/MemeLink";
 import env from "../environment";
@@ -24,12 +24,14 @@ const Home: React.FC<HomeProps> = observer(({ memes, competitions }) => {
     () => new HomeStore(memes, competitions),
     [memes, competitions]
   );
+
   useEffect(() => {
     store.init();
     return () => {
       store.destroy();
     };
   }, []);
+
   const renderNoDataFound = useCallback(
     (whatWasNotFound: string) => (
       <div className={css("text-xs", "py-8", "text-center", "text-slate-500")}>
@@ -83,19 +85,6 @@ const Home: React.FC<HomeProps> = observer(({ memes, competitions }) => {
     </AppLayout>
   );
 });
-
-const CompetitionLink: React.FC<Competition> = ({ ...competition }) => {
-  return (
-    <Link href={`/competition/${competition.id}`}>
-      <div className={css("break-words", "max-w-full")}>
-        <div>{competition.name}</div>
-        <div className={css("text-xs", "break-words")}>
-          {JSON.stringify(competition)}
-        </div>
-      </div>
-    </Link>
-  );
-};
 
 export const getServerSideProps: GetServerSideProps<HomeProps> = async (
   context

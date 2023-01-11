@@ -1,11 +1,7 @@
 import { FormApi, FORM_ERROR } from "final-form";
 import { PropsWithChildren } from "react";
 import { Form as FinalForm } from "react-final-form";
-import { css } from "../../../helpers/css";
-import { jsonify } from "../../../helpers/strings";
 import ApiError from "../../../services/exceptions/Api.error";
-import Code from "../Code/Code";
-import { DevToggle } from "../Dev/Dev";
 
 interface FormProps {
   onSubmit: (data: Record<string, any>, form: FormApi) => Promise<any>;
@@ -40,7 +36,7 @@ const Form: React.FC<PropsWithChildren<FormProps>> = ({
             <form className={className} onSubmit={handleSubmit}>
               {children}
             </form>
-            <DevToggle>
+            {/* <DevToggle>
               <div>
                 <div>values</div>
                 <Code>{jsonify(values)}</Code>
@@ -49,7 +45,7 @@ const Form: React.FC<PropsWithChildren<FormProps>> = ({
                 <div>errors</div>
                 <Code>{jsonify(errors)}</Code>
               </div>
-            </DevToggle>
+            </DevToggle> */}
           </>
         );
       }}

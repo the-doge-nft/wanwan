@@ -8,7 +8,10 @@ import { useControlledFormField, useFormField } from "./useFormField";
 
 interface TextInputProps
   extends BaseFormInputProps,
-    Pick<InputProps, "placeholder" | "block" | "disabled" | "defaultValue"> {}
+    Pick<
+      InputProps,
+      "placeholder" | "block" | "disabled" | "defaultValue" | "type"
+    > {}
 
 const TextInput = ({
   name,

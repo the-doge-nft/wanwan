@@ -183,6 +183,7 @@ const MediaInput: React.FC<MediaInputProps> = ({
         {!isDragActive && preview && (
           <div className={css("absolute", "top-3", "right-3")}>
             <Button
+              disabled={disabled}
               onClick={() => {
                 input.onChange(null);
                 setPreview(null);

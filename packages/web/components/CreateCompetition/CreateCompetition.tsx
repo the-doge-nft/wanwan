@@ -84,8 +84,8 @@ const Curators: React.FC<CompetitionStoreProp> = observer(({ store }) => {
           {Array.from(Array(store.curatorCount)).map((_, index) => (
             <TextInput
               block
-              key={`curator-input-${index}`}
-              name={`curator-${index}`}
+              key={`${store.CREATOR_INPUT_PREFIX}-${index}`}
+              name={`${store.CREATOR_INPUT_PREFIX}-${index}`}
               label={`curator ${index + 1}`}
               validate={[required, isEthereumAddress]}
             />

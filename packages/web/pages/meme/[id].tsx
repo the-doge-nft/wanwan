@@ -33,7 +33,13 @@ const MemeById: React.FC<Meme> = observer(({ ...meme }) => {
     <AppLayout>
       <div className={css("mt-4")}>
         <AspectRatio
-          className={css("bg-contain", "bg-center", "bg-no-repeat")}
+          className={css(
+            "bg-contain",
+            "bg-center",
+            "bg-no-repeat",
+            "border-[1px]",
+            "border-black"
+          )}
           ratio={`${meme.media.width}/${meme.media.height}`}
           style={{
             backgroundImage: `url(${meme.media.url})`,
@@ -41,22 +47,30 @@ const MemeById: React.FC<Meme> = observer(({ ...meme }) => {
         />
         <div
           className={css(
-            "flex",
-            "justify-between",
-            "items-end",
+            "grid",
+            "grid-cols-1",
+            "md:grid-cols-12",
+            "md:grid-rows-1",
             "text-sm",
-            "mt-2"
+            "mt-2",
+            "w-full"
           )}
         >
-          <div>
-            {meme.name && <div className={css("font-bold")}>{meme.name}</div>}
+          <div className={css("md:col-span-10")}>
+            {meme.name && (
+              <div className={css("font-bold", "break-words")}>{meme.name}</div>
+            )}
             {meme.description && (
-              <div className={css()}>{meme.description}</div>
+              <div className={css("break-words")}>{meme.description}</div>
             )}
           </div>
-          <Link href={`/profile/${meme.user.address}`}>
-            {abbreviate(meme.user.address)}
-          </Link>
+          <div
+            className={css("md:col-span-2", "flex", "justify-end", "items-end")}
+          >
+            <Link href={`/profile/${meme.user.address}`}>
+              {abbreviate(meme.user.address)}
+            </Link>
+          </div>
         </div>
         <div className={css("mt-8")}>
           <Form
