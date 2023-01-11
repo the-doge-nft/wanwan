@@ -1,7 +1,7 @@
 import { css } from "../../helpers/css";
 import { Meme } from "../../interfaces";
-import AspectRatio from "../dsl/AspectRatio/AspectRatio";
-import Link from "../dsl/Link/Link";
+import AspectRatio from "../DSL/AspectRatio/AspectRatio";
+import Link from "../DSL/Link/Link";
 
 interface MemePreviewProps extends Meme {}
 

@@ -56,13 +56,13 @@ const configSchema = Joi.object<Config>({
     password: Joi.string().required(),
   }).required(),
   alchemy: Joi.object({
-    apiKey: Joi.string(),
-    wsEndpoint: Joi.string(),
-    httpEndpoint: Joi.string(),
-  }),
+    apiKey: Joi.string().required(),
+    wsEndpoint: Joi.string().required(),
+    httpEndpoint: Joi.string().required(),
+  }).required(),
   sentry: Joi.object({
-    dns: Joi.string(),
-  }),
+    dns: Joi.string().required(),
+  }).required(),
 });
 
 const config: Config = {

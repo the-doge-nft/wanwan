@@ -1,7 +1,7 @@
 import env from "../../environment";
 import { css } from "../../helpers/css";
-import { ConnectButton } from "../dsl/Button/Button";
-import Link from "../dsl/Link/Link";
+import { ConnectButton } from "../DSL/Button/Button";
+import Link from "../DSL/Link/Link";
 
 const navItems = [
   { name: "home", link: "/" },
