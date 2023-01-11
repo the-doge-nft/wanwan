@@ -2,6 +2,7 @@ import { IoCloseOutline } from "react-icons/io5";
 import { cssTransition, toast } from "react-toastify";
 import { isDev } from "../../../environment/vars";
 import { css } from "../../../helpers/css";
+import { defaultBgCss } from "../Theme";
 
 const transition = cssTransition({
   enter: "flex",
@@ -27,7 +28,7 @@ const CloseButton: React.FC<{ color?: "black" | "white" }> = ({
 export const successToast = (message: string) => {
   toast(message, {
     type: "success",
-    className: css(toastBaseStyles, "!bg-slate-200", "!text-black"),
+    className: css(toastBaseStyles, defaultBgCss, "!text-black"),
     icon: false,
     closeButton: <CloseButton color={"black"} />,
     transition,

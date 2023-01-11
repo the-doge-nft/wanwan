@@ -2,6 +2,7 @@ import { computed, makeObservable, observable } from "mobx";
 import http from "../services/http";
 import { EmptyClass } from "../services/mixins";
 import { Navigable } from "../services/mixins/navigable";
+import AppStore from "./App.store";
 
 export enum CreateMemeView {
   Create = "Create",
@@ -33,6 +34,7 @@ export default class CreateMemeStore extends Navigable(EmptyClass) {
     await http.post("/meme", formData);
     this.isSubmitLoading = false;
     this.currentView = CreateMemeView.Success;
+    AppStore.events.publish(AppStore.events.events.MEME_CREATED);
   }
 
   onFileDrop(file: File) {

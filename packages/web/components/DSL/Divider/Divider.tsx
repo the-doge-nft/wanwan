@@ -13,7 +13,7 @@ export const Divider: React.FC<PropsWithChildren<DividerProps>> = ({
 }) => {
   return (
     <div
-      className={css("border-slate-200", "border-t-[1px]", {
+      className={css("border-slate-300", "border-t-[1px]", {
         [verticalStyles]: orientation === "vertical",
         [horizontalStyles]: orientation === "horizontal",
       })}

@@ -1,7 +1,8 @@
 import "@rainbow-me/rainbowkit/styles.css";
+import { observer } from "mobx-react-lite";
 import { GetServerSideProps } from "next";
 import Head from "next/head";
-import { useCallback } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import AsyncWrap from "../components/DSL/AsyncWrap/AsyncWrap";
 import Link from "../components/DSL/Link/Link";
 import Pane, { PaneType } from "../components/DSL/Pane/Pane";
@@ -11,13 +12,24 @@ import { css } from "../helpers/css";
 import { Competition, Meme } from "../interfaces";
 import AppLayout from "../layouts/App.layout";
 import http from "../services/http";
+import HomeStore from "../store/Home.store";
 
 interface HomeProps {
   competitions: Competition[];
   memes: Meme[];
 }
 
-const Home: React.FC<HomeProps> = ({ competitions, memes }) => {
+const Home: React.FC<HomeProps> = observer(({ memes, competitions }) => {
+  const store = useMemo(
+    () => new HomeStore(memes, competitions),
+    [memes, competitions]
+  );
+  useEffect(() => {
+    store.init();
+    return () => {
+      store.destroy();
+    };
+  }, []);
   const renderNoDataFound = useCallback(
     (whatWasNotFound: string) => (
       <div className={css("text-xs", "py-8", "text-center", "text-slate-500")}>
@@ -42,7 +54,7 @@ const Home: React.FC<HomeProps> = ({ competitions, memes }) => {
                 hasData={competitions.length > 0}
                 renderNoData={() => renderNoDataFound("competitions")}
               >
-                {competitions.map((comp) => (
+                {store.competitions.map((comp) => (
                   <CompetitionLink key={`competition-${comp.id}`} {...comp} />
                 ))}
               </AsyncWrap>
@@ -60,7 +72,7 @@ const Home: React.FC<HomeProps> = ({ competitions, memes }) => {
                 hasData={memes.length > 0}
                 renderNoData={() => renderNoDataFound("memes")}
               >
-                {memes.map((meme) => (
+                {store.memes.map((meme) => (
                   <MemeLink key={`meme-${meme.id}`} {...meme} />
                 ))}
               </AsyncWrap>
@@ -70,7 +82,7 @@ const Home: React.FC<HomeProps> = ({ competitions, memes }) => {
       </main>
     </AppLayout>
   );
-};
+});
 
 const CompetitionLink: React.FC<Competition> = ({ ...competition }) => {
   return (

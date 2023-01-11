@@ -1,5 +1,6 @@
 import { css } from "../../../helpers/css";
 import Spinner, { SpinnerSize } from "../Spinner/Spinner";
+import { defaultBgCss } from "../Theme";
 
 type NativeTextFieldProps =
   | React.HTMLProps<HTMLInputElement>
@@ -41,7 +42,8 @@ const textFieldBaseStyles = css(
   "text-sm",
   "focus:outline-none",
   "border-[1px]",
-  "border-black"
+  "border-black",
+  defaultBgCss
 );
 
 const Input = ({
