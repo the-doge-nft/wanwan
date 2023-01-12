@@ -24,6 +24,7 @@ export const useFormField = (
   };
 
   const { input, meta } = useField(name, {
+    //@ts-ignore
     validate: validators,
     initialValue: defaultValue,
     defaultValue: defaultValue,

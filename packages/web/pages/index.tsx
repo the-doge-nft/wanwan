@@ -63,7 +63,7 @@ const Home: React.FC<HomeProps> = observer(({ memes, competitions }) => {
               >
                 {store.competitions.map((comp) => (
                   <PreviewLink
-                    key={`competition-${comp.id}`}
+                    key={`competition-preview-${comp.id}`}
                     name={comp.name}
                     description={comp.description}
                     link={`/competition/${comp.id}`}
@@ -88,7 +88,7 @@ const Home: React.FC<HomeProps> = observer(({ memes, competitions }) => {
               >
                 {store.memes.map((meme) => (
                   <PreviewLink
-                    key={`meme-${meme.id}`}
+                    key={`meme-preview-${meme.id}`}
                     name={meme.name}
                     description={meme.description}
                     link={`/meme/${meme.id}`}
