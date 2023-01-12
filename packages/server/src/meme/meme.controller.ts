@@ -78,7 +78,7 @@ export class MemeController {
     });
   }
 
-  @Get('meme/:id/comment')
+  @Get(':id/comment')
   getComment(@Param() { id }: IdDto) {
     return this.comment.getByMemeId(id);
   }
