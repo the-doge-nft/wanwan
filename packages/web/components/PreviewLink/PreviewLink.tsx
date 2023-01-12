@@ -1,23 +1,18 @@
+import { PropsWithChildren } from "react";
 import { css } from "../../helpers/css";
-import AspectRatio from "../DSL/AspectRatio/AspectRatio";
 import Link from "../DSL/Link/Link";
 
 interface PreviewLinkProps {
   link: string;
-  ratio: string;
-  backgroundImage?: string;
-  background?: string;
   name?: string | null;
   description?: string | null;
 }
 
-const PreviewLink: React.FC<PreviewLinkProps> = ({
+const PreviewLink: React.FC<PropsWithChildren<PreviewLinkProps>> = ({
   link,
-  ratio,
   name,
   description,
-  backgroundImage,
-  background,
+  children,
 }) => {
   return (
     <div className={css()}>
@@ -32,20 +27,7 @@ const PreviewLink: React.FC<PreviewLinkProps> = ({
             "overflow-y-hidden"
           )}
         >
-          <AspectRatio
-            className={css(
-              "max-w-[300px]",
-              "bg-cover",
-              "bg-center",
-              "bg-no-repeat",
-              "h-full"
-            )}
-            ratio={ratio}
-            style={{
-              backgroundImage,
-              background,
-            }}
-          />
+          {children}
         </div>
       </Link>
       <div className={css("text-xs")}>

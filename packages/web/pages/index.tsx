@@ -3,6 +3,7 @@ import { observer } from "mobx-react-lite";
 import { GetServerSideProps } from "next";
 import Head from "next/head";
 import { useCallback, useEffect, useMemo } from "react";
+import AspectRatio from "../components/DSL/AspectRatio/AspectRatio";
 import AsyncWrap from "../components/DSL/AsyncWrap/AsyncWrap";
 import Pane, { PaneType } from "../components/DSL/Pane/Pane";
 import { colors } from "../components/DSL/Theme";
@@ -67,9 +68,19 @@ const Home: React.FC<HomeProps> = observer(({ memes, competitions }) => {
                     name={comp.name}
                     description={comp.description}
                     link={`/competition/${comp.id}`}
-                    ratio={"1/1"}
-                    background={colors.slate[200]}
-                  />
+                  >
+                    <AspectRatio
+                      className={css(
+                        "max-w-[300px]",
+                        "bg-cover",
+                        "bg-center",
+                        "bg-no-repeat",
+                        "h-full"
+                      )}
+                      ratio={"1/1"}
+                      style={{ background: colors.slate[200] }}
+                    />
+                  </PreviewLink>
                 ))}
               </AsyncWrap>
             </div>
@@ -92,9 +103,19 @@ const Home: React.FC<HomeProps> = observer(({ memes, competitions }) => {
                     name={meme.name}
                     description={meme.description}
                     link={`/meme/${meme.id}`}
-                    ratio={`${meme.media.width}/${meme.media.height}`}
-                    backgroundImage={`url(${meme.media.url})`}
-                  />
+                  >
+                    <AspectRatio
+                      className={css(
+                        "max-w-[300px]",
+                        "bg-cover",
+                        "bg-center",
+                        "bg-no-repeat",
+                        "h-full"
+                      )}
+                      ratio={`${meme.media.width}/${meme.media.height}`}
+                      style={{ backgroundImage: `url(${meme.media.url})` }}
+                    />
+                  </PreviewLink>
                 ))}
               </AsyncWrap>
             </div>
