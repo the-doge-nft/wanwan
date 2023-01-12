@@ -8,7 +8,10 @@ import { useControlledFormField, useFormField } from "./useFormField";
 
 interface NumberInputProps
   extends BaseFormInputProps,
-    Pick<BaseInputProps, "max" | "min" | "placeholder" | "block"> {}
+    Pick<
+      BaseInputProps,
+      "max" | "min" | "placeholder" | "block" | "disabled"
+    > {}
 
 const NumberInput = ({
   name,

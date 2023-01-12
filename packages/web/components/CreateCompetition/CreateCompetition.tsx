@@ -7,6 +7,7 @@ import Button, { Submit } from "../DSL/Button/Button";
 import { Divider } from "../DSL/Divider/Divider";
 import DateInput from "../DSL/Form/DateInput";
 import Form from "../DSL/Form/Form";
+import FormError from "../DSL/Form/FormError";
 import NumberInput from "../DSL/Form/NumberInput";
 import TextInput from "../DSL/Form/TextInput";
 import {
@@ -37,14 +38,26 @@ const CreateView: React.FC<CompetitionStoreProp> = observer(({ store }) => {
   return (
     <Form onSubmit={(values) => store.onCompetitionSubmit(values)}>
       <div className={css("flex", "flex-col", "gap-2")}>
-        <TextInput block label={"name"} name={"name"} validate={required} />
-        <TextInput block label={"description"} name={"description"} />
+        <TextInput
+          block
+          label={"name"}
+          name={"name"}
+          validate={required}
+          disabled={store.isLoading}
+        />
+        <TextInput
+          block
+          label={"description"}
+          name={"description"}
+          disabled={store.isLoading}
+        />
         <NumberInput
           block
           label={"max user submissions"}
           name={"maxUserSubmissions"}
           description={"total amount of memes a single user can submit"}
           validate={[required, minValue(1), maxValue(5)]}
+          disabled={store.isLoading}
         />
         <DateInput
           block
@@ -55,6 +68,7 @@ const CreateView: React.FC<CompetitionStoreProp> = observer(({ store }) => {
           // @next -- bad to have mixed validation here
           min={new Date().toISOString().split("T")[0]}
           defaultValue={new Date().toISOString().split("T")[0]}
+          disabled={store.isLoading}
         />
         <div className={css("mt-3", "mb-2.5")}>
           <Divider />
@@ -64,8 +78,9 @@ const CreateView: React.FC<CompetitionStoreProp> = observer(({ store }) => {
           <Divider />
         </div>
         {/* rewards */}
+        <FormError />
         <div className={css("mt-4")}>
-          <Submit block />
+          <Submit block isLoading={store.isLoading} />
         </div>
       </div>
     </Form>

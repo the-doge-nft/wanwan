@@ -13,24 +13,22 @@ const Form: React.FC<PropsWithChildren<FormProps>> = ({
   onSubmit,
   className,
 }) => {
-  // @next add error middleware in axios http helper
   const apiErrorMiddleware = (data: Record<string, any>, form: FormApi) => {
-    return onSubmit(data, form)
-      .then(() => form.reset())
-      .catch((e) => {
-        if (e instanceof ApiError) {
-          return { [FORM_ERROR]: e.message };
-        } else {
-          throw e;
-        }
-      });
+    return onSubmit(data, form).catch((e) => {
+      if (e instanceof ApiError) {
+        // @next -- add input specific errors here. we need logic server side as well
+        return { [FORM_ERROR]: e.message };
+      } else {
+        throw e;
+      }
+    });
   };
 
   return (
     <FinalForm
       destroyOnUnregister
       onSubmit={(data, form) => apiErrorMiddleware(data, form)}
-      render={({ handleSubmit, values, errors }) => {
+      render={({ handleSubmit, values, errors, submitError, submitErrors }) => {
         return (
           <>
             <form className={className} onSubmit={handleSubmit}>

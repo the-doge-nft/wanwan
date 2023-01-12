@@ -22,3 +22,52 @@ body {
     overflow-x: hidden;
 }
 
+[data-rk] {
+    flex-grow: 1;
+    display: grid;
+}
+
+/* hack for display block / display none on toast enter and exit */
+:root {
+    --animate-duration: 0.01s;
+    --animate-delay: 0.01s;
+    --animate-repeat: 1;
+}
+
+.animate__animated {
+    -webkit-animation-duration: 0.01s;
+    animation-duration: 0.01s;
+    -webkit-animation-duration: var(--animate-duration);
+    animation-duration: var(--animate-duration);
+    -webkit-animation-fill-mode: both;
+    animation-fill-mode: both;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.animate__animated.fadeIn {
+    animation-name: fadeIn;
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0;
+    }
+}
+
+.animate__animated.fadeOut {
+    animation-name: fadeOut;
+}
+

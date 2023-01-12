@@ -10,6 +10,8 @@ import { useEffect } from "react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { WagmiConfig } from "wagmi";
+import { colors } from "../components/DSL/Theme";
+import { toastTransition } from "../components/DSL/Toast/Toast";
 import Modals from "../components/Modals/Modals";
 import env from "../environment";
 import { chains, client, createRainbowAuthAdapter } from "../services/wagmi";
@@ -17,65 +19,48 @@ import AppStore from "../store/App.store";
 import "../styles/globals.css";
 
 const App = observer(({ Component, pageProps }: AppProps) => {
-  const theme = lightTheme({ borderRadius: "none" });
+  const theme = lightTheme({
+    borderRadius: "none",
+    fontStack: "system",
+    accentColor: colors.gray[500],
+  });
+  theme.colors.closeButtonBackground = colors.slate[100];
+  theme.colors.modalBackground = colors.slate[100];
+  theme.colors.actionButtonBorder = colors.slate[100];
+  theme.colors.actionButtonBorder = "transparent";
   useEffect(() => {
     AppStore.init();
   }, []);
   return (
-    <WagmiConfig client={client}>
-      <RainbowKitAuthenticationProvider
-        status={AppStore.auth.status}
-        adapter={createRainbowAuthAdapter({
-          onVerifySuccess: () => AppStore.auth.getStatus(),
-          onLogoutSuccess: () => AppStore.auth.getStatus(),
-        })}
-      >
-        <RainbowKitProvider
-          appInfo={{ appName: env.app.name }}
-          chains={chains}
-          theme={theme}
+    <>
+      <WagmiConfig client={client}>
+        <RainbowKitAuthenticationProvider
+          status={AppStore.auth.status}
+          adapter={createRainbowAuthAdapter({
+            onVerifySuccess: () => AppStore.auth.getStatus(),
+            onLogoutSuccess: () => AppStore.auth.getStatus(),
+          })}
         >
-          <Component {...pageProps} />
-          <ToastContainer
-            position={"bottom-right"}
-            autoClose={5000}
-            hideProgressBar
-          />
-          <Modals />
-        </RainbowKitProvider>
-      </RainbowKitAuthenticationProvider>
-    </WagmiConfig>
+          <RainbowKitProvider
+            appInfo={{
+              appName: env.app.name,
+            }}
+            chains={chains}
+            theme={theme}
+          >
+            <Component {...pageProps} />
+            <Modals />
+          </RainbowKitProvider>
+        </RainbowKitAuthenticationProvider>
+      </WagmiConfig>
+      <ToastContainer
+        position={"bottom-right"}
+        autoClose={3500}
+        hideProgressBar
+        transition={toastTransition}
+      />
+    </>
   );
 });
 
 export default App;
-// export default function Duh({ Component, pageProps }: AppProps) {
-//   const theme = lightTheme({ borderRadius: "none" });
-//   useEffect(() => {
-//     AppStore.init();
-//   }, []);
-//   return (
-//     <WagmiConfig client={client}>
-//       <RainbowKitAuthenticationProvider
-//         status={AppStore.auth.status}
-//         adapter={createRainbowAuthAdapter({
-//           onVerifySuccess: () => AppStore.auth.getStatus(),
-//           onLogoutSuccess: () => AppStore.auth.getStatus(),
-//         })}
-//       >
-//         <RainbowKitProvider
-//           appInfo={{ appName: env.app.name }}
-//           chains={chains}
-//           theme={theme}
-//         >
-//           <Component {...pageProps} />
-//           <ToastContainer
-//             position={"bottom-right"}
-//             autoClose={5000}
-//             hideProgressBar
-//           />
-//         </RainbowKitProvider>
-//       </RainbowKitAuthenticationProvider>
-//     </WagmiConfig>
-//   );
-// }

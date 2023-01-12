@@ -32,19 +32,21 @@ const MemeById: React.FC<Meme> = observer(({ ...meme }) => {
   return (
     <AppLayout>
       <div className={css("mt-4")}>
-        <AspectRatio
-          className={css(
-            "bg-contain",
-            "bg-center",
-            "bg-no-repeat",
-            "border-[1px]",
-            "border-black"
-          )}
-          ratio={`${meme.media.width}/${meme.media.height}`}
-          style={{
-            backgroundImage: `url(${meme.media.url})`,
-          }}
-        />
+        <div className={css("px-24")}>
+          <AspectRatio
+            className={css(
+              "bg-contain",
+              "bg-center",
+              "bg-no-repeat",
+              "border-[1px]",
+              "border-black"
+            )}
+            ratio={`${meme.media.width}/${meme.media.height}`}
+            style={{
+              backgroundImage: `url(${meme.media.url})`,
+            }}
+          />
+        </div>
         <div
           className={css(
             "grid",
@@ -52,7 +54,7 @@ const MemeById: React.FC<Meme> = observer(({ ...meme }) => {
             "md:grid-cols-12",
             "md:grid-rows-1",
             "text-sm",
-            "mt-2",
+            "mt-8",
             "w-full"
           )}
         >

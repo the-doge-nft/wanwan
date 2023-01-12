@@ -4,9 +4,9 @@ import { isDev } from "../../../environment/vars";
 import { css } from "../../../helpers/css";
 import { defaultBgCss } from "../Theme";
 
-const transition = cssTransition({
-  enter: "flex",
-  exit: "hidden",
+export const toastTransition = cssTransition({
+  enter: "animate__animated fadeIn",
+  exit: "animate__animated fadeOut",
 });
 
 const toastBaseStyles = css(
@@ -31,7 +31,6 @@ export const successToast = (message: string) => {
     className: css(toastBaseStyles, defaultBgCss, "!text-black"),
     icon: false,
     closeButton: <CloseButton color={"black"} />,
-    transition,
   });
 };
 
@@ -41,7 +40,6 @@ export const errorToast = (message: string) => {
     className: css(toastBaseStyles, "!bg-red-800"),
     icon: false,
     closeButton: <CloseButton />,
-    transition,
   });
 };
 
@@ -51,7 +49,6 @@ export const warningToast = (message: string) => {
     className: css(toastBaseStyles, "!bg-yellow-600"),
     icon: false,
     closeButton: <CloseButton />,
-    transition,
   });
 };
 
@@ -73,7 +70,6 @@ export const debugToast = (message: string) => {
         ),
         icon: false,
         closeButton: <CloseButton />,
-        transition,
       }
     );
   }

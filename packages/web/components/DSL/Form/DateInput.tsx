@@ -10,7 +10,7 @@ interface DateInputProps
   extends BaseFormInputProps,
     Pick<
       BaseInputProps,
-      "max" | "min" | "placeholder" | "block" | "defaultValue"
+      "max" | "min" | "placeholder" | "block" | "defaultValue" | "disabled"
     > {}
 
 const DateInput = ({

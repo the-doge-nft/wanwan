@@ -1,5 +1,5 @@
 import { Oval } from "react-loader-spinner";
-const colors = require("tailwindcss/colors");
+import { colors } from "../Theme";
 
 export enum SpinnerSize {
   sm = "sm",

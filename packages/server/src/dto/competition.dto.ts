@@ -1,9 +1,8 @@
 import { TokenType } from '@prisma/client';
 import { Transform, Type } from 'class-transformer';
 import {
-  ArrayNotEmpty,
   IsArray,
-  IsDateString,
+  IsDate,
   IsEnum,
   IsInt,
   IsNotEmpty,
@@ -103,6 +102,7 @@ export class CompetitionDto {
 
   @IsOptional()
   @IsString()
+  @Transform(({ value }) => (value === '' ? null : value))
   description?: string;
 
   @IsNotEmpty()
@@ -112,17 +112,19 @@ export class CompetitionDto {
   maxUserSubmissions: number;
 
   @IsNotEmpty()
-  @IsDateString()
+  @IsDate()
+  @Transform(({ value }) => new Date(value))
   endsAt: Date;
 
+  @IsNotEmpty()
   @IsArray()
-  @ArrayNotEmpty()
   @Validate(EthereumAddressValidator)
   @Transform(({ value }: { value: string[] }) =>
     value.map((address) => formatEthereumAddress(address)),
   )
   curators: string[];
 
+  @IsNotEmpty()
   @IsArray()
   @ValidateNested({ each: true })
   @Validate(UniqueCompetitionRank)
