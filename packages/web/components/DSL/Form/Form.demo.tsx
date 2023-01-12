@@ -8,6 +8,7 @@ import DateInput from "./DateInput";
 import Form from "./Form";
 import MediaInput from "./MediaInput";
 import NumberInput from "./NumberInput";
+import SelectInput from "./SelectInput";
 import TextInput from "./TextInput";
 import { required } from "./validation";
 
@@ -41,6 +42,11 @@ const FormDemo = () => {
                   acceptedMimeToExtension={{ "image/jpg": [".jpg", ".jpeg"] }}
                 />
                 <DateInput name={"date"} label={"<date>"} validate={required} />
+                <SelectInput
+                  label={"<select>"}
+                  name={"select"}
+                  items={[{ id: "test", name: "test" }]}
+                />
                 <div className={css("flex", "justify-center", "mt-4")}>
                   <Button submit>submit</Button>
                 </div>

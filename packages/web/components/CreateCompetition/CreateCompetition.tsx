@@ -78,6 +78,7 @@ const CreateView: React.FC<CompetitionStoreProp> = observer(({ store }) => {
           <Divider />
         </div>
         {/* rewards */}
+        <Rewards store={store} />
         <FormError />
         <div className={css("mt-4")}>
           <Submit block isLoading={store.isLoading} />
@@ -119,6 +120,10 @@ const Curators: React.FC<CompetitionStoreProp> = observer(({ store }) => {
       </div>
     </>
   );
+});
+
+const Rewards: React.FC<CompetitionStoreProp> = observer(({ store }) => {
+  return <div></div>;
 });
 
 export default CreateCompetition;

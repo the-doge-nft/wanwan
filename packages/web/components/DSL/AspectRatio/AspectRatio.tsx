@@ -1,6 +1,5 @@
 import { PropsWithChildren } from "react";
 import { css } from "../../../helpers/css";
-import { jsonify } from "../../../helpers/strings";
 
 const CUSTOM_PROPERTY_NAME = "--aspect-ratio";
 
@@ -22,12 +21,9 @@ const AspectRatio: React.FC<PropsWithChildren<AspectRatioProps>> = ({
   } as React.CSSProperties;
   console.log(computedStyle);
   return (
-    <>
-      <div className={css(className)} style={computedStyle}>
-        {children}
-      </div>
-      <div>{jsonify(computedStyle)}</div>
-    </>
+    <div className={css(className)} style={computedStyle}>
+      {children}
+    </div>
   );
 };
 

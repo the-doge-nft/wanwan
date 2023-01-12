@@ -12,6 +12,7 @@ import InputDemo from "./Input/Input.demo";
 import MarqueeDemo from "./Marquee/Marquee.demo";
 import ModalDemo from "./Modal/Modal.demo";
 import PaneDemo from "./Pane/Pane.demo";
+import SelectDemo from "./Select/Select.demo";
 import SpinnerDemo from "./Spinner/Spinner.demo";
 import ToastDemo from "./Toast/Toast.demo";
 
@@ -34,6 +35,7 @@ const DSLPage = () => {
       <ModalDemo />
       <MarqueeDemo />
       <BottomSheetDemo />
+      <SelectDemo />
     </>
   );
 };

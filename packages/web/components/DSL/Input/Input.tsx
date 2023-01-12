@@ -32,7 +32,7 @@ export interface BaseInputProps
 
 export type InputProps = BaseInputProps & ValueProps;
 
-const textFieldBaseStyles = css(
+export const textFieldBaseStyles = css(
   "text-black",
   "py-1",
   "px-2",

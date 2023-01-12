@@ -14,7 +14,7 @@ export interface BaseFormInputProps {
 
 export const BaseInvalidInputStyle = css("border-2", "!border-red-700");
 const errorTextCss = css("text-red-500");
-interface FormControlProps
+export interface FormControlProps
   extends Pick<BaseFormInputProps, "label" | "name" | "description"> {
   children: any;
   isRequired: boolean;
