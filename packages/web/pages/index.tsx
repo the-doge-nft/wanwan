@@ -50,6 +50,9 @@ const Home: React.FC<HomeProps> = observer(({ memes, competitions }) => {
       </Head>
       <main className={css()}>
         <div className={css("flex", "flex-col", "gap-4")}>
+          <Pane title={"What is wanwan?"} type={PaneType.Secondary}>
+            wanwan is a platform for creating meme competitions.
+          </Pane>
           <Pane title={"competitions"}>
             <div
               className={css("grid", "grid-rows-[min-content]", "gap-4", "p-2")}
@@ -63,29 +66,32 @@ const Home: React.FC<HomeProps> = observer(({ memes, competitions }) => {
                 renderNoData={() => renderNoDataFound("competitions")}
               >
                 {store.competitions.map((comp) => (
-                  <PreviewLink
+                  <div
                     key={`competition-preview-${comp.id}`}
-                    name={comp.name}
-                    description={comp.description}
-                    link={`/competition/${comp.id}`}
+                    className={css("max-w-[200px]")}
                   >
-                    <AspectRatio
-                      className={css(
-                        "max-w-[300px]",
-                        "bg-cover",
-                        "bg-center",
-                        "bg-no-repeat",
-                        "h-full"
-                      )}
-                      ratio={"1/1"}
-                      style={{ background: colors.slate[200] }}
-                    />
-                  </PreviewLink>
+                    <PreviewLink
+                      name={comp.name}
+                      description={comp.description}
+                      link={`/competition/${comp.id}`}
+                    >
+                      <AspectRatio
+                        className={css(
+                          "bg-cover",
+                          "bg-center",
+                          "bg-no-repeat",
+                          "h-full"
+                        )}
+                        ratio={"1/1"}
+                        style={{ background: colors.slate[200] }}
+                      />
+                    </PreviewLink>
+                  </div>
                 ))}
               </AsyncWrap>
             </div>
           </Pane>
-          <Pane title={"recent memes"} type={PaneType.Secondary}>
+          <Pane title={"recent memes"}>
             <div
               className={css("grid", "grid-rows-[min-content]", "gap-4", "p-2")}
               style={{
@@ -98,24 +104,27 @@ const Home: React.FC<HomeProps> = observer(({ memes, competitions }) => {
                 renderNoData={() => renderNoDataFound("memes")}
               >
                 {store.memes.map((meme) => (
-                  <PreviewLink
+                  <div
                     key={`meme-preview-${meme.id}`}
-                    name={meme.name}
-                    description={meme.description}
-                    link={`/meme/${meme.id}`}
+                    className={css("max-w-[200px]")}
                   >
-                    <AspectRatio
-                      className={css(
-                        "max-w-[300px]",
-                        "bg-cover",
-                        "bg-center",
-                        "bg-no-repeat",
-                        "h-full"
-                      )}
-                      ratio={`${meme.media.width}/${meme.media.height}`}
-                      style={{ backgroundImage: `url(${meme.media.url})` }}
-                    />
-                  </PreviewLink>
+                    <PreviewLink
+                      name={meme.name}
+                      description={meme.description}
+                      link={`/meme/${meme.id}`}
+                    >
+                      <AspectRatio
+                        className={css(
+                          "bg-cover",
+                          "bg-center",
+                          "bg-no-repeat",
+                          "h-full"
+                        )}
+                        ratio={`${meme.media.width}/${meme.media.height}`}
+                        style={{ backgroundImage: `url(${meme.media.url})` }}
+                      />
+                    </PreviewLink>
+                  </div>
                 ))}
               </AsyncWrap>
             </div>

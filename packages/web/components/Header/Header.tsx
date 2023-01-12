@@ -1,12 +1,13 @@
 import env from "../../environment";
+import { isDev } from "../../environment/vars";
 import { css } from "../../helpers/css";
 import { ConnectButton } from "../DSL/Button/Button";
-import Link from "../DSL/Link/Link";
+import Link, { LinkType } from "../DSL/Link/Link";
 
-const navItems = [
-  { name: "home", link: "/" },
-  { name: "dsl", link: "/dsl" },
-];
+const navItems: { name: string; link: string }[] = [];
+if (isDev()) {
+  navItems.push({ name: "dsl", link: "/dsl" });
+}
 
 const Header = () => {
   return (
@@ -28,7 +29,9 @@ const Header = () => {
           "font-bold"
         )}
       >
-        {env.app.name}
+        <Link type={LinkType.Secondary} href="/">
+          {env.app.name}
+        </Link>
       </div>
       <div className={css("z-10")}>
         <ConnectButton />

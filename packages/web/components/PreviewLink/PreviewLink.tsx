@@ -15,7 +15,7 @@ const PreviewLink: React.FC<PropsWithChildren<PreviewLinkProps>> = ({
   children,
 }) => {
   return (
-    <div className={css()}>
+    <div>
       <Link href={link} className={css("w-full")}>
         <div
           className={css(
