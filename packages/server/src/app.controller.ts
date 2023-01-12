@@ -148,6 +148,13 @@ export class AppController {
     });
   }
 
+  @Get('competition/:id')
+  getCompetitionById(@Param() { id }: IdDto) {
+    return this.competition.findFirst({
+      where: { id },
+    });
+  }
+
   @Get('competition/:id/meme')
   getCompetitionMemes(@Param() { id }: IdDto) {
     return this.meme.getByCompetitionId(id);
