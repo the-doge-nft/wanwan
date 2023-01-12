@@ -29,7 +29,7 @@ export class MemeController {
     private readonly comment: CommentService,
   ) {}
 
-  @Post('meme')
+  @Post('/')
   @UseGuards(AuthGuard)
   @UseInterceptors(
     FileInterceptor('file', {
@@ -54,17 +54,17 @@ export class MemeController {
     return this.meme.create(file, { ...meme, createdById: user.id });
   }
 
-  @Get('meme')
+  @Get('/')
   getMeme() {
     return this.meme.findMany({ orderBy: { createdAt: 'desc' } });
   }
 
-  @Get('meme/:id')
+  @Get(':id')
   async getMemeById(@Param() { id }: IdDto) {
     return this.meme.findFirst({ where: { id } });
   }
 
-  @Post('meme/:id/comment')
+  @Post(':id/comment')
   @UseGuards(AuthGuard)
   postComment(
     @Param() { id }: IdDto,

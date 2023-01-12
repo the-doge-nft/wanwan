@@ -27,7 +27,7 @@ export class CompetitionController {
     private readonly alchemy: AlchemyService,
   ) {}
 
-  @Post('competition')
+  @Post('/')
   @UseGuards(AuthGuard)
   postCompetition(
     @Body() competition: CompetitionDto,
@@ -39,26 +39,26 @@ export class CompetitionController {
     });
   }
 
-  @Get('competition')
+  @Get('/')
   getCompetition() {
     return this.competition.findMany({
       orderBy: { createdAt: 'desc' },
     });
   }
 
-  @Get('competition/:id')
+  @Get(':id')
   getCompetitionById(@Param() { id }: IdDto) {
     return this.competition.findFirst({
       where: { id },
     });
   }
 
-  @Get('competition/:id/meme')
+  @Get(':id/meme')
   getCompetitionMemes(@Param() { id }: IdDto) {
     return this.meme.getByCompetitionId(id);
   }
 
-  @Post('competition/:id/vote')
+  @Post(':id/vote')
   @UseGuards(AuthGuard)
   async postVote(
     @Body() vote: VoteDto,
