@@ -3,10 +3,10 @@ import { observer } from "mobx-react-lite";
 import { GetServerSideProps } from "next";
 import Head from "next/head";
 import { useCallback, useEffect, useMemo } from "react";
-import CompetitionLink from "../components/CompetitionLink/CompetitionLink";
 import AsyncWrap from "../components/DSL/AsyncWrap/AsyncWrap";
 import Pane, { PaneType } from "../components/DSL/Pane/Pane";
-import MemeLink from "../components/MemeLink/MemeLink";
+import { colors } from "../components/DSL/Theme";
+import PreviewLink from "../components/PreviewLink/PreviewLink";
 import env from "../environment";
 import { css } from "../helpers/css";
 import { Competition, Meme } from "../interfaces";
@@ -50,14 +50,26 @@ const Home: React.FC<HomeProps> = observer(({ memes, competitions }) => {
       <main className={css()}>
         <div className={css("flex", "flex-col", "gap-4")}>
           <Pane title={"competitions"}>
-            <div className={css("flex", "flex-col", "gap-4")}>
+            <div
+              className={css("grid", "grid-rows-[min-content]", "gap-4", "p-2")}
+              style={{
+                gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
+              }}
+            >
               <AsyncWrap
                 isLoading={false}
-                hasData={competitions.length > 0}
+                hasData={store.competitions.length > 0}
                 renderNoData={() => renderNoDataFound("competitions")}
               >
                 {store.competitions.map((comp) => (
-                  <CompetitionLink key={`competition-${comp.id}`} {...comp} />
+                  <PreviewLink
+                    key={`competition-${comp.id}`}
+                    name={comp.name}
+                    description={comp.description}
+                    link={`/competition/${comp.id}`}
+                    ratio={"1/1"}
+                    background={colors.slate[200]}
+                  />
                 ))}
               </AsyncWrap>
             </div>
@@ -71,11 +83,18 @@ const Home: React.FC<HomeProps> = observer(({ memes, competitions }) => {
             >
               <AsyncWrap
                 isLoading={false}
-                hasData={memes.length > 0}
+                hasData={store.memes.length > 0}
                 renderNoData={() => renderNoDataFound("memes")}
               >
                 {store.memes.map((meme) => (
-                  <MemeLink key={`meme-${meme.id}`} {...meme} />
+                  <PreviewLink
+                    key={`meme-${meme.id}`}
+                    name={meme.name}
+                    description={meme.description}
+                    link={`/meme/${meme.id}`}
+                    ratio={`${meme.media.width}/${meme.media.height}`}
+                    backgroundImage={`url(${meme.media.url})`}
+                  />
                 ))}
               </AsyncWrap>
             </div>
