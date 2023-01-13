@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   Post,
+  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -12,10 +13,12 @@ import { AlchemyService } from '../alchemy/alchemy.service';
 import { AuthGuard } from '../auth/auth.guard';
 import { CompetitionDto } from '../dto/competition.dto';
 import IdDto from '../dto/id.dto';
+import SearchDto from '../dto/search.dto';
 import VoteDto from '../dto/vote.dto';
 import { AuthenticatedRequest } from '../interface';
 import { VoteService } from '../vote/vote.service';
 import { MemeService } from './../meme/meme.service';
+import { CompetitionSearchService } from './competition-search.service';
 import { CompetitionService } from './competition.service';
 
 @Controller('competition')
@@ -25,6 +28,7 @@ export class CompetitionController {
     private readonly meme: MemeService,
     private readonly vote: VoteService,
     private readonly alchemy: AlchemyService,
+    private readonly search: CompetitionSearchService,
   ) {}
 
   @Post('/')
@@ -44,6 +48,12 @@ export class CompetitionController {
     return this.competition.findMany({
       orderBy: { createdAt: 'desc' },
     });
+  }
+
+  @Get('search')
+  getCompetitionSearch(@Query() config: SearchDto, @Req() req: Request) {
+    console.log('hit');
+    return this.search.searchOrFail(config, req);
   }
 
   @Get(':id')

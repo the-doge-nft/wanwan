@@ -8,6 +8,7 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { CommentService } from './comment/comment.service';
 import { CompetitionCuratorService } from './competition-curator/competition-curator.service';
+import { CompetitionSearchService } from './competition/competition-search.service';
 import { CompetitionController } from './competition/competition.controller';
 import { CompetitionService } from './competition/competition.service';
 import config, { Config } from './config/config';
@@ -77,6 +78,7 @@ import { VoteService } from './vote/vote.service';
     CompetitionCuratorService,
     ProfileService,
     EthersService,
+    CompetitionSearchService,
     // Search,
   ],
 })
