@@ -18,7 +18,7 @@ export interface Sort<T> {
 
 @Injectable()
 export abstract class Search<T, K extends object> {
-  static CONFIG_KEY = 'search';
+  static CONFIG_KEY = 'config';
   static PAGE_SIZE_KEY = 'count';
   static OFFSET_KEY = 'offset';
 
