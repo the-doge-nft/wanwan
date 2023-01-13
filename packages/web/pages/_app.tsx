@@ -37,9 +37,7 @@ const App = observer(({ Component, pageProps }: AppProps) => {
 
   const { address, isDisconnected, isConnected } = useAccount();
   useEffect(() => {
-    console.log(address, isDisconnected, isConnected);
     AppStore.auth.address = isDisconnected ? undefined : address;
-    console.log(AppStore.auth.address);
   }, [address, isDisconnected]);
   return (
     <>

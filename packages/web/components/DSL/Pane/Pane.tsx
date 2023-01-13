@@ -13,8 +13,8 @@ interface PaneProps {
 
 const basePaneStyles = {
   container: css("border-[1px]", "border-black"),
-  title: css("p-0.5", "font-bold", "text-sm"),
-  body: css("p-0.5", "text-sm"),
+  title: css("p-1", "font-bold", "text-sm"),
+  body: css("p-1", "text-sm"),
 };
 
 const paneTypeStyles = {

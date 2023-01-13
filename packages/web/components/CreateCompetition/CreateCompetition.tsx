@@ -1,5 +1,6 @@
 import { observer } from "mobx-react-lite";
 import { css } from "../../helpers/css";
+import AppStore from "../../store/App.store";
 import CreateCompetitionStore, {
   CreateCompetitionView,
 } from "../../store/CreateCompetition.store";
@@ -40,20 +41,20 @@ const CreateView: React.FC<CompetitionStoreProp> = observer(({ store }) => {
       <div className={css("flex", "flex-col", "gap-2")}>
         <TextInput
           block
-          label={"name"}
+          label={"Name"}
           name={"name"}
           validate={required}
           disabled={store.isLoading}
         />
         <TextInput
           block
-          label={"description"}
+          label={"Description"}
           name={"description"}
           disabled={store.isLoading}
         />
         <NumberInput
           block
-          label={"max user submissions"}
+          label={"Max user submissions"}
           name={"maxUserSubmissions"}
           description={"total amount of memes a single user can submit"}
           validate={[required, minValue(1), maxValue(5)]}
@@ -61,7 +62,7 @@ const CreateView: React.FC<CompetitionStoreProp> = observer(({ store }) => {
         />
         <DateInput
           block
-          label={"ends at"}
+          label={"Ends at"}
           name={"endsAt"}
           description={"when your competition ends"}
           validate={required}
@@ -80,8 +81,16 @@ const CreateView: React.FC<CompetitionStoreProp> = observer(({ store }) => {
         {/* rewards */}
         <Rewards store={store} />
         <FormError />
-        <div className={css("mt-4")}>
+        <div className={css("mt-4", "flex", "gap-2")}>
           <Submit block isLoading={store.isLoading} />
+          <Button
+            block
+            onClick={() =>
+              (AppStore.modals.isCreateCompetitionModalOpen = false)
+            }
+          >
+            Cancel
+          </Button>
         </div>
       </div>
     </Form>

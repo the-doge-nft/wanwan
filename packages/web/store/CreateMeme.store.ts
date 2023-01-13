@@ -51,7 +51,7 @@ export default class CreateMemeStore extends Navigable(EmptyClass) {
       case CreateMemeView.Create:
         return "Create Meme";
       case CreateMemeView.Success:
-        return "Meme Created";
+        return "Created";
       default:
         return "";
     }

@@ -2,7 +2,7 @@ import { observer } from "mobx-react-lite";
 import { css } from "../../helpers/css";
 import AppStore from "../../store/App.store";
 import CreateMemeStore, { CreateMemeView } from "../../store/CreateMeme.store";
-import { Submit } from "../DSL/Button/Button";
+import Button, { Submit } from "../DSL/Button/Button";
 import Form from "../DSL/Form/Form";
 import MediaInput from "../DSL/Form/MediaInput";
 import TextInput from "../DSL/Form/TextInput";
@@ -50,8 +50,14 @@ const CreateMemeForm: React.FC<{ store: CreateMemeStore }> = observer(
               disabled={store.isSubmitLoading}
             />
           )}
-          <div className={css("mt-4")}>
+          <div className={css("mt-4", "flex", "gap-2")}>
             <Submit block isLoading={store.isSubmitLoading} />
+            <Button
+              block
+              onClick={() => (AppStore.modals.isCreateMemeModalOpen = false)}
+            >
+              Cancel
+            </Button>
           </div>
         </div>
       </Form>

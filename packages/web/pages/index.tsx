@@ -54,23 +54,30 @@ const Home: React.FC<HomeProps> = observer(({ memes, competitions }) => {
           <Pane title={"What is wanwan?"} type={PaneType.Secondary}>
             wanwan is a platform for creating meme competitions.
           </Pane>
-          <Pane title={"Your Memes"}>
-            {AppStore.auth.memes.map((meme) => (
-              <AspectRatio
-                key={`meme-user-${meme.id}`}
-                className={css(
-                  "bg-cover",
-                  "bg-center",
-                  "bg-no-repeat",
-                  "h-full",
-                  "max-w-[200px]"
-                )}
-                ratio={`${meme.media.width}/${meme.media.height}`}
-                style={{ backgroundImage: `url(${meme.media.url})` }}
-              />
-            ))}
+          <Pane title={"Your memes"}>
+            <div
+              className={css("grid", "grid-rows-[min-content]", "gap-4", "p-2")}
+              style={{
+                gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
+              }}
+            >
+              {AppStore.auth.memes.map((meme) => (
+                <AspectRatio
+                  key={`meme-user-${meme.id}`}
+                  className={css(
+                    "bg-cover",
+                    "bg-center",
+                    "bg-no-repeat",
+                    "h-full",
+                    "max-w-[200px]"
+                  )}
+                  ratio={`${meme.media.width}/${meme.media.height}`}
+                  style={{ backgroundImage: `url(${meme.media.url})` }}
+                />
+              ))}
+            </div>
           </Pane>
-          <Pane title={"competitions"}>
+          <Pane title={"Competitions"}>
             <div
               className={css("grid", "grid-rows-[min-content]", "gap-4", "p-2")}
               style={{
@@ -108,7 +115,7 @@ const Home: React.FC<HomeProps> = observer(({ memes, competitions }) => {
               </AsyncWrap>
             </div>
           </Pane>
-          <Pane title={"recent memes"}>
+          <Pane title={"Recent memes"}>
             <div
               className={css("grid", "grid-rows-[min-content]", "gap-4", "p-2")}
               style={{

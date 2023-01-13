@@ -118,7 +118,7 @@ const MediaInput: React.FC<MediaInputProps> = ({
             "p-7",
             {
               "border-red-700": isError && !isDragActive,
-              "border-slate-600": !isError && !isDragActive,
+              "border-black": !isError && !isDragActive,
               "border-neutral-600": isDragActive,
               "cursor-pointer": !noClick,
               "cursor-default": noClick,
@@ -142,9 +142,7 @@ const MediaInput: React.FC<MediaInputProps> = ({
               )}
             >
               <div className={css()}>
-                <Button disabled={disabled} onClick={() => open()}>
-                  Select File
-                </Button>
+                <Button disabled={disabled}>Select File</Button>
               </div>
               <div className={css("text-center")}>
                 <div className={css("text-xs")}>
