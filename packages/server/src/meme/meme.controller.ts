@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
@@ -6,12 +7,14 @@ import {
   Param,
   ParseFilePipe,
   Post,
+  Query,
   Req,
   UploadedFile,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+import SearchDto from 'src/dto/search.dto';
 import { AuthGuard } from '../auth/auth.guard';
 import { CommentService } from '../comment/comment.service';
 import CommentDto from '../dto/comment.dto';
@@ -20,6 +23,7 @@ import { MemeDto } from '../dto/meme.dto';
 import { AuthenticatedRequest } from '../interface';
 import { MediaService } from '../media/media.service';
 import MemeMediaFileValidator from '../validator/meme-media-file.validator';
+import { MemeSearchService } from './meme-search.service';
 import { MemeService } from './meme.service';
 
 @Controller('meme')
@@ -27,6 +31,7 @@ export class MemeController {
   constructor(
     private readonly meme: MemeService,
     private readonly comment: CommentService,
+    private readonly search: MemeSearchService,
   ) {}
 
   @Post('/')
@@ -57,6 +62,14 @@ export class MemeController {
   @Get('/')
   getMeme() {
     return this.meme.findMany({ orderBy: { createdAt: 'desc' } });
+  }
+
+  @Get('search')
+  getCompetitionSearch(@Query() config: SearchDto, @Req() req: Request) {
+    console.log('hit');
+    return this.search.searchOrFail(config, req).catch((e) => {
+      throw new BadRequestException(e.message);
+    });
   }
 
   @Get(':id')

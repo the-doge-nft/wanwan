@@ -15,6 +15,7 @@ import config, { Config } from './config/config';
 import { CurrencyService } from './currency/currency.service';
 import { EthersService } from './ethers/ethers.service';
 import { MediaService } from './media/media.service';
+import { MemeSearchService } from './meme/meme-search.service';
 import { MemeController } from './meme/meme.controller';
 import { MemeService } from './meme/meme.service';
 import { PrismaService } from './prisma.service';
@@ -79,6 +80,7 @@ import { VoteService } from './vote/vote.service';
     ProfileService,
     EthersService,
     CompetitionSearchService,
+    MemeSearchService,
     // Search,
   ],
 })

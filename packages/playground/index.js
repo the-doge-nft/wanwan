@@ -5,18 +5,15 @@ const main = async () => {
   //   console.log(test);
 
   try {
-    const { data } = await axios.get(
-      `http://localhost:3000/competition/search`,
-      {
-        params: {
-          count: 0,
-          offset: 0,
-          config: encodeBase64({
-            filters: [{ key: "name", operation: "contains", value: "tets" }],
-          }),
-        },
-      }
-    );
+    const { data } = await axios.get(`http://localhost:3000/meme/search`, {
+      params: {
+        count: 0,
+        offset: 0,
+        config: encodeBase64({
+          filters: [{ key: "name", operation: "contains", value: "A" }],
+        }),
+      },
+    });
     console.log(data);
   } catch (e) {
     console.error(e);
