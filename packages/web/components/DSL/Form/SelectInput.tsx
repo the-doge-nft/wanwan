@@ -8,7 +8,7 @@ import { useControlledFormField, useFormField } from "./useFormField";
 
 interface SelectInputProps
   extends BaseFormInputProps,
-    Pick<SelectProps, "items"> {}
+    Pick<SelectProps, "items" | "defaultValue"> {}
 
 const SelectInput: React.FC<SelectInputProps> = ({
   name,
@@ -18,9 +18,14 @@ const SelectInput: React.FC<SelectInputProps> = ({
   validate,
   items,
   description,
+  defaultValue,
   ...rest
 }) => {
-  const { input, meta, isRequired } = useFormField(name, validate);
+  const { input, meta, isRequired } = useFormField(
+    name,
+    validate,
+    defaultValue
+  );
   useControlledFormField(input.onChange, value);
   return (
     <FormControl

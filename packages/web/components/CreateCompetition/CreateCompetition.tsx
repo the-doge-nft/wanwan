@@ -10,6 +10,7 @@ import DateInput from "../DSL/Form/DateInput";
 import Form from "../DSL/Form/Form";
 import FormError from "../DSL/Form/FormError";
 import NumberInput from "../DSL/Form/NumberInput";
+import SelectInput from "../DSL/Form/SelectInput";
 import TextInput from "../DSL/Form/TextInput";
 import {
   isEthereumAddress,
@@ -132,7 +133,35 @@ const Curators: React.FC<CompetitionStoreProp> = observer(({ store }) => {
 });
 
 const Rewards: React.FC<CompetitionStoreProp> = observer(({ store }) => {
-  return <div></div>;
+  return (
+    <>
+      {store.isRewardsVisible && (
+        <>
+          {Array.from(Array(store.rewardsCount)).map((_, index) => (
+            <div key={`${store.REWARDS_INPUT_PREFIX}-${index}`}>
+              <SelectInput
+                label={"Token Type"}
+                name={`${store.REWARDS_INPUT_PREFIX}-${index}`}
+                items={store.rewardsTypeSelectItems}
+                validate={required}
+                defaultValue={store.rewardsTypeSelectItems[0].value}
+              />
+            </div>
+          ))}
+        </>
+      )}
+      <div className={css("flex", "items-center", "gap-10")}>
+        <Button block onClick={() => store.addReward()}>
+          + reward
+        </Button>
+        {store.showRemoveReward && (
+          <Button block onClick={() => store.removeReward()}>
+            - reward
+          </Button>
+        )}
+      </div>
+    </>
+  );
 });
 
 export default CreateCompetition;

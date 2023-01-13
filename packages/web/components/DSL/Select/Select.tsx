@@ -25,29 +25,30 @@ const Select = ({
 }: SelectProps) => {
   const initialValue = defaultValue ? defaultValue : items[0].id;
   return (
-    <div>
-      <RadixSelect.Root
-        onValueChange={(value) => onChange(value)}
-        value={value}
-        defaultValue={initialValue}
+    // <div className={css()}>
+    <RadixSelect.Root
+      onValueChange={(value) => onChange(value)}
+      value={value}
+      defaultValue={initialValue}
+    >
+      <RadixSelect.Trigger
+        className={css(
+          textFieldBaseStyles,
+          "inline-flex",
+          "items-center",
+          {
+            "w-full": block,
+          },
+          className
+        )}
       >
-        <RadixSelect.Trigger
-          className={css(
-            textFieldBaseStyles,
-            "inline-flex",
-            "items-center",
-            {
-              "w-full": block,
-            },
-            className
-          )}
-        >
-          <RadixSelect.Value />
-          <RadixSelect.Icon className={css("ml-2")}>
-            <BsChevronDown />
-          </RadixSelect.Icon>
-        </RadixSelect.Trigger>
+        <RadixSelect.Value />
+        <RadixSelect.Icon className={css("ml-2")}>
+          <BsChevronDown />
+        </RadixSelect.Icon>
+      </RadixSelect.Trigger>
 
+      <RadixSelect.Portal>
         <RadixSelect.Content
           className={css(
             "overflow-hidden",
@@ -55,6 +56,7 @@ const Select = ({
             "text-sm",
             "border-[1px]",
             "border-black",
+            "z-20",
             defaultBgCss
           )}
         >
@@ -80,8 +82,9 @@ const Select = ({
           </RadixSelect.Viewport>
           <RadixSelect.ScrollDownButton />
         </RadixSelect.Content>
-      </RadixSelect.Root>
-    </div>
+      </RadixSelect.Portal>
+    </RadixSelect.Root>
+    // </div>
   );
 };
 

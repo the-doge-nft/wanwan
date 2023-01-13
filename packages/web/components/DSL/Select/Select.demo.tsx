@@ -3,10 +3,11 @@ import { Demo } from "../Demo";
 import Select from "./Select";
 
 const SelectDemo = () => {
-  const [value, setValue] = useState("empty");
+  const [value, setValue] = useState<string | undefined>();
   return (
     <Demo title={"Select"}>
       <Select
+        defaultValue="test"
         onChange={(val) => setValue(val)}
         value={value}
         items={[

@@ -12,9 +12,13 @@ export enum CreateCompetitionView {
 
 export default class CreateCompetitionStore extends Navigable(EmptyClass) {
   CREATOR_INPUT_PREFIX = "creator-input";
+  REWARDS_INPUT_PREFIX = "rewards-input";
 
   @observable
   private _curatorsCount = 0;
+
+  @observable
+  private _rewardsCount = 0;
 
   @observable
   isLoading = false;
@@ -79,6 +83,16 @@ export default class CreateCompetitionStore extends Navigable(EmptyClass) {
     this._curatorsCount -= 1;
   }
 
+  @action
+  addReward() {
+    this._rewardsCount += 1;
+  }
+
+  @action
+  removeReward() {
+    this._rewardsCount -= 1;
+  }
+
   get isCuratorsVisible() {
     return this._curatorsCount > 0;
   }
@@ -91,5 +105,27 @@ export default class CreateCompetitionStore extends Navigable(EmptyClass) {
   @computed
   get showRemoveCurator() {
     return this._curatorsCount >= 1;
+  }
+
+  get isRewardsVisible() {
+    return this._rewardsCount > 0;
+  }
+
+  @computed
+  get rewardsCount() {
+    return this._rewardsCount;
+  }
+
+  @computed
+  get showRemoveReward() {
+    return this._rewardsCount >= 1;
+  }
+
+  get rewardsTypeSelectItems(): SelectItem[] {
+    return [
+      { name: "ERC1155", id: "ERC1155" },
+      { name: "ERC721", id: "ERC721" },
+      { name: "ERC20", id: "ERC20" },
+    ];
   }
 }
