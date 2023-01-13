@@ -21,10 +21,12 @@ const MemeById: React.FC<CompetitionByIdProps> = observer(
     const {
       query: { id },
     } = useRouter();
+
     const store = useMemo(
       () => new CompetitionIdStore(id as string, competition, memes),
       [id, competition, memes]
     );
+
     useEffect(() => {
       store.init();
     }, [store]);

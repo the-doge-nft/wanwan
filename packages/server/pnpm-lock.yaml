@@ -36,6 +36,7 @@ specifiers:
   image-size: ^1.0.2
   jest: 28.1.2
   joi: ^17.7.0
+  lodash.merge: ^4.6.2
   prettier: ^2.3.2
   prisma: ^4.6.1
   redis: ^4.5.1
@@ -73,6 +74,7 @@ dependencies:
   express-session: 1.17.3
   image-size: 1.0.2
   joi: 17.7.0
+  lodash.merge: 4.6.2
   redis: 4.5.1
   reflect-metadata: 0.1.13
   rimraf: 3.0.2
@@ -5711,7 +5713,6 @@ packages:
 
   /lodash.merge/4.6.2:
     resolution: {integrity: sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==}
-    dev: true
 
   /lodash/4.17.21:
     resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}

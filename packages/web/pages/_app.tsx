@@ -30,12 +30,17 @@ const App = observer(({ Component, pageProps }: AppProps) => {
   theme.colors.actionButtonBorder = "transparent";
   useEffect(() => {
     AppStore.init();
+    return () => {
+      AppStore.destroy();
+    };
   }, []);
 
-  const { address } = useAccount();
+  const { address, isDisconnected, isConnected } = useAccount();
   useEffect(() => {
-    AppStore.auth.address = address;
-  }, [address]);
+    console.log(address, isDisconnected, isConnected);
+    AppStore.auth.address = isDisconnected ? undefined : address;
+    console.log(AppStore.auth.address);
+  }, [address, isDisconnected]);
   return (
     <>
       <WagmiConfig client={client}>

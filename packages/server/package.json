@@ -45,6 +45,7 @@
     "express-session": "^1.17.3",
     "image-size": "^1.0.2",
     "joi": "^17.7.0",
+    "lodash.merge": "^4.6.2",
     "redis": "^4.5.1",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",

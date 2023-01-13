@@ -29,6 +29,10 @@ class AppStoreClass {
     this.auth.init();
     this.settings.init();
   }
+
+  destroy() {
+    this.auth.destroy();
+  }
 }
 
 const AppStore = new AppStoreClass();

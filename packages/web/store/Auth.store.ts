@@ -2,25 +2,40 @@ import { AuthenticationStatus } from "@rainbow-me/rainbowkit";
 import { computed, makeObservable, observable } from "mobx";
 import { Address } from "wagmi";
 import http from "../services/http";
+import { Reactionable } from "../services/mixins/reactionable";
 import { Profile } from "./../interfaces/index";
+import { EmptyClass } from "./../services/mixins/index";
 import AppStore from "./App.store";
 
-export default class AuthStore {
+export default class AuthStore extends Reactionable(EmptyClass) {
   @observable
   status: AuthenticationStatus = "loading";
 
+  // must be explicit undefined for mobx react to fire
   @observable
-  address?: Address;
+  address?: Address = undefined;
 
   @observable
   profile?: Profile;
 
   constructor() {
+    super();
     makeObservable(this);
   }
 
   init() {
     this.getStatus();
+    return (
+      this.react(
+        () => this.address,
+        () => {
+          if (this.address) {
+            this.getProfile();
+          }
+        }
+      ),
+      { fireImmediately: true }
+    );
   }
 
   getStatus() {
@@ -36,11 +51,12 @@ export default class AuthStore {
   }
 
   getProfile() {
-    if (this.address) {
-      http
-        .get(`/profile/${this.address}`)
-        .then(({ data }) => (this.profile = data));
+    if (!this.address) {
+      throw new Error("Address not available");
     }
+    http
+      .get(`/profile/${this.address}`)
+      .then(({ data }) => (this.profile = data));
   }
 
   runOrAuthPrompt(fn: () => void) {
@@ -52,8 +68,8 @@ export default class AuthStore {
   }
 
   onLogin() {
+    console.log("on login");
     this.getStatus();
-    this.getProfile();
     AppStore.events.publish(AppStore.events.events.LOGIN);
   }
 
@@ -65,5 +81,9 @@ export default class AuthStore {
   @computed
   get isAuthed() {
     return this.status === "authenticated";
+  }
+
+  destroy() {
+    this.disposeReactions();
   }
 }
