@@ -7,7 +7,7 @@ export enum PaneType {
 }
 
 interface PaneProps {
-  title?: string;
+  title?: React.ReactNode;
   type?: PaneType;
 }
 

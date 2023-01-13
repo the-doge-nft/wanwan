@@ -167,7 +167,7 @@ export const ConnectButton: React.FC<
                       }
                     >
                       <DropdownItem>
-                        <Link href={`/profile/${account.address}`}>
+                        <Link href={`/profile/${account.address}/meme`}>
                           Profile
                         </Link>
                       </DropdownItem>

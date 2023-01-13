@@ -13,7 +13,6 @@ import { css } from "../helpers/css";
 import { Competition, Meme } from "../interfaces";
 import AppLayout from "../layouts/App.layout";
 import http from "../services/http";
-import AppStore from "../store/App.store";
 import HomeStore from "../store/Home.store";
 
 interface HomeProps {
@@ -44,30 +43,8 @@ const Home: React.FC<HomeProps> = observer(({ memes, competitions }) => {
       <main className={css()}>
         <div className={css("flex", "flex-col", "gap-4")}>
           <Pane title={"What is wanwan?"} type={PaneType.Secondary}>
-            wanwan is a platform for creating meme competitions.
-          </Pane>
-          <Pane title={"Your memes"}>
-            <div
-              className={css("grid", "grid-rows-[min-content]", "gap-4", "p-2")}
-              style={{
-                gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
-              }}
-            >
-              {AppStore.auth.memes.map((meme) => (
-                <AspectRatio
-                  key={`meme-user-${meme.id}`}
-                  className={css(
-                    "bg-cover",
-                    "bg-center",
-                    "bg-no-repeat",
-                    "h-full",
-                    "max-w-[200px]"
-                  )}
-                  ratio={`${meme.media.width}/${meme.media.height}`}
-                  style={{ backgroundImage: `url(${meme.media.url})` }}
-                />
-              ))}
-            </div>
+            wanwan is a platform for creating meme competitions. If you make
+            something good enough, you could win.
           </Pane>
           <Pane title={"Competitions"}>
             <div
@@ -107,7 +84,7 @@ const Home: React.FC<HomeProps> = observer(({ memes, competitions }) => {
               </AsyncWrap>
             </div>
           </Pane>
-          <Pane title={"Recent memes"}>
+          <Pane title={"Recent"}>
             <div
               className={css("grid", "grid-rows-[min-content]", "gap-4", "p-2")}
               style={{

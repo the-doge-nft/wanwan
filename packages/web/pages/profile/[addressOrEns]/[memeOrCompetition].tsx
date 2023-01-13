@@ -2,19 +2,19 @@ import { observer } from "mobx-react-lite";
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 import { useEffect, useMemo } from "react";
-import AspectRatio from "../../components/DSL/AspectRatio/AspectRatio";
+import AspectRatio from "../../../components/DSL/AspectRatio/AspectRatio";
 import AsyncWrap, {
   NoDataFound,
-} from "../../components/DSL/AsyncWrap/AsyncWrap";
-import Link from "../../components/DSL/Link/Link";
-import Pane from "../../components/DSL/Pane/Pane";
-import PreviewLink from "../../components/PreviewLink/PreviewLink";
-import { css } from "../../helpers/css";
-import { abbreviate, getEtherscanURL } from "../../helpers/strings";
-import { Profile } from "../../interfaces";
-import AppLayout from "../../layouts/App.layout";
-import http from "../../services/http";
-import ProfileStore from "../../store/Profile.store";
+} from "../../../components/DSL/AsyncWrap/AsyncWrap";
+import Link from "../../../components/DSL/Link/Link";
+import Pane from "../../../components/DSL/Pane/Pane";
+import PreviewLink from "../../../components/PreviewLink/PreviewLink";
+import { css } from "../../../helpers/css";
+import { abbreviate, getEtherscanURL } from "../../../helpers/strings";
+import { Profile } from "../../../interfaces";
+import AppLayout from "../../../layouts/App.layout";
+import http from "../../../services/http";
+import ProfileStore from "../../../store/Profile.store";
 
 interface ProfileProps {
   profile: Profile;
@@ -22,8 +22,9 @@ interface ProfileProps {
 
 const ProfileView: React.FC<ProfileProps> = observer(({ profile }) => {
   const {
-    query: { addressOrEns },
+    query: { addressOrEns, memeOrCompetition },
   } = useRouter();
+  console.log(addressOrEns, memeOrCompetition);
   const store = useMemo(() => new ProfileStore(profile), [profile]);
   useEffect(() => {
     store.init();
@@ -47,13 +48,13 @@ const ProfileView: React.FC<ProfileProps> = observer(({ profile }) => {
               className={css(
                 "h-[100px]",
                 "w-[100px]",
-                "sm:h-[150px]",
-                "sm:w-[150px]",
+                "sm:h-[120px]",
+                "sm:w-[120px]",
                 "bg-center",
                 "bg-no-repeat",
                 "bg-contain",
                 "border-[1px]",
-                "border-gray-600",
+                "border-black",
                 "rounded-full",
                 { "bg-gray-300": !profile.avatar }
               )}
@@ -79,7 +80,16 @@ const ProfileView: React.FC<ProfileProps> = observer(({ profile }) => {
             </div>
           </div>
         </div>
-        <Pane title={"Memes"}>
+        <Pane
+          title={
+            <div className={css("inline-flex", "gap-2", "cursor-pointer")}>
+              <Link href={`/profile/${addressOrEns}/meme`}>Meme</Link>
+              <Link href={`/profile/${addressOrEns}/competition`}>
+                Competition
+              </Link>
+            </div>
+          }
+        >
           <div
             className={css("grid", "grid-rows-[min-content]", "gap-4", "p-2")}
             style={{
@@ -87,8 +97,8 @@ const ProfileView: React.FC<ProfileProps> = observer(({ profile }) => {
             }}
           >
             <AsyncWrap
-              isLoading={false}
-              hasData={store.memes.length > 0}
+              isLoading={store.isLoading}
+              hasData={store.hasData}
               renderNoData={() => <NoDataFound>memes</NoDataFound>}
             >
               {store.memes.map((meme) => (
