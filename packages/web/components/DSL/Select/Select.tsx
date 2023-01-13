@@ -23,13 +23,11 @@ const Select = ({
   block = false,
   className,
 }: SelectProps) => {
-  const initialValue = defaultValue ? defaultValue : items[0].id;
   return (
-    // <div className={css()}>
     <RadixSelect.Root
       onValueChange={(value) => onChange(value)}
       value={value}
-      defaultValue={initialValue}
+      defaultValue={defaultValue ? defaultValue : items[0].id}
     >
       <RadixSelect.Trigger
         className={css(
@@ -84,7 +82,6 @@ const Select = ({
         </RadixSelect.Content>
       </RadixSelect.Portal>
     </RadixSelect.Root>
-    // </div>
   );
 };
 

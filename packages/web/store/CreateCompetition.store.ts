@@ -1,4 +1,5 @@
 import { action, computed, makeObservable, observable } from "mobx";
+import { SelectItem } from "../components/DSL/Select/Select";
 import { formatEthereumAddress } from "../helpers/strings";
 import http from "../services/http";
 import { Navigable } from "../services/mixins/navigable";
@@ -10,9 +11,16 @@ export enum CreateCompetitionView {
   Success = "Success",
 }
 
+export enum TokenType {
+  ERC1155 = "ERC1155",
+  ERC721 = "ERC721",
+  ERC20 = "ERC20",
+}
+
 export default class CreateCompetitionStore extends Navigable(EmptyClass) {
   CREATOR_INPUT_PREFIX = "creator-input";
   REWARDS_INPUT_PREFIX = "rewards-input";
+  REWARDS_INPUT_TYPE_PREFIX = "rewards-type-input";
 
   @observable
   private _curatorsCount = 0;
@@ -123,9 +131,9 @@ export default class CreateCompetitionStore extends Navigable(EmptyClass) {
 
   get rewardsTypeSelectItems(): SelectItem[] {
     return [
-      { name: "ERC1155", id: "ERC1155" },
-      { name: "ERC721", id: "ERC721" },
-      { name: "ERC20", id: "ERC20" },
+      { name: TokenType.ERC1155, id: TokenType.ERC1155 },
+      { name: TokenType.ERC721, id: TokenType.ERC721 },
+      { name: TokenType.ERC20, id: TokenType.ERC20 },
     ];
   }
 }

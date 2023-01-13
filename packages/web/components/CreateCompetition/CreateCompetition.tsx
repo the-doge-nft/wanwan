@@ -81,6 +81,9 @@ const CreateView: React.FC<CompetitionStoreProp> = observer(({ store }) => {
         </div>
         {/* rewards */}
         <Rewards store={store} />
+        <div className={css("mt-3")}>
+          <Divider />
+        </div>
         <FormError />
         <div className={css("mt-4", "flex", "gap-2")}>
           <Submit block isLoading={store.isLoading} />
@@ -107,18 +110,21 @@ const Curators: React.FC<CompetitionStoreProp> = observer(({ store }) => {
     <>
       {store.isCuratorsVisible && (
         <>
-          {Array.from(Array(store.curatorCount)).map((_, index) => (
-            <TextInput
-              block
-              key={`${store.CREATOR_INPUT_PREFIX}-${index}`}
-              name={`${store.CREATOR_INPUT_PREFIX}-${index}`}
-              label={`curator ${index + 1}`}
-              validate={[required, isEthereumAddress]}
-            />
-          ))}
+          {Array.from(Array(store.curatorCount)).map((_, index) => {
+            const key = `${store.CREATOR_INPUT_PREFIX}-${index}`;
+            return (
+              <TextInput
+                block
+                key={key}
+                name={key}
+                label={`curator ${index + 1}`}
+                validate={[required, isEthereumAddress]}
+              />
+            );
+          })}
         </>
       )}
-      <div className={css("flex", "items-center", "gap-10")}>
+      <div className={css("flex", "items-center", "gap-2")}>
         <Button block onClick={() => store.addCurator()}>
           + curator
         </Button>
@@ -137,20 +143,30 @@ const Rewards: React.FC<CompetitionStoreProp> = observer(({ store }) => {
     <>
       {store.isRewardsVisible && (
         <>
-          {Array.from(Array(store.rewardsCount)).map((_, index) => (
-            <div key={`${store.REWARDS_INPUT_PREFIX}-${index}`}>
-              <SelectInput
-                label={"Token Type"}
-                name={`${store.REWARDS_INPUT_PREFIX}-${index}`}
-                items={store.rewardsTypeSelectItems}
-                validate={required}
-                defaultValue={store.rewardsTypeSelectItems[0].value}
-              />
-            </div>
-          ))}
+          {Array.from(Array(store.rewardsCount)).map((_, index) => {
+            return (
+              <div
+                key={`${store.REWARDS_INPUT_PREFIX}-${index}`}
+                className={css("flex", "gap-2")}
+              >
+                <SelectInput
+                  label={"Token Type"}
+                  name={`${store.REWARDS_INPUT_PREFIX}-${store.REWARDS_INPUT_TYPE_PREFIX}-${index}`}
+                  items={store.rewardsTypeSelectItems}
+                  validate={required}
+                  defaultValue={store.rewardsTypeSelectItems[0].id}
+                />
+                <TextInput
+                  block
+                  label={"Token Address"}
+                  name={`${store.REWARDS_INPUT_PREFIX}-${store.REWARDS_INPUT_ADDRESS_PREFIX}-${index}`}
+                />
+              </div>
+            );
+          })}
         </>
       )}
-      <div className={css("flex", "items-center", "gap-10")}>
+      <div className={css("flex", "items-center", "gap-2")}>
         <Button block onClick={() => store.addReward()}>
           + reward
         </Button>
