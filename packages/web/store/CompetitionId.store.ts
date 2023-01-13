@@ -1,5 +1,6 @@
 import { observable } from "mobx";
 import { Competition, Meme } from "../interfaces";
+import AppStore from "./App.store";
 
 export default class CompetitionByIdStore {
   @observable
@@ -15,6 +16,11 @@ export default class CompetitionByIdStore {
   ) {
     this.competition = competition;
     this.memes = memes;
+  }
+
+  getUserCompetitionMemes() {
+    if (AppStore.auth.isAuthed) {
+    }
   }
 
   init() {}

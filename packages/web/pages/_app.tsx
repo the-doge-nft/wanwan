@@ -9,7 +9,7 @@ import type { AppProps } from "next/app";
 import { useEffect } from "react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { WagmiConfig } from "wagmi";
+import { useAccount, WagmiConfig } from "wagmi";
 import { colors } from "../components/DSL/Theme";
 import { toastTransition } from "../components/DSL/Toast/Toast";
 import Modals from "../components/Modals/Modals";
@@ -31,14 +31,19 @@ const App = observer(({ Component, pageProps }: AppProps) => {
   useEffect(() => {
     AppStore.init();
   }, []);
+
+  const { address } = useAccount();
+  useEffect(() => {
+    AppStore.auth.address = address;
+  }, [address]);
   return (
     <>
       <WagmiConfig client={client}>
         <RainbowKitAuthenticationProvider
           status={AppStore.auth.status}
           adapter={createRainbowAuthAdapter({
-            onVerifySuccess: () => AppStore.auth.getStatus(),
-            onLogoutSuccess: () => AppStore.auth.getStatus(),
+            onVerifySuccess: () => AppStore.auth.onLogin(),
+            onLogoutSuccess: () => AppStore.auth.onLogout(),
           })}
         >
           <RainbowKitProvider

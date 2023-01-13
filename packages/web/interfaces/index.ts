@@ -65,7 +65,7 @@ export interface Meme {
   user: User;
 }
 
-export interface ProfileI {
+export interface Profile {
   ens: null | string;
   address: string;
   avatar: string;

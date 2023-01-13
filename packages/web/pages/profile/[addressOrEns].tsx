@@ -7,16 +7,16 @@ import { DevToggle } from "../../components/DSL/Dev/Dev";
 import Link from "../../components/DSL/Link/Link";
 import { css } from "../../helpers/css";
 import { abbreviate, getEtherscanURL } from "../../helpers/strings";
-import { ProfileI } from "../../interfaces";
+import { Profile } from "../../interfaces";
 import AppLayout from "../../layouts/App.layout";
 import http from "../../services/http";
 import ProfileStore from "../../store/Profile.store";
 
 interface ProfileProps {
-  profile: ProfileI;
+  profile: Profile;
 }
 
-const Profile: React.FC<ProfileProps> = observer(({ profile }) => {
+const ProfileView: React.FC<ProfileProps> = observer(({ profile }) => {
   const {
     query: { addressOrEns },
   } = useRouter();
@@ -85,4 +85,4 @@ export const getServerSideProps: GetServerSideProps<ProfileProps> = async (
   }
 };
 
-export default Profile;
+export default ProfileView;

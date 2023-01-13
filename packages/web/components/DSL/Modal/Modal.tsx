@@ -40,8 +40,7 @@ const Modal: React.FC<PropsWithChildren<ModalProps>> = ({
             "p-10",
             "text-black",
             "z-20",
-            "outline-none",
-            "drop-shadow-lg"
+            "outline-none"
           )}
         >
           {onChange && (
