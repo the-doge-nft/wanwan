@@ -60,6 +60,8 @@ const Button: React.FC<PropsWithChildren<ButtonProps>> = ({
         buttonSizeStyles[size],
         "relative",
         "disabled:cursor-not-allowed",
+        "disabled:hover:bg-gray-300",
+        "disabled:bg-gray-300",
         "outline-0",
         { "w-full": block }
       )}

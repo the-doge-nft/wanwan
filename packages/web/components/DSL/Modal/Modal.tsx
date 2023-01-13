@@ -25,7 +25,14 @@ const Modal: React.FC<PropsWithChildren<ModalProps>> = ({
     >
       <RadixDialog.Portal>
         <RadixDialog.Overlay
-          className={css("fixed", "bg-black", "inset-0", "opacity-30", "z-20")}
+          className={css(
+            "fixed",
+            "bg-black",
+            "inset-0",
+            "opacity-30",
+            "z-20",
+            "overflow-y-auto"
+          )}
         />
         <RadixDialog.Content
           style={{ transform: "translate(-50%, -50%)", maxWidth: "350px" }}
@@ -39,7 +46,10 @@ const Modal: React.FC<PropsWithChildren<ModalProps>> = ({
             "md:w-9/12",
             "text-black",
             "z-20",
-            "outline-none"
+            "outline-none",
+            "max-h-[95%]",
+            "flex",
+            "flex-col"
           )}
         >
           {onChange && (
@@ -70,7 +80,9 @@ const Modal: React.FC<PropsWithChildren<ModalProps>> = ({
             </RadixDialog.Title>
             <RadixDialog.Description>{description}</RadixDialog.Description>
           </div>
-          <div className={css("p-5")}>{children}</div>
+          <div className={css("p-5", "grow", "overflow-y-auto")}>
+            {children}
+          </div>
         </RadixDialog.Content>
       </RadixDialog.Portal>
     </RadixDialog.Root>

@@ -125,7 +125,11 @@ const Curators: React.FC<CompetitionStoreProp> = observer(({ store }) => {
         </>
       )}
       <div className={css("flex", "items-center", "gap-2")}>
-        <Button block onClick={() => store.addCurator()}>
+        <Button
+          block
+          onClick={() => store.addCurator()}
+          disabled={!store.canAddCurator}
+        >
           + curator
         </Button>
         {store.showRemoveCurator && (
@@ -147,29 +151,46 @@ const Rewards: React.FC<CompetitionStoreProp> = observer(({ store }) => {
             return (
               <div
                 key={`${store.REWARDS_INPUT_PREFIX}-${index}`}
-                className={css("flex", "gap-2")}
+                className={css()}
               >
-                <SelectInput
-                  block
-                  label={"Token Type"}
-                  name={`${store.REWARDS_INPUT_PREFIX}-${store.REWARDS_INPUT_TYPE_PREFIX}-${index}`}
-                  items={store.rewardsTypeSelectItems}
-                  validate={required}
-                  defaultValue={store.rewardsTypeSelectItems[0].id}
-                />
-                <TextInput
-                  block
-                  label={"Token Address"}
-                  name={`${store.REWARDS_INPUT_PREFIX}-${store.REWARDS_INPUT_ADDRESS_PREFIX}-${index}`}
-                  validate={[required, isEthereumAddress]}
-                />
+                <div className={css("text-xs", "text-slate-600")}>
+                  {index + 1} place
+                </div>
+                <div className={css("flex", "gap-2")}>
+                  <SelectInput
+                    block
+                    label={"Token Type"}
+                    name={`${store.REWARDS_INPUT_PREFIX}-${store.REWARDS_INPUT_TYPE_PREFIX}-${index}`}
+                    items={store.rewardsTypeSelectItems}
+                    validate={required}
+                    defaultValue={store.rewardsTypeSelectItems[0].id}
+                  />
+                  <NumberInput
+                    block
+                    label={"Amount"}
+                    name={`${store.REWARDS_INPUT_PREFIX}-${store.REWARDS_INPUT_NUMBER_PREFIX}-${index}`}
+                    validate={required}
+                  />
+                </div>
+                <div className={css("mt-2")}>
+                  <TextInput
+                    block
+                    label={"Token Address"}
+                    name={`${store.REWARDS_INPUT_PREFIX}-${store.REWARDS_INPUT_ADDRESS_PREFIX}-${index}`}
+                    validate={[required, isEthereumAddress]}
+                  />
+                </div>
               </div>
             );
           })}
         </>
       )}
       <div className={css("flex", "items-center", "gap-2")}>
-        <Button block onClick={() => store.addReward()}>
+        <Button
+          block
+          onClick={() => store.addReward()}
+          disabled={!store.canAddReward}
+        >
           + reward
         </Button>
         {store.showRemoveReward && (

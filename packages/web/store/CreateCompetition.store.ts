@@ -21,6 +21,8 @@ export default class CreateCompetitionStore extends Navigable(EmptyClass) {
   CREATOR_INPUT_PREFIX = "creator-input";
   REWARDS_INPUT_PREFIX = "rewards-input";
   REWARDS_INPUT_TYPE_PREFIX = "rewards-type-input";
+  REWARDS_INPUT_ADDRESS_PREFIX = "rewards-address-input";
+  REWARDS_INPUT_NUMBER_PREFIX = "rewards-number-input";
 
   @observable
   private _curatorsCount = 0;
@@ -127,6 +129,16 @@ export default class CreateCompetitionStore extends Navigable(EmptyClass) {
   @computed
   get showRemoveReward() {
     return this._rewardsCount >= 1;
+  }
+
+  @computed
+  get canAddReward() {
+    return this._rewardsCount < 3;
+  }
+
+  @computed
+  get canAddCurator() {
+    return this._curatorsCount < 3;
   }
 
   get rewardsTypeSelectItems(): SelectItem[] {
