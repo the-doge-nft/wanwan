@@ -54,25 +54,25 @@ const CreateView: React.FC<CompetitionStoreProp> = observer(({ store }) => {
           name={"description"}
           disabled={store.isLoading}
         />
-        <NumberInput
-          block
-          label={"Max user submissions"}
-          name={"maxUserSubmissions"}
-          description={"total amount of memes a single user can submit"}
-          validate={[required, minValue(1), maxValue(5)]}
-          disabled={store.isLoading}
-        />
-        <DateInput
-          block
-          label={"Ends at"}
-          name={"endsAt"}
-          description={"when your competition ends"}
-          validate={required}
-          // @next -- bad to have mixed validation here
-          min={new Date().toISOString().split("T")[0]}
-          defaultValue={new Date().toISOString().split("T")[0]}
-          disabled={store.isLoading}
-        />
+        <div className={css("flex", "gap-2")}>
+          <NumberInput
+            block
+            label={"Max user submissions"}
+            name={"maxUserSubmissions"}
+            validate={[required, minValue(1), maxValue(5)]}
+            disabled={store.isLoading}
+          />
+          <DateInput
+            block
+            label={"Ends at"}
+            name={"endsAt"}
+            validate={required}
+            // @next -- bad to have mixed validation here
+            min={new Date().toISOString().split("T")[0]}
+            defaultValue={new Date().toISOString().split("T")[0]}
+            disabled={store.isLoading}
+          />
+        </div>
         <div className={css("mt-2", "mb-1")}>
           <Divider />
         </div>

@@ -2,9 +2,9 @@ import "@rainbow-me/rainbowkit/styles.css";
 import { observer } from "mobx-react-lite";
 import { GetServerSideProps } from "next";
 import Head from "next/head";
-import { useCallback, useEffect, useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import AspectRatio from "../components/DSL/AspectRatio/AspectRatio";
-import AsyncWrap from "../components/DSL/AsyncWrap/AsyncWrap";
+import AsyncWrap, { NoDataFound } from "../components/DSL/AsyncWrap/AsyncWrap";
 import Pane, { PaneType } from "../components/DSL/Pane/Pane";
 import { colors } from "../components/DSL/Theme";
 import PreviewLink from "../components/PreviewLink/PreviewLink";
@@ -34,14 +34,6 @@ const Home: React.FC<HomeProps> = observer(({ memes, competitions }) => {
     };
   }, []);
 
-  const renderNoDataFound = useCallback(
-    (whatWasNotFound: string) => (
-      <div className={css("text-xs", "py-8", "text-center", "text-slate-500")}>
-        No {whatWasNotFound}
-      </div>
-    ),
-    []
-  );
   return (
     <AppLayout>
       <Head>
@@ -87,7 +79,7 @@ const Home: React.FC<HomeProps> = observer(({ memes, competitions }) => {
               <AsyncWrap
                 isLoading={false}
                 hasData={store.competitions.length > 0}
-                renderNoData={() => renderNoDataFound("competitions")}
+                renderNoData={() => <NoDataFound>competitions</NoDataFound>}
               >
                 {store.competitions.map((comp) => (
                   <div
@@ -125,7 +117,7 @@ const Home: React.FC<HomeProps> = observer(({ memes, competitions }) => {
               <AsyncWrap
                 isLoading={false}
                 hasData={store.memes.length > 0}
-                renderNoData={() => renderNoDataFound("memes")}
+                renderNoData={() => <NoDataFound>memes</NoDataFound>}
               >
                 {store.memes.map((meme) => (
                   <div

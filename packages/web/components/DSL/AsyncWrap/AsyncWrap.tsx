@@ -2,6 +2,14 @@ import React, { PropsWithChildren, ReactNode } from "react";
 import { css } from "../../../helpers/css";
 import Spinner from "../Spinner/Spinner";
 
+export const NoDataFound: React.FC<PropsWithChildren> = ({ children }) => {
+  return (
+    <div className={css("text-xs", "py-8", "text-center", "text-slate-500")}>
+      No {children}
+    </div>
+  );
+};
+
 export interface AsyncWrapProps {
   isLoading: boolean;
   hasData: boolean;

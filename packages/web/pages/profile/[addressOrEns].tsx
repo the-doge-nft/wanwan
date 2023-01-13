@@ -1,10 +1,14 @@
 import { observer } from "mobx-react-lite";
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
-import { useMemo } from "react";
-import Code from "../../components/DSL/Code/Code";
-import { DevToggle } from "../../components/DSL/Dev/Dev";
+import { useEffect, useMemo } from "react";
+import AspectRatio from "../../components/DSL/AspectRatio/AspectRatio";
+import AsyncWrap, {
+  NoDataFound,
+} from "../../components/DSL/AsyncWrap/AsyncWrap";
 import Link from "../../components/DSL/Link/Link";
+import Pane from "../../components/DSL/Pane/Pane";
+import PreviewLink from "../../components/PreviewLink/PreviewLink";
 import { css } from "../../helpers/css";
 import { abbreviate, getEtherscanURL } from "../../helpers/strings";
 import { Profile } from "../../interfaces";
@@ -20,12 +24,25 @@ const ProfileView: React.FC<ProfileProps> = observer(({ profile }) => {
   const {
     query: { addressOrEns },
   } = useRouter();
-  const store = useMemo(() => new ProfileStore(), [addressOrEns]);
+  const store = useMemo(() => new ProfileStore(profile), [profile]);
+  useEffect(() => {
+    store.init();
+  }, [store]);
   return (
     <AppLayout>
       <div>
         <div className={css("flex", "justify-center", "sm:justify-start")}>
-          <div className={css("flex", "flex-col", "items-center")}>
+          <div
+            className={css(
+              "flex",
+              "flex-col",
+              "items-center",
+              "justify-center",
+              "w-full",
+              "mt-8",
+              "mb-4"
+            )}
+          >
             <div
               className={css(
                 "h-[100px]",
@@ -49,22 +66,57 @@ const ProfileView: React.FC<ProfileProps> = observer(({ profile }) => {
               }
             />
             <div className={css("mt-1", "flex", "flex-col", "items-center")}>
-              <div>{profile.ens}</div>
-              {profile.address && (
+              <div>{store.profile.ens}</div>
+              {store.profile.address && (
                 <Link
                   isExternal
                   href={getEtherscanURL(profile.address, "address")}
                   className={css("inline-flex")}
                 >
-                  {abbreviate(profile.address)}
+                  {abbreviate(store.profile.address)}
                 </Link>
               )}
             </div>
           </div>
         </div>
-        <DevToggle>
-          <Code className={css("mt-11")}>{JSON.stringify(profile)}</Code>
-        </DevToggle>
+        <Pane title={"Memes"}>
+          <div
+            className={css("grid", "grid-rows-[min-content]", "gap-4", "p-2")}
+            style={{
+              gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
+            }}
+          >
+            <AsyncWrap
+              isLoading={false}
+              hasData={store.memes.length > 0}
+              renderNoData={() => <NoDataFound>memes</NoDataFound>}
+            >
+              {store.memes.map((meme) => (
+                <div
+                  key={`meme-preview-${meme.id}`}
+                  className={css("max-w-[200px]")}
+                >
+                  <PreviewLink
+                    name={meme.name}
+                    description={meme.description}
+                    link={`/meme/${meme.id}`}
+                  >
+                    <AspectRatio
+                      className={css(
+                        "bg-cover",
+                        "bg-center",
+                        "bg-no-repeat",
+                        "h-full"
+                      )}
+                      ratio={`${meme.media.width}/${meme.media.height}`}
+                      style={{ backgroundImage: `url(${meme.media.url})` }}
+                    />
+                  </PreviewLink>
+                </div>
+              ))}
+            </AsyncWrap>
+          </div>
+        </Pane>
       </div>
     </AppLayout>
   );
@@ -76,6 +128,7 @@ export const getServerSideProps: GetServerSideProps<ProfileProps> = async (
   const { addressOrEns } = context.query;
   try {
     const { data: profile } = await http.get(`/profile/${addressOrEns}`);
+    console.log(profile);
     return {
       props: { profile },
     };

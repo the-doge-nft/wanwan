@@ -35,7 +35,7 @@ const Modal: React.FC<PropsWithChildren<ModalProps>> = ({
           )}
         />
         <RadixDialog.Content
-          style={{ transform: "translate(-50%, -50%)", maxWidth: "350px" }}
+          style={{ transform: "translate(-50%, -50%)", maxWidth: "390px" }}
           className={css(
             defaultBgCss,
             "rounded-none",

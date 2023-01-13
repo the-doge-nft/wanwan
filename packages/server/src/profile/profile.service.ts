@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { MemeService } from 'src/meme/meme.service';
 import { EthersService } from './../ethers/ethers.service';
 import {
   formatEthereumAddress,
@@ -19,6 +20,7 @@ export class ProfileService {
     private readonly prisma: PrismaService,
     private readonly ethers: EthersService,
     private readonly user: UserService,
+    private readonly meme: MemeService,
   ) {}
   async get(addressOrEns: string) {
     const isAddress = isValidEthereumAddress(addressOrEns);
@@ -39,6 +41,7 @@ export class ProfileService {
       avatar = await this.ethers.getAvatar(addressOrEns);
     }
     const user = await this.user.findFirst({ where: { address } });
-    return { ens, address, avatar, user };
+    const memes = await this.meme.findMany({ where: { user: { address } } });
+    return { ens, address, avatar, user, memes };
   }
 }

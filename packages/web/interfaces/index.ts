@@ -70,6 +70,7 @@ export interface Profile {
   address: string;
   avatar: string;
   user: User;
+  memes: Array<Meme>;
 }
 
 export interface MediaRequirements {
