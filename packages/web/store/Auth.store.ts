@@ -4,7 +4,8 @@ import { Address } from "wagmi";
 import { encodeBase64 } from "../helpers/strings";
 import http from "../services/http";
 import { Reactionable } from "../services/mixins/reactionable";
-import { Meme, Profile } from "./../interfaces/index";
+import { MemeWithMedia } from "./../../server/dist/src/interface/index.d";
+import { Profile } from "./../interfaces/index";
 import { EmptyClass } from "./../services/mixins/index";
 import AppStore from "./App.store";
 
@@ -20,7 +21,7 @@ export default class AuthStore extends Reactionable(EmptyClass) {
   profile?: Profile;
 
   @observable
-  memes: Meme[] = [];
+  memes: Array<MemeWithMedia> = [];
 
   constructor() {
     super();
@@ -29,6 +30,11 @@ export default class AuthStore extends Reactionable(EmptyClass) {
 
   init() {
     this.getStatus();
+    AppStore.events.subscribe(
+      AppStore.events.events.MEME_CREATED,
+      this,
+      "getUserMemes"
+    );
     return (
       this.react(
         () => this.address,
@@ -69,7 +75,7 @@ export default class AuthStore extends Reactionable(EmptyClass) {
       throw new Error("Address not available");
     }
     http
-      .get("/meme/search", {
+      .get<{ data: Array<MemeWithMedia> }>("/meme/search", {
         params: {
           offset: 0,
           count: 1000,
@@ -80,7 +86,7 @@ export default class AuthStore extends Reactionable(EmptyClass) {
           }),
         },
       })
-      .then(({ data }) => (this.memes = data));
+      .then(({ data }) => (this.memes = data.data));
   }
 
   runOrAuthPrompt(fn: () => void) {
@@ -102,12 +108,12 @@ export default class AuthStore extends Reactionable(EmptyClass) {
     AppStore.events.publish(AppStore.events.events.LOGOUT);
   }
 
+  destroy() {
+    this.disposeReactions();
+  }
+
   @computed
   get isAuthed() {
     return this.status === "authenticated";
-  }
-
-  destroy() {
-    this.disposeReactions();
   }
 }

@@ -13,6 +13,7 @@ import { css } from "../helpers/css";
 import { Competition, Meme } from "../interfaces";
 import AppLayout from "../layouts/App.layout";
 import http from "../services/http";
+import AppStore from "../store/App.store";
 import HomeStore from "../store/Home.store";
 
 interface HomeProps {
@@ -52,6 +53,22 @@ const Home: React.FC<HomeProps> = observer(({ memes, competitions }) => {
         <div className={css("flex", "flex-col", "gap-4")}>
           <Pane title={"What is wanwan?"} type={PaneType.Secondary}>
             wanwan is a platform for creating meme competitions.
+          </Pane>
+          <Pane title={"Your Memes"}>
+            {AppStore.auth.memes.map((meme) => (
+              <AspectRatio
+                key={`meme-user-${meme.id}`}
+                className={css(
+                  "bg-cover",
+                  "bg-center",
+                  "bg-no-repeat",
+                  "h-full",
+                  "max-w-[200px]"
+                )}
+                ratio={`${meme.media.width}/${meme.media.height}`}
+                style={{ backgroundImage: `url(${meme.media.url})` }}
+              />
+            ))}
           </Pane>
           <Pane title={"competitions"}>
             <div
