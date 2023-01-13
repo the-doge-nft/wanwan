@@ -150,6 +150,7 @@ const Rewards: React.FC<CompetitionStoreProp> = observer(({ store }) => {
                 className={css("flex", "gap-2")}
               >
                 <SelectInput
+                  block
                   label={"Token Type"}
                   name={`${store.REWARDS_INPUT_PREFIX}-${store.REWARDS_INPUT_TYPE_PREFIX}-${index}`}
                   items={store.rewardsTypeSelectItems}
@@ -160,6 +161,7 @@ const Rewards: React.FC<CompetitionStoreProp> = observer(({ store }) => {
                   block
                   label={"Token Address"}
                   name={`${store.REWARDS_INPUT_PREFIX}-${store.REWARDS_INPUT_ADDRESS_PREFIX}-${index}`}
+                  validate={[required, isEthereumAddress]}
                 />
               </div>
             );

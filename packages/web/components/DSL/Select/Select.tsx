@@ -34,6 +34,7 @@ const Select = ({
           textFieldBaseStyles,
           "inline-flex",
           "items-center",
+          "justify-between",
           {
             "w-full": block,
           },
