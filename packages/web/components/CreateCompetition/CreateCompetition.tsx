@@ -8,6 +8,7 @@ import Button, { Submit } from "../DSL/Button/Button";
 import { Divider } from "../DSL/Divider/Divider";
 import DateInput from "../DSL/Form/DateInput";
 import Form from "../DSL/Form/Form";
+import { FormDescription } from "../DSL/Form/FormControl";
 import FormError from "../DSL/Form/FormError";
 import NumberInput from "../DSL/Form/NumberInput";
 import SelectInput from "../DSL/Form/SelectInput";
@@ -72,16 +73,16 @@ const CreateView: React.FC<CompetitionStoreProp> = observer(({ store }) => {
           defaultValue={new Date().toISOString().split("T")[0]}
           disabled={store.isLoading}
         />
-        <div className={css("mt-3", "mb-2.5")}>
+        <div className={css("mt-2", "mb-1")}>
           <Divider />
         </div>
         <Curators store={store} />
-        <div className={css("mt-3", "mb-3")}>
+        <div className={css("mt-2", "mb-1")}>
           <Divider />
         </div>
         {/* rewards */}
         <Rewards store={store} />
-        <div className={css("mt-3")}>
+        <div className={css("mt-2")}>
           <Divider />
         </div>
         <FormError />
@@ -108,6 +109,9 @@ const SuccessView = () => {
 const Curators: React.FC<CompetitionStoreProp> = observer(({ store }) => {
   return (
     <>
+      <FormDescription>
+        Users who can remove memes from your competition
+      </FormDescription>
       {store.isCuratorsVisible && (
         <>
           {Array.from(Array(store.curatorCount)).map((_, index) => {
@@ -145,6 +149,9 @@ const Curators: React.FC<CompetitionStoreProp> = observer(({ store }) => {
 const Rewards: React.FC<CompetitionStoreProp> = observer(({ store }) => {
   return (
     <>
+      <FormDescription>
+        Incentivise your competition by rewarding the top memes
+      </FormDescription>
       {store.isRewardsVisible && (
         <>
           {Array.from(Array(store.rewardsCount)).map((_, index) => {

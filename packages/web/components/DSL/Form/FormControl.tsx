@@ -56,7 +56,7 @@ const FormControl = ({
 };
 
 export const FormLabel: React.FC<
-  PropsWithChildren<{ isInvalid: boolean; isRequired: boolean; mb?: boolean }>
+  PropsWithChildren<{ isInvalid?: boolean; isRequired?: boolean; mb?: boolean }>
 > = ({ children, isInvalid, isRequired, mb = true }) => {
   return (
     <div
