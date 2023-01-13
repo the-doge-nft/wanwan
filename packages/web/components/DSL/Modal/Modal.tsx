@@ -49,7 +49,9 @@ const Modal: React.FC<PropsWithChildren<ModalProps>> = ({
             "outline-none",
             "max-h-[95%]",
             "flex",
-            "flex-col"
+            "flex-col",
+            "border-[1px]",
+            "border-red-800"
           )}
         >
           {onChange && (
