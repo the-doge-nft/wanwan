@@ -47,7 +47,7 @@ export const competitionSearchSchema = Joi.object().keys({
         }),
       operation: Joi.string()
         .required()
-        .when('when', {
+        .when('value', {
           switch: [
             {
               is: Joi.date(),

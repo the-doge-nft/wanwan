@@ -69,8 +69,14 @@ export abstract class Search<T, K extends object> {
   } {
     const search = query[Search.CONFIG_KEY];
     const json = this.decodeBase64(search);
+    console.log(json);
     //@ts-ignore
-    return this.validationSchema.validate(json);
+    const test = this.validationSchema.validate(json);
+    console.log(test);
+    if (test.error) {
+      throw new Error(JSON.stringify(test.error));
+    }
+    return test.value;
   }
 
   private async search(

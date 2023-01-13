@@ -53,7 +53,9 @@ export class CompetitionController {
   @Get('search')
   getCompetitionSearch(@Query() config: SearchDto, @Req() req: Request) {
     console.log('hit');
-    return this.search.searchOrFail(config, req);
+    return this.search.searchOrFail(config, req).catch((e) => {
+      throw new BadRequestException(e.message);
+    });
   }
 
   @Get(':id')

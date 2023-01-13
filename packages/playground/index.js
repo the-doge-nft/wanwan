@@ -12,13 +12,14 @@ const main = async () => {
           count: 0,
           offset: 0,
           config: encodeBase64({
-            filters: [{ key: "name", operation: "contains", value: "test" }],
+            filters: [{ key: "name", operation: "contains", value: "tets" }],
           }),
         },
       }
     );
     console.log(data);
   } catch (e) {
+    console.error(e);
     console.error(e.response.data);
   }
 };

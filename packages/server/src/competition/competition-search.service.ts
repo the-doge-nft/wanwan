@@ -12,13 +12,13 @@ export class CompetitionSearchService extends Search<
   Prisma.CompetitionFindManyArgs
 > {
   keyNames = competitionSearchKeyNames;
-  guardedKeyNames = ['deletedAt'];
+  guardedKeyNames = [];
   customKeyNames = [];
   modelName = 'competition' as keyof PrismaClient;
   validationSchema = competitionSearchSchema;
 
   protected beforeGetAll(builder) {
-    builder.where('deletedAt', { equals: null });
+    // builder.where('deletedAt', { equals: null });
   }
 
   onCustomKeyFilter() {
