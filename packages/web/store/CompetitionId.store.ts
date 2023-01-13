@@ -1,7 +1,5 @@
 import { observable } from "mobx";
 import { Competition, Meme } from "../interfaces";
-import http from "../services/http";
-import AppStore from "./App.store";
 
 export default class CompetitionByIdStore {
   @observable
@@ -20,14 +18,10 @@ export default class CompetitionByIdStore {
   }
 
   init() {
-    AppStore.events.subscribe(
-      AppStore.events.events.LOGIN,
-      this,
-      "getUserEligibleMemes"
-    );
-  }
-
-  getUserEligibleMemes() {
-    return http.get(`/competitions/${this.id}/meme`).then(({}) => {});
+    // AppStore.events.subscribe(
+    //   AppStore.events.events.LOGIN,
+    //   this,
+    //   "getUserEligibleMemes"
+    // );
   }
 }

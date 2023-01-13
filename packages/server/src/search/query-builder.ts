@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
-import * as merge from 'lodash.merge';
+const merge = require('lodash.merge');
 
 export interface GenericFindManyArgs {
   select?: any;

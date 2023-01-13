@@ -17,6 +17,7 @@ specifiers:
   '@types/express': ^4.17.13
   '@types/express-session': ^1.17.5
   '@types/jest': 28.1.4
+  '@types/lodash.merge': ^4.6.7
   '@types/multer': ^1.4.7
   '@types/node': ^16.0.0
   '@types/supertest': ^2.0.11
@@ -88,6 +89,7 @@ devDependencies:
   '@types/express': 4.17.14
   '@types/express-session': 1.17.5
   '@types/jest': 28.1.4
+  '@types/lodash.merge': 4.6.7
   '@types/multer': 1.4.7
   '@types/node': 16.18.3
   '@types/supertest': 2.0.12
@@ -3048,6 +3050,16 @@ packages:
 
   /@types/json-schema/7.0.11:
     resolution: {integrity: sha512-wOuvG1SN4Us4rez+tylwwwCV1psiNVOkJeM3AUWUNWg/jDQY2+HE/444y5gc+jBmRqASOm2Oeh5c1axHobwRKQ==}
+    dev: true
+
+  /@types/lodash.merge/4.6.7:
+    resolution: {integrity: sha512-OwxUJ9E50gw3LnAefSHJPHaBLGEKmQBQ7CZe/xflHkyy/wH2zVyEIAKReHvVrrn7zKdF58p16We9kMfh7v0RRQ==}
+    dependencies:
+      '@types/lodash': 4.14.191
+    dev: true
+
+  /@types/lodash/4.14.191:
+    resolution: {integrity: sha512-BdZ5BCCvho3EIXw6wUCXHe7rS53AIDPLE+JzwgT+OsJk53oBfbSmZZ7CX4VaRoN78N+TJpFi9QPlfIVNmJYWxQ==}
     dev: true
 
   /@types/mime/3.0.1:

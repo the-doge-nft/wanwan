@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 import { ObjectSchema } from 'joi';
 import SearchDto from 'src/dto/search.dto';
-import { PrismaService } from './../prisma.service';
 import QueryBuilder from './query-builder';
 
 export interface Filter<T> {
@@ -21,8 +20,6 @@ export abstract class Search<T, K extends object> {
   static CONFIG_KEY = 'config';
   static PAGE_SIZE_KEY = 'count';
   static OFFSET_KEY = 'offset';
-
-  constructor(private readonly prisma: PrismaService) {}
 
   protected modelName: keyof PrismaClient;
   protected guardedNames: (keyof T | string)[] = [];
@@ -71,6 +68,7 @@ export abstract class Search<T, K extends object> {
     const json = this.decodeBase64(search);
 
     const test = this.validationSchema.validate(json);
+    console.log(test);
     if (test.error) {
       throw new Error(JSON.stringify(test.error));
     }

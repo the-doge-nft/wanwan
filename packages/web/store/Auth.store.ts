@@ -1,9 +1,10 @@
 import { AuthenticationStatus } from "@rainbow-me/rainbowkit";
 import { computed, makeObservable, observable } from "mobx";
 import { Address } from "wagmi";
+import { encodeBase64 } from "../helpers/strings";
 import http from "../services/http";
 import { Reactionable } from "../services/mixins/reactionable";
-import { Profile } from "./../interfaces/index";
+import { Meme, Profile } from "./../interfaces/index";
 import { EmptyClass } from "./../services/mixins/index";
 import AppStore from "./App.store";
 
@@ -18,6 +19,9 @@ export default class AuthStore extends Reactionable(EmptyClass) {
   @observable
   profile?: Profile;
 
+  @observable
+  memes: Meme[] = [];
+
   constructor() {
     super();
     makeObservable(this);
@@ -31,6 +35,7 @@ export default class AuthStore extends Reactionable(EmptyClass) {
         () => {
           if (this.address) {
             this.getProfile();
+            this.getUserMemes();
           }
         }
       ),
@@ -57,6 +62,25 @@ export default class AuthStore extends Reactionable(EmptyClass) {
     http
       .get(`/profile/${this.address}`)
       .then(({ data }) => (this.profile = data));
+  }
+
+  getUserMemes() {
+    if (!this.address) {
+      throw new Error("Address not available");
+    }
+    http
+      .get("/meme/search", {
+        params: {
+          offset: 0,
+          count: 1000,
+          config: encodeBase64({
+            filters: [
+              { key: "address", operation: "equals", value: this.address },
+            ],
+          }),
+        },
+      })
+      .then(({ data }) => (this.memes = data));
   }
 
   runOrAuthPrompt(fn: () => void) {

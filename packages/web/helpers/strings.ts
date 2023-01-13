@@ -39,3 +39,11 @@ export const isValidEthereumAddress = (address: string) => {
 
 export const formatEthereumAddress = (address: string) =>
   utils.getAddress(address);
+
+export function decodeBase64(value: string) {
+  return JSON.parse(Buffer.from(value, "base64").toString());
+}
+
+export function encodeBase64(obj: object) {
+  return Buffer.from(JSON.stringify(obj)).toString("base64");
+}

@@ -18,11 +18,11 @@ export class MemeService {
     };
   }
 
-  private addExtra(item: MemeWithMedia) {
+  addExtra(item: MemeWithMedia) {
     return { ...item, media: this.media.addExtra(item.media) };
   }
 
-  private addExtras(memes: Array<MemeWithMedia>) {
+  addExtras(memes: Array<MemeWithMedia>) {
     return memes.map((item) => this.addExtra(item));
   }
 

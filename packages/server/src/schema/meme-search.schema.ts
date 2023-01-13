@@ -16,11 +16,13 @@ export const memeSearchKeyNames: (keyof Meme)[] = [
   'mediaId',
 ];
 
+export const memeCustomKeyNames = ['address'];
+
 export const memeSearchSchema = Joi.object().keys({
   filters: Joi.array().items(
     Joi.object({
       key: Joi.string()
-        .valid(...memeSearchKeyNames)
+        .valid(...memeSearchKeyNames, ...memeCustomKeyNames)
         .required(),
       value: Joi.any()
         .required()
@@ -28,6 +30,7 @@ export const memeSearchSchema = Joi.object().keys({
           switch: [
             { is: 'id', then: Joi.number() },
             { is: 'maxUserSubmissions', then: Joi.number() },
+            { is: 'createdById', then: Joi.number() },
           ],
           otherwise: Joi.string(),
         }),

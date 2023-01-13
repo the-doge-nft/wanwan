@@ -10,7 +10,7 @@ const main = async () => {
         count: 0,
         offset: 0,
         config: encodeBase64({
-          filters: [{ key: "name", operation: "contains", value: "A" }],
+          filters: [{ key: "createdById", operation: "equals", value: 1 }],
         }),
       },
     });
