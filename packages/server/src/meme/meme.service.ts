@@ -89,4 +89,17 @@ export class MemeService {
   async getMemeBelongsToUser(id: number, createdById: number) {
     return !!(await this.findFirst({ where: { id, createdById } }));
   }
+
+  async getRankedMemesByCompetition(id: number) {
+    return this.addExtras(
+      await this.prisma.meme.findMany({
+        where: {
+          submissions: { every: { competitionId: id } },
+          votes: { every: { competitionId: id } },
+        },
+        include: { media: true, user: true, votes: true },
+        orderBy: { votes: { _count: 'desc' } },
+      }),
+    );
+  }
 }

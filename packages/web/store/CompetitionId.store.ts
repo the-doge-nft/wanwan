@@ -6,12 +6,12 @@ export default class CompetitionByIdStore {
   competition: Competition | null = null;
 
   @observable
-  memes: Meme[] | null;
+  memes: Meme[] = [];
 
   constructor(
     private readonly id: string,
     competition: Competition | null,
-    memes: Meme[] | null
+    memes: Meme[]
   ) {
     this.competition = competition;
     this.memes = memes;

@@ -91,4 +91,9 @@ export class CompetitionController {
       update: { score: vote.score },
     });
   }
+
+  @Get(':id/meme/ranked')
+  async getRankedMemes(@Param() { id }: IdDto) {
+    return this.meme.getRankedMemesByCompetition(id);
+  }
 }

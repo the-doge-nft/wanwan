@@ -2,8 +2,14 @@ import { observer } from "mobx-react-lite";
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 import { useEffect, useMemo } from "react";
+import AspectRatio from "../../components/DSL/AspectRatio/AspectRatio";
+import AsyncWrap, {
+  NoDataFound,
+} from "../../components/DSL/AsyncWrap/AsyncWrap";
 import Code from "../../components/DSL/Code/Code";
 import { DevToggle } from "../../components/DSL/Dev/Dev";
+import Pane from "../../components/DSL/Pane/Pane";
+import PreviewLink from "../../components/PreviewLink/PreviewLink";
 import { css } from "../../helpers/css";
 import { jsonify } from "../../helpers/strings";
 import { Competition, Meme } from "../../interfaces";
@@ -23,7 +29,8 @@ const MemeById: React.FC<CompetitionByIdProps> = observer(
     } = useRouter();
 
     const store = useMemo(
-      () => new CompetitionIdStore(id as string, competition, memes),
+      () =>
+        new CompetitionIdStore(id as string, competition, memes ? memes : []),
       [id, competition, memes]
     );
 
@@ -56,7 +63,49 @@ const MemeById: React.FC<CompetitionByIdProps> = observer(
                 </div>
               )}
             </div>
-            <div>{memes?.map((meme) => jsonify(meme))}</div>
+            <Pane title={"Recent"}>
+              <div
+                className={css(
+                  "grid",
+                  "grid-rows-[min-content]",
+                  "gap-4",
+                  "p-2"
+                )}
+                style={{
+                  gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
+                }}
+              >
+                <AsyncWrap
+                  isLoading={false}
+                  hasData={store.memes.length > 0}
+                  renderNoData={() => <NoDataFound>memes</NoDataFound>}
+                >
+                  {store.memes.map((meme) => (
+                    <div
+                      key={`meme-preview-${meme.id}`}
+                      className={css("max-w-[200px]")}
+                    >
+                      <PreviewLink
+                        name={meme.name}
+                        description={meme.description}
+                        link={`/meme/${meme.id}`}
+                      >
+                        <AspectRatio
+                          className={css(
+                            "bg-cover",
+                            "bg-center",
+                            "bg-no-repeat",
+                            "h-full"
+                          )}
+                          ratio={`${meme.media.width}/${meme.media.height}`}
+                          style={{ backgroundImage: `url(${meme.media.url})` }}
+                        />
+                      </PreviewLink>
+                    </div>
+                  ))}
+                </AsyncWrap>
+              </div>
+            </Pane>
           </div>
 
           <DevToggle>
@@ -76,7 +125,9 @@ export const getServerSideProps: GetServerSideProps<
     const { data: competition } = await http.get<Competition>(
       `/competition/${id}`
     );
-    const { data: memes } = await http.get<Meme[]>(`/competition/${id}/meme`);
+    const { data: memes } = await http.get<Meme[]>(
+      `/competition/${id}/meme/ranked`
+    );
     return {
       props: {
         competition,
