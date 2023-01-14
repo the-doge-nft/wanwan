@@ -30,11 +30,13 @@ export const competitionSearchKeyNames: (keyof Competition)[] = [
   'updatedAt',
 ];
 
+export const competitionSearchCustomKeys = ['address'];
+
 export const competitionSearchSchema = Joi.object().keys({
   filters: Joi.array().items(
     Joi.object({
       key: Joi.string()
-        .valid(...competitionSearchKeyNames)
+        .valid(...competitionSearchKeyNames, ...competitionSearchCustomKeys)
         .required(),
       value: Joi.any()
         .required()
@@ -69,7 +71,7 @@ export const competitionSearchSchema = Joi.object().keys({
   sorts: Joi.array().items(
     Joi.object({
       key: Joi.string()
-        .valid(...competitionSearchKeyNames)
+        .valid(...competitionSearchKeyNames, ...competitionSearchCustomKeys)
         .required(),
       direction: Joi.string().valid('asc', 'desc').required(),
     }),

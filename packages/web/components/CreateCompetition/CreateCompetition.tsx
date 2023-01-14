@@ -138,7 +138,7 @@ const Curators: React.FC<CompetitionStoreProp> = observer(({ store }) => {
         </Button>
         {store.showRemoveCurator && (
           <Button block onClick={() => store.removeCurator()}>
-            - curator
+            - Curator
           </Button>
         )}
       </div>

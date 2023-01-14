@@ -32,7 +32,7 @@ export default class ProfileStore {
 
   init() {
     this.getUserMemes();
-    this.getUserCompetitions;
+    this.getUserCompetitions();
     AppStore.events.subscribe(
       AppStore.events.events.MEME_CREATED,
       this,
@@ -89,11 +89,18 @@ export default class ProfileStore {
           offset: 0,
           count: 10,
           config: encodeBase64({
-            filters: [{ key: "" }],
-            sorts: [{ key: "crateAt", direction: "desc" }],
+            filters: [
+              {
+                key: "address",
+                operation: "equals",
+                value: this.profile.address,
+              },
+            ],
+            sorts: [{ key: "createdAt", direction: "desc" }],
           }),
         },
       })
+      .then(({ data }) => (this.competitions = data.data))
       .catch((e) => errorToast("Could not get competitions"));
   }
 

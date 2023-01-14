@@ -117,29 +117,54 @@ const ProfilePage: React.FC<ProfileProps> = observer(({ profile }) => {
                 </NoDataFound>
               )}
             >
-              {store.memes.map((meme) => (
-                <div
-                  key={`meme-preview-${meme.id}`}
-                  className={css("max-w-[200px]")}
-                >
-                  <PreviewLink
-                    name={meme.name}
-                    description={meme.description}
-                    link={`/meme/${meme.id}`}
+              {store.view === ProfileView.Meme &&
+                store.memes.map((meme) => (
+                  <div
+                    key={`meme-preview-${meme.id}`}
+                    className={css("max-w-[200px]")}
                   >
-                    <AspectRatio
-                      className={css(
-                        "bg-cover",
-                        "bg-center",
-                        "bg-no-repeat",
-                        "h-full"
-                      )}
-                      ratio={`${meme.media.width}/${meme.media.height}`}
-                      style={{ backgroundImage: `url(${meme.media.url})` }}
-                    />
-                  </PreviewLink>
-                </div>
-              ))}
+                    <PreviewLink
+                      name={meme.name}
+                      description={meme.description}
+                      link={`/meme/${meme.id}`}
+                    >
+                      <AspectRatio
+                        className={css(
+                          "bg-cover",
+                          "bg-center",
+                          "bg-no-repeat",
+                          "h-full"
+                        )}
+                        ratio={`${meme.media.width}/${meme.media.height}`}
+                        style={{ backgroundImage: `url(${meme.media.url})` }}
+                      />
+                    </PreviewLink>
+                  </div>
+                ))}
+              {store.view === ProfileView.Competition &&
+                store.competitions.map((comp) => (
+                  <div
+                    key={`comp-preview-${comp.id}`}
+                    className={css("max-w-[200px]")}
+                  >
+                    <PreviewLink
+                      name={comp.name}
+                      description={comp.description}
+                      link={`/competition/${comp.id}`}
+                    >
+                      <AspectRatio
+                        className={css(
+                          "bg-cover",
+                          "bg-center",
+                          "bg-no-repeat",
+                          "h-full"
+                        )}
+                        ratio={`1/1`}
+                        style={{ background: "green" }}
+                      />
+                    </PreviewLink>
+                  </div>
+                ))}
             </AsyncWrap>
           </div>
         </Pane>
