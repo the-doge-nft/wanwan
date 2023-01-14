@@ -92,6 +92,15 @@ export class CompetitionController {
     });
   }
 
+  @Get(':id/canSubmit')
+  @UseGuards(AuthGuard)
+  async getCanVote(
+    @Param() { id }: IdDto,
+    @Req() { user }: AuthenticatedRequest,
+  ) {
+    return this.competition.getCanAddressSubmit(id, user.address);
+  }
+
   @Get(':id/meme/ranked')
   async getRankedMemes(@Param() { id }: IdDto) {
     return this.meme.getRankedMemesByCompetition(id);

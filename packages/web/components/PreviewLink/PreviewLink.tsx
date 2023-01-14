@@ -24,7 +24,8 @@ const PreviewLink: React.FC<PropsWithChildren<PreviewLinkProps>> = ({
             "hover:border-red-700",
             "border-[1px]",
             "h-[115px]",
-            "overflow-y-hidden"
+            "overflow-y-hidden",
+            "border-slate-900"
           )}
         >
           {children}

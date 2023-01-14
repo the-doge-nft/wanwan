@@ -119,4 +119,14 @@ export class CompetitionService {
       })) as CompetitionWithCuratorUsers,
     );
   }
+
+  async getCanAddressSubmit(id: number, address: string) {
+    const { maxUserSubmissions } = await this.findFirst({
+      where: { id },
+    });
+    const submissions = await this.prisma.submission.findMany({
+      where: { competitionId: id, user: { address } },
+    });
+    return maxUserSubmissions > submissions.length;
+  }
 }

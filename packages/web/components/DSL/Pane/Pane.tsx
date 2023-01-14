@@ -9,19 +9,14 @@ export enum PaneType {
 interface PaneProps {
   title?: React.ReactNode;
   type?: PaneType;
+  rightOfTitle?: React.ReactNode;
 }
-
-const basePaneStyles = {
-  container: css("border-[1px]", "border-black"),
-  title: css("p-1", "font-bold", "text-sm"),
-  body: css("p-1", "text-sm"),
-};
 
 const paneTypeStyles = {
   [PaneType.Primary]: {
     title: css("bg-slate-300", "text-slate-900"),
     container: css("bg-slate-100", "border-[1px]", "border-black"),
-    body: css(),
+    body: css("text-slate-900"),
   },
   [PaneType.Secondary]: {
     title: css("bg-red-800", "text-white"),
@@ -34,7 +29,21 @@ const Pane: React.FC<PropsWithChildren<PaneProps>> = ({
   children,
   title,
   type = PaneType.Primary,
+  rightOfTitle,
 }) => {
+  const basePaneStyles = {
+    container: css("border-[1px]", "border-black"),
+    title: css(
+      "p-1",
+      "font-bold",
+      "text-sm",
+      "flex",
+      "jusitfy-between",
+      "items-center",
+      "w-full"
+    ),
+    body: css("text-sm", { "p-1": children }),
+  };
   return (
     <div
       className={
@@ -43,7 +52,8 @@ const Pane: React.FC<PropsWithChildren<PaneProps>> = ({
     >
       {title && (
         <div className={css(paneTypeStyles[type].title, basePaneStyles.title)}>
-          {title}
+          <div className={css("grow")}>{title}</div>
+          {rightOfTitle && rightOfTitle}
         </div>
       )}
       <div className={css(paneTypeStyles[type].body, basePaneStyles.body)}>

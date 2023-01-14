@@ -105,4 +105,5 @@ export interface SearchParams {
 
 export interface SearchResponse<T> {
   data: T[];
+  next: string | null;
 }

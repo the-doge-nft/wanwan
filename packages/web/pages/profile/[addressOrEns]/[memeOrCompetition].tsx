@@ -70,7 +70,15 @@ const ProfilePage: React.FC<ProfileProps> = observer(({ profile }) => {
                   : {}
               }
             />
-            <div className={css("mt-1", "flex", "flex-col", "items-center")}>
+            <div
+              className={css(
+                "mt-1",
+                "flex",
+                "flex-col",
+                "items-center",
+                "text-sm"
+              )}
+            >
               <div>{store.profile.ens}</div>
               {store.profile.address && (
                 <Link
@@ -86,7 +94,7 @@ const ProfilePage: React.FC<ProfileProps> = observer(({ profile }) => {
         </div>
         <Pane
           title={
-            <div className={css("inline-flex", "gap-2", "cursor-pointer")}>
+            <div className={css("inline-flex", "gap-4", "cursor-pointer")}>
               <div
                 className={css({ underline: store.isMemeView })}
                 onClick={() => store.goToMemeView()}
@@ -121,7 +129,7 @@ const ProfilePage: React.FC<ProfileProps> = observer(({ profile }) => {
                 store.memes.map((meme) => (
                   <div
                     key={`meme-preview-${meme.id}`}
-                    className={css("max-w-[200px]")}
+                    className={css("max-w-[167px]")}
                   >
                     <PreviewLink
                       name={meme.name}
@@ -145,7 +153,7 @@ const ProfilePage: React.FC<ProfileProps> = observer(({ profile }) => {
                 store.competitions.map((comp) => (
                   <div
                     key={`comp-preview-${comp.id}`}
-                    className={css("max-w-[200px]")}
+                    className={css("max-w-[167px]")}
                   >
                     <PreviewLink
                       name={comp.name}

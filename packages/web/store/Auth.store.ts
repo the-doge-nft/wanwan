@@ -4,8 +4,7 @@ import { Address } from "wagmi";
 import { encodeBase64 } from "../helpers/strings";
 import http from "../services/http";
 import { Reactionable } from "../services/mixins/reactionable";
-import { MemeWithMedia } from "./../../server/dist/src/interface/index.d";
-import { Profile } from "./../interfaces/index";
+import { Meme, Profile, SearchResponse } from "./../interfaces/index";
 import { EmptyClass } from "./../services/mixins/index";
 import AppStore from "./App.store";
 
@@ -21,7 +20,7 @@ export default class AuthStore extends Reactionable(EmptyClass) {
   profile?: Profile;
 
   @observable
-  memes: Array<MemeWithMedia> = [];
+  memes: Array<Meme> = [];
 
   constructor() {
     super();
@@ -76,14 +75,16 @@ export default class AuthStore extends Reactionable(EmptyClass) {
       throw new Error("Address not available");
     }
     http
-      .get<{ data: Array<MemeWithMedia> }>("/meme/search", {
+      .get<SearchResponse<Meme>>("/meme/search", {
         params: {
           offset: 0,
-          count: 1000,
+          // if the user has more than 100k we break
+          count: 100000,
           config: encodeBase64({
             filters: [
               { key: "address", operation: "equals", value: this.address },
             ],
+            sorts: [{ key: "createdAt", direction: "desc" }],
           }),
         },
       })

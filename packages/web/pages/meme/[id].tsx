@@ -69,7 +69,7 @@ const MemeById: React.FC<Meme> = observer(({ ...meme }) => {
           <div
             className={css("md:col-span-2", "flex", "justify-end", "items-end")}
           >
-            <Link href={`/profile/${meme.user.address}`}>
+            <Link href={`/profile/${meme.user.address}/meme`}>
               {abbreviate(meme.user.address)}
             </Link>
           </div>
