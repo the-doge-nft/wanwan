@@ -90,16 +90,20 @@ export class MemeService {
     return !!(await this.findFirst({ where: { id, createdById } }));
   }
 
-  async getRankedMemesByCompetition(id: number) {
-    return this.addExtras(
-      await this.prisma.meme.findMany({
-        where: {
-          submissions: { every: { competitionId: id } },
-          votes: { every: { competitionId: id } },
-        },
-        include: { media: true, user: true, votes: true },
-        orderBy: { votes: { _count: 'desc' } },
-      }),
-    );
+  async getRankedMemesByCompetition(competitionId: number) {
+    const memes = await this.prisma.meme.findMany({
+      where: { submissions: { some: { competitionId } } },
+      include: {
+        media: true,
+        votes: true,
+        comments: true,
+      },
+    });
+    const filteredMemes = memes.sort((a, b) => {
+      const aSum = a.votes.reduce((acc, cur) => acc + cur.score, 0);
+      const bSum = b.votes.reduce((acc, cur) => acc + cur.score, 0);
+      return bSum - aSum;
+    });
+    return this.addExtras(filteredMemes);
   }
 }

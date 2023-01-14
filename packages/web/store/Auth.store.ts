@@ -65,9 +65,10 @@ export default class AuthStore extends Reactionable(EmptyClass) {
     if (!this.address) {
       throw new Error("Address not available");
     }
-    http
-      .get(`/profile/${this.address}`)
-      .then(({ data }) => (this.profile = data));
+    http.get(`/profile/${this.address}`).then(({ data }) => {
+      this.profile = data;
+      console.log(this.profile);
+    });
   }
 
   getUserMemes() {
