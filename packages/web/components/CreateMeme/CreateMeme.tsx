@@ -54,6 +54,7 @@ const CreateMemeForm: React.FC<{ store: CreateMemeStore }> = observer(
             <Submit block isLoading={store.isSubmitLoading} />
             <Button
               block
+              disabled={store.isSubmitLoading}
               onClick={() => (AppStore.modals.isCreateMemeModalOpen = false)}
             >
               Cancel

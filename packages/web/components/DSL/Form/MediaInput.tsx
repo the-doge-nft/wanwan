@@ -116,9 +116,10 @@ const MediaInput: React.FC<MediaInputProps> = ({
             "overflow-hidden",
             "rounded-sm",
             "p-7",
+            "hover:border-black",
             {
               "border-red-700": isError && !isDragActive,
-              "border-black": !isError && !isDragActive,
+              "border-gray-400": !isError && !isDragActive,
               "border-neutral-600": isDragActive,
               "cursor-pointer": !noClick,
               "cursor-default": noClick,
@@ -131,6 +132,19 @@ const MediaInput: React.FC<MediaInputProps> = ({
               {!renderIsDropActive && <div className={css("text-xs")}>wow</div>}
             </>
           )}
+          {preview && (
+            <div
+              className={css(
+                "!bg-contain",
+                "!bg-center",
+                "!bg-no-repeat",
+                "w-full",
+                "h-full",
+                "grow"
+              )}
+              style={{ background: `url(${preview})` }}
+            />
+          )}
           {!isDragActive && !preview && (
             <div
               className={css(
@@ -138,10 +152,11 @@ const MediaInput: React.FC<MediaInputProps> = ({
                 "flex-col",
                 "items-center",
                 "text-neutral-700",
-                "gap-3"
+                "gap-3",
+                "mt-3"
               )}
             >
-              <div className={css()}>
+              <div>
                 <Button disabled={disabled}>Select File</Button>
               </div>
               <div className={css("text-center")}>
@@ -161,22 +176,9 @@ const MediaInput: React.FC<MediaInputProps> = ({
                   Max Size: {bytesToSize(maxSizeBytes)}
                 </div>
               </div>
+              <input {...getInputProps()} />
             </div>
           )}
-          {preview && (
-            <div
-              className={css(
-                "!bg-contain",
-                "!bg-center",
-                "!bg-no-repeat",
-                "w-full",
-                "h-full",
-                "grow"
-              )}
-              style={{ background: `url(${preview})` }}
-            />
-          )}
-          <input {...getInputProps()} />
         </div>
         {!isDragActive && preview && (
           <div className={css("absolute", "top-3", "right-3")}>

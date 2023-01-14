@@ -6,7 +6,7 @@ const FormError = () => {
   return (
     <>
       {submitError && (
-        <div className={css("text-xs", "text-red-500")}>{submitError}</div>
+        <div className={css("text-xs", "text-red-800")}>{submitError}</div>
       )}
     </>
   );

@@ -14,18 +14,22 @@ import { abbreviate, getEtherscanURL } from "../../../helpers/strings";
 import { Profile } from "../../../interfaces";
 import AppLayout from "../../../layouts/App.layout";
 import http from "../../../services/http";
-import ProfileStore from "../../../store/Profile.store";
+import ProfileStore, { ProfileView } from "../../../store/Profile.store";
 
 interface ProfileProps {
   profile: Profile;
 }
 
-const ProfileView: React.FC<ProfileProps> = observer(({ profile }) => {
+const ProfilePage: React.FC<ProfileProps> = observer(({ profile }) => {
   const {
     query: { addressOrEns, memeOrCompetition },
   } = useRouter();
   console.log(addressOrEns, memeOrCompetition);
-  const store = useMemo(() => new ProfileStore(profile), [profile]);
+
+  const store = useMemo(
+    () => new ProfileStore(profile, memeOrCompetition as ProfileView),
+    [profile, memeOrCompetition]
+  );
   useEffect(() => {
     store.init();
   }, [store]);
@@ -83,10 +87,18 @@ const ProfileView: React.FC<ProfileProps> = observer(({ profile }) => {
         <Pane
           title={
             <div className={css("inline-flex", "gap-2", "cursor-pointer")}>
-              <Link href={`/profile/${addressOrEns}/meme`}>Meme</Link>
-              <Link href={`/profile/${addressOrEns}/competition`}>
-                Competition
-              </Link>
+              <div
+                className={css({ underline: store.isMemeView })}
+                onClick={() => store.goToMemeView()}
+              >
+                Memes
+              </div>
+              <div
+                className={css({ underline: store.isCompetitionView })}
+                onClick={() => store.goToCompetitionView()}
+              >
+                Competitions
+              </div>
             </div>
           }
         >
@@ -99,7 +111,11 @@ const ProfileView: React.FC<ProfileProps> = observer(({ profile }) => {
             <AsyncWrap
               isLoading={store.isLoading}
               hasData={store.hasData}
-              renderNoData={() => <NoDataFound>memes</NoDataFound>}
+              renderNoData={() => (
+                <NoDataFound>
+                  {store.isMemeView ? "Memes" : "Competitions"}
+                </NoDataFound>
+              )}
             >
               {store.memes.map((meme) => (
                 <div
@@ -148,4 +164,4 @@ export const getServerSideProps: GetServerSideProps<ProfileProps> = async (
   }
 };
 
-export default ProfileView;
+export default ProfilePage;

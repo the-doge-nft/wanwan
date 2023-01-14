@@ -12,8 +12,8 @@ export interface BaseFormInputProps {
   description?: string;
 }
 
-export const BaseInvalidInputStyle = css("border-2", "!border-red-700");
-const errorTextCss = css("text-red-500");
+export const BaseInvalidInputStyle = css("border-2", "!border-red-800");
+const errorTextCss = css("text-red-800");
 export interface FormControlProps
   extends Pick<BaseFormInputProps, "label" | "name" | "description"> {
   children: any;
@@ -78,7 +78,7 @@ export const FormDescription: React.FC<
   return (
     <div
       className={css("text-xs", "mb-0.5", "italic", {
-        "text-red-400": isInvalid,
+        "text-red-900": isInvalid,
         "text-slate-800": !isInvalid,
       })}
     >

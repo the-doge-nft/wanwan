@@ -134,7 +134,7 @@ const Curators: React.FC<CompetitionStoreProp> = observer(({ store }) => {
           onClick={() => store.addCurator()}
           disabled={!store.canAddCurator}
         >
-          + curator
+          + Curator
         </Button>
         {store.showRemoveCurator && (
           <Button block onClick={() => store.removeCurator()}>
@@ -198,11 +198,11 @@ const Rewards: React.FC<CompetitionStoreProp> = observer(({ store }) => {
           onClick={() => store.addReward()}
           disabled={!store.canAddReward}
         >
-          + reward
+          + Reward
         </Button>
         {store.showRemoveReward && (
           <Button block onClick={() => store.removeReward()}>
-            - reward
+            - Reward
           </Button>
         )}
       </div>

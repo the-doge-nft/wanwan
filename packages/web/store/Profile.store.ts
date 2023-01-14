@@ -1,7 +1,8 @@
 import { Competition } from "@prisma/client";
-import { computed, makeObservable, observable } from "mobx";
+import { action, computed, makeObservable, observable } from "mobx";
 import { encodeBase64 } from "../helpers/strings";
 import http from "../services/http";
+import { errorToast } from "./../components/DSL/Toast/Toast";
 import { Meme, Profile } from "./../interfaces/index";
 import AppStore from "./App.store";
 
@@ -21,25 +22,38 @@ export default class ProfileStore {
   profile: Profile;
 
   @observable
-  selectedView: ProfileView = ProfileView.Meme;
+  view: ProfileView = ProfileView.Meme;
 
-  constructor(profile: Profile) {
+  constructor(profile: Profile, view: ProfileView) {
     makeObservable(this);
     this.profile = profile;
+    this.view = view;
   }
 
   init() {
     this.getUserMemes();
+    this.getUserCompetitions;
     AppStore.events.subscribe(
       AppStore.events.events.MEME_CREATED,
       this,
       "getMemesIfAuthedUser"
+    );
+    AppStore.events.subscribe(
+      AppStore.events.events.COMPETITION_CREATED,
+      this,
+      "getCompetitionsIfAuthedUser"
     );
   }
 
   getMemesIfAuthedUser() {
     if (AppStore.auth.address === this.profile.address) {
       this.getUserMemes();
+    }
+  }
+
+  getCompetitionsIfAuthedUser() {
+    if (AppStore.auth.address === this.profile.address) {
+      this.getUserCompetitions();
     }
   }
 
@@ -64,34 +78,73 @@ export default class ProfileStore {
       .then(({ data }) => {
         this.memes = data.data;
         console.log(this.memes);
-      });
+      })
+      .catch(() => errorToast("Could not get memes"));
   }
 
   getUserCompetitions() {
-    return http.get("/competition/search", {
-      params: {
-        offset: 0,
-        count: 10,
-        config: encodeBase64({
-          filters: [{ key: "" }],
-          sorts: [{ key: "crateAt", direction: "desc" }],
-        }),
-      },
-    });
+    return http
+      .get("/competition/search", {
+        params: {
+          offset: 0,
+          count: 10,
+          config: encodeBase64({
+            filters: [{ key: "" }],
+            sorts: [{ key: "crateAt", direction: "desc" }],
+          }),
+        },
+      })
+      .catch((e) => errorToast("Could not get competitions"));
   }
 
   @computed
   get hasData() {
-    if (this.selectedView === ProfileView.Meme) {
+    if (this.isMemeView) {
       return this.memes.length > 0;
-    } else if (this.selectedView === ProfileView.Competition) {
+    } else if (this.isCompetitionView) {
       return this.competitions.length > 0;
     }
     return false;
   }
 
   @computed
+  get isMemeView() {
+    return this.view === ProfileView.Meme;
+  }
+
+  @computed
+  get isCompetitionView() {
+    return this.view === ProfileView.Competition;
+  }
+
+  @computed
   get isLoading() {
     return false;
+  }
+
+  @action
+  goToMemeView() {
+    this.view = ProfileView.Meme;
+    const newUrl = this.getUrl(ProfileView.Meme);
+    window.history.replaceState(
+      { ...window.history.state, as: newUrl, url: newUrl },
+      "",
+      newUrl
+    );
+  }
+
+  @action
+  goToCompetitionView() {
+    this.view = ProfileView.Competition;
+    const newUrl = this.getUrl(ProfileView.Competition);
+    window.history.replaceState(
+      { ...window.history.state, as: newUrl, url: newUrl },
+      "",
+      newUrl
+    );
+  }
+
+  private getUrl(view: ProfileView) {
+    return `/profile/${this.profile.address}/${view}`;
   }
 }
