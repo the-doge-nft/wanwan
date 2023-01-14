@@ -17,6 +17,7 @@ import { AuthenticatedRequest } from './interface';
 import { MediaService } from './media/media.service';
 import { MemeService } from './meme/meme.service';
 import { ProfileService } from './profile/profile.service';
+import { StatsService } from './stats/stats.service';
 import { SubmissionService } from './submission/submission.service';
 
 @Controller()
@@ -28,6 +29,7 @@ export class AppController {
     private readonly competition: CompetitionService,
     private readonly submission: SubmissionService,
     private readonly profile: ProfileService,
+    private readonly stats: StatsService,
   ) {}
 
   @Get()
@@ -92,5 +94,10 @@ export class AppController {
   @Get('profile/:addressOrEns')
   async getProfile(@Param() { addressOrEns }: { addressOrEns: string }) {
     return this.profile.get(addressOrEns);
+  }
+
+  @Get('stats')
+  getStats() {
+    return this.stats.get();
   }
 }

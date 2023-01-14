@@ -26,6 +26,10 @@ export class MemeService {
     return memes.map((item) => this.addExtra(item));
   }
 
+  count(args?: Prisma.MemeCountArgs) {
+    return this.prisma.meme.count(args);
+  }
+
   async create(
     file: Express.Multer.File,
     meme: Pick<

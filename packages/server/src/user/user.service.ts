@@ -6,6 +6,10 @@ import { PrismaService } from './../prisma.service';
 export class UserService {
   constructor(private prisma: PrismaService) {}
 
+  count(args?: Prisma.UserCountArgs) {
+    return this.prisma.user.count(args);
+  }
+
   upsert(args?: Prisma.UserUpsertArgs) {
     return this.prisma.user.upsert(args);
   }

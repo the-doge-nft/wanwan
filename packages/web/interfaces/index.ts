@@ -89,3 +89,20 @@ export interface Comment {
   updatedAt: DatetimeString;
   user: User;
 }
+
+export interface Stats {
+  totalMemes: number;
+  totalUsers: number;
+  totalCompetitions: number;
+  totalActiveCompetitions: number;
+}
+
+export interface SearchParams {
+  count: number;
+  offset: number;
+  config: string;
+}
+
+export interface SearchResponse<T> {
+  data: T[];
+}

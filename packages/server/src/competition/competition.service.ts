@@ -44,6 +44,10 @@ export class CompetitionService {
     return competitions.map((item) => this.addExtra(item));
   }
 
+  count(args?: Prisma.CompetitionCountArgs) {
+    return this.prisma.competition.count(args);
+  }
+
   private async upsertRewards(competition: Competition, rewards: RewardsDto[]) {
     for (const reward of rewards) {
       const { contractAddress, type } = reward.currency;
