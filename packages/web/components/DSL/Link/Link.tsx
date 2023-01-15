@@ -73,7 +73,7 @@ const linkTypeStyles = {
   [LinkType.Secondary]: css("text-black", "hover:text-red-800", baseLinkStyles),
   [LinkType.Tertiary]: css(
     "text-slate-800",
-    "hover:text-slate-600",
+    "hover:text-slate-400",
     baseLinkStyles
   ),
 };
