@@ -58,12 +58,7 @@ const Home: React.FC<HomeProps> = observer(
             </Pane>
             <Pane title={"Competitions"}>
               <div
-                className={css(
-                  "grid",
-                  "grid-rows-[min-content]",
-                  "gap-4",
-                  "p-2"
-                )}
+                className={css("grid", "grid-rows-[min-content]", "gap-4")}
                 style={{
                   gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
                 }}
@@ -101,12 +96,7 @@ const Home: React.FC<HomeProps> = observer(
             </Pane>
             <Pane title={"Recent"}>
               <div
-                className={css(
-                  "grid",
-                  "grid-rows-[min-content]",
-                  "gap-4",
-                  "p-2"
-                )}
+                className={css("grid", "grid-rows-[min-content]", "gap-4")}
                 style={{
                   gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
                 }}

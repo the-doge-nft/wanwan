@@ -6,13 +6,11 @@ import { CompetitionWithCuratorUsers } from '../interface';
 import { CompetitionCuratorService } from './../competition-curator/competition-curator.service';
 import { PrismaService } from './../prisma.service';
 import { RewardService } from './../reward/reward.service';
-import { UserService } from './../user/user.service';
 
 @Injectable()
 export class CompetitionService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly user: UserService,
     private readonly currency: CurrencyService,
     private readonly reward: RewardService,
     private readonly competitionCurator: CompetitionCuratorService,
@@ -118,15 +116,5 @@ export class CompetitionService {
         include: this.defaultInclude,
       })) as CompetitionWithCuratorUsers,
     );
-  }
-
-  async getCanAddressSubmit(id: number, address: string) {
-    const { maxUserSubmissions } = await this.findFirst({
-      where: { id },
-    });
-    const submissions = await this.prisma.submission.findMany({
-      where: { competitionId: id, user: { address } },
-    });
-    return maxUserSubmissions > submissions.length;
   }
 }

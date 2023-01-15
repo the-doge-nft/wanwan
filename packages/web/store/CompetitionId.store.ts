@@ -17,16 +17,22 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
   searchValue = "";
 
   @observable
-  canUserSubmit = false;
-
-  @observable
   selectedMemeIds: number[] = [];
 
   @observable
   showSubmitContent = true;
 
+  @observable
+  showUserEntriesContent = true;
+
+  @observable
+  isSubmitLoading = false;
+
+  @observable
+  userSubmittedMemes: Meme[] = [];
+
   constructor(
-    private readonly id: string,
+    private readonly id: number,
     competition: Competition,
     memes: Meme[]
   ) {
@@ -41,7 +47,7 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
       () => AppStore.auth.isAuthed,
       (isAuthed) => {
         if (isAuthed) {
-          this.getCanUserSubmit();
+          this.getUserSubmittedMemes();
         }
       },
       { fireImmediately: true }
@@ -49,10 +55,10 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
   }
 
   @action
-  getCanUserSubmit() {
+  getUserSubmittedMemes() {
     return http
-      .get(`/competition/${this.id}/canSubmit`)
-      .then(({ data: canSubmit }) => (this.canUserSubmit = canSubmit));
+      .get<Meme[]>(`/competition/${this.id}/meme/submissions`)
+      .then(({ data }) => (this.userSubmittedMemes = data));
   }
 
   @action
@@ -63,7 +69,9 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
   @computed
   get filteredMemes() {
     const nonSelectedMemes = AppStore.auth.memes.filter(
-      (meme) => !this.selectedMemeIds.includes(meme.id)
+      (meme) =>
+        !this.selectedMemeIds.includes(meme.id) &&
+        !this.userSubmittedMemes.map((meme) => meme.id).includes(meme.id)
     );
     if (this.searchValue === "") {
       return nonSelectedMemes;
@@ -78,7 +86,7 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
 
   @computed
   get showSubmitPane() {
-    return AppStore.auth.isAuthed && this.canUserSubmit;
+    return AppStore.auth.isAuthed && this.canUserSelectMemes;
   }
 
   @action
@@ -110,5 +118,41 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
   @computed
   get hasSelectedMemes() {
     return this.selectedMemes.length > 0;
+  }
+
+  onSubmit() {
+    this.isSubmitLoading = true;
+    const promises = this.selectedMemeIds.map((memeId) =>
+      http.post("/submission", { memeId, competitionId: this.id })
+    );
+    return Promise.all(promises).finally(() => (this.isSubmitLoading = false));
+  }
+
+  @computed
+  get isMemesToSubmitMax() {
+    return this.selectedMemes.length === this.countMemeUserCanSubmit;
+  }
+
+  @computed
+  get countMemeUserCanSubmit() {
+    return this.competition.maxUserSubmissions - this.userSubmittedMemes.length;
+  }
+
+  @computed
+  get canUserSelectMemes() {
+    return this.competition.maxUserSubmissions > this.userEntriesCount;
+  }
+
+  @computed
+  get canSubmit() {
+    return (
+      this.selectedMemes.length > 0 &&
+      this.competition.maxUserSubmissions >= this.userEntriesCount
+    );
+  }
+
+  @computed
+  get userEntriesCount() {
+    return this.userSubmittedMemes.length;
   }
 }

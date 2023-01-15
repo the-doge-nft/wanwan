@@ -92,13 +92,13 @@ export class CompetitionController {
     });
   }
 
-  @Get(':id/canSubmit')
+  @Get(':id/meme/submissions')
   @UseGuards(AuthGuard)
   async getCanVote(
     @Param() { id }: IdDto,
     @Req() { user }: AuthenticatedRequest,
   ) {
-    return this.competition.getCanAddressSubmit(id, user.address);
+    return this.meme.getSubmittedByCompetitionId(id, user.address);
   }
 
   @Get(':id/meme/ranked')

@@ -110,4 +110,16 @@ export class MemeService {
     });
     return this.addExtras(filteredMemes);
   }
+
+  async getSubmittedByCompetitionId(competitionId: number, address: string) {
+    return this.addExtras(
+      await this.prisma.meme.findMany({
+        where: { submissions: { some: { competitionId } }, user: { address } },
+        include: {
+          media: true,
+          user: true,
+        },
+      }),
+    );
+  }
 }

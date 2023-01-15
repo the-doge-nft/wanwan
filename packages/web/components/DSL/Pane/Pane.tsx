@@ -1,4 +1,5 @@
 import { PropsWithChildren } from "react";
+import { AiOutlineMinus, AiOutlinePlus } from "react-icons/ai";
 import { css } from "../../../helpers/css";
 
 export enum PaneType {
@@ -9,7 +10,9 @@ export enum PaneType {
 interface PaneProps {
   title?: React.ReactNode;
   type?: PaneType;
-  rightOfTitle?: React.ReactNode;
+  toggle?: boolean;
+  isExpanded?: boolean;
+  onChange?: (isExpanded: boolean) => void;
 }
 
 const paneTypeStyles = {
@@ -29,12 +32,15 @@ const Pane: React.FC<PropsWithChildren<PaneProps>> = ({
   children,
   title,
   type = PaneType.Primary,
-  rightOfTitle,
+  toggle,
+  isExpanded = true,
+  onChange,
 }) => {
   const basePaneStyles = {
     container: css("border-[1px]", "border-black"),
     title: css(
-      "p-1",
+      "px-2",
+      "py-1",
       "font-bold",
       "text-sm",
       "flex",
@@ -42,8 +48,9 @@ const Pane: React.FC<PropsWithChildren<PaneProps>> = ({
       "items-center",
       "w-full"
     ),
-    body: css("text-sm", { "p-1": children }),
+    body: css("text-sm", { "p-2": children }),
   };
+  console.log("isExpanded", isExpanded);
   return (
     <div
       className={
@@ -53,12 +60,25 @@ const Pane: React.FC<PropsWithChildren<PaneProps>> = ({
       {title && (
         <div className={css(paneTypeStyles[type].title, basePaneStyles.title)}>
           <div className={css("grow")}>{title}</div>
-          {rightOfTitle && rightOfTitle}
+          {toggle && (
+            <div
+              className={css("cursor-pointer")}
+              onClick={() => onChange && onChange(!isExpanded)}
+            >
+              {isExpanded ? (
+                <AiOutlineMinus size={16} />
+              ) : (
+                <AiOutlinePlus size={16} />
+              )}
+            </div>
+          )}
         </div>
       )}
-      <div className={css(paneTypeStyles[type].body, basePaneStyles.body)}>
-        {children}
-      </div>
+      {isExpanded && (
+        <div className={css(paneTypeStyles[type].body, basePaneStyles.body)}>
+          {children}
+        </div>
+      )}
     </div>
   );
 };
