@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import { useEffect, useMemo } from "react";
 import { AiOutlineMinus, AiOutlinePlus } from "react-icons/ai";
 import { RxArrowDown, RxArrowUp } from "react-icons/rx";
+import { VscComment } from "react-icons/vsc";
 import AspectRatio from "../../components/DSL/AspectRatio/AspectRatio";
 import AsyncWrap, {
   NoDataFound,
@@ -288,8 +289,17 @@ const CompetitionEntries: React.FC<{ store: CompetitionIdStore }> = observer(
                           style={{ backgroundImage: `url(${meme.media.url})` }}
                         />
                         <div className={css("text-right", "mt-2")}>
-                          <Link size={LinkSize.sm} href={`/meme/${meme.id}`}>
-                            comments ({meme.comments.length})
+                          <Link
+                            size={LinkSize.sm}
+                            href={`/meme/${meme.id}`}
+                            className={css(
+                              "inline-flex",
+                              "items-center",
+                              "gap-1"
+                            )}
+                          >
+                            <VscComment size={20} />
+                            <div>{meme.comments.length} comments</div>
                           </Link>
                         </div>
                       </div>
