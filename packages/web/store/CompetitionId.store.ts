@@ -1,4 +1,4 @@
-import { action, computed, makeObservable, observable } from "mobx";
+import { action, computed, makeObservable, observable, toJS } from "mobx";
 import { fuzzyDeepSearch } from "../helpers/arrays";
 import { Competition, Meme } from "../interfaces";
 import http from "../services/http";
@@ -66,20 +66,6 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
     this.searchValue = value;
   };
 
-  @computed
-  get filteredMemes() {
-    const nonSelectedMemes = AppStore.auth.memes.filter(
-      (meme) =>
-        !this.selectedMemeIds.includes(meme.id) &&
-        !this.userSubmittedMemes.map((meme) => meme.id).includes(meme.id)
-    );
-    if (this.searchValue === "") {
-      return nonSelectedMemes;
-    } else {
-      return fuzzyDeepSearch(nonSelectedMemes, "name", this.searchValue);
-    }
-  }
-
   destroy() {
     this.disposeReactions();
   }
@@ -120,12 +106,35 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
     return this.selectedMemes.length > 0;
   }
 
+  @computed
+  get availableMemes() {
+    return AppStore.auth.memes.filter(
+      (meme) =>
+        !this.selectedMemeIds.includes(meme.id) &&
+        !this.userSubmittedMemes.map((meme) => meme.id).includes(meme.id)
+    );
+  }
+
+  @computed
+  get filteredMemes() {
+    if (this.searchValue === "") {
+      return this.availableMemes;
+    } else {
+      return fuzzyDeepSearch(this.availableMemes, "name", this.searchValue);
+    }
+  }
+
   onSubmit() {
     this.isSubmitLoading = true;
     const promises = this.selectedMemeIds.map((memeId) =>
       http.post("/submission", { memeId, competitionId: this.id })
     );
-    return Promise.all(promises).finally(() => (this.isSubmitLoading = false));
+    return Promise.all(promises)
+      .then(() => {
+        this.userSubmittedMemes.concat(toJS(this.selectedMemes));
+        this.getUserSubmittedMemes().then(() => (this.selectedMemeIds = []));
+      })
+      .finally(() => (this.isSubmitLoading = false));
   }
 
   @computed

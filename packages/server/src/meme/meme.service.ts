@@ -118,6 +118,7 @@ export class MemeService {
         include: {
           media: true,
           user: true,
+          votes: true,
         },
       }),
     );
