@@ -14,7 +14,7 @@ import Link, { LinkType } from "../../components/DSL/Link/Link";
 import Pane, { PaneType } from "../../components/DSL/Pane/Pane";
 import PreviewLink from "../../components/PreviewLink/PreviewLink";
 import { css } from "../../helpers/css";
-import { abbreviate, jsonify } from "../../helpers/strings";
+import { abbreviate } from "../../helpers/strings";
 import { Competition, Meme } from "../../interfaces";
 import AppLayout from "../../layouts/App.layout";
 import http from "../../services/http";
@@ -208,7 +208,7 @@ const CompetitionEntries: React.FC<{ store: CompetitionIdStore }> = observer(
                   </div>
                 }
               >
-                <div>{jsonify(meme.votes)}</div>
+                {/* <div>{jsonify(meme.votes)}</div> */}
                 <div className={css("flex", "gap-2", "mr-2")}>
                   <div>
                     <div
