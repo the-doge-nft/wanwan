@@ -6,6 +6,7 @@ interface PreviewLinkProps {
   link: string;
   name?: string | null;
   description?: string | null;
+  showDetails?: boolean;
 }
 
 const PreviewLink: React.FC<PropsWithChildren<PreviewLinkProps>> = ({
@@ -13,6 +14,7 @@ const PreviewLink: React.FC<PropsWithChildren<PreviewLinkProps>> = ({
   name,
   description,
   children,
+  showDetails = true,
 }) => {
   return (
     <div>
@@ -31,32 +33,34 @@ const PreviewLink: React.FC<PropsWithChildren<PreviewLinkProps>> = ({
           {children}
         </div>
       </Link>
-      <div className={css("text-xs")}>
-        {name && (
-          <div
-            className={css(
-              "font-bold",
-              "whitespace-nowrap",
-              "overflow-hidden",
-              "overflow-ellipsis"
-            )}
-          >
-            {name}
-          </div>
-        )}
-        {description && (
-          <div
-            className={css(
-              "text-slate-700",
-              "whitespace-nowrap",
-              "overflow-hidden",
-              "overflow-ellipsis"
-            )}
-          >
-            {description}
-          </div>
-        )}
-      </div>
+      {showDetails && (
+        <div className={css("text-xs")}>
+          {name && (
+            <div
+              className={css(
+                "font-bold",
+                "whitespace-nowrap",
+                "overflow-hidden",
+                "overflow-ellipsis"
+              )}
+            >
+              {name}
+            </div>
+          )}
+          {description && (
+            <div
+              className={css(
+                "text-slate-700",
+                "whitespace-nowrap",
+                "overflow-hidden",
+                "overflow-ellipsis"
+              )}
+            >
+              {description}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };

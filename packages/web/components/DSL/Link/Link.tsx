@@ -68,8 +68,8 @@ const baseLinkStyles = css(
 );
 
 const linkTypeStyles = {
-  [LinkType.Primary]: css("text-red-700", "hover:text-red-600", baseLinkStyles),
-  [LinkType.Secondary]: css("text-black", "hover:text-red-600", baseLinkStyles),
+  [LinkType.Primary]: css("text-red-800", "hover:text-red-600", baseLinkStyles),
+  [LinkType.Secondary]: css("text-black", "hover:text-red-800", baseLinkStyles),
 };
 
 const linkSizeStyles = {

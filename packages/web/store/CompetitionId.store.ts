@@ -20,10 +20,10 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
   selectedMemeIds: number[] = [];
 
   @observable
-  showSubmitContent = true;
+  showSubmitContent = false;
 
   @observable
-  showUserEntriesContent = true;
+  showUserEntriesContent = false;
 
   @observable
   isSubmitLoading = false;

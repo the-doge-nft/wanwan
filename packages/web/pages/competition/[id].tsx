@@ -3,15 +3,18 @@ import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 import { useEffect, useMemo } from "react";
 import { AiOutlineMinus, AiOutlinePlus } from "react-icons/ai";
+import { RxArrowDown, RxArrowUp } from "react-icons/rx";
 import AspectRatio from "../../components/DSL/AspectRatio/AspectRatio";
 import AsyncWrap, {
   NoDataFound,
 } from "../../components/DSL/AsyncWrap/AsyncWrap";
 import Button from "../../components/DSL/Button/Button";
 import Input from "../../components/DSL/Input/Input";
+import Link, { LinkType } from "../../components/DSL/Link/Link";
 import Pane, { PaneType } from "../../components/DSL/Pane/Pane";
 import PreviewLink from "../../components/PreviewLink/PreviewLink";
 import { css } from "../../helpers/css";
+import { abbreviate } from "../../helpers/strings";
 import { Competition, Meme } from "../../interfaces";
 import AppLayout from "../../layouts/App.layout";
 import http from "../../services/http";
@@ -47,84 +50,81 @@ const MemeById: React.FC<CompetitionByIdProps> = observer(
     return (
       <AppLayout>
         <div className={css("mt-4", "flex", "flex-col", "gap-2")}>
-          <div
-            className={css(
-              "grid",
-              "grid-cols-1",
-              "md:grid-cols-12",
-              "md:grid-rows-1",
-              "text-sm",
-              "mt-8",
-              "w-full",
-              "mb-8"
-            )}
+          <Pane
+            type={PaneType.Secondary}
+            title={`Competition: ${store.competition.name}`}
           >
-            <div className={css("md:col-span-10")}>
-              {store.competition.name && (
-                <div className={css("font-bold", "break-words")}>
-                  {competition.name}
-                </div>
-              )}
-              {store.competition.description && (
-                <div className={css("break-words")}>
-                  {competition.description}
-                </div>
-              )}
-              {store.competition.maxUserSubmissions && (
-                <div>{store.competition.maxUserSubmissions}</div>
+            {store.competition.description && (
+              <div className={css("break-words")}>
+                {competition.description}
+              </div>
+            )}
+            {store.competition.maxUserSubmissions && (
+              <div>{store.competition.maxUserSubmissions}</div>
+            )}
+          </Pane>
+
+          <div
+            className={css("grid", {
+              "grid-cols-1": store.showSubmitPane,
+              "md:grid-cols-2": store.showSubmitPane,
+              "gap-2": store.showSubmitPane,
+            })}
+          >
+            <div className={css()}>
+              <CompetitionEntries store={store} />
+            </div>
+            <div className={css("flex", "flex-col", "gap-2")}>
+              {store.showSubmitPane && (
+                <>
+                  <Pane
+                    type={PaneType.Secondary}
+                    title={"Enter"}
+                    toggle
+                    isExpanded={store.showSubmitContent}
+                    onChange={(value) => (store.showSubmitContent = value)}
+                  >
+                    <div className={css("flex", "flex-col", "gap-2")}>
+                      <div
+                        className={css(
+                          "flex",
+                          "justify-between",
+                          "align-items-center",
+                          "gap-2"
+                        )}
+                      >
+                        <Input
+                          block
+                          value={store.searchValue}
+                          onChange={store.onSearchChange}
+                          placeholder={"search your meme catalogue"}
+                          type={"text"}
+                        />
+                        <Button
+                          onClick={() => store.onSubmit()}
+                          isLoading={store.isSubmitLoading}
+                          disabled={!store.canSubmit}
+                        >
+                          Submit
+                        </Button>
+                      </div>
+                      <MemeSelector store={store} />
+                      <SelectedMemes store={store} />
+                    </div>
+                  </Pane>
+                  <Pane
+                    type={PaneType.Secondary}
+                    title={`Your Entries: (${store.userEntriesCount})`}
+                    toggle
+                    isExpanded={store.showUserEntriesContent}
+                    onChange={(value) => (store.showUserEntriesContent = value)}
+                  >
+                    <UserEntries store={store} />
+                  </Pane>
+                </>
               )}
             </div>
           </div>
-
-          {store.showSubmitPane && (
-            <Pane
-              type={PaneType.Secondary}
-              title={"Enter"}
-              toggle
-              isExpanded={store.showSubmitContent}
-              onChange={(value) => (store.showSubmitContent = value)}
-            >
-              <div className={css("flex", "flex-col", "gap-2")}>
-                <div
-                  className={css(
-                    "flex",
-                    "justify-between",
-                    "align-items-center",
-                    "gap-2"
-                  )}
-                >
-                  <Input
-                    block
-                    value={store.searchValue}
-                    onChange={store.onSearchChange}
-                    placeholder={"search your meme catalogue"}
-                    type={"text"}
-                  />
-                  <Button
-                    onClick={() => store.onSubmit()}
-                    isLoading={store.isSubmitLoading}
-                    disabled={!store.canSubmit}
-                  >
-                    Submit
-                  </Button>
-                </div>
-                <MemeSelector store={store} />
-                <SelectedMemes store={store} />
-              </div>
-            </Pane>
-          )}
-          <Pane
-            type={PaneType.Secondary}
-            title={`Your Entries: (${store.userEntriesCount})`}
-            toggle
-            isExpanded={store.showUserEntriesContent}
-            onChange={(value) => (store.showUserEntriesContent = value)}
-          >
-            <UserEntries store={store} />
-          </Pane>
-          <Pane title={"All Entries"}>
-            <CompetitionEntries store={store} />
-          </Pane>
         </div>
       </AppLayout>
     );
@@ -156,7 +156,7 @@ const UserEntries: React.FC<{ store: CompetitionIdStore }> = ({ store }) => {
                   "bg-cover",
                   "bg-center",
                   "bg-no-repeat",
-                  "h-full"
+                  "w-full"
                 )}
                 ratio={`${meme.media.width}/${meme.media.height}`}
                 style={{ backgroundImage: `url(${meme.media.url})` }}
@@ -172,37 +172,71 @@ const UserEntries: React.FC<{ store: CompetitionIdStore }> = ({ store }) => {
 const CompetitionEntries: React.FC<{ store: CompetitionIdStore }> = observer(
   ({ store }) => {
     return (
-      <div className={css("flex", "flex-col")}>
+      <div className={css("flex", "flex-col", "gap-4")}>
         <AsyncWrap
           isLoading={false}
           hasData={store.memes.length > 0}
           renderNoData={() => <NoDataFound>memes</NoDataFound>}
         >
           {store.memes.map((meme) => (
-            <div key={`meme-preview-${meme.id}`} className={css("flex")}>
-              <div>---</div>
-              <div
-                key={`meme-preview-${meme.id}`}
-                className={css("max-w-[200px]")}
-              >
-                <PreviewLink
-                  name={meme.name}
-                  description={meme.description}
-                  link={`/meme/${meme.id}`}
-                >
-                  <AspectRatio
+            <Pane
+              key={`meme-preview-${meme.id}`}
+              title={
+                <div>
+                  Posted by{" "}
+                  <Link
+                    type={LinkType.Secondary}
+                    href={`/profile/${meme.user.address}/meme`}
+                  >
+                    {abbreviate(meme.user.address)}
+                  </Link>
+                </div>
+              }
+            >
+              <div className={css("flex", "gap-3")}>
+                <div>
+                  <div
                     className={css(
-                      "bg-cover",
-                      "bg-center",
-                      "bg-no-repeat",
-                      "h-full"
+                      "text-slate-400",
+                      "hover:text-red-800",
+                      "cursor-pointer"
                     )}
-                    ratio={`${meme.media.width}/${meme.media.height}`}
-                    style={{ backgroundImage: `url(${meme.media.url})` }}
-                  />
-                </PreviewLink>
+                  >
+                    <RxArrowUp size={22} />
+                  </div>
+                  <div className={css("text-slate-600")}>231</div>
+                  <div
+                    className={css(
+                      "text-slate-400",
+                      "hover:text-red-800",
+                      "cursor-pointer"
+                    )}
+                  >
+                    <RxArrowDown size={22} />
+                  </div>
+                </div>
+                <div className={css("grow")}>
+                  <div className={css("max-w-[200px]")}>
+                    <PreviewLink
+                      name={meme.name}
+                      description={meme.description}
+                      link={`/meme/${meme.id}`}
+                    >
+                      <AspectRatio
+                        className={css(
+                          "bg-cover",
+                          "bg-center",
+                          "bg-no-repeat",
+                          "h-full"
+                        )}
+                        ratio={`${meme.media.width}/${meme.media.height}`}
+                        style={{ backgroundImage: `url(${meme.media.url})` }}
+                      />
+                    </PreviewLink>
+                  </div>
+                </div>
               </div>
-            </div>
+            </Pane>
           ))}
         </AsyncWrap>
       </div>

@@ -101,6 +101,7 @@ export class MemeService {
         media: true,
         votes: true,
         comments: true,
+        user: true,
       },
     });
     const filteredMemes = memes.sort((a, b) => {
