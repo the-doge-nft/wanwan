@@ -185,7 +185,8 @@ const UserEntries: React.FC<{ store: CompetitionIdStore }> = ({ store }) => {
                   "bg-cover",
                   "bg-center",
                   "bg-no-repeat",
-                  "w-full"
+                  "w-full",
+                  "h-full"
                 )}
                 ratio={`${meme.media.width}/${meme.media.height}`}
                 style={{ backgroundImage: `url(${meme.media.url})` }}
