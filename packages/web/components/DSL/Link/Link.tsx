@@ -18,7 +18,7 @@ const Link: React.FC<LinkProps> = ({
   href,
   children,
   type = LinkType.Primary,
-  size = LinkSize.sm,
+  size = LinkSize.lg,
   onClick,
   className,
 }: LinkProps) => {
@@ -54,6 +54,7 @@ const Link: React.FC<LinkProps> = ({
 export enum LinkType {
   Primary = "primary",
   Secondary = "secondary",
+  Tertiary = "tertiary",
 }
 
 export enum LinkSize {
@@ -70,11 +71,16 @@ const baseLinkStyles = css(
 const linkTypeStyles = {
   [LinkType.Primary]: css("text-red-800", "hover:text-red-600", baseLinkStyles),
   [LinkType.Secondary]: css("text-black", "hover:text-red-800", baseLinkStyles),
+  [LinkType.Tertiary]: css(
+    "text-slate-800",
+    "hover:text-slate-600",
+    baseLinkStyles
+  ),
 };
 
 const linkSizeStyles = {
-  [LinkSize.sm]: css("text-md"),
-  [LinkSize.lg]: css("text-lg"),
+  [LinkSize.sm]: css("text-xs"),
+  [LinkSize.lg]: css("text-sm"),
 };
 
 export default Link;

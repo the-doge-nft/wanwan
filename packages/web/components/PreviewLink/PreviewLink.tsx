@@ -23,7 +23,7 @@ const PreviewLink: React.FC<PropsWithChildren<PreviewLinkProps>> = ({
           className={css(
             "max-w-full",
             "h-full",
-            "hover:border-red-700",
+            "hover:border-slate-400",
             "border-[1px]",
             "h-[115px]",
             "overflow-y-hidden",

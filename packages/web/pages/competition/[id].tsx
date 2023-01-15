@@ -240,7 +240,11 @@ const CompetitionEntries: React.FC<{ store: CompetitionIdStore }> = observer(
                 key={`meme-preview-${meme.id}`}
               >
                 <Pane
-                  className={css("hover:border-red-800", "!hover:text-red-800")}
+                  className={css(
+                    "hover:border-slate-400",
+                    "!hover:text-red-800",
+                    "group"
+                  )}
                   title={
                     <div>
                       Posted by{" "}
@@ -306,14 +310,16 @@ const CompetitionEntries: React.FC<{ store: CompetitionIdStore }> = observer(
                             "h-full",
                             "border-[1px]",
                             "border-black",
-                            "mt-2"
+                            "mt-3",
+                            "mb-2",
+                            "group-hover:border-slate-400"
                           )}
                           ratio={`${meme.media.width}/${meme.media.height}`}
                           style={{ backgroundImage: `url(${meme.media.url})` }}
                         />
                         <div className={css("text-right", "mt-2.5")}>
                           <Link
-                            type={LinkType.Secondary}
+                            type={LinkType.Tertiary}
                             size={LinkSize.sm}
                             href={`/meme/${meme.id}`}
                             className={css(
@@ -322,8 +328,8 @@ const CompetitionEntries: React.FC<{ store: CompetitionIdStore }> = observer(
                               "gap-1"
                             )}
                           >
-                            <VscComment size={20} />
-                            <div>{meme.comments.length} comments</div>
+                            <VscComment size={18} />
+                            <div>{meme.comments.length}</div>
                           </Link>
                         </div>
                       </div>
@@ -376,14 +382,7 @@ const SelectedMemes: React.FC<{ store: CompetitionIdStore }> = observer(
               "cursor-pointer"
             )}
           >
-            <div
-              className={css(
-                "border-[1px]",
-                "border-black",
-                "hover:border-red-700",
-                "relative"
-              )}
-            >
+            <div className={css("border-[1px]", "border-black", "relative")}>
               <AspectRatio
                 className={css("bg-cover", "bg-center", "bg-no-repeat")}
                 ratio={"1/1"}
