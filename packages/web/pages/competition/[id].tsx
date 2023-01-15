@@ -288,8 +288,9 @@ const CompetitionEntries: React.FC<{ store: CompetitionIdStore }> = observer(
                           ratio={`${meme.media.width}/${meme.media.height}`}
                           style={{ backgroundImage: `url(${meme.media.url})` }}
                         />
-                        <div className={css("text-right", "mt-2")}>
+                        <div className={css("text-right", "mt-2.5")}>
                           <Link
+                            type={LinkType.Secondary}
                             size={LinkSize.sm}
                             href={`/meme/${meme.id}`}
                             className={css(

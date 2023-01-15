@@ -1,4 +1,4 @@
-import { makeObservable, observable } from "mobx";
+import { computed, makeObservable, observable } from "mobx";
 import { Comment } from "../interfaces";
 import http from "../services/http";
 import AppStore from "./App.store";
@@ -6,6 +6,9 @@ import AppStore from "./App.store";
 export default class MemeIdStore {
   @observable
   comments: Comment[] = [];
+
+  @observable
+  comment = "";
 
   constructor(private readonly id: string) {
     makeObservable(this);
@@ -22,15 +25,23 @@ export default class MemeIdStore {
 
   async onCommentSubmit(body: string) {
     return AppStore.auth.runOrAuthPrompt(async () => {
-      await http.post(`/meme/${this.id}/comment`, { body });
+      await http.post(`/meme/${this.id}/comment`, { body: body.trim() });
       this.getComments();
     });
   }
 
   async onParentCommentSubmit(body: string, parentCommentId: number) {
     return AppStore.auth.runOrAuthPrompt(async () => {
-      await http.post(`/meme/${this.id}/comment`, { parentCommentId, body });
+      await http.post(`/meme/${this.id}/comment`, {
+        parentCommentId,
+        body: body.trim(),
+      });
       this.getComments();
     });
+  }
+
+  @computed
+  get canComment() {
+    return this.comment !== "";
   }
 }

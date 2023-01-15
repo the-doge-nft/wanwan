@@ -83,6 +83,8 @@ const MemeById: React.FC<Meme> = observer(({ ...meme }) => {
           >
             <TextInput
               block
+              value={store.comment}
+              onChange={(value) => (store.comment = value)}
               type={"textarea"}
               name={"body"}
               label={
@@ -102,7 +104,7 @@ const MemeById: React.FC<Meme> = observer(({ ...meme }) => {
               }
             />
             <div className={css("flex", "justify-end", "mt-2")}>
-              <Submit>Comment</Submit>
+              <Submit disabled={!store.canComment}>Comment</Submit>
             </div>
           </Form>
           <div className={css("flex", "flex-col", "gap-3")}>
