@@ -15,10 +15,11 @@ import Link, { LinkSize, LinkType } from "../../components/DSL/Link/Link";
 import Pane, { PaneType } from "../../components/DSL/Pane/Pane";
 import PreviewLink from "../../components/PreviewLink/PreviewLink";
 import { css } from "../../helpers/css";
-import { abbreviate, jsonify } from "../../helpers/strings";
+import { abbreviate } from "../../helpers/strings";
 import { Competition, Meme } from "../../interfaces";
 import AppLayout from "../../layouts/App.layout";
 import http from "../../services/http";
+import AppStore from "../../store/App.store";
 import CompetitionIdStore from "../../store/CompetitionId.store";
 
 interface CompetitionByIdProps {
@@ -177,7 +178,6 @@ const UserEntries: React.FC<{ store: CompetitionIdStore }> = ({ store }) => {
           const votes = meme.votes;
           const totalScore = votes.reduce((acc, vote) => acc + vote.score, 0);
           const place = store.getMemePlaceInCompetition(meme.id);
-          console.log("debug:: votes", jsonify(votes), totalScore, place);
           return (
             <div key={`meme-preview-${meme.id}`} className={css("relative")}>
               <PreviewLink link={`/meme/${meme.id}`}>
@@ -230,11 +230,9 @@ const CompetitionEntries: React.FC<{ store: CompetitionIdStore }> = observer(
         >
           {store.memes.map((meme) => {
             const score = meme.votes.reduce((acc, vote) => acc + vote.score, 0);
-            // const userVote = meme.votes.filter(
-            //   // @ts-ignore
-            //   (vote) => vote.user.address === store.user.address
-            // )[0];
-            // console.log("debug:: user vote", userVote);
+            const userVoteScore = meme.votes.filter(
+              (vote) => vote.user.address === AppStore.auth.address
+            )[0]?.score;
             return (
               <Link
                 className={css("hover:no-underline")}
@@ -264,8 +262,9 @@ const CompetitionEntries: React.FC<{ store: CompetitionIdStore }> = observer(
                         }}
                         className={css(
                           "text-slate-400",
-                          "hover:text-red-800",
-                          "cursor-pointer"
+                          "hover:text-slate-800",
+                          "cursor-pointer",
+                          { "text-slate-800": userVoteScore === 1 }
                         )}
                       >
                         <RxArrowUp size={22} />
@@ -285,8 +284,11 @@ const CompetitionEntries: React.FC<{ store: CompetitionIdStore }> = observer(
                         }}
                         className={css(
                           "text-slate-400",
-                          "hover:text-red-800",
-                          "cursor-pointer"
+                          "hover:text-slate-800",
+                          "cursor-pointer",
+                          {
+                            "text-slate-800": userVoteScore === -1,
+                          }
                         )}
                       >
                         <RxArrowDown size={22} />
@@ -450,7 +452,7 @@ const MemeSelector: React.FC<{ store: CompetitionIdStore }> = observer(
       <div
         className={css(
           "flex",
-          "overflow-x-scroll",
+          "overflow-x-auto",
           "overflow-y-hidden",
           "gap-2",
           "min-h-[120px]"

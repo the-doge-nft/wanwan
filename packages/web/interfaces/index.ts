@@ -49,6 +49,7 @@ export interface Vote {
   score: number;
   createdAt: DatetimeString;
   updatedAt: DatetimeString;
+  user: User;
 }
 
 export interface Media {
