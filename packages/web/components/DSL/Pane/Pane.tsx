@@ -13,6 +13,7 @@ interface PaneProps {
   toggle?: boolean;
   isExpanded?: boolean;
   onChange?: (isExpanded: boolean) => void;
+  className?: string;
 }
 
 const paneTypeStyles = {
@@ -34,10 +35,11 @@ const Pane: React.FC<PropsWithChildren<PaneProps>> = ({
   type = PaneType.Primary,
   toggle,
   isExpanded = true,
+  className,
   onChange,
 }) => {
   const basePaneStyles = {
-    container: css("border-[1px]", "border-black"),
+    container: css("border-[1px]", "border-black", className),
     title: css(
       "px-2",
       "py-1",
@@ -50,7 +52,6 @@ const Pane: React.FC<PropsWithChildren<PaneProps>> = ({
     ),
     body: css("text-sm", { "p-2": children }),
   };
-  console.log("isExpanded", isExpanded);
   return (
     <div
       className={

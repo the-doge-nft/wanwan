@@ -7,7 +7,7 @@ export interface BaseFormInputProps {
   name: string;
   value?: string | number;
   onChange?: (value: any) => void;
-  label?: string;
+  label?: React.ReactNode;
   validate?: ValidatorFunction[] | ValidatorFunction;
   description?: string;
 }

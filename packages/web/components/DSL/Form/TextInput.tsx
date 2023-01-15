@@ -20,6 +20,7 @@ const TextInput = ({
   label,
   validate,
   description,
+  type = "text",
   ...rest
 }: TextInputProps) => {
   const { input, meta, isRequired } = useFormField(name, validate);
@@ -34,7 +35,7 @@ const TextInput = ({
       <Input
         {...input}
         {...rest}
-        type={"text"}
+        type={type}
         value={input.value}
         className={css({
           [BaseInvalidInputStyle]: meta.error && meta.touched,

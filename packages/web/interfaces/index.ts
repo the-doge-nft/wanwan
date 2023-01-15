@@ -38,6 +38,7 @@ export interface Competition {
   createdById: number;
   curators: User[];
   rewards: Reward[];
+  user: User;
 }
 
 export interface Vote {

@@ -1,3 +1,4 @@
+import { differenceInMinutes } from "date-fns";
 import { observer } from "mobx-react-lite";
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
@@ -5,16 +6,15 @@ import { useEffect, useMemo, useState } from "react";
 import { BsDot } from "react-icons/bs";
 import AspectRatio from "../../components/DSL/AspectRatio/AspectRatio";
 import Button, { Submit } from "../../components/DSL/Button/Button";
-import Code from "../../components/DSL/Code/Code";
-import { DevToggle } from "../../components/DSL/Dev/Dev";
 import Form from "../../components/DSL/Form/Form";
 import TextInput from "../../components/DSL/Form/TextInput";
-import Link from "../../components/DSL/Link/Link";
+import Link, { LinkType } from "../../components/DSL/Link/Link";
 import { css } from "../../helpers/css";
-import { abbreviate, jsonify } from "../../helpers/strings";
+import { abbreviate } from "../../helpers/strings";
 import { Comment, Meme } from "../../interfaces";
 import AppLayout from "../../layouts/App.layout";
 import http from "../../services/http";
+import AppStore from "../../store/App.store";
 import MemeIdStore from "../../store/MemeId.store";
 
 interface MemeByIdProps {
@@ -77,15 +77,33 @@ const MemeById: React.FC<Meme> = observer(({ ...meme }) => {
         <div className={css("mt-8")}>
           <Form
             className={css("w-full")}
-            onSubmit={({ body }) => store.onCommentSubmit(body)}
+            onSubmit={({ body }, form) =>
+              store.onCommentSubmit(body).then(() => form.reset())
+            }
           >
             <TextInput
               block
               type={"textarea"}
               name={"body"}
-              label={"comment as ___"}
+              label={
+                AppStore.auth.address ? (
+                  <div>
+                    Comment as{" "}
+                    <Link
+                      type={LinkType.Secondary}
+                      href={`/profile/${AppStore.auth.address}/meme`}
+                    >
+                      {abbreviate(AppStore.auth.address)}
+                    </Link>
+                  </div>
+                ) : (
+                  "Comment"
+                )
+              }
             />
-            <Submit>Comment</Submit>
+            <div className={css("flex", "justify-end", "mt-2")}>
+              <Submit>Comment</Submit>
+            </div>
           </Form>
           <div className={css("flex", "flex-col", "gap-3")}>
             {store.comments.map((comment) => (
@@ -99,9 +117,6 @@ const MemeById: React.FC<Meme> = observer(({ ...meme }) => {
             ))}
           </div>
         </div>
-        <DevToggle>
-          <Code>{jsonify(meme)}</Code>
-        </DevToggle>
       </div>
     </AppLayout>
   );
@@ -114,19 +129,20 @@ const MemeComment: React.FC<
   return (
     <div key={`comment-${comment.id}`} className={css("text-xs")}>
       <div className={css("flex", "items-center")}>
-        <div></div>
-        <div>{abbreviate(comment.user.address)}</div>
-        <div className={css("flex", "items-center", "text-slate-600")}>
-          <BsDot />
-          <div>
-            {Math.abs(
-              new Date(comment.createdAt).getTime() - new Date().getTime()
-            ) / 36e5}
-          </div>
+        <Link
+          type={LinkType.Secondary}
+          href={`/profile/${comment.user.address}/meme`}
+        >
+          {abbreviate(comment.user.address)}
+        </Link>
+        <BsDot />
+        <div>
+          {differenceInMinutes(new Date(), new Date(comment.createdAt))} mins
+          ago
         </div>
       </div>
       <div className={css("text-sm")}>{comment.body}</div>
-      <div>
+      <div className={css("flex", "justify-end")}>
         <Button onClick={() => setShowReply(!showReply)}>reply</Button>
       </div>
       {showReply && (

@@ -185,4 +185,9 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
   get userEntriesCount() {
     return this.userSubmittedMemes.length;
   }
+
+  @computed
+  get totalVotes() {
+    return this.memes.reduce((acc, meme) => acc + meme.votes.length, 0);
+  }
 }

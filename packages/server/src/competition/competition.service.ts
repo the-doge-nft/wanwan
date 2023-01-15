@@ -28,6 +28,7 @@ export class CompetitionService {
           currency: true,
         },
       },
+      user: true,
     };
   }
 

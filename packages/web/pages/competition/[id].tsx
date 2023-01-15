@@ -10,7 +10,7 @@ import AsyncWrap, {
 } from "../../components/DSL/AsyncWrap/AsyncWrap";
 import Button from "../../components/DSL/Button/Button";
 import Input from "../../components/DSL/Input/Input";
-import Link, { LinkType } from "../../components/DSL/Link/Link";
+import Link, { LinkSize, LinkType } from "../../components/DSL/Link/Link";
 import Pane, { PaneType } from "../../components/DSL/Pane/Pane";
 import PreviewLink from "../../components/PreviewLink/PreviewLink";
 import { css } from "../../helpers/css";
@@ -56,17 +56,37 @@ const MemeById: React.FC<CompetitionByIdProps> = observer(
           >
             <div className={css("text-sm")}>
               {store.competition.description && (
-                <div className={css("flex", "gap-1")}>
-                  <div>Description:</div>
-                  <div>{store.competition.description}</div>
-                </div>
+                <div>{store.competition.description}</div>
               )}
-              {store.competition.maxUserSubmissions && (
-                <div className={css("flex", "gap-1")}>
-                  <div>Max User Submissions:</div>
-                  <div>{store.competition.maxUserSubmissions}</div>
+              <div
+                className={css("mt-4", "flex", "justify-between", "items-end")}
+              >
+                <div>
+                  <div className={css("flex", "gap-1", "items-center")}>
+                    <div className={css("font-bold")}>Memes:</div>
+                    <div>{store.memes.length}</div>
+                  </div>
+                  <div className={css("flex", "gap-1", "items-center")}>
+                    <div className={css("font-bold")}>Votes:</div>
+                    <div>{store.totalVotes}</div>
+                  </div>
+                  <div className={css("flex", "gap-1", "items-center")}>
+                    <div className={css("font-bold")}>Ends at:</div>
+                    <div>
+                      {new Date(store.competition.endsAt).toLocaleDateString()}
+                    </div>
+                  </div>
                 </div>
-              )}
+                <div className={css("flex", "gap-1", "justify-end")}>
+                  <div>Created by:</div>
+                  <Link
+                    type={LinkType.Secondary}
+                    href={`/profile/${store.competition.user.address}/competition`}
+                  >
+                    {abbreviate(store.competition.user.address)}
+                  </Link>
+                </div>
+              </div>
             </div>
           </Pane>
 
@@ -142,7 +162,7 @@ const MemeById: React.FC<CompetitionByIdProps> = observer(
 const UserEntries: React.FC<{ store: CompetitionIdStore }> = ({ store }) => {
   return (
     <div
-      className={css("grid", "grid-rows-[min-content]", "gap-4")}
+      className={css("grid", "grid-rows-[min-content]", "gap-2")}
       style={{
         gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
       }}
@@ -180,7 +200,7 @@ const UserEntries: React.FC<{ store: CompetitionIdStore }> = ({ store }) => {
 const CompetitionEntries: React.FC<{ store: CompetitionIdStore }> = observer(
   ({ store }) => {
     return (
-      <div className={css("flex", "flex-col", "gap-4")}>
+      <div className={css("flex", "flex-col", "gap-2")}>
         <AsyncWrap
           isLoading={false}
           hasData={store.memes.length > 0}
@@ -194,78 +214,89 @@ const CompetitionEntries: React.FC<{ store: CompetitionIdStore }> = observer(
             // )[0];
             // console.log("debug:: user vote", userVote);
             return (
-              <Pane
+              <Link
+                className={css("hover:no-underline")}
+                href={`/meme/${meme.id}`}
                 key={`meme-preview-${meme.id}`}
-                title={
-                  <div>
-                    Posted by{" "}
-                    <Link
-                      type={LinkType.Secondary}
-                      href={`/profile/${meme.user.address}/meme`}
-                    >
-                      {abbreviate(meme.user.address)}
-                    </Link>
-                  </div>
-                }
               >
-                {/* <div>{jsonify(meme.votes)}</div> */}
-                <div className={css("flex", "gap-2", "mr-2")}>
-                  <div>
-                    <div
-                      onClick={() => store.upVote(meme.id)}
-                      className={css(
-                        "text-slate-400",
-                        "hover:text-red-800",
-                        "cursor-pointer"
-                      )}
-                    >
-                      <RxArrowUp size={22} />
+                <Pane
+                  className={css("hover:border-red-800", "!hover:text-red-800")}
+                  title={
+                    <div>
+                      Posted by{" "}
+                      <Link
+                        type={LinkType.Secondary}
+                        href={`/profile/${meme.user.address}/meme`}
+                      >
+                        {abbreviate(meme.user.address)}
+                      </Link>
                     </div>
-                    <div
-                      className={css("text-center", {
-                        "text-slate-600": score > 0,
-                        "text-slate-400": score === 0,
-                      })}
-                    >
-                      {score}
-                    </div>
-                    <div
-                      onClick={() => store.downVote(meme.id)}
-                      className={css(
-                        "text-slate-400",
-                        "hover:text-red-800",
-                        "cursor-pointer"
-                      )}
-                    >
-                      <RxArrowDown size={22} />
-                    </div>
-                  </div>
-                  <div className={css("grow")}>
-                    <div className={css("flex", "flex-col")}>
-                      <div className={css("font-bold")}>{meme.name}</div>
-                      <div>{meme.description}</div>
-                      <AspectRatio
+                  }
+                >
+                  <div className={css("flex", "gap-2", "mr-2")}>
+                    <div>
+                      <div
+                        onClick={(e) => {
+                          e.preventDefault();
+                          store.upVote(meme.id);
+                        }}
                         className={css(
-                          "bg-contain",
-                          "bg-center",
-                          "bg-no-repeat",
-                          "h-full",
-                          "border-[1px]",
-                          "border-black",
-                          "mt-2"
+                          "text-slate-400",
+                          "hover:text-red-800",
+                          "cursor-pointer"
                         )}
-                        ratio={`${meme.media.width}/${meme.media.height}`}
-                        style={{ backgroundImage: `url(${meme.media.url})` }}
-                      />
-                      <div className={css("text-right", "mt-2")}>
-                        <Link href={`/meme/${meme.id}`}>
-                          comments ({meme.comments.length})
-                        </Link>
+                      >
+                        <RxArrowUp size={22} />
+                      </div>
+                      <div
+                        className={css("text-center", {
+                          "text-slate-600": score > 0,
+                          "text-slate-400": score === 0,
+                        })}
+                      >
+                        {score}
+                      </div>
+                      <div
+                        onClick={(e) => {
+                          e.preventDefault();
+                          store.downVote(meme.id);
+                        }}
+                        className={css(
+                          "text-slate-400",
+                          "hover:text-red-800",
+                          "cursor-pointer"
+                        )}
+                      >
+                        <RxArrowDown size={22} />
+                      </div>
+                    </div>
+                    <div className={css("grow")}>
+                      <div className={css("flex", "flex-col")}>
+                        <div className={css("font-bold")}>{meme.name}</div>
+                        <div>{meme.description}</div>
+                        <AspectRatio
+                          className={css(
+                            "bg-contain",
+                            "bg-center",
+                            "bg-no-repeat",
+                            "h-full",
+                            "border-[1px]",
+                            "border-black",
+                            "mt-2"
+                          )}
+                          ratio={`${meme.media.width}/${meme.media.height}`}
+                          style={{ backgroundImage: `url(${meme.media.url})` }}
+                        />
+                        <div className={css("text-right", "mt-2")}>
+                          <Link size={LinkSize.sm} href={`/meme/${meme.id}`}>
+                            comments ({meme.comments.length})
+                          </Link>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </Pane>
+                </Pane>
+              </Link>
             );
           })}
         </AsyncWrap>
@@ -288,7 +319,6 @@ const SelectedMemes: React.FC<{ store: CompetitionIdStore }> = observer(
           "gap-2",
           "flex",
           "overflow-y-scroll",
-          "gap-3",
           "min-h-[120px]",
           {
             "border-slate-400": !store.isMemesToSubmitMax,
@@ -386,7 +416,7 @@ const MemeSelector: React.FC<{ store: CompetitionIdStore }> = observer(
 
     return (
       <div
-        className={css("flex", "overflow-y-scroll", "gap-3", "min-h-[120px]")}
+        className={css("flex", "overflow-y-scroll", "gap-2", "min-h-[120px]")}
       >
         <AsyncWrap
           isLoading={false}
@@ -488,6 +518,7 @@ export const getServerSideProps: GetServerSideProps<
     const { data: competition } = await http.get<Competition>(
       `/competition/${id}`
     );
+    console.log(competition);
     const { data: memes } = await http.get<Meme[]>(
       `/competition/${id}/meme/ranked`
     );
