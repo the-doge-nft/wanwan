@@ -69,10 +69,7 @@ const Home: React.FC<HomeProps> = observer(
                   renderNoData={() => <NoDataFound>competitions</NoDataFound>}
                 >
                   {store.competitions.map((comp) => (
-                    <div
-                      key={`competition-preview-${comp.id}`}
-                      className={css("max-w-[167px]")}
-                    >
+                    <div key={`competition-preview-${comp.id}`}>
                       <PreviewLink
                         name={comp.name}
                         description={comp.description}
@@ -107,10 +104,7 @@ const Home: React.FC<HomeProps> = observer(
                   renderNoData={() => <NoDataFound>memes</NoDataFound>}
                 >
                   {store.memes.map((meme) => (
-                    <div
-                      key={`meme-preview-${meme.id}`}
-                      className={css("max-w-[167px]")}
-                    >
+                    <div key={`meme-preview-${meme.id}`}>
                       <PreviewLink
                         name={meme.name}
                         description={meme.description}

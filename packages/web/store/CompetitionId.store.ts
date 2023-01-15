@@ -20,10 +20,10 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
   selectedMemeIds: number[] = [];
 
   @observable
-  showSubmitContent = false;
+  showSubmitContent = true;
 
   @observable
-  showUserEntriesContent = false;
+  showUserEntriesContent = true;
 
   @observable
   isSubmitLoading = false;
@@ -189,5 +189,9 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
   @computed
   get totalVotes() {
     return this.memes.reduce((acc, meme) => acc + meme.votes.length, 0);
+  }
+
+  getMemePlaceInCompetition(id: number) {
+    return this.memes.findIndex((meme) => meme.id === id) + 1;
   }
 }

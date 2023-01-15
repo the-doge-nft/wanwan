@@ -15,7 +15,7 @@ import Link, { LinkSize, LinkType } from "../../components/DSL/Link/Link";
 import Pane, { PaneType } from "../../components/DSL/Pane/Pane";
 import PreviewLink from "../../components/PreviewLink/PreviewLink";
 import { css } from "../../helpers/css";
-import { abbreviate } from "../../helpers/strings";
+import { abbreviate, jsonify } from "../../helpers/strings";
 import { Competition, Meme } from "../../interfaces";
 import AppLayout from "../../layouts/App.layout";
 import http from "../../services/http";
@@ -173,27 +173,47 @@ const UserEntries: React.FC<{ store: CompetitionIdStore }> = ({ store }) => {
         hasData={store.userSubmittedMemes.length > 0}
         renderNoData={() => <NoDataFound>memes</NoDataFound>}
       >
-        {store.userSubmittedMemes.map((meme) => (
-          <div key={`meme-preview-${meme.id}`} className={css("max-w-[167px]")}>
-            <PreviewLink
-              name={meme.name}
-              description={meme.description}
-              link={`/meme/${meme.id}`}
-            >
-              <AspectRatio
-                className={css(
-                  "bg-cover",
-                  "bg-center",
-                  "bg-no-repeat",
-                  "w-full",
-                  "h-full"
-                )}
-                ratio={`${meme.media.width}/${meme.media.height}`}
-                style={{ backgroundImage: `url(${meme.media.url})` }}
-              />
-            </PreviewLink>
-          </div>
-        ))}
+        {store.userSubmittedMemes.map((meme) => {
+          const votes = meme.votes;
+          const totalScore = votes.reduce((acc, vote) => acc + vote.score, 0);
+          const place = store.getMemePlaceInCompetition(meme.id);
+          console.log("debug:: votes", jsonify(votes), totalScore, place);
+          return (
+            <div key={`meme-preview-${meme.id}`} className={css("relative")}>
+              <PreviewLink link={`/meme/${meme.id}`}>
+                <AspectRatio
+                  className={css(
+                    "bg-cover",
+                    "bg-center",
+                    "bg-no-repeat",
+                    "w-full",
+                    "h-full"
+                  )}
+                  ratio={`${meme.media.width}/${meme.media.height}`}
+                  style={{ backgroundImage: `url(${meme.media.url})` }}
+                />
+                <div
+                  className={css(
+                    "absolute",
+                    "top-0",
+                    "left-0",
+                    "bg-red-800",
+                    "p-1",
+                    "mt-1.5",
+                    "ml-1.5",
+                    "text-white",
+                    "border-[1px]",
+                    "border-black",
+                    "text-xs"
+                  )}
+                >
+                  {place} place
+                </div>
+                <div>{totalScore}</div>
+              </PreviewLink>
+            </div>
+          );
+        })}
       </AsyncWrap>
     </div>
   );
@@ -330,8 +350,8 @@ const SelectedMemes: React.FC<{ store: CompetitionIdStore }> = observer(
           "p-4",
           "gap-2",
           "flex",
-          "overflow-y-scroll",
-          "min-h-[120px]",
+          "overflow-y-hidden",
+          "overflow-x-auto",
           {
             "border-slate-400": !store.isMemesToSubmitMax,
             "border-black": store.isMemesToSubmitMax,
@@ -428,7 +448,13 @@ const MemeSelector: React.FC<{ store: CompetitionIdStore }> = observer(
 
     return (
       <div
-        className={css("flex", "overflow-y-scroll", "gap-2", "min-h-[120px]")}
+        className={css(
+          "flex",
+          "overflow-x-scroll",
+          "overflow-y-hidden",
+          "gap-2",
+          "min-h-[120px]"
+        )}
       >
         <AsyncWrap
           isLoading={false}
