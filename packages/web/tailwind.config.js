@@ -8,6 +8,9 @@ module.exports = {
   theme: {
     extend: {
       colors: {},
+      fontSize: {
+        xxs: "0.65rem",
+      },
     },
   },
   plugins: [],

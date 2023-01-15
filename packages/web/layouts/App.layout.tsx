@@ -19,6 +19,9 @@ const AppLayout: React.FC<PropsWithChildren> = ({ children }) => {
           <Header />
         </div>
         <div className={css("flex-grow")}>{children}</div>
+        <footer className={css("text-xs", "text-slate-400", "text-center")}>
+          No copyright, no trademark. Kabosu forever.
+        </footer>
       </div>
     </div>
   );
