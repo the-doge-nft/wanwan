@@ -40,7 +40,15 @@ export interface Competition {
   rewards: Reward[];
 }
 
-export interface Vote {}
+export interface Vote {
+  id: number;
+  competitionId: number;
+  createdById: number;
+  memeId: number;
+  score: number;
+  createdAt: DatetimeString;
+  updatedAt: DatetimeString;
+}
 
 export interface Media {
   id: number;
@@ -65,6 +73,8 @@ export interface Meme {
   mediaId: number;
   media: Media;
   user: User;
+  votes: Array<Vote>;
+  comments: Array<Comment>;
 }
 
 export interface MemeWithVotes extends Meme {

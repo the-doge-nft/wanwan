@@ -76,9 +76,11 @@ export class CompetitionController {
     @Req() { user }: AuthenticatedRequest,
     @Param() { id: competitionId }: IdDto,
   ) {
-    if (!(await this.alchemy.getIsPixelHolder(user.address))) {
-      throw new BadRequestException('You must hold a pixel to vote');
-    }
+    // @next UNCOMMENT
+
+    // if (!(await this.alchemy.getIsPixelHolder(user.address))) {
+    //   throw new BadRequestException('You must hold a pixel to vote');
+    // }
     return this.vote.upsert({
       where: {
         createdById_memeId_competitionId: {

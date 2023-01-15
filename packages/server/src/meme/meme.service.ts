@@ -99,7 +99,7 @@ export class MemeService {
       where: { submissions: { some: { competitionId } } },
       include: {
         media: true,
-        votes: true,
+        votes: { include: { user: true } },
         comments: true,
         user: true,
       },

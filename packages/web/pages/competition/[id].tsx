@@ -14,7 +14,7 @@ import Link, { LinkType } from "../../components/DSL/Link/Link";
 import Pane, { PaneType } from "../../components/DSL/Pane/Pane";
 import PreviewLink from "../../components/PreviewLink/PreviewLink";
 import { css } from "../../helpers/css";
-import { abbreviate } from "../../helpers/strings";
+import { abbreviate, jsonify } from "../../helpers/strings";
 import { Competition, Meme } from "../../interfaces";
 import AppLayout from "../../layouts/App.layout";
 import http from "../../services/http";
@@ -54,21 +54,28 @@ const MemeById: React.FC<CompetitionByIdProps> = observer(
             type={PaneType.Secondary}
             title={`Competition: ${store.competition.name}`}
           >
-            {store.competition.description && (
-              <div className={css("break-words")}>
-                {competition.description}
-              </div>
-            )}
-            {store.competition.maxUserSubmissions && (
-              <div>{store.competition.maxUserSubmissions}</div>
-            )}
+            <div className={css("text-sm")}>
+              {store.competition.description && (
+                <div className={css("flex", "gap-1")}>
+                  <div>Description:</div>
+                  <div>{store.competition.description}</div>
+                </div>
+              )}
+              {store.competition.maxUserSubmissions && (
+                <div className={css("flex", "gap-1")}>
+                  <div>Max User Submissions:</div>
+                  <div>{store.competition.maxUserSubmissions}</div>
+                </div>
+              )}
+            </div>
           </Pane>
 
           <div
             className={css("grid", {
-              "grid-cols-1": store.showSubmitPane,
-              "md:grid-cols-2": store.showSubmitPane,
-              "gap-2": store.showSubmitPane,
+              "grid-cols-1": store.showSubmitPane || store.showHasEntriesPane,
+              "md:grid-cols-2":
+                store.showSubmitPane || store.showHasEntriesPane,
+              "gap-2": store.showSubmitPane || store.showHasEntriesPane,
             })}
           >
             <div className={css()}>
@@ -76,52 +83,53 @@ const MemeById: React.FC<CompetitionByIdProps> = observer(
             </div>
             <div className={css("flex", "flex-col", "gap-2")}>
               {store.showSubmitPane && (
-                <>
-                  <Pane
-                    type={PaneType.Secondary}
-                    title={"Enter"}
-                    toggle
-                    isExpanded={store.showSubmitContent}
-                    onChange={(value) => (store.showSubmitContent = value)}
-                  >
-                    <div className={css("flex", "flex-col", "gap-2")}>
-                      <div
-                        className={css(
-                          "flex",
-                          "justify-between",
-                          "align-items-center",
-                          "gap-2"
-                        )}
+                <Pane
+                  type={PaneType.Secondary}
+                  title={"Enter"}
+                  toggle
+                  isExpanded={store.showSubmitContent}
+                  onChange={(value) => (store.showSubmitContent = value)}
+                >
+                  <div className={css("flex", "flex-col", "gap-2")}>
+                    <div
+                      className={css(
+                        "flex",
+                        "justify-between",
+                        "align-items-center",
+                        "gap-2"
+                      )}
+                    >
+                      <Input
+                        block
+                        value={store.searchValue}
+                        onChange={store.onSearchChange}
+                        placeholder={"search your meme catalogue"}
+                        type={"text"}
+                      />
+                      <Button
+                        onClick={() => store.onSubmit()}
+                        isLoading={store.isSubmitLoading}
+                        disabled={!store.canSubmit}
                       >
-                        <Input
-                          block
-                          value={store.searchValue}
-                          onChange={store.onSearchChange}
-                          placeholder={"search your meme catalogue"}
-                          type={"text"}
-                        />
-                        <Button
-                          onClick={() => store.onSubmit()}
-                          isLoading={store.isSubmitLoading}
-                          disabled={!store.canSubmit}
-                        >
-                          Submit
-                        </Button>
-                      </div>
-                      <MemeSelector store={store} />
-                      <SelectedMemes store={store} />
+                        Submit
+                      </Button>
                     </div>
-                  </Pane>
-                  <Pane
-                    type={PaneType.Secondary}
-                    title={`Your Entries: (${store.userEntriesCount})`}
-                    toggle
-                    isExpanded={store.showUserEntriesContent}
-                    onChange={(value) => (store.showUserEntriesContent = value)}
-                  >
-                    <UserEntries store={store} />
-                  </Pane>
-                </>
+                    <MemeSelector store={store} />
+                    <SelectedMemes store={store} />
+                  </div>
+                </Pane>
+              )}
+
+              {store.showHasEntriesPane && (
+                <Pane
+                  type={PaneType.Secondary}
+                  title={`Your Entries: (${store.userEntriesCount})`}
+                  toggle
+                  isExpanded={store.showUserEntriesContent}
+                  onChange={(value) => (store.showUserEntriesContent = value)}
+                >
+                  <UserEntries store={store} />
+                </Pane>
               )}
             </div>
           </div>
@@ -178,66 +186,88 @@ const CompetitionEntries: React.FC<{ store: CompetitionIdStore }> = observer(
           hasData={store.memes.length > 0}
           renderNoData={() => <NoDataFound>memes</NoDataFound>}
         >
-          {store.memes.map((meme) => (
-            <Pane
-              key={`meme-preview-${meme.id}`}
-              title={
-                <div>
-                  Posted by{" "}
-                  <Link
-                    type={LinkType.Secondary}
-                    href={`/profile/${meme.user.address}/meme`}
-                  >
-                    {abbreviate(meme.user.address)}
-                  </Link>
-                </div>
-              }
-            >
-              <div className={css("flex", "gap-3")}>
-                <div>
-                  <div
-                    className={css(
-                      "text-slate-400",
-                      "hover:text-red-800",
-                      "cursor-pointer"
-                    )}
-                  >
-                    <RxArrowUp size={22} />
-                  </div>
-                  <div className={css("text-slate-600")}>231</div>
-                  <div
-                    className={css(
-                      "text-slate-400",
-                      "hover:text-red-800",
-                      "cursor-pointer"
-                    )}
-                  >
-                    <RxArrowDown size={22} />
-                  </div>
-                </div>
-                <div className={css("grow")}>
-                  <div className={css("max-w-[200px]")}>
-                    <PreviewLink
-                      name={meme.name}
-                      description={meme.description}
-                      link={`/meme/${meme.id}`}
+          {store.memes.map((meme) => {
+            const score = meme.votes.reduce((acc, vote) => acc + vote.score, 0);
+            // const userVote = meme.votes.filter(
+            //   // @ts-ignore
+            //   (vote) => vote.user.address === store.user.address
+            // )[0];
+            // console.log("debug:: user vote", userVote);
+            return (
+              <Pane
+                key={`meme-preview-${meme.id}`}
+                title={
+                  <div>
+                    Posted by{" "}
+                    <Link
+                      type={LinkType.Secondary}
+                      href={`/profile/${meme.user.address}/meme`}
                     >
+                      {abbreviate(meme.user.address)}
+                    </Link>
+                  </div>
+                }
+              >
+                <div>{jsonify(meme.votes)}</div>
+                <div className={css("flex", "gap-2", "mr-2")}>
+                  <div>
+                    <div
+                      onClick={() => store.upVote(meme.id)}
+                      className={css(
+                        "text-slate-400",
+                        "hover:text-red-800",
+                        "cursor-pointer"
+                      )}
+                    >
+                      <RxArrowUp size={22} />
+                    </div>
+                    <div
+                      className={css("text-center", {
+                        "text-slate-600": score > 0,
+                        "text-slate-400": score === 0,
+                      })}
+                    >
+                      {score}
+                    </div>
+                    <div
+                      onClick={() => store.downVote(meme.id)}
+                      className={css(
+                        "text-slate-400",
+                        "hover:text-red-800",
+                        "cursor-pointer"
+                      )}
+                    >
+                      <RxArrowDown size={22} />
+                    </div>
+                  </div>
+                  <div className={css("grow")}>
+                    <div className={css("flex", "flex-col")}>
+                      <div className={css("font-bold")}>{meme.name}</div>
+                      <div>{meme.description}</div>
                       <AspectRatio
                         className={css(
-                          "bg-cover",
+                          "bg-contain",
                           "bg-center",
                           "bg-no-repeat",
-                          "h-full"
+                          "h-full",
+                          "border-[1px]",
+                          "border-black",
+                          "mt-2"
                         )}
                         ratio={`${meme.media.width}/${meme.media.height}`}
                         style={{ backgroundImage: `url(${meme.media.url})` }}
                       />
-                    </PreviewLink>
+                      <div className={css("text-right", "mt-2")}>
+                        <Link href={`/meme/${meme.id}`}>
+                          comments ({meme.comments.length})
+                        </Link>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </Pane>
-          ))}
+              </Pane>
+            );
+          })}
         </AsyncWrap>
       </div>
     );
@@ -254,12 +284,17 @@ const SelectedMemes: React.FC<{ store: CompetitionIdStore }> = observer(
           "border-dashed",
           "flex",
           "justify-center",
-          "items-center",
           "p-4",
           "gap-2",
+          "flex",
+          "overflow-y-scroll",
+          "gap-3",
+          "min-h-[120px]",
           {
             "border-slate-400": !store.isMemesToSubmitMax,
             "border-black": store.isMemesToSubmitMax,
+            "items-start": store.selectedMemes.length > 0,
+            "items-center": store.selectedMemes.length === 0,
           }
         )}
       >

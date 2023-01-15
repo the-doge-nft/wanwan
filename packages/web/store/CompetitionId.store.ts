@@ -82,6 +82,11 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
     return AppStore.auth.isAuthed && this.canUserSelectMemes;
   }
 
+  @computed
+  get showHasEntriesPane() {
+    return AppStore.auth.isAuthed && this.userEntriesCount > 0;
+  }
+
   @action
   toggleShowSubmitContent() {
     this.showSubmitContent = !this.showSubmitContent;
@@ -143,6 +148,14 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
         this.getRankedMemes();
       })
       .finally(() => (this.isSubmitLoading = false));
+  }
+
+  upVote(memeId: number) {
+    return http.post(`/competition/${this.id}/vote`, { score: 1, memeId });
+  }
+
+  downVote(memeId: number) {
+    return http.post(`/competition/${this.id}/vote`, { score: -1, memeId });
   }
 
   @computed
