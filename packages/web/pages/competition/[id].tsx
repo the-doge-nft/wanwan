@@ -8,13 +8,10 @@ import AsyncWrap, {
   NoDataFound,
 } from "../../components/DSL/AsyncWrap/AsyncWrap";
 import Button from "../../components/DSL/Button/Button";
-import Code from "../../components/DSL/Code/Code";
-import { DevToggle } from "../../components/DSL/Dev/Dev";
 import Input from "../../components/DSL/Input/Input";
 import Pane, { PaneType } from "../../components/DSL/Pane/Pane";
 import PreviewLink from "../../components/PreviewLink/PreviewLink";
 import { css } from "../../helpers/css";
-import { jsonify } from "../../helpers/strings";
 import { Competition, Meme } from "../../interfaces";
 import AppLayout from "../../layouts/App.layout";
 import http from "../../services/http";
@@ -123,55 +120,88 @@ const MemeById: React.FC<CompetitionByIdProps> = observer(
             isExpanded={store.showUserEntriesContent}
             onChange={(value) => (store.showUserEntriesContent = value)}
           >
-            <div>{store.userSubmittedMemes.map((meme) => jsonify(meme))}</div>
+            <UserEntries store={store} />
           </Pane>
           <Pane title={"All Entries"}>
             <CompetitionEntries store={store} />
           </Pane>
-          <DevToggle>
-            <Code>{jsonify(competition)}</Code>
-          </DevToggle>
         </div>
       </AppLayout>
     );
   }
 );
 
+const UserEntries: React.FC<{ store: CompetitionIdStore }> = ({ store }) => {
+  return (
+    <div
+      className={css("grid", "grid-rows-[min-content]", "gap-4")}
+      style={{
+        gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
+      }}
+    >
+      <AsyncWrap
+        isLoading={false}
+        hasData={store.userSubmittedMemes.length > 0}
+        renderNoData={() => <NoDataFound>memes</NoDataFound>}
+      >
+        {store.userSubmittedMemes.map((meme) => (
+          <div key={`meme-preview-${meme.id}`} className={css("max-w-[167px]")}>
+            <PreviewLink
+              name={meme.name}
+              description={meme.description}
+              link={`/meme/${meme.id}`}
+            >
+              <AspectRatio
+                className={css(
+                  "bg-cover",
+                  "bg-center",
+                  "bg-no-repeat",
+                  "h-full"
+                )}
+                ratio={`${meme.media.width}/${meme.media.height}`}
+                style={{ backgroundImage: `url(${meme.media.url})` }}
+              />
+            </PreviewLink>
+          </div>
+        ))}
+      </AsyncWrap>
+    </div>
+  );
+};
+
 const CompetitionEntries: React.FC<{ store: CompetitionIdStore }> = observer(
   ({ store }) => {
     return (
-      <div
-        className={css("grid", "grid-rows-[min-content]", "gap-4")}
-        style={{
-          gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
-        }}
-      >
+      <div className={css("flex", "flex-col")}>
         <AsyncWrap
           isLoading={false}
           hasData={store.memes.length > 0}
           renderNoData={() => <NoDataFound>memes</NoDataFound>}
         >
           {store.memes.map((meme) => (
-            <div
-              key={`meme-preview-${meme.id}`}
-              className={css("max-w-[200px]")}
-            >
-              <PreviewLink
-                name={meme.name}
-                description={meme.description}
-                link={`/meme/${meme.id}`}
+            <div key={`meme-preview-${meme.id}`} className={css("flex")}>
+              <div>---</div>
+              <div
+                key={`meme-preview-${meme.id}`}
+                className={css("max-w-[200px]")}
               >
-                <AspectRatio
-                  className={css(
-                    "bg-cover",
-                    "bg-center",
-                    "bg-no-repeat",
-                    "h-full"
-                  )}
-                  ratio={`${meme.media.width}/${meme.media.height}`}
-                  style={{ backgroundImage: `url(${meme.media.url})` }}
-                />
-              </PreviewLink>
+                <PreviewLink
+                  name={meme.name}
+                  description={meme.description}
+                  link={`/meme/${meme.id}`}
+                >
+                  <AspectRatio
+                    className={css(
+                      "bg-cover",
+                      "bg-center",
+                      "bg-no-repeat",
+                      "h-full"
+                    )}
+                    ratio={`${meme.media.width}/${meme.media.height}`}
+                    style={{ backgroundImage: `url(${meme.media.url})` }}
+                  />
+                </PreviewLink>
+              </div>
             </div>
           ))}
         </AsyncWrap>

@@ -40,6 +40,8 @@ export interface Competition {
   rewards: Reward[];
 }
 
+export interface Vote {}
+
 export interface Media {
   id: number;
   width: number;
@@ -63,6 +65,10 @@ export interface Meme {
   mediaId: number;
   media: Media;
   user: User;
+}
+
+export interface MemeWithVotes extends Meme {
+  votes: Vote[];
 }
 
 export interface Profile {

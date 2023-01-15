@@ -62,6 +62,13 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
   }
 
   @action
+  getRankedMemes() {
+    return http
+      .get<Meme[]>(`/competition/${this.id}/meme/ranked`)
+      .then(({ data }) => (this.memes = data));
+  }
+
+  @action
   onSearchChange = (value: string) => {
     this.searchValue = value;
   };
@@ -133,6 +140,7 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
       .then(() => {
         this.userSubmittedMemes.concat(toJS(this.selectedMemes));
         this.getUserSubmittedMemes().then(() => (this.selectedMemeIds = []));
+        this.getRankedMemes();
       })
       .finally(() => (this.isSubmitLoading = false));
   }
