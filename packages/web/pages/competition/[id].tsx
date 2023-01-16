@@ -382,7 +382,14 @@ const SelectedMemes: React.FC<{ store: CompetitionIdStore }> = observer(
               "cursor-pointer"
             )}
           >
-            <div className={css("border-[1px]", "border-black", "relative")}>
+            <div
+              className={css(
+                "border-[1px]",
+                "border-black",
+                "relative",
+                "hover:border-red-800"
+              )}
+            >
               <AspectRatio
                 className={css("bg-cover", "bg-center", "bg-no-repeat")}
                 ratio={"1/1"}
