@@ -1,4 +1,4 @@
-import { differenceInMinutes } from "date-fns";
+import { differenceInMinutes, format } from "date-fns";
 import { observer } from "mobx-react-lite";
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
@@ -73,6 +73,9 @@ const MemeById: React.FC<Meme> = observer(({ ...meme }) => {
               {abbreviate(meme.user.address)}
             </Link>
           </div>
+        </div>
+        <div className={css("text-xs", "text-slate-600", "w-full")}>
+          {format(new Date(meme.createdAt), "Pp")}
         </div>
         <div className={css("mt-8")}>
           <Form

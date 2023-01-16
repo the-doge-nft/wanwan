@@ -1,6 +1,6 @@
 import { action, computed, makeObservable, observable, toJS } from "mobx";
 import { fuzzyDeepSearch } from "../helpers/arrays";
-import { Competition, Meme } from "../interfaces";
+import { Competition, CompetitionMeme } from "../interfaces";
 import http from "../services/http";
 import { Reactionable } from "../services/mixins/reactionable";
 import { EmptyClass } from "./../services/mixins/index";
@@ -11,7 +11,7 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
   competition: Competition;
 
   @observable
-  memes: Meme[] = [];
+  memes: CompetitionMeme[] = [];
 
   @observable
   searchValue = "";
@@ -29,12 +29,12 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
   isSubmitLoading = false;
 
   @observable
-  userSubmittedMemes: Meme[] = [];
+  userSubmittedMemes: CompetitionMeme[] = [];
 
   constructor(
     private readonly id: number,
     competition: Competition,
-    memes: Meme[]
+    memes: CompetitionMeme[]
   ) {
     super();
     makeObservable(this);
@@ -57,14 +57,14 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
   @action
   getUserSubmittedMemes() {
     return http
-      .get<Meme[]>(`/competition/${this.id}/meme/submissions`)
+      .get<CompetitionMeme[]>(`/competition/${this.id}/meme/submissions`)
       .then(({ data }) => (this.userSubmittedMemes = data));
   }
 
   @action
   getRankedMemes() {
     return http
-      .get<Meme[]>(`/competition/${this.id}/meme/ranked`)
+      .get<CompetitionMeme[]>(`/competition/${this.id}/meme/ranked`)
       .then(({ data }) => (this.memes = data));
   }
 
@@ -143,7 +143,17 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
     );
     return Promise.all(promises)
       .then(() => {
-        this.userSubmittedMemes.concat(toJS(this.selectedMemes));
+        this.userSubmittedMemes.concat(
+          toJS(
+            this.selectedMemes.map((meme) => ({
+              ...meme,
+              comments: [],
+              submissions: [],
+              score: 0,
+              votes: [],
+            }))
+          )
+        );
         this.getUserSubmittedMemes().then(() => (this.selectedMemeIds = []));
         this.getRankedMemes();
       })

@@ -1,10 +1,10 @@
+import { format } from "date-fns";
 import { observer } from "mobx-react-lite";
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 import { useEffect, useMemo } from "react";
 import { AiOutlineMinus, AiOutlinePlus } from "react-icons/ai";
 import { RxArrowDown, RxArrowUp } from "react-icons/rx";
-import { VscComment } from "react-icons/vsc";
 import AspectRatio from "../../components/DSL/AspectRatio/AspectRatio";
 import AsyncWrap, {
   NoDataFound,
@@ -16,7 +16,7 @@ import Pane, { PaneType } from "../../components/DSL/Pane/Pane";
 import PreviewLink from "../../components/PreviewLink/PreviewLink";
 import { css } from "../../helpers/css";
 import { abbreviate } from "../../helpers/strings";
-import { Competition, Meme } from "../../interfaces";
+import { Competition, CompetitionMeme, MemeWithScore } from "../../interfaces";
 import AppLayout from "../../layouts/App.layout";
 import http from "../../services/http";
 import AppStore from "../../store/App.store";
@@ -24,7 +24,7 @@ import CompetitionIdStore from "../../store/CompetitionId.store";
 
 interface CompetitionByIdProps {
   competition: Competition;
-  memes: Meme[];
+  memes: MemeWithScore[];
 }
 
 const MemeById: React.FC<CompetitionByIdProps> = observer(
@@ -175,8 +175,6 @@ const UserEntries: React.FC<{ store: CompetitionIdStore }> = ({ store }) => {
         renderNoData={() => <NoDataFound>memes</NoDataFound>}
       >
         {store.userSubmittedMemes.map((meme) => {
-          const votes = meme.votes;
-          const totalScore = votes.reduce((acc, vote) => acc + vote.score, 0);
           const place = store.getMemePlaceInCompetition(meme.id);
           return (
             <div key={`meme-preview-${meme.id}`} className={css("relative")}>
@@ -209,7 +207,7 @@ const UserEntries: React.FC<{ store: CompetitionIdStore }> = ({ store }) => {
                 >
                   {place} place
                 </div>
-                <div>{totalScore}</div>
+                <div>{meme.score}</div>
               </PreviewLink>
             </div>
           );
@@ -246,9 +244,10 @@ const CompetitionEntries: React.FC<{ store: CompetitionIdStore }> = observer(
                     "group"
                   )}
                   title={
-                    <div>
+                    <div className={css("group-hover:text-slate-400")}>
                       Posted by{" "}
                       <Link
+                        className={css("group-hover:text-slate-400")}
                         type={LinkType.Secondary}
                         href={`/profile/${meme.user.address}/meme`}
                       >
@@ -299,7 +298,13 @@ const CompetitionEntries: React.FC<{ store: CompetitionIdStore }> = observer(
                       </div>
                     </div>
                     <div className={css("grow")}>
-                      <div className={css("flex", "flex-col")}>
+                      <div
+                        className={css(
+                          "flex",
+                          "flex-col",
+                          "group-hover:text-slate-400"
+                        )}
+                      >
                         <div className={css("font-bold")}>{meme.name}</div>
                         <div>{meme.description}</div>
                         <AspectRatio
@@ -317,7 +322,22 @@ const CompetitionEntries: React.FC<{ store: CompetitionIdStore }> = observer(
                           ratio={`${meme.media.width}/${meme.media.height}`}
                           style={{ backgroundImage: `url(${meme.media.url})` }}
                         />
-                        <div className={css("text-right", "mt-2.5")}>
+                        <div
+                          className={css(
+                            "flex",
+                            "justify-between",
+                            "items-center",
+                            "mt-2.5",
+                            "text-slate-500",
+                            "group-hover:text-slate-400"
+                          )}
+                        >
+                          <div className={css("text-xs")}>
+                            {format(
+                              new Date(meme.submissions[0].createdAt),
+                              "Pp"
+                            )}
+                          </div>
                           <Link
                             type={LinkType.Tertiary}
                             size={LinkSize.sm}
@@ -325,11 +345,12 @@ const CompetitionEntries: React.FC<{ store: CompetitionIdStore }> = observer(
                             className={css(
                               "inline-flex",
                               "items-center",
-                              "gap-1"
+                              "gap-1",
+                              "group-hover:text-slate-400"
                             )}
                           >
-                            <VscComment size={18} />
-                            <div>{meme.comments.length}</div>
+                            {/* <VscComment size={18} /> */}
+                            <div>{meme.comments.length} comments</div>
                           </Link>
                         </div>
                       </div>
@@ -565,7 +586,7 @@ export const getServerSideProps: GetServerSideProps<
       `/competition/${id}`
     );
     console.log(competition);
-    const { data: memes } = await http.get<Meme[]>(
+    const { data: memes } = await http.get<CompetitionMeme[]>(
       `/competition/${id}/meme/ranked`
     );
     return {

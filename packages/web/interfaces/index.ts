@@ -75,12 +75,28 @@ export interface Meme {
   mediaId: number;
   media: Media;
   user: User;
-  votes: Array<Vote>;
-  comments: Array<Comment>;
+}
+
+export interface Submission {
+  id: number;
+  memeId: number;
+  competitionId: number;
+  createdAt: DatetimeString;
+  deletedAt?: DatetimeString;
+  createdById: number;
 }
 
 export interface MemeWithVotes extends Meme {
-  votes: Vote[];
+  votes: Array<Vote>;
+}
+
+export interface MemeWithScore extends Meme {
+  score: number;
+}
+
+export interface CompetitionMeme extends MemeWithVotes, MemeWithScore {
+  comments: Array<Comment>;
+  submissions: Array<Submission>;
 }
 
 export interface Profile {

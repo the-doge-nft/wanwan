@@ -99,29 +99,67 @@ export class MemeService {
       where: { submissions: { some: { competitionId } } },
       include: {
         media: true,
+        user: true,
         votes: { include: { user: true }, where: { competitionId } },
         comments: true,
-        user: true,
+        submissions: { where: { competitionId } },
       },
     });
-    const filteredMemes = memes.sort((a, b) => {
-      const aSum = a.votes.reduce((acc, cur) => acc + cur.score, 0);
-      const bSum = b.votes.reduce((acc, cur) => acc + cur.score, 0);
-      return bSum - aSum;
+
+    const memesWithScore = memes.map((meme) => {
+      const score = meme.votes.reduce((acc, cur) => acc + cur.score, 0);
+      return { ...meme, score };
     });
-    return this.addExtras(filteredMemes);
+
+    const memesSortedByScore = memesWithScore.sort((a, b) => {
+      return b.score - a.score;
+    });
+
+    // check if any votes are tied, if so, then sort by submission their time
+    // for (const meme of memesSortedByScore) {
+    //   const tiedMemes = memesSortedByScore.filter(
+    //     (m) => m.score === meme.score && m.id !== meme.id,
+    //   );
+    //   if (tiedMemes.length) {
+    //     const sortedTiedMemes = tiedMemes.sort((a, b) => {
+    //       const aSub = a.submissions[0];
+    //       const bSub = b.submissions[0];
+    //       if (aSub.createdAt < bSub.createdAt) {
+    //         return -1;
+    //       }
+    //       if (aSub.createdAt > bSub.createdAt) {
+    //         return 1;
+    //       }
+    //       return 0;
+    //     });
+    //     const index = memesSortedByScore.findIndex((m) => m.id === meme.id);
+    //     memesSortedByScore.splice(index, 1, ...sortedTiedMemes);
+    //   }
+    // }
+
+    console.log(
+      'debug:: fileteredMemes',
+      JSON.stringify(memesSortedByScore, undefined, 2),
+    );
+    return this.addExtras(memesSortedByScore);
   }
 
+  // next -- very similar to above
   async getSubmittedByCompetitionId(competitionId: number, address: string) {
-    return this.addExtras(
-      await this.prisma.meme.findMany({
-        where: { submissions: { some: { competitionId } }, user: { address } },
-        include: {
-          media: true,
-          user: true,
-          votes: true,
-        },
-      }),
-    );
+    const memes = await this.prisma.meme.findMany({
+      where: { submissions: { some: { competitionId } }, user: { address } },
+      include: {
+        media: true,
+        user: true,
+        votes: { include: { user: true }, where: { competitionId } },
+        comments: true,
+        submissions: { where: { competitionId } },
+      },
+    });
+    const memesWithScore = memes.map((meme) => {
+      const score = meme.votes.reduce((acc, cur) => acc + cur.score, 0);
+      return { ...meme, score };
+    });
+    return this.addExtras(memesWithScore);
   }
 }
