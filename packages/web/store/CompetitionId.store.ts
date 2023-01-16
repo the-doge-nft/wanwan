@@ -73,20 +73,6 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
     this.searchValue = value;
   };
 
-  destroy() {
-    this.disposeReactions();
-  }
-
-  @computed
-  get showSubmitPane() {
-    return AppStore.auth.isAuthed && this.canUserSelectMemes;
-  }
-
-  @computed
-  get showHasEntriesPane() {
-    return AppStore.auth.isAuthed && this.userEntriesCount > 0;
-  }
-
   @action
   toggleShowSubmitContent() {
     this.showSubmitContent = !this.showSubmitContent;
@@ -104,6 +90,62 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
     this.selectedMemeIds = this.selectedMemeIds.filter(
       (memeId) => memeId !== id
     );
+  }
+
+  destroy() {
+    this.disposeReactions();
+  }
+
+  onSubmit() {
+    this.isSubmitLoading = true;
+    const promises = this.selectedMemeIds.map((memeId) =>
+      http.post("/submission", { memeId, competitionId: this.id })
+    );
+    return Promise.all(promises)
+      .then(() => {
+        this.userSubmittedMemes.concat(
+          toJS(
+            this.selectedMemes.map((meme) => ({
+              ...meme,
+              comments: [],
+              submissions: [],
+              score: 0,
+              votes: [],
+            }))
+          )
+        );
+        this.getUserSubmittedMemes().then(() => (this.selectedMemeIds = []));
+        this.getRankedMemes();
+      })
+      .finally(() => (this.isSubmitLoading = false));
+  }
+
+  upVote(memeId: number) {
+    return http
+      .post(`/competition/${this.id}/vote`, { score: 1, memeId })
+      .then(() => this.getRankedMemes());
+  }
+
+  downVote(memeId: number) {
+    return http
+      .post(`/competition/${this.id}/vote`, { score: -1, memeId })
+      .then(() => this.getRankedMemes());
+  }
+
+  zeroVote(memeId: number) {
+    return http
+      .post(`/competition/${this.id}/vote`, { score: 0, memeId })
+      .then(() => this.getRankedMemes());
+  }
+
+  @computed
+  get showSubmitPane() {
+    return AppStore.auth.isAuthed && this.canUserSelectMemes;
+  }
+
+  @computed
+  get showHasEntriesPane() {
+    return AppStore.auth.isAuthed && this.userEntriesCount > 0;
   }
 
   @computed
@@ -134,38 +176,6 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
     } else {
       return fuzzyDeepSearch(this.availableMemes, "name", this.searchValue);
     }
-  }
-
-  onSubmit() {
-    this.isSubmitLoading = true;
-    const promises = this.selectedMemeIds.map((memeId) =>
-      http.post("/submission", { memeId, competitionId: this.id })
-    );
-    return Promise.all(promises)
-      .then(() => {
-        this.userSubmittedMemes.concat(
-          toJS(
-            this.selectedMemes.map((meme) => ({
-              ...meme,
-              comments: [],
-              submissions: [],
-              score: 0,
-              votes: [],
-            }))
-          )
-        );
-        this.getUserSubmittedMemes().then(() => (this.selectedMemeIds = []));
-        this.getRankedMemes();
-      })
-      .finally(() => (this.isSubmitLoading = false));
-  }
-
-  upVote(memeId: number) {
-    return http.post(`/competition/${this.id}/vote`, { score: 1, memeId });
-  }
-
-  downVote(memeId: number) {
-    return http.post(`/competition/${this.id}/vote`, { score: -1, memeId });
   }
 
   @computed

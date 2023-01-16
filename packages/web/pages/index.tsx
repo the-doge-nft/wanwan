@@ -195,7 +195,6 @@ export const getServerSideProps: GetServerSideProps<HomeProps> = async (
     };
   } catch (e) {
     throw new Error("Bad");
-    return { props: { competitions: [], memes: [], stats: null, params: {} } };
   }
 };
 

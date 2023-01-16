@@ -16,7 +16,7 @@ import Pane, { PaneType } from "../../components/DSL/Pane/Pane";
 import PreviewLink from "../../components/PreviewLink/PreviewLink";
 import { css } from "../../helpers/css";
 import { abbreviate } from "../../helpers/strings";
-import { Competition, CompetitionMeme, MemeWithScore } from "../../interfaces";
+import { Competition, CompetitionMeme } from "../../interfaces";
 import AppLayout from "../../layouts/App.layout";
 import http from "../../services/http";
 import AppStore from "../../store/App.store";
@@ -24,7 +24,7 @@ import CompetitionIdStore from "../../store/CompetitionId.store";
 
 interface CompetitionByIdProps {
   competition: Competition;
-  memes: MemeWithScore[];
+  memes: CompetitionMeme[];
 }
 
 const MemeById: React.FC<CompetitionByIdProps> = observer(
@@ -244,10 +244,10 @@ const CompetitionEntries: React.FC<{ store: CompetitionIdStore }> = observer(
                     "group"
                   )}
                   title={
-                    <div className={css("group-hover:text-slate-400")}>
+                    <div className={css("group-hover:text-slate-500")}>
                       Posted by{" "}
                       <Link
-                        className={css("group-hover:text-slate-400")}
+                        className={css("group-hover:text-slate-500")}
                         type={LinkType.Secondary}
                         href={`/profile/${meme.user.address}/meme`}
                       >
@@ -261,7 +261,13 @@ const CompetitionEntries: React.FC<{ store: CompetitionIdStore }> = observer(
                       <div
                         onClick={(e) => {
                           e.preventDefault();
-                          store.upVote(meme.id);
+                          AppStore.auth.runOrAuthPrompt(() => {
+                            if (userVoteScore === 1) {
+                              store.zeroVote(meme.id);
+                            } else {
+                              store.upVote(meme.id);
+                            }
+                          });
                         }}
                         className={css(
                           "text-slate-400",
@@ -273,7 +279,7 @@ const CompetitionEntries: React.FC<{ store: CompetitionIdStore }> = observer(
                         <RxArrowUp size={22} />
                       </div>
                       <div
-                        className={css("text-center", {
+                        className={css("text-center", "font-bold", {
                           "text-slate-600": score > 0,
                           "text-slate-400": score === 0,
                         })}
@@ -283,7 +289,13 @@ const CompetitionEntries: React.FC<{ store: CompetitionIdStore }> = observer(
                       <div
                         onClick={(e) => {
                           e.preventDefault();
-                          store.downVote(meme.id);
+                          AppStore.auth.runOrAuthPrompt(() => {
+                            if (userVoteScore === -1) {
+                              store.zeroVote(meme.id);
+                            } else {
+                              store.downVote(meme.id);
+                            }
+                          });
                         }}
                         className={css(
                           "text-slate-400",
@@ -302,7 +314,7 @@ const CompetitionEntries: React.FC<{ store: CompetitionIdStore }> = observer(
                         className={css(
                           "flex",
                           "flex-col",
-                          "group-hover:text-slate-400"
+                          "group-hover:text-slate-500"
                         )}
                       >
                         <div className={css("font-bold")}>{meme.name}</div>
@@ -329,7 +341,7 @@ const CompetitionEntries: React.FC<{ store: CompetitionIdStore }> = observer(
                             "items-center",
                             "mt-2.5",
                             "text-slate-500",
-                            "group-hover:text-slate-400"
+                            "group-hover:text-slate-500"
                           )}
                         >
                           <div className={css("text-xs")}>
@@ -346,7 +358,7 @@ const CompetitionEntries: React.FC<{ store: CompetitionIdStore }> = observer(
                               "inline-flex",
                               "items-center",
                               "gap-1",
-                              "group-hover:text-slate-400"
+                              "group-hover:text-slate-500"
                             )}
                           >
                             {/* <VscComment size={18} /> */}
