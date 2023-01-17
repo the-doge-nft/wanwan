@@ -1,4 +1,3 @@
-import { Injectable } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 const merge = require('lodash.merge');
 
@@ -15,7 +14,7 @@ export interface GenericFindManyArgs {
 
 const client = new PrismaClient();
 
-@Injectable()
+// next -- better type safety
 class QueryBuilder<T, K extends GenericFindManyArgs> {
   protected prisma: PrismaClient;
   private _filters: Pick<K, 'where'>;
@@ -29,17 +28,14 @@ class QueryBuilder<T, K extends GenericFindManyArgs> {
     this.prisma = client;
   }
 
-  // todo: fix typings
   where(key: keyof NonNullable<K['where']>, thing: object | null) {
     this._filters = merge(this._filters, { [key]: thing });
   }
 
-  // todo: fix typings
   orderBy(key: keyof (NonNullable<K['orderBy']> | any), direction: any) {
     this._sorts.push({ [key]: direction });
   }
 
-  // todo: fix typings
   include(key: keyof NonNullable<K['include']>, more: any) {
     this._includes = merge(this._includes, { [key]: more });
   }
@@ -59,10 +55,13 @@ class QueryBuilder<T, K extends GenericFindManyArgs> {
       skip: this._offset ? this._offset : undefined,
     };
 
-    console.log(
-      'debug:: querying with the following config',
-      JSON.stringify(config, undefined, 2),
-    );
+    // if (process.env.NODE_ENV === 'development') {
+    //   console.log(
+    //     'debug:: querying with the following config',
+    //     JSON.stringify(config, undefined, 2),
+    //   );
+    // }
+
     //@ts-ignore
     return this.prisma[this.model].findMany(config);
   }

@@ -1,9 +1,8 @@
-import { Competition } from "@prisma/client";
 import { action, computed, makeObservable, observable } from "mobx";
 import { encodeBase64 } from "../helpers/strings";
 import http from "../services/http";
 import { errorToast } from "./../components/DSL/Toast/Toast";
-import { Meme, Profile } from "./../interfaces/index";
+import { Competition, Meme, Profile } from "./../interfaces/index";
 import AppStore from "./App.store";
 
 export enum ProfileView {

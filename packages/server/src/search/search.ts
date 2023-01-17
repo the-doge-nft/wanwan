@@ -15,6 +15,7 @@ export interface Sort<T> {
   direction: 'asc' | 'desc';
 }
 
+// next -- better type safety
 @Injectable()
 export abstract class Search<T, K extends object> {
   static CONFIG_KEY = 'config';
@@ -68,7 +69,6 @@ export abstract class Search<T, K extends object> {
     const json = this.decodeBase64(search);
 
     const test = this.validationSchema.validate(json);
-    console.log(test);
     if (test.error) {
       throw new Error(JSON.stringify(test.error));
     }

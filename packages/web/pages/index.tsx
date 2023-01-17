@@ -90,7 +90,7 @@ const Home: React.FC<HomeProps> = observer(
                           style={
                             comp?.media
                               ? { backgroundImage: `url(${comp.media.url})` }
-                              : { backgroundColor: colors.gray[100] }
+                              : { backgroundColor: colors.slate[200] }
                           }
                         />
                       </PreviewLink>

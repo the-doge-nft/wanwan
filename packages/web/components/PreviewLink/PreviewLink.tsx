@@ -17,24 +17,25 @@ const PreviewLink: React.FC<PropsWithChildren<PreviewLinkProps>> = ({
   showDetails = true,
 }) => {
   return (
-    <div>
+    <div className={css("group")}>
       <Link href={link} className={css("w-full")}>
         <div
           className={css(
             "max-w-full",
             "h-full",
-            "hover:border-slate-400",
+            "group-hover:border-slate-500",
+            "group-hover:text-slate-500",
             "border-[1px]",
             "h-[115px]",
             "overflow-y-hidden",
-            "border-slate-900"
+            "border-black"
           )}
         >
           {children}
         </div>
       </Link>
       {showDetails && (
-        <div className={css("text-xs")}>
+        <div className={css("text-xs", "group-hover:text-slate-500")}>
           {name && (
             <div
               className={css(
@@ -53,7 +54,8 @@ const PreviewLink: React.FC<PropsWithChildren<PreviewLinkProps>> = ({
                 "text-slate-700",
                 "whitespace-nowrap",
                 "overflow-hidden",
-                "overflow-ellipsis"
+                "overflow-ellipsis",
+                "group-hover:text-slate-500"
               )}
             >
               {description}

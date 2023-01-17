@@ -8,6 +8,7 @@ import AsyncWrap, {
 } from "../../../components/DSL/AsyncWrap/AsyncWrap";
 import Link from "../../../components/DSL/Link/Link";
 import Pane from "../../../components/DSL/Pane/Pane";
+import { colors } from "../../../components/DSL/Theme";
 import PreviewLink from "../../../components/PreviewLink/PreviewLink";
 import { css } from "../../../helpers/css";
 import { abbreviate, getEtherscanURL } from "../../../helpers/strings";
@@ -60,7 +61,7 @@ const ProfilePage: React.FC<ProfileProps> = observer(({ profile }) => {
                 "border-[1px]",
                 "border-black",
                 "rounded-full",
-                { "bg-gray-300": !profile.avatar }
+                { "bg-slate-200": !profile.avatar }
               )}
               style={
                 profile.avatar
@@ -167,8 +168,16 @@ const ProfilePage: React.FC<ProfileProps> = observer(({ profile }) => {
                           "bg-no-repeat",
                           "h-full"
                         )}
-                        ratio={`1/1`}
-                        style={{ background: "green" }}
+                        ratio={
+                          comp?.media
+                            ? `${comp.media.width}/${comp.media.height}`
+                            : "1/1"
+                        }
+                        style={
+                          comp.media
+                            ? { backgroundImage: `url(${comp.media.url})` }
+                            : { background: colors.slate[200] }
+                        }
                       />
                     </PreviewLink>
                   </div>
@@ -187,13 +196,11 @@ export const getServerSideProps: GetServerSideProps<ProfileProps> = async (
   const { addressOrEns } = context.query;
   try {
     const { data: profile } = await http.get(`/profile/${addressOrEns}`);
-    console.log(profile);
     return {
       props: { profile },
     };
   } catch (e) {
-    console.error(e);
-    return { props: { profile: {} } };
+    throw new Error();
   }
 };
 

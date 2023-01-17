@@ -61,7 +61,9 @@ const MemeById: React.FC<CompetitionByIdProps> = observer(
                 <div>{store.competition.description}</div>
               )}
               <div
-                className={css("mt-4", "flex", "justify-between", "items-end")}
+                className={css("flex", "justify-between", "items-end", {
+                  "mt-4": store.competition.description,
+                })}
               >
                 <div>
                   <div className={css("flex", "gap-1", "items-center")}>
@@ -73,9 +75,13 @@ const MemeById: React.FC<CompetitionByIdProps> = observer(
                     <div>{store.totalVotes}</div>
                   </div>
                   <div className={css("flex", "gap-1", "items-center")}>
+                    <div className={css("font-bold")}>Max Entries:</div>
+                    <div>{store.competition.maxUserSubmissions}</div>
+                  </div>
+                  <div className={css("flex", "gap-1", "items-center")}>
                     <div className={css("font-bold")}>Ends at:</div>
                     <div>
-                      {new Date(store.competition.endsAt).toLocaleDateString()}
+                      {format(new Date(store.competition.endsAt), "Pp")}
                     </div>
                   </div>
                 </div>
@@ -100,10 +106,18 @@ const MemeById: React.FC<CompetitionByIdProps> = observer(
               "gap-2": store.showSubmitPane || store.showHasEntriesPane,
             })}
           >
-            <div className={css()}>
+            <div className={css("order-2", "md:order-1")}>
               <CompetitionEntries store={store} />
             </div>
-            <div className={css("flex", "flex-col", "gap-2")}>
+            <div
+              className={css(
+                "flex",
+                "flex-col",
+                "gap-2",
+                "order-1",
+                "md:order-2"
+              )}
+            >
               {store.showSubmitPane && (
                 <Pane
                   type={PaneType.Secondary}
@@ -539,7 +553,7 @@ const MemeSelector: React.FC<{ store: CompetitionIdStore }> = observer(
                 className={css(
                   "border-[1px]",
                   "border-black",
-                  "hover:border-green-700",
+                  "hover:border-slate-500",
                   "relative"
                 )}
               >
@@ -559,7 +573,7 @@ const MemeSelector: React.FC<{ store: CompetitionIdStore }> = observer(
                     "bg-[rgba(0, 0, 0, 0.61)]",
                     "hidden",
                     "group-hover:flex",
-                    "text-green-400",
+                    "text-slate-500",
                     "items-center",
                     "justify-center",
                     "group-hover:bg-slate-100"
@@ -568,8 +582,8 @@ const MemeSelector: React.FC<{ store: CompetitionIdStore }> = observer(
                   <div
                     className={css(
                       "border-[1px]",
-                      "border-green-800",
-                      "text-green-800"
+                      "border-slate-500",
+                      "text-slate-500"
                     )}
                   >
                     <AiOutlinePlus size={20} />
@@ -584,7 +598,7 @@ const MemeSelector: React.FC<{ store: CompetitionIdStore }> = observer(
                   "overflow-hidden",
                   "overflow-ellipsis",
                   "text-slate-600",
-                  "group-hover:text-green-800"
+                  "group-hover:text-slate-500"
                 )}
               >
                 {meme.name}

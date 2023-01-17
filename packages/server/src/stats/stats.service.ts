@@ -20,7 +20,6 @@ export class StatsService {
         endsAt: { lte: new Date() },
       },
     });
-    console.log(totalActiveCompetitions);
     return {
       totalUsers,
       totalMemes,
