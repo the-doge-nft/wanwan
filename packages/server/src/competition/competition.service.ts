@@ -131,4 +131,11 @@ export class CompetitionService {
       })) as CompetitionWithDefaultInclude,
     );
   }
+
+  async getIsCompetitionActive(id: number) {
+    const competition = await this.prisma.competition.findFirst({
+      where: { id, endsAt: { gte: new Date() } },
+    });
+    return !!competition;
+  }
 }

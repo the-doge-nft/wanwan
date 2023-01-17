@@ -79,21 +79,18 @@ export class CompetitionController {
     @Req() { user }: AuthenticatedRequest,
     @Param() { id: competitionId }: IdDto,
   ) {
-    // @next UNCOMMENT
+    if (!(await this.competition.getIsCompetitionActive(competitionId))) {
+      throw new BadRequestException('Competition has ended');
+    }
 
     // if (!(await this.alchemy.getIsPixelHolder(user.address))) {
     //   throw new BadRequestException('You must hold a pixel to vote');
     // }
-    return this.vote.upsert({
-      where: {
-        createdById_memeId_competitionId: {
-          createdById: user.id,
-          memeId: vote.memeId,
-          competitionId,
-        },
-      },
-      create: { ...vote, competitionId, createdById: user.id },
-      update: { score: vote.score },
+
+    return this.vote.vote({
+      ...vote,
+      competitionId,
+      createdById: user.id,
     });
   }
 
