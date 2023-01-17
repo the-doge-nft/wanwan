@@ -6,6 +6,7 @@ import {
 } from 'src/schema/competition-search.schema';
 import { Search } from 'src/search/search';
 import { competitionSearchCustomKeys } from './../schema/competition-search.schema';
+import { CompetitionService } from './competition.service';
 
 @Injectable()
 export class CompetitionSearchService extends Search<
@@ -18,8 +19,19 @@ export class CompetitionSearchService extends Search<
   modelName = 'competition' as keyof PrismaClient;
   validationSchema = competitionSearchSchema;
 
+  constructor(private readonly competition: CompetitionService) {
+    super();
+  }
+
   protected beforeGetAll(builder) {
-    // builder.where('deletedAt', { equals: null });
+    builder.include('curators', { include: { user: true } });
+    builder.include('rewards', { include: { currency: true } });
+    builder.include('user', true);
+    builder.include('submissions', {
+      include: { meme: { include: { media: true } } },
+      orderBy: { createdAt: 'asc' },
+      take: 1,
+    });
   }
 
   onCustomKeyFilter(filter, builder) {
@@ -29,6 +41,10 @@ export class CompetitionSearchService extends Search<
       });
     }
     return;
+  }
+
+  afterGetAll(results) {
+    return this.competition.addExtras(results);
   }
 
   onCustomKeySort() {

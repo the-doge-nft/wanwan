@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { Competition, Prisma, User } from '@prisma/client';
+import { MediaService } from 'src/media/media.service';
 import { CurrencyService } from '../currency/currency.service';
 import { CompetitionDto, RewardsDto } from '../dto/competition.dto';
-import { CompetitionWithCuratorUsers } from '../interface';
+import { CompetitionWithDefaultInclude } from '../interface';
 import { CompetitionCuratorService } from './../competition-curator/competition-curator.service';
 import { PrismaService } from './../prisma.service';
 import { RewardService } from './../reward/reward.service';
@@ -14,6 +15,7 @@ export class CompetitionService {
     private readonly currency: CurrencyService,
     private readonly reward: RewardService,
     private readonly competitionCurator: CompetitionCuratorService,
+    private readonly media: MediaService,
   ) {}
 
   private get defaultInclude(): Prisma.CompetitionInclude {
@@ -29,17 +31,28 @@ export class CompetitionService {
         },
       },
       user: true,
+      // grab the first submission for the cover image for the competiiton
+      submissions: {
+        include: { meme: { include: { media: true } } },
+        orderBy: { createdAt: 'asc' },
+        take: 1,
+      },
     };
   }
 
-  private addExtra(competition: CompetitionWithCuratorUsers) {
+  private addExtra({
+    submissions,
+    ...competition
+  }: CompetitionWithDefaultInclude) {
+    const media = submissions[0]?.meme?.media;
     return {
       ...competition,
       curators: competition?.curators.map((item) => item.user),
+      media: media ? this.media.addExtra(media) : undefined,
     };
   }
 
-  private addExtras(competitions: Array<CompetitionWithCuratorUsers>) {
+  addExtras(competitions: Array<CompetitionWithDefaultInclude>) {
     return competitions.map((item) => this.addExtra(item));
   }
 
@@ -106,7 +119,7 @@ export class CompetitionService {
       (await this.prisma.competition.findMany({
         ...args,
         include: this.defaultInclude,
-      })) as CompetitionWithCuratorUsers[],
+      })) as CompetitionWithDefaultInclude[],
     );
   }
 
@@ -115,7 +128,7 @@ export class CompetitionService {
       (await this.prisma.competition.findFirst({
         ...args,
         include: this.defaultInclude,
-      })) as CompetitionWithCuratorUsers,
+      })) as CompetitionWithDefaultInclude,
     );
   }
 }

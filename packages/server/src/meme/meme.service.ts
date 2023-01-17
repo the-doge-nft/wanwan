@@ -125,11 +125,6 @@ export class MemeService {
         return { ...meme, score };
       })
       .sort((a, b) => b.score - a.score);
-
-    console.log(
-      'debug:: fileteredMemes',
-      JSON.stringify(memesWithScore, undefined, 2),
-    );
     return this.addExtras(memesWithScore);
   }
 

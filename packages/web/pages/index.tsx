@@ -82,8 +82,16 @@ const Home: React.FC<HomeProps> = observer(
                             "bg-no-repeat",
                             "h-full"
                           )}
-                          ratio={"1/1"}
-                          style={{ background: colors.slate[200] }}
+                          ratio={
+                            comp?.media
+                              ? `${comp.media.width}/${comp.media.height}`
+                              : "1/1"
+                          }
+                          style={
+                            comp?.media
+                              ? { backgroundImage: `url(${comp.media.url})` }
+                              : { backgroundColor: colors.gray[100] }
+                          }
                         />
                       </PreviewLink>
                     </div>
