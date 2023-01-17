@@ -11,7 +11,7 @@ import { useRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
 import { BsDot } from "react-icons/bs";
 import AspectRatio from "../../components/DSL/AspectRatio/AspectRatio";
-import Button, { Submit } from "../../components/DSL/Button/Button";
+import { Submit } from "../../components/DSL/Button/Button";
 import Form from "../../components/DSL/Form/Form";
 import TextInput from "../../components/DSL/Form/TextInput";
 import Link, { LinkType } from "../../components/DSL/Link/Link";
@@ -84,39 +84,13 @@ const MemeById: React.FC<Meme> = observer(({ ...meme }) => {
           {format(new Date(meme.createdAt), "Pp")}
         </div>
         <div className={css("mt-8")}>
-          <Form
-            className={css("w-full")}
-            onSubmit={({ body }, form) =>
-              store.onCommentSubmit(body).then(() => form.reset())
+          <CommentForm
+            store={store}
+            onSubmit={({ body }: { body: string }) =>
+              store.onCommentSubmit(body)
             }
-          >
-            <TextInput
-              block
-              value={store.comment}
-              onChange={(value) => (store.comment = value)}
-              type={"textarea"}
-              name={"body"}
-              label={
-                AppStore.auth.address ? (
-                  <div className={css("text-sm")}>
-                    Comment as{" "}
-                    <Link
-                      type={LinkType.Secondary}
-                      href={`/profile/${AppStore.auth.address}/meme`}
-                    >
-                      {abbreviate(AppStore.auth.address)}
-                    </Link>
-                  </div>
-                ) : (
-                  "Comment"
-                )
-              }
-            />
-            <div className={css("flex", "justify-end", "mt-2")}>
-              <Submit disabled={!store.canComment}>Comment</Submit>
-            </div>
-          </Form>
-          <div className={css("flex", "flex-col", "gap-3")}>
+          />
+          <div className={css("flex", "flex-col", "gap-3", "mt-4")}>
             {store.comments.map((comment) => (
               <MemeComment
                 key={`meme-comment-${comment.id}`}
@@ -130,6 +104,42 @@ const MemeById: React.FC<Meme> = observer(({ ...meme }) => {
         </div>
       </div>
     </AppLayout>
+  );
+});
+
+const CommentForm: React.FC<{
+  onSubmit: (body: any) => Promise<void>;
+}> = observer(({ onSubmit }) => {
+  return (
+    <Form
+      className={css("w-full")}
+      onSubmit={(values, form) => onSubmit(values).then(() => form.reset())}
+    >
+      <TextInput
+        block
+        type={"textarea"}
+        name={"body"}
+        // validate={required}
+        label={
+          AppStore.auth.address ? (
+            <div className={css("text-sm")}>
+              Comment as{" "}
+              <Link
+                type={LinkType.Secondary}
+                href={`/profile/${AppStore.auth.address}/meme`}
+              >
+                {abbreviate(AppStore.auth.address)}
+              </Link>
+            </div>
+          ) : (
+            "Comment"
+          )
+        }
+      />
+      <div className={css("flex", "justify-end", "mt-2")}>
+        <Submit>Comment</Submit>
+      </div>
+    </Form>
   );
 });
 
@@ -154,7 +164,16 @@ const MemeComment: React.FC<
     }
   }
   return (
-    <div key={`comment-${comment.id}`} className={css("text-xs")}>
+    <div
+      key={`comment-${comment.id}`}
+      className={css(
+        "text-xs",
+        "bg-slate-200",
+        "p-2",
+        "border-[1px]",
+        "border-slate-300"
+      )}
+    >
       <div className={css("flex", "items-center")}>
         <Link
           type={LinkType.Secondary}
@@ -167,17 +186,23 @@ const MemeComment: React.FC<
       </div>
       <div className={css("text-sm")}>{comment.body}</div>
       <div className={css("flex", "justify-end")}>
-        <Button onClick={() => setShowReply(!showReply)}>reply</Button>
+        <button
+          className={css(
+            "hover:underline",
+            "text-slate-500",
+            "hover:text-slate-900"
+          )}
+          onClick={() => setShowReply(!showReply)}
+        >
+          {showReply ? "hide" : "reply"}
+        </button>
       </div>
       {showReply && (
-        <Form
+        <CommentForm
           onSubmit={({ body }) =>
             onCommentSubmit(body).then(() => setShowReply(false))
           }
-        >
-          <TextInput type={"textarea"} name={"body"} label={"reply as ___"} />
-          <Submit>Reply</Submit>
-        </Form>
+        />
       )}
     </div>
   );

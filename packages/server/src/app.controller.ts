@@ -70,6 +70,12 @@ export class AppController {
       throw new BadRequestException('Meme not found');
     }
 
+    if (
+      !(await this.competition.getIsCompetitionActive(submission.competitionId))
+    ) {
+      throw new BadRequestException('Competition not active');
+    }
+
     const competition = await this.competition.findFirst({
       where: { id: submission.competitionId },
     });

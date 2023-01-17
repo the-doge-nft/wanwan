@@ -7,9 +7,6 @@ export default class MemeIdStore {
   @observable
   comments: Comment[] = [];
 
-  @observable
-  comment = "";
-
   constructor(private readonly id: string) {
     makeObservable(this);
   }
@@ -42,6 +39,6 @@ export default class MemeIdStore {
 
   @computed
   get canComment() {
-    return this.comment !== "";
+    return AppStore.auth.isAuthed;
   }
 }
