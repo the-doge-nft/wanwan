@@ -100,7 +100,6 @@ export default class AuthStore extends Reactionable(EmptyClass) {
   }
 
   onLogin() {
-    console.log("on login");
     this.getStatus();
     AppStore.events.publish(AppStore.events.events.LOGIN);
   }

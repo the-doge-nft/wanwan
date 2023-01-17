@@ -100,9 +100,16 @@ export const Submit: React.FC<PropsWithChildren<ButtonProps>> = ({
 
 export const ConnectButton: React.FC<
   PropsWithChildren<
-    Pick<ButtonProps, "type" | "size"> & { onConnectClick?: () => void }
+    Pick<ButtonProps, "type" | "size" | "block"> & {
+      onConnectClick?: () => void;
+    }
   >
-> = ({ type = ButtonType.Primary, size = ButtonSize.sm, onConnectClick }) => {
+> = ({
+  type = ButtonType.Primary,
+  size = ButtonSize.sm,
+  onConnectClick,
+  block,
+}) => {
   const { disconnect } = useDisconnect();
   const [isDropDownOpen, setIsDropDownOpen] = useState(false);
   return (
@@ -137,6 +144,7 @@ export const ConnectButton: React.FC<
                 if (shouldRenderConnect) {
                   return (
                     <Button
+                      block={block}
                       size={size}
                       type={type}
                       onClick={() => {
@@ -151,7 +159,12 @@ export const ConnectButton: React.FC<
 
                 if (chain.unsupported) {
                   return (
-                    <Button size={size} type={type} onClick={openChainModal}>
+                    <Button
+                      block={block}
+                      size={size}
+                      type={type}
+                      onClick={openChainModal}
+                    >
                       Wrong network
                     </Button>
                   );

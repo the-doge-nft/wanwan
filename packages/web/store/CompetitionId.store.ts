@@ -58,7 +58,10 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
   getUserSubmittedMemes() {
     return http
       .get<CompetitionMeme[]>(`/competition/${this.id}/meme/submissions`)
-      .then(({ data }) => (this.userSubmittedMemes = data));
+      .then(
+        ({ data }) =>
+          (this.userSubmittedMemes = data.sort((a, b) => b.score - a.score))
+      );
   }
 
   @action

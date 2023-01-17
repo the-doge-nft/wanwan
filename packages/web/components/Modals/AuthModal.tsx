@@ -11,6 +11,7 @@ const AuthModal: React.FC = observer(() => {
       onChange={(isOpen) => (AppStore.modals.isAuthModalOpen = isOpen)}
     >
       <ConnectButton
+        block
         size={ButtonSize.lg}
         onConnectClick={() => (AppStore.modals.isAuthModalOpen = false)}
       />

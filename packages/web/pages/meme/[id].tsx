@@ -1,4 +1,10 @@
-import { differenceInMinutes, format } from "date-fns";
+import {
+  differenceInDays,
+  differenceInHours,
+  differenceInMinutes,
+  differenceInSeconds,
+  format,
+} from "date-fns";
 import { observer } from "mobx-react-lite";
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
@@ -92,7 +98,7 @@ const MemeById: React.FC<Meme> = observer(({ ...meme }) => {
               name={"body"}
               label={
                 AppStore.auth.address ? (
-                  <div>
+                  <div className={css("text-sm")}>
                     Comment as{" "}
                     <Link
                       type={LinkType.Secondary}
@@ -131,6 +137,22 @@ const MemeComment: React.FC<
   Comment & { onCommentSubmit: (body: string) => Promise<void> }
 > = ({ onCommentSubmit, ...comment }) => {
   const [showReply, setShowReply] = useState(false);
+  const today = new Date();
+  const commentCreatedAt = new Date(comment.createdAt);
+  const diffInSecs = differenceInSeconds(today, commentCreatedAt);
+  const diffInMins = differenceInMinutes(today, commentCreatedAt);
+  const diffInHours = differenceInHours(today, commentCreatedAt);
+  const diffInDays = differenceInDays(today, commentCreatedAt);
+  let diffFormatted = `${diffInSecs} seconds`;
+  if (diffInSecs >= 60) {
+    diffFormatted = `${diffInMins} minutes`;
+    if (diffInMins >= 60) {
+      diffFormatted = `${diffInHours} hours`;
+      if (diffInHours >= 24) {
+        diffFormatted = `${diffInDays} days`;
+      }
+    }
+  }
   return (
     <div key={`comment-${comment.id}`} className={css("text-xs")}>
       <div className={css("flex", "items-center")}>
@@ -141,10 +163,7 @@ const MemeComment: React.FC<
           {abbreviate(comment.user.address)}
         </Link>
         <BsDot />
-        <div>
-          {differenceInMinutes(new Date(), new Date(comment.createdAt))} mins
-          ago
-        </div>
+        <div>{diffFormatted} ago</div>
       </div>
       <div className={css("text-sm")}>{comment.body}</div>
       <div className={css("flex", "justify-end")}>

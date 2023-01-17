@@ -177,7 +177,10 @@ const UserEntries: React.FC<{ store: CompetitionIdStore }> = ({ store }) => {
         {store.userSubmittedMemes.map((meme) => {
           const place = store.getMemePlaceInCompetition(meme.id);
           return (
-            <div key={`meme-preview-${meme.id}`} className={css("relative")}>
+            <div
+              key={`meme-preview-${meme.id}`}
+              className={css("relative", "group")}
+            >
               <PreviewLink link={`/meme/${meme.id}`}>
                 <AspectRatio
                   className={css(
@@ -195,17 +198,22 @@ const UserEntries: React.FC<{ store: CompetitionIdStore }> = ({ store }) => {
                     "absolute",
                     "top-0",
                     "left-0",
-                    "bg-red-800",
                     "p-1",
                     "mt-1.5",
                     "ml-1.5",
+                    "bg-red-800",
                     "text-white",
                     "border-[1px]",
                     "border-black",
-                    "text-xs"
+                    "text-xs",
+                    "rounded-full",
+                    "group-hover:bg-slate-300",
+                    "group-hover:text-slate-500",
+                    "group-hover:border-slate-500",
+                    "leading-[0.6rem]"
                   )}
                 >
-                  {place} place
+                  {place}
                 </div>
                 <div>{meme.score}</div>
               </PreviewLink>
@@ -239,7 +247,7 @@ const CompetitionEntries: React.FC<{ store: CompetitionIdStore }> = observer(
               >
                 <Pane
                   className={css(
-                    "hover:border-slate-400",
+                    "hover:border-slate-500",
                     "!hover:text-red-800",
                     "group"
                   )}
@@ -329,7 +337,7 @@ const CompetitionEntries: React.FC<{ store: CompetitionIdStore }> = observer(
                             "border-black",
                             "mt-3",
                             "mb-2",
-                            "group-hover:border-slate-400"
+                            "group-hover:border-slate-500"
                           )}
                           ratio={`${meme.media.width}/${meme.media.height}`}
                           style={{ backgroundImage: `url(${meme.media.url})` }}
@@ -358,10 +366,10 @@ const CompetitionEntries: React.FC<{ store: CompetitionIdStore }> = observer(
                               "inline-flex",
                               "items-center",
                               "gap-1",
-                              "group-hover:text-slate-500"
+                              "group-hover:text-slate-500",
+                              "text-slate-900"
                             )}
                           >
-                            {/* <VscComment size={18} /> */}
                             <div>{meme.comments.length} comments</div>
                           </Link>
                         </div>
