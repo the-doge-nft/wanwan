@@ -23,9 +23,8 @@ interface ProfileProps {
 
 const ProfilePage: React.FC<ProfileProps> = observer(({ profile }) => {
   const {
-    query: { addressOrEns, memeOrCompetition },
+    query: { memeOrCompetition },
   } = useRouter();
-  console.log(addressOrEns, memeOrCompetition);
 
   const store = useMemo(
     () => new ProfileStore(profile, memeOrCompetition as ProfileView),
@@ -85,7 +84,7 @@ const ProfilePage: React.FC<ProfileProps> = observer(({ profile }) => {
                 <Link
                   isExternal
                   href={getEtherscanURL(profile.address, "address")}
-                  className={css("inline-flex")}
+                  className={css("inline-flex", "mt-2")}
                 >
                   {abbreviate(store.profile.address)}
                 </Link>

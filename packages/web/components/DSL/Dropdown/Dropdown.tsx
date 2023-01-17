@@ -33,7 +33,7 @@ const Dropdown: React.FC<PropsWithChildren<DropdownProps>> = ({
         <div className={css("inline-block")}>{trigger}</div>
       </RadixDropdown.Trigger>
       <RadixDropdown.Content
-        style={{ minWidth: "200px", boxShadow: "0px 0px 10px rgba(0,0,0,0.1)" }}
+        style={{ minWidth: "200px" }}
         className={css(
           styleToTypeMap[type],
           "w-full",

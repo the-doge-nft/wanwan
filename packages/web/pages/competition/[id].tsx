@@ -67,12 +67,12 @@ const MemeById: React.FC<CompetitionByIdProps> = observer(
               >
                 <div>
                   <div className={css("flex", "gap-1", "items-center")}>
-                    <div className={css("font-bold")}>Memes:</div>
-                    <div>{store.memes.length}</div>
-                  </div>
-                  <div className={css("flex", "gap-1", "items-center")}>
                     <div className={css("font-bold")}>Votes:</div>
                     <div>{store.totalVotes}</div>
+                  </div>
+                  <div className={css("flex", "gap-1", "items-center")}>
+                    <div className={css("font-bold")}>Submissions:</div>
+                    <div>{store.memes.length}</div>
                   </div>
                   <div className={css("flex", "gap-1", "items-center")}>
                     <div className={css("font-bold")}>Max Entries:</div>
@@ -139,7 +139,7 @@ const MemeById: React.FC<CompetitionByIdProps> = observer(
                         block
                         value={store.searchValue}
                         onChange={store.onSearchChange}
-                        placeholder={"search your meme catalogue"}
+                        placeholder={"search your catalogue"}
                         type={"text"}
                       />
                       <Button
