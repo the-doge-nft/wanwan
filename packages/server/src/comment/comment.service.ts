@@ -9,6 +9,7 @@ export class CommentService {
   private get defaultInclude(): Prisma.CommentInclude {
     return {
       user: true,
+      child: true,
     };
   }
 

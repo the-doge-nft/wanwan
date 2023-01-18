@@ -85,21 +85,23 @@ const MemeById: React.FC<Meme> = observer(({ ...meme }) => {
         </div>
         <div className={css("mt-8")}>
           <CommentForm
-            store={store}
             onSubmit={({ body }: { body: string }) =>
               store.onCommentSubmit(body)
             }
           />
           <div className={css("flex", "flex-col", "gap-3", "mt-4")}>
-            {store.comments.map((comment) => (
-              <MemeComment
-                key={`meme-comment-${comment.id}`}
-                {...comment}
-                onCommentSubmit={(body) =>
-                  store.onParentCommentSubmit(body, comment.id)
-                }
-              />
-            ))}
+            {store.comments
+              .filter((comment) => !comment.parentCommentId)
+              .map((comment) => (
+                <MemeComment
+                  store={store}
+                  key={`meme-comment-${comment.id}`}
+                  comment={comment}
+                  onCommentSubmit={(body) =>
+                    store.onParentCommentSubmit(body, comment.id)
+                  }
+                />
+              ))}
           </div>
         </div>
       </div>
@@ -109,7 +111,9 @@ const MemeById: React.FC<Meme> = observer(({ ...meme }) => {
 
 const CommentForm: React.FC<{
   onSubmit: (body: any) => Promise<void>;
-}> = observer(({ onSubmit }) => {
+  isReply?: boolean;
+}> = observer(({ onSubmit, isReply = false }) => {
+  const replyOrComment = isReply ? "Reply" : "Comment";
   return (
     <Form
       className={css("w-full")}
@@ -123,7 +127,7 @@ const CommentForm: React.FC<{
         label={
           AppStore.auth.address ? (
             <div className={css("text-sm")}>
-              Comment as{" "}
+              {replyOrComment} as{" "}
               <Link
                 type={LinkType.Secondary}
                 href={`/profile/${AppStore.auth.address}/meme`}
@@ -132,20 +136,22 @@ const CommentForm: React.FC<{
               </Link>
             </div>
           ) : (
-            "Comment"
+            <>{replyOrComment}</>
           )
         }
       />
       <div className={css("flex", "justify-end", "mt-2")}>
-        <Submit>Comment</Submit>
+        <Submit>{replyOrComment}</Submit>
       </div>
     </Form>
   );
 });
 
-const MemeComment: React.FC<
-  Comment & { onCommentSubmit: (body: string) => Promise<void> }
-> = ({ onCommentSubmit, ...comment }) => {
+const MemeComment: React.FC<{
+  comment: Comment;
+  onCommentSubmit: (body: string) => Promise<void>;
+  store: MemeIdStore;
+}> = ({ onCommentSubmit, comment, store }) => {
   const [showReply, setShowReply] = useState(false);
   const today = new Date();
   const commentCreatedAt = new Date(comment.createdAt);
@@ -163,15 +169,16 @@ const MemeComment: React.FC<
       }
     }
   }
+  const commentReply = store.getReply(comment.id);
   return (
     <div
       key={`comment-${comment.id}`}
       className={css(
         "text-xs",
-        "bg-slate-200",
+        "bg-slate-100",
         "p-2",
         "border-[1px]",
-        "border-slate-300"
+        "border-slate-400"
       )}
     >
       <div className={css("flex", "items-center")}>
@@ -194,15 +201,42 @@ const MemeComment: React.FC<
           )}
           onClick={() => setShowReply(!showReply)}
         >
-          {showReply ? "hide" : "reply"}
+          {showReply ? "cancel" : "reply"}
         </button>
       </div>
       {showReply && (
         <CommentForm
+          isReply
           onSubmit={({ body }) =>
             onCommentSubmit(body).then(() => setShowReply(false))
           }
         />
+      )}
+      {commentReply && Array.isArray(commentReply) && (
+        <div className={css("flex", "flex-col", "gap-2", "mt-2")}>
+          {commentReply.map((reply) => (
+            <MemeComment
+              key={`comment-${reply.id}`}
+              store={store}
+              comment={reply}
+              onCommentSubmit={(body) =>
+                store.onParentCommentSubmit(body, reply.id)
+              }
+            />
+          ))}
+        </div>
+      )}
+      {commentReply && !Array.isArray(commentReply) && (
+        <div className={css("mt-2")}>
+          <MemeComment
+            key={`comment-${commentReply.id}`}
+            store={store}
+            comment={commentReply}
+            onCommentSubmit={(body) =>
+              store.onParentCommentSubmit(body, commentReply.id)
+            }
+          />
+        </div>
       )}
     </div>
   );
@@ -218,8 +252,7 @@ export const getServerSideProps: GetServerSideProps<MemeByIdProps> = async (
       props: meme,
     };
   } catch (e) {
-    console.error(e);
-    return { props: null };
+    throw new Error();
   }
 };
 

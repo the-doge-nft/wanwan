@@ -1,3 +1,4 @@
+import { add } from "date-fns";
 import { observer } from "mobx-react-lite";
 import { css } from "../../helpers/css";
 import AppStore from "../../store/App.store";
@@ -68,8 +69,10 @@ const CreateView: React.FC<CompetitionStoreProp> = observer(({ store }) => {
             name={"endsAt"}
             validate={required}
             // @next -- bad to have mixed validation here
-            min={new Date().toISOString().split("T")[0]}
-            defaultValue={new Date().toISOString().split("T")[0]}
+            min={add(new Date(), { days: 1 }).toISOString().split("T")[0]}
+            defaultValue={
+              add(new Date(), { days: 1 }).toISOString().split("T")[0]
+            }
             disabled={store.isLoading}
           />
         </div>

@@ -90,6 +90,17 @@ export class MemeService {
     );
   }
 
+  async findFirstOrFail(args?: Prisma.MemeFindFirstArgs) {
+    const data = await this.prisma.meme.findFirst({
+      ...args,
+      include: this.defaultInclude,
+    });
+    if (!data) {
+      throw new Error('Meme not found');
+    }
+    return this.addExtra(data);
+  }
+
   async getMemeBelongsToUser(id: number, createdById: number) {
     return !!(await this.findFirst({ where: { id, createdById } }));
   }

@@ -73,7 +73,9 @@ export class MemeController {
 
   @Get(':id')
   async getMemeById(@Param() { id }: IdDto) {
-    return this.meme.findFirst({ where: { id } });
+    return this.meme.findFirstOrFail({ where: { id } }).catch((e) => {
+      throw new BadRequestException('Could not find meme');
+    });
   }
 
   @Post(':id/comment')

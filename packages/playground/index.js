@@ -1,9 +1,8 @@
 const { default: axios } = require("axios");
 
-const main = async () => {
-  //   const { data: test } = await axios.get("http://localhost:3000/competition");
-  //   console.log(test);
+const main = async () => {};
 
+const testSearch = async () => {
   try {
     const { data } = await axios.get(`http://localhost:3000/meme/search`, {
       params: {

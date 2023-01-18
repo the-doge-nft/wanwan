@@ -1,4 +1,5 @@
 import { ConnectButton as RainbowConnectButton } from "@rainbow-me/rainbowkit";
+import { observer } from "mobx-react-lite";
 import { PropsWithChildren, useState } from "react";
 import { useDisconnect } from "wagmi";
 import { css } from "../../../helpers/css";
@@ -104,153 +105,156 @@ export const ConnectButton: React.FC<
       onConnectClick?: () => void;
     }
   >
-> = ({
-  type = ButtonType.Primary,
-  size = ButtonSize.sm,
-  onConnectClick,
-  block,
-}) => {
-  const { disconnect } = useDisconnect();
-  const [isDropDownOpen, setIsDropDownOpen] = useState(false);
-  return (
-    <>
-      <RainbowConnectButton.Custom>
-        {({
-          account,
-          chain,
-          openChainModal,
-          openConnectModal,
-          mounted,
-          authenticationStatus,
-        }) => {
-          const shouldRenderConnect =
-            !mounted ||
-            !account ||
-            !chain ||
-            authenticationStatus === "loading" ||
-            authenticationStatus === "unauthenticated";
-          return (
-            <div
-              {...(!mounted && {
-                "aria-hidden": true,
-                style: {
-                  opacity: 0,
-                  pointerEvents: "none",
-                  userSelect: "none",
-                },
-              })}
-            >
-              {(() => {
-                if (shouldRenderConnect) {
-                  return (
-                    <Button
-                      block={block}
-                      size={size}
-                      type={type}
-                      onClick={() => {
-                        openConnectModal();
-                        onConnectClick && onConnectClick();
-                      }}
-                    >
-                      connect
-                    </Button>
-                  );
-                }
+> = observer(
+  ({
+    type = ButtonType.Primary,
+    size = ButtonSize.sm,
+    onConnectClick,
+    block,
+  }) => {
+    const { disconnect } = useDisconnect();
+    const [isDropDownOpen, setIsDropDownOpen] = useState(false);
+    return (
+      <>
+        <RainbowConnectButton.Custom>
+          {({
+            account,
+            chain,
+            openChainModal,
+            openConnectModal,
+            mounted,
+            authenticationStatus,
+          }) => {
+            const shouldRenderConnect =
+              !mounted ||
+              !account ||
+              !chain ||
+              authenticationStatus === "loading" ||
+              authenticationStatus === "unauthenticated";
+            return (
+              <div
+                {...(!mounted && {
+                  "aria-hidden": true,
+                  style: {
+                    opacity: 0,
+                    pointerEvents: "none",
+                    userSelect: "none",
+                  },
+                })}
+              >
+                {(() => {
+                  if (shouldRenderConnect) {
+                    return (
+                      <Button
+                        block={block}
+                        size={size}
+                        type={type}
+                        onClick={() => {
+                          openConnectModal();
+                          onConnectClick && onConnectClick();
+                        }}
+                      >
+                        connect
+                      </Button>
+                    );
+                  }
 
-                if (chain.unsupported) {
-                  return (
-                    <Button
-                      block={block}
-                      size={size}
-                      type={type}
-                      onClick={openChainModal}
-                    >
-                      Wrong network
-                    </Button>
-                  );
-                }
+                  if (chain.unsupported) {
+                    return (
+                      <Button
+                        block={block}
+                        size={size}
+                        type={type}
+                        onClick={openChainModal}
+                      >
+                        Wrong network
+                      </Button>
+                    );
+                  }
 
-                return (
-                  <div>
-                    <Dropdown
-                      open={isDropDownOpen}
-                      onOpenChange={setIsDropDownOpen}
-                      trigger={
-                        <Button type={type}>{account.displayName}</Button>
-                      }
-                    >
-                      <DropdownItem>
-                        <Link href={`/profile/${account.address}/meme`}>
-                          Profile
-                        </Link>
-                      </DropdownItem>
-                      {AppStore.auth.isAuthed && (
-                        <div className={css("my-2")}>
-                          <DropdownItem>
-                            <div className={css("flex", "flex-col", "gap-2")}>
-                              <Button
-                                onClick={() =>
-                                  (AppStore.modals.isCreateMemeModalOpen = true)
-                                }
-                              >
-                                + Meme
-                              </Button>
-                              <Button
-                                onClick={() =>
-                                  (AppStore.modals.isCreateCompetitionModalOpen =
-                                    true)
-                                }
-                              >
-                                + Competition
-                              </Button>
-                            </div>
-                          </DropdownItem>
-                        </div>
-                      )}
-                      <div className={css("mt-2")}>
+                  return (
+                    <div>
+                      <Dropdown
+                        open={isDropDownOpen}
+                        onOpenChange={setIsDropDownOpen}
+                        trigger={
+                          <Button type={type}>{account.displayName}</Button>
+                        }
+                      >
                         <DropdownItem>
-                          <div
-                            className={css(
-                              "flex",
-                              "justify-between",
-                              "text-xs",
-                              "w-full"
-                            )}
-                          >
-                            <button
-                              className={css("hover:underline")}
-                              onClick={() => disconnect()}
-                            >
-                              Disconnect
-                            </button>
+                          <Link href={`/profile/${account.address}/meme`}>
+                            Profile
+                          </Link>
+                        </DropdownItem>
+                        {AppStore.auth.isAuthed && (
+                          <div className={css("my-2")}>
+                            <DropdownItem>
+                              <div className={css("flex", "flex-col", "gap-2")}>
+                                <Button
+                                  onClick={() =>
+                                    (AppStore.modals.isCreateMemeModalOpen =
+                                      true)
+                                  }
+                                >
+                                  + Meme
+                                </Button>
+                                <Button
+                                  onClick={() =>
+                                    (AppStore.modals.isCreateCompetitionModalOpen =
+                                      true)
+                                  }
+                                >
+                                  + Competition
+                                </Button>
+                              </div>
+                            </DropdownItem>
+                          </div>
+                        )}
+                        <div className={css("mt-2")}>
+                          <DropdownItem>
                             <div
                               className={css(
                                 "flex",
-                                "items-center",
-                                "space-x-1",
                                 "justify-between",
-                                "text-gray-500",
-                                "text-xs"
+                                "text-xs",
+                                "w-full"
                               )}
                             >
-                              <div>net:</div>
-                              <div className={css("flex", "items-center")}>
-                                {chain.name}
+                              <button
+                                className={css("hover:underline")}
+                                onClick={() => disconnect()}
+                              >
+                                Disconnect
+                              </button>
+                              <div
+                                className={css(
+                                  "flex",
+                                  "items-center",
+                                  "space-x-1",
+                                  "justify-between",
+                                  "text-gray-500",
+                                  "text-xs"
+                                )}
+                              >
+                                <div>net:</div>
+                                <div className={css("flex", "items-center")}>
+                                  {chain.name}
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        </DropdownItem>
-                      </div>
-                    </Dropdown>
-                  </div>
-                );
-              })()}
-            </div>
-          );
-        }}
-      </RainbowConnectButton.Custom>
-    </>
-  );
-};
+                          </DropdownItem>
+                        </div>
+                      </Dropdown>
+                    </div>
+                  );
+                })()}
+              </div>
+            );
+          }}
+        </RainbowConnectButton.Custom>
+      </>
+    );
+  }
+);
 
 export default Button;
