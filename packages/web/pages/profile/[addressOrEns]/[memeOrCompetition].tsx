@@ -127,10 +127,7 @@ const ProfilePage: React.FC<ProfileProps> = observer(({ profile }) => {
             >
               {store.view === ProfileView.Meme &&
                 store.memes.map((meme) => (
-                  <div
-                    key={`meme-preview-${meme.id}`}
-                    className={css("max-w-[167px]")}
-                  >
+                  <div key={`meme-preview-${meme.id}`}>
                     <PreviewLink
                       name={meme.name}
                       description={meme.description}
@@ -151,10 +148,7 @@ const ProfilePage: React.FC<ProfileProps> = observer(({ profile }) => {
                 ))}
               {store.view === ProfileView.Competition &&
                 store.competitions.map((comp) => (
-                  <div
-                    key={`comp-preview-${comp.id}`}
-                    className={css("max-w-[167px]")}
-                  >
+                  <div key={`comp-preview-${comp.id}`}>
                     <PreviewLink
                       name={comp.name}
                       description={comp.description}

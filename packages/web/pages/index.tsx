@@ -33,7 +33,7 @@ const Home: React.FC<HomeProps> = observer(
   ({ memes, competitions, stats, searchParams }) => {
     const store = useMemo(
       () => new HomeStore(memes, competitions, searchParams),
-      [memes, competitions]
+      [memes, competitions, searchParams]
     );
 
     useEffect(() => {

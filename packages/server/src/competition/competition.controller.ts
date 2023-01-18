@@ -59,12 +59,11 @@ export class CompetitionController {
 
   @Get(':id')
   getCompetitionById(@Param() { id }: IdDto) {
-    return this.competition.findFirst({
-      where: { id },
-      include: {
-        curators: { include: { user: true } },
-      },
-    });
+    try {
+      return this.competition.findFirstOrFail({ where: { id } });
+    } catch (e) {
+      throw new BadRequestException('Competition not found');
+    }
   }
 
   @Get(':id/meme')

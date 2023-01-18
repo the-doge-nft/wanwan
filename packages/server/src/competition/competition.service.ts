@@ -40,15 +40,13 @@ export class CompetitionService {
     };
   }
 
-  private addExtra({
-    submissions,
-    ...competition
-  }: CompetitionWithDefaultInclude) {
-    const media = submissions[0]?.meme?.media;
+  private addExtra(competition: CompetitionWithDefaultInclude) {
+    const media = competition?.submissions[0]?.meme?.media;
     return {
       ...competition,
       curators: competition?.curators.map((item) => item.user),
       media: media ? this.media.addExtra(media) : undefined,
+      submissions: undefined,
     };
   }
 
@@ -130,6 +128,17 @@ export class CompetitionService {
         include: this.defaultInclude,
       })) as CompetitionWithDefaultInclude,
     );
+  }
+
+  async findFirstOrFail(args?: Prisma.CompetitionFindFirstArgs) {
+    const data = await this.prisma.competition.findFirst({
+      ...args,
+      include: this.defaultInclude,
+    });
+    if (!data) {
+      throw new Error('Competition not found');
+    }
+    return this.addExtra(data as CompetitionWithDefaultInclude);
   }
 
   async getIsCompetitionActive(id: number) {
