@@ -6,15 +6,7 @@ export default function Document() {
   return (
     <Html>
       <Head title={"Meme2Earn"} />
-      <body
-        className={css(
-          "font-ComicNeue",
-          "mr-0",
-          "!mr-0",
-          defaultBgCss
-          // "bg-gradient-to-b from-slate-200 to-white"
-        )}
-      >
+      <body className={css("font-ComicNeue", "mr-0", "!mr-0", defaultBgCss)}>
         <Main />
         <NextScript />
       </body>

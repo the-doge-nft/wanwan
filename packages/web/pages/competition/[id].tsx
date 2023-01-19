@@ -16,6 +16,7 @@ import { abbreviate } from "../../helpers/strings";
 import { Competition, CompetitionMeme } from "../../interfaces";
 import AppLayout from "../../layouts/App.layout";
 import http from "../../services/http";
+import redirectTo404 from "../../services/redirect/404";
 import {
   default as CompetitionByIdStore,
   default as CompetitionIdStore,
@@ -195,7 +196,7 @@ export const getServerSideProps: GetServerSideProps<
       },
     };
   } catch (e) {
-    throw new Error();
+    return redirectTo404();
   }
 };
 

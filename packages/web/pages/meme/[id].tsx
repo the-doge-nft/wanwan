@@ -11,7 +11,7 @@ import { useRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
 import { BsDot } from "react-icons/bs";
 import AspectRatio from "../../components/DSL/AspectRatio/AspectRatio";
-import { Submit } from "../../components/DSL/Button/Button";
+import Button, { Submit } from "../../components/DSL/Button/Button";
 import Form from "../../components/DSL/Form/Form";
 import TextInput from "../../components/DSL/Form/TextInput";
 import Link, { LinkType } from "../../components/DSL/Link/Link";
@@ -20,6 +20,7 @@ import { abbreviate } from "../../helpers/strings";
 import { Comment, Meme } from "../../interfaces";
 import AppLayout from "../../layouts/App.layout";
 import http from "../../services/http";
+import redirectTo404 from "../../services/redirect/404";
 import AppStore from "../../store/App.store";
 import MemeIdStore from "../../store/MemeId.store";
 
@@ -89,7 +90,7 @@ const MemeById: React.FC<Meme> = observer(({ ...meme }) => {
               store.onCommentSubmit(body)
             }
           />
-          <div className={css("flex", "flex-col", "gap-3", "mt-4")}>
+          <div className={css("flex", "flex-col", "gap-3", "mt-8")}>
             {store.comments
               .filter((comment) => !comment.parentCommentId)
               .map((comment) => (
@@ -112,7 +113,8 @@ const MemeById: React.FC<Meme> = observer(({ ...meme }) => {
 const CommentForm: React.FC<{
   onSubmit: (body: any) => Promise<void>;
   isReply?: boolean;
-}> = observer(({ onSubmit, isReply = false }) => {
+  onCancel?: () => void;
+}> = observer(({ onSubmit, onCancel, isReply = false }) => {
   const replyOrComment = isReply ? "Reply" : "Comment";
   return (
     <Form
@@ -140,7 +142,8 @@ const CommentForm: React.FC<{
           )
         }
       />
-      <div className={css("flex", "justify-end", "mt-2")}>
+      <div className={css("flex", "justify-end", "mt-2", "gap-2")}>
+        {onCancel && <Button onClick={() => onCancel()}>Cancel</Button>}
         <Submit>{replyOrComment}</Submit>
       </div>
     </Form>
@@ -177,7 +180,8 @@ const MemeComment: React.FC<{
         "text-xs",
         "bg-slate-100",
         "p-2",
-        "border-[1px]",
+        "border-l-[1px]",
+        "border-t-[1px]",
         "border-slate-400"
       )}
     >
@@ -192,7 +196,7 @@ const MemeComment: React.FC<{
         <div>{diffFormatted} ago</div>
       </div>
       <div className={css("text-sm")}>{comment.body}</div>
-      <div className={css("flex", "justify-end")}>
+      <div className={css("flex", "justify-start")}>
         <button
           className={css(
             "hover:underline",
@@ -201,16 +205,19 @@ const MemeComment: React.FC<{
           )}
           onClick={() => setShowReply(!showReply)}
         >
-          {showReply ? "cancel" : "reply"}
+          {showReply ? "Cancel" : "Reply"}
         </button>
       </div>
       {showReply && (
-        <CommentForm
-          isReply
-          onSubmit={({ body }) =>
-            onCommentSubmit(body).then(() => setShowReply(false))
-          }
-        />
+        <div className={css("mt-3")}>
+          <CommentForm
+            isReply
+            onCancel={() => setShowReply(false)}
+            onSubmit={({ body }) =>
+              onCommentSubmit(body).then(() => setShowReply(false))
+            }
+          />
+        </div>
       )}
       {commentReply && Array.isArray(commentReply) && (
         <div className={css("flex", "flex-col", "gap-2", "mt-2")}>
@@ -252,7 +259,7 @@ export const getServerSideProps: GetServerSideProps<MemeByIdProps> = async (
       props: meme,
     };
   } catch (e) {
-    throw new Error();
+    return redirectTo404();
   }
 };
 

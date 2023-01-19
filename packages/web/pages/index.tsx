@@ -20,6 +20,7 @@ import {
 } from "../interfaces";
 import AppLayout from "../layouts/App.layout";
 import http from "../services/http";
+import redirectTo404 from "../services/redirect/404";
 import HomeStore from "../store/Home.store";
 
 interface HomeProps {
@@ -197,12 +198,11 @@ export const getServerSideProps: GetServerSideProps<HomeProps> = async (
       params,
     });
     const { data: stats } = await http.get<Stats>("/stats");
-    console.log(stats);
     return {
       props: { competitions, memes, stats, searchParams: params },
     };
   } catch (e) {
-    throw new Error("Bad");
+    return redirectTo404();
   }
 };
 

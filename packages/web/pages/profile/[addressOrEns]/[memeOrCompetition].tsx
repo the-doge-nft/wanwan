@@ -15,6 +15,7 @@ import { abbreviate, getEtherscanURL } from "../../../helpers/strings";
 import { Profile } from "../../../interfaces";
 import AppLayout from "../../../layouts/App.layout";
 import http from "../../../services/http";
+import redirectTo404 from "../../../services/redirect/404";
 import ProfileStore, { ProfileView } from "../../../store/Profile.store";
 
 interface ProfileProps {
@@ -193,7 +194,7 @@ export const getServerSideProps: GetServerSideProps<ProfileProps> = async (
       props: { profile },
     };
   } catch (e) {
-    throw new Error();
+    return redirectTo404();
   }
 };
 
