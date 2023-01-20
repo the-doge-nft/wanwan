@@ -3,8 +3,8 @@ import { observer } from "mobx-react-lite";
 import { GetServerSideProps } from "next";
 import Head from "next/head";
 import { useEffect, useMemo } from "react";
+import AsyncGrid from "../components/AsyncGrid/AsyncGrid";
 import AspectRatio from "../components/DSL/AspectRatio/AspectRatio";
-import AsyncWrap, { NoDataFound } from "../components/DSL/AsyncWrap/AsyncWrap";
 import Pane, { PaneType } from "../components/DSL/Pane/Pane";
 import { colors } from "../components/DSL/Theme";
 import PreviewLink from "../components/PreviewLink/PreviewLink";
@@ -58,82 +58,63 @@ const Home: React.FC<HomeProps> = observer(
               something good enough, you could win.
             </Pane>
             <Pane title={"Competitions"}>
-              <div
-                className={css("grid", "grid-rows-[min-content]", "gap-4")}
-                style={{
-                  gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
-                }}
+              <AsyncGrid
+                isLoading={store.isCompetitionsLoading}
+                data={store.competitions}
               >
-                <AsyncWrap
-                  isLoading={false}
-                  hasData={store.competitions.length > 0}
-                  renderNoData={() => <NoDataFound>competitions</NoDataFound>}
-                >
-                  {store.competitions.map((comp) => (
-                    <div key={`competition-preview-${comp.id}`}>
-                      <PreviewLink
-                        name={comp.name}
-                        description={comp.description}
-                        link={`/competition/${comp.id}`}
-                      >
-                        <AspectRatio
-                          className={css(
-                            "bg-cover",
-                            "bg-center",
-                            "bg-no-repeat",
-                            "h-full"
-                          )}
-                          ratio={
-                            comp?.media
-                              ? `${comp.media.width}/${comp.media.height}`
-                              : "1/1"
-                          }
-                          style={
-                            comp?.media
-                              ? { backgroundImage: `url(${comp.media.url})` }
-                              : { backgroundColor: colors.slate[200] }
-                          }
-                        />
-                      </PreviewLink>
-                    </div>
-                  ))}
-                </AsyncWrap>
-              </div>
+                {store.competitions.map((comp) => (
+                  <div key={`competition-preview-${comp.id}`}>
+                    <PreviewLink
+                      name={comp.name}
+                      description={comp.description}
+                      link={`/competition/${comp.id}`}
+                    >
+                      <AspectRatio
+                        className={css(
+                          "bg-cover",
+                          "bg-center",
+                          "bg-no-repeat",
+                          "h-full"
+                        )}
+                        ratio={
+                          comp?.media
+                            ? `${comp.media.width}/${comp.media.height}`
+                            : "1/1"
+                        }
+                        style={
+                          comp?.media
+                            ? { backgroundImage: `url(${comp.media.url})` }
+                            : { backgroundColor: colors.slate[200] }
+                        }
+                      />
+                    </PreviewLink>
+                  </div>
+                ))}
+              </AsyncGrid>
             </Pane>
             <Pane title={"Recent"}>
-              <div
-                className={css("grid", "grid-rows-[min-content]", "gap-4")}
-                style={{
-                  gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
-                }}
-              >
-                <AsyncWrap
-                  isLoading={false}
-                  hasData={store.memes.length > 0}
-                  renderNoData={() => <NoDataFound>memes</NoDataFound>}
-                >
-                  {store.memes.map((meme) => (
-                    <div key={`meme-preview-${meme.id}`}>
-                      <PreviewLink
-                        name={meme.name}
-                        description={meme.description}
-                        link={`/meme/${meme.id}`}
-                      >
-                        <AspectRatio
-                          className={css(
-                            "bg-cover",
-                            "bg-center",
-                            "bg-no-repeat",
-                            "h-full"
-                          )}
-                          ratio={`${meme.media.width}/${meme.media.height}`}
-                          style={{ backgroundImage: `url(${meme.media.url})` }}
-                        />
-                      </PreviewLink>
-                    </div>
-                  ))}
-                </AsyncWrap>
-              </div>
+              <AsyncGrid isLoading={store.isMemesLoading} data={store.memes}>
+                {store.memes.map((meme) => (
+                  <div key={`meme-preview-${meme.id}`}>
+                    <PreviewLink
+                      name={meme.name}
+                      description={meme.description}
+                      link={`/meme/${meme.id}`}
+                    >
+                      <AspectRatio
+                        className={css(
+                          "bg-cover",
+                          "bg-center",
+                          "bg-no-repeat",
+                          "h-full"
+                        )}
+                        ratio={`${meme.media.width}/${meme.media.height}`}
+                        style={{ backgroundImage: `url(${meme.media.url})` }}
+                      />
+                    </PreviewLink>
+                  </div>
+                ))}
+              </AsyncGrid>
             </Pane>
             <Pane title={"Stats"}>
               {stats && (

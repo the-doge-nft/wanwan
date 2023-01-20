@@ -2,10 +2,8 @@ import { observer } from "mobx-react-lite";
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 import { useEffect, useMemo } from "react";
+import AsyncGrid from "../../../components/AsyncGrid/AsyncGrid";
 import AspectRatio from "../../../components/DSL/AspectRatio/AspectRatio";
-import AsyncWrap, {
-  NoDataFound,
-} from "../../../components/DSL/AsyncWrap/AsyncWrap";
 import Link from "../../../components/DSL/Link/Link";
 import Pane from "../../../components/DSL/Pane/Pane";
 import { colors } from "../../../components/DSL/Theme";
@@ -111,73 +109,58 @@ const ProfilePage: React.FC<ProfileProps> = observer(({ profile }) => {
             </div>
           }
         >
-          <div
-            className={css("grid", "grid-rows-[min-content]", "gap-4", "p-2")}
-            style={{
-              gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
-            }}
-          >
-            <AsyncWrap
-              isLoading={store.isLoading}
-              hasData={store.hasData}
-              renderNoData={() => (
-                <NoDataFound>
-                  {store.isMemeView ? "Memes" : "Competitions"}
-                </NoDataFound>
-              )}
-            >
-              {store.view === ProfileView.Meme &&
-                store.memes.map((meme) => (
-                  <div key={`meme-preview-${meme.id}`}>
-                    <PreviewLink
-                      name={meme.name}
-                      description={meme.description}
-                      link={`/meme/${meme.id}`}
-                    >
-                      <AspectRatio
-                        className={css(
-                          "bg-cover",
-                          "bg-center",
-                          "bg-no-repeat",
-                          "h-full"
-                        )}
-                        ratio={`${meme.media.width}/${meme.media.height}`}
-                        style={{ backgroundImage: `url(${meme.media.url})` }}
-                      />
-                    </PreviewLink>
-                  </div>
-                ))}
-              {store.view === ProfileView.Competition &&
-                store.competitions.map((comp) => (
-                  <div key={`comp-preview-${comp.id}`}>
-                    <PreviewLink
-                      name={comp.name}
-                      description={comp.description}
-                      link={`/competition/${comp.id}`}
-                    >
-                      <AspectRatio
-                        className={css(
-                          "bg-cover",
-                          "bg-center",
-                          "bg-no-repeat",
-                          "h-full"
-                        )}
-                        ratio={
-                          comp?.media
-                            ? `${comp.media.width}/${comp.media.height}`
-                            : "1/1"
-                        }
-                        style={
-                          comp.media
-                            ? { backgroundImage: `url(${comp.media.url})` }
-                            : { background: colors.slate[200] }
-                        }
-                      />
-                    </PreviewLink>
-                  </div>
-                ))}
-            </AsyncWrap>
-          </div>
+          <AsyncGrid isLoading={store.isLoading} data={store.data}>
+            {store.view === ProfileView.Meme &&
+              store.memes.map((meme) => (
+                <div key={`meme-preview-${meme.id}`}>
+                  <PreviewLink
+                    name={meme.name}
+                    description={meme.description}
+                    link={`/meme/${meme.id}`}
+                  >
+                    <AspectRatio
+                      className={css(
+                        "bg-cover",
+                        "bg-center",
+                        "bg-no-repeat",
+                        "h-full"
+                      )}
+                      ratio={`${meme.media.width}/${meme.media.height}`}
+                      style={{ backgroundImage: `url(${meme.media.url})` }}
+                    />
+                  </PreviewLink>
+                </div>
+              ))}
+            {store.view === ProfileView.Competition &&
+              store.competitions.map((comp) => (
+                <div key={`comp-preview-${comp.id}`}>
+                  <PreviewLink
+                    name={comp.name}
+                    description={comp.description}
+                    link={`/competition/${comp.id}`}
+                  >
+                    <AspectRatio
+                      className={css(
+                        "bg-cover",
+                        "bg-center",
+                        "bg-no-repeat",
+                        "h-full"
+                      )}
+                      ratio={
+                        comp?.media
+                          ? `${comp.media.width}/${comp.media.height}`
+                          : "1/1"
+                      }
+                      style={
+                        comp.media
+                          ? { backgroundImage: `url(${comp.media.url})` }
+                          : { background: colors.slate[200] }
+                      }
+                    />
+                  </PreviewLink>
+                </div>
+              ))}
+          </AsyncGrid>
         </Pane>
       </div>
     </AppLayout>

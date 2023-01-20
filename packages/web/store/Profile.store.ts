@@ -103,13 +103,13 @@ export default class ProfileStore {
   }
 
   @computed
-  get hasData() {
+  get data() {
     if (this.isMemeView) {
-      return this.memes.length > 0;
+      return this.memes;
     } else if (this.isCompetitionView) {
-      return this.competitions.length > 0;
+      return this.competitions;
     }
-    return false;
+    return [];
   }
 
   @computed

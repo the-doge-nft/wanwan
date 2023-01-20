@@ -10,6 +10,12 @@ export default class HomeStore {
   @observable
   competitions: Competition[] = [];
 
+  @observable
+  isMemesLoading = false;
+
+  @observable
+  isCompetitionsLoading = false;
+
   constructor(
     memes: Meme[],
     competitions: Competition[],
@@ -34,15 +40,19 @@ export default class HomeStore {
   }
 
   private getMemes() {
+    this.isMemesLoading = true;
     return http
       .get("/meme/search", { params: this.params })
-      .then(({ data }) => (this.memes = data.data));
+      .then(({ data }) => (this.memes = data.data))
+      .finally(() => (this.isMemesLoading = false));
   }
 
   private getCompetitions() {
+    this.isCompetitionsLoading = true;
     return http
       .get("/competition/search", { params: this.params })
-      .then(({ data }) => (this.competitions = data.data));
+      .then(({ data }) => (this.competitions = data.data))
+      .finally(() => (this.isCompetitionsLoading = false));
   }
 
   destroy() {
