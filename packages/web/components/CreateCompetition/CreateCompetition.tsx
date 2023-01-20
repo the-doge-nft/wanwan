@@ -50,6 +50,7 @@ const CreateView: React.FC<CompetitionStoreProp> = observer(({ store }) => {
           disabled={store.isLoading}
         />
         <TextInput
+          type={"textarea"}
           block
           label={"Description"}
           name={"description"}

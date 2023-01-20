@@ -19,7 +19,6 @@ const AspectRatio: React.FC<PropsWithChildren<AspectRatioProps>> = ({
     [CUSTOM_PROPERTY_NAME]: `(${ratio})`,
     ...style,
   } as React.CSSProperties;
-  console.log(computedStyle);
   return (
     <div className={css(className)} style={computedStyle}>
       {children}

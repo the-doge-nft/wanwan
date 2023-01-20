@@ -76,7 +76,6 @@ export default class ProfileStore {
       })
       .then(({ data }) => {
         this.memes = data.data;
-        console.log(this.memes);
       })
       .catch(() => errorToast("Could not get memes"));
   }

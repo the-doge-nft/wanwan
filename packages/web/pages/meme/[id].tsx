@@ -182,7 +182,11 @@ const MemeComment: React.FC<{
         "p-2",
         "border-l-[1px]",
         "border-t-[1px]",
-        "border-slate-400"
+        "border-slate-400",
+        {
+          "border-[1px]": commentReply?.length === 0,
+          "pb-0": commentReply?.length > 0,
+        }
       )}
     >
       <div className={css("flex", "items-center")}>

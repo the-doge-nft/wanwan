@@ -17,12 +17,11 @@ export default class MemeIdStore {
 
   private async getComments() {
     const { data } = await http.get<Comment[]>(`/meme/${this.id}/comment`);
-    console.log(JSON.stringify(data, undefined, 2));
     this.comments = data;
   }
 
   // @next -- should get data as a tree instead
-  getReply(parentId: number): Comment | Comment[] | undefined {
+  getReply(parentId: number): Comment[] {
     const comments = this.comments.filter(
       (comment) => comment.parentCommentId === parentId
     );

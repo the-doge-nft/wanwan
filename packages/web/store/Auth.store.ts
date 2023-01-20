@@ -66,7 +66,6 @@ export default class AuthStore extends Reactionable(EmptyClass) {
     }
     http.get(`/profile/${this.address}`).then(({ data }) => {
       this.profile = data;
-      console.log(this.profile);
     });
   }
 
