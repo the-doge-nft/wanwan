@@ -1,9 +1,6 @@
 import { PropsWithChildren } from "react";
-import { css } from "../../helpers/css";
-import AsyncWrap, {
-  AsyncWrapProps,
-  NoDataFound,
-} from "../DSL/AsyncWrap/AsyncWrap";
+import { css } from "../../../helpers/css";
+import AsyncWrap, { AsyncWrapProps, NoDataFound } from "../AsyncWrap/AsyncWrap";
 
 interface AsyncGridProps extends Pick<AsyncWrapProps, "isLoading"> {
   data: object[];
