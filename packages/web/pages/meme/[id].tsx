@@ -180,75 +180,78 @@ const MemeComment: React.FC<{
         "text-xs",
         "bg-slate-100",
         "p-2",
-        "border-l-[1px]",
-        "border-t-[1px]",
         "border-slate-400",
+        "flex",
+        "w-full",
+        "border-2",
+        "border-black",
         {
-          "border-[1px]": commentReply?.length === 0,
           "pb-0": commentReply?.length > 0,
         }
       )}
     >
-      <div className={css("flex", "items-center")}>
-        <Link
-          type={LinkType.Secondary}
-          href={`/profile/${comment.user.address}/meme`}
-        >
-          {abbreviate(comment.user.address)}
-        </Link>
-        <BsDot />
-        <div>{diffFormatted} ago</div>
-      </div>
-      <div className={css("text-sm")}>{comment.body}</div>
-      <div className={css("flex", "justify-start")}>
-        <button
-          className={css(
-            "hover:underline",
-            "text-slate-500",
-            "hover:text-slate-900"
-          )}
-          onClick={() => setShowReply(!showReply)}
-        >
-          {showReply ? "Cancel" : "Reply"}
-        </button>
-      </div>
-      {showReply && (
-        <div className={css("mt-3")}>
-          <CommentForm
-            isReply
-            onCancel={() => setShowReply(false)}
-            onSubmit={({ body }) =>
-              onCommentSubmit(body).then(() => setShowReply(false))
-            }
-          />
+      <div className={css("grow")}>
+        <div className={css("flex", "items-center")}>
+          <Link
+            type={LinkType.Secondary}
+            href={`/profile/${comment.user.address}/meme`}
+          >
+            {abbreviate(comment.user.address)}
+          </Link>
+          <BsDot />
+          <div>{diffFormatted} ago</div>
         </div>
-      )}
-      {commentReply && Array.isArray(commentReply) && (
-        <div className={css("flex", "flex-col", "gap-2", "mt-2")}>
-          {commentReply.map((reply) => (
-            <MemeComment
-              key={`comment-${reply.id}`}
-              store={store}
-              comment={reply}
-              onCommentSubmit={(body) =>
-                store.onParentCommentSubmit(body, reply.id)
+        <div className={css("text-sm")}>{comment.body}</div>
+        <div className={css("flex", "justify-start")}>
+          <button
+            className={css(
+              "hover:underline",
+              "text-slate-500",
+              "hover:text-slate-900"
+            )}
+            onClick={() => setShowReply(!showReply)}
+          >
+            {showReply ? "Cancel" : "Reply"}
+          </button>
+        </div>
+        {showReply && (
+          <div className={css("mt-3")}>
+            <CommentForm
+              isReply
+              onCancel={() => setShowReply(false)}
+              onSubmit={({ body }) =>
+                onCommentSubmit(body).then(() => setShowReply(false))
               }
             />
-          ))}
-        </div>
-      )}
-      {commentReply && !Array.isArray(commentReply) && (
-        <div className={css("mt-2")}>
-          <MemeComment
-            key={`comment-${commentReply.id}`}
-            store={store}
-            comment={commentReply}
-            onCommentSubmit={(body) =>
-              store.onParentCommentSubmit(body, commentReply.id)
-            }
-          />
-        </div>
-      )}
+          </div>
+        )}
+        {commentReply && Array.isArray(commentReply) && (
+          <div className={css("flex", "flex-col", "gap-2", "mt-2")}>
+            {commentReply.map((reply) => (
+              <MemeComment
+                key={`comment-${reply.id}`}
+                store={store}
+                comment={reply}
+                onCommentSubmit={(body) =>
+                  store.onParentCommentSubmit(body, reply.id)
+                }
+              />
+            ))}
+          </div>
+        )}
+        {commentReply && !Array.isArray(commentReply) && (
+          <div className={css("mt-2")}>
+            <MemeComment
+              key={`comment-${commentReply.id}`}
+              store={store}
+              comment={commentReply}
+              onCommentSubmit={(body) =>
+                store.onParentCommentSubmit(body, commentReply.id)
+              }
+            />
+          </div>
+        )}
+      </div>
     </div>
   );
 };
