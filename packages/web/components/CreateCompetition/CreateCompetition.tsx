@@ -156,7 +156,7 @@ const Rewards: React.FC<CompetitionStoreProp> = observer(({ store }) => {
         Incentivise your competition by rewarding the top memes
       </FormDescription>
       {store.isRewardsVisible && (
-        <>
+        <div className={css("flex", "flex-col", "gap-6")}>
           {Array.from(Array(store.rewardsCount)).map((_, index) => {
             const typeKey = store.getInputKey("type", index);
             const tokenIdKey = store.getInputKey("token-id", index);
@@ -212,7 +212,7 @@ const Rewards: React.FC<CompetitionStoreProp> = observer(({ store }) => {
               </div>
             );
           })}
-        </>
+        </div>
       )}
       <div className={css("flex", "items-center", "gap-2")}>
         <Button
