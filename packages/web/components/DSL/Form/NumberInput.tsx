@@ -20,6 +20,7 @@ const NumberInput = ({
   label,
   validate,
   description,
+  disabled,
   ...rest
 }: NumberInputProps) => {
   const { input, meta, isRequired } = useFormField(name, validate);
@@ -30,10 +31,12 @@ const NumberInput = ({
       isRequired={isRequired}
       name={name}
       label={label}
+      disabled={disabled}
     >
       <Input
         {...input}
         {...rest}
+        disabled={disabled}
         type={"number"}
         value={input.value}
         className={css({

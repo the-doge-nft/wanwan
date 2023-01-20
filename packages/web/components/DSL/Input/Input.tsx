@@ -74,7 +74,11 @@ const Input = ({
         onChange={(e) => {
           onChange && onChange(e.target.value);
         }}
-        className={css(textFieldBaseStyles, className, { "w-full": block })}
+        className={css(textFieldBaseStyles, className, {
+          "w-full": block,
+          [css("text-slate-400", "border-slate-500", "cursor-not-allowed")]:
+            disabled,
+        })}
       />
       {isLoading && (
         <div

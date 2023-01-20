@@ -84,7 +84,6 @@ const CreateView: React.FC<CompetitionStoreProp> = observer(({ store }) => {
         <div className={css("mt-2", "mb-1")}>
           <Divider />
         </div>
-        {/* rewards */}
         <Rewards store={store} />
         <div className={css("mt-2")}>
           <Divider />
@@ -125,7 +124,7 @@ const Curators: React.FC<CompetitionStoreProp> = observer(({ store }) => {
                 block
                 key={key}
                 name={key}
-                label={`curator ${index + 1}`}
+                label={`Curator ${index + 1}`}
                 validate={[required, isEthereumAddress]}
               />
             );
@@ -159,6 +158,10 @@ const Rewards: React.FC<CompetitionStoreProp> = observer(({ store }) => {
       {store.isRewardsVisible && (
         <>
           {Array.from(Array(store.rewardsCount)).map((_, index) => {
+            const typeKey = store.getInputKey("type", index);
+            const tokenIdKey = store.getInputKey("token-id", index);
+            const amountKey = store.getInputKey("amount", index);
+            const addressKey = store.getInputKey("address", index);
             return (
               <div
                 key={`${store.REWARDS_INPUT_PREFIX}-${index}`}
@@ -170,24 +173,39 @@ const Rewards: React.FC<CompetitionStoreProp> = observer(({ store }) => {
                 <div className={css("flex", "gap-2")}>
                   <SelectInput
                     block
+                    name={typeKey}
                     label={"Token Type"}
-                    name={`${store.REWARDS_INPUT_PREFIX}-${store.REWARDS_INPUT_TYPE_PREFIX}-${index}`}
+                    value={store.rewardInputTypes[typeKey]}
+                    onChange={(value) => store.onTypeInputChange(index, value)}
                     items={store.rewardsTypeSelectItems}
                     validate={required}
                     defaultValue={store.rewardsTypeSelectItems[0].id}
                   />
+                  {store.getShowTokenIdInput(typeKey) && (
+                    <NumberInput
+                      block
+                      name={tokenIdKey}
+                      label={"Token ID"}
+                      validate={required}
+                    />
+                  )}
                   <NumberInput
                     block
                     label={"Amount"}
-                    name={`${store.REWARDS_INPUT_PREFIX}-${store.REWARDS_INPUT_NUMBER_PREFIX}-${index}`}
+                    value={store.rewardInputAmounts[amountKey]}
+                    onChange={(value) =>
+                      store.onAmountInputChange(amountKey, value)
+                    }
+                    name={amountKey}
                     validate={required}
+                    disabled={store.getIsAmountDisabled(typeKey)}
                   />
                 </div>
                 <div className={css("mt-2")}>
                   <TextInput
                     block
                     label={"Token Address"}
-                    name={`${store.REWARDS_INPUT_PREFIX}-${store.REWARDS_INPUT_ADDRESS_PREFIX}-${index}`}
+                    name={addressKey}
                     validate={[required, isEthereumAddress]}
                   />
                 </div>

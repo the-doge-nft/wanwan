@@ -21,12 +21,14 @@ const TextInput = ({
   validate,
   description,
   type = "text",
+  disabled,
   ...rest
 }: TextInputProps) => {
   const { input, meta, isRequired } = useFormField(name, validate);
   useControlledFormField(input.onChange, value);
   return (
     <FormControl
+      disabled={disabled}
       description={description}
       isRequired={isRequired}
       name={name}
@@ -35,6 +37,7 @@ const TextInput = ({
       <Input
         {...input}
         {...rest}
+        disabled={disabled}
         type={type}
         value={input.value}
         className={css({

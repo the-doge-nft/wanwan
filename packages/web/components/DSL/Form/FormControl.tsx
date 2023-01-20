@@ -18,6 +18,7 @@ export interface FormControlProps
   extends Pick<BaseFormInputProps, "label" | "name" | "description"> {
   children: any;
   isRequired: boolean;
+  disabled?: boolean;
 }
 
 const FormControl = ({
@@ -26,6 +27,7 @@ const FormControl = ({
   name,
   isRequired,
   description,
+  disabled = false,
 }: FormControlProps) => {
   const { meta } = useField(name, {
     subscription: { touched: true, error: true, pristine: true, visited: true },
@@ -38,6 +40,7 @@ const FormControl = ({
           mb={!description}
           isRequired={isRequired}
           isInvalid={isInvalid}
+          isDisabled={disabled}
         >
           {label}
         </FormLabel>
@@ -55,12 +58,24 @@ const FormControl = ({
   );
 };
 
-export const FormLabel: React.FC<
-  PropsWithChildren<{ isInvalid?: boolean; isRequired?: boolean; mb?: boolean }>
-> = ({ children, isInvalid, isRequired, mb = true }) => {
+interface FormLabelProps {
+  isInvalid?: boolean;
+  isRequired?: boolean;
+  mb?: boolean;
+  isDisabled: boolean;
+}
+
+export const FormLabel: React.FC<PropsWithChildren<FormLabelProps>> = ({
+  children,
+  isInvalid,
+  isRequired,
+  mb = true,
+  isDisabled,
+}) => {
   return (
     <div
       className={css("text-xs", "text-black", {
+        [css("text-slate-500")]: isDisabled,
         [errorTextCss]: isInvalid,
         flex: isRequired,
         "mb-0.5": mb,

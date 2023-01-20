@@ -23,6 +23,7 @@ export default class CreateCompetitionStore extends Navigable(EmptyClass) {
   REWARDS_INPUT_TYPE_PREFIX = "rewards-type-input";
   REWARDS_INPUT_ADDRESS_PREFIX = "rewards-address-input";
   REWARDS_INPUT_NUMBER_PREFIX = "rewards-number-input";
+  REWARDS_INPUT_TOKENID_PREFIX = "rewards-tokenid-input";
 
   @observable
   private _curatorsCount = 0;
@@ -32,6 +33,12 @@ export default class CreateCompetitionStore extends Navigable(EmptyClass) {
 
   @observable
   isLoading = false;
+
+  @observable
+  rewardInputTypes: { [key: string]: TokenType } = {};
+
+  @observable
+  rewardInputAmounts: { [key: string]: string } = {};
 
   constructor() {
     super();
@@ -139,6 +146,49 @@ export default class CreateCompetitionStore extends Navigable(EmptyClass) {
   @computed
   get canAddCurator() {
     return this._curatorsCount < 3;
+  }
+
+  getShowTokenIdInput(key: string) {
+    return this.rewardInputTypes?.[key] !== TokenType.ERC20;
+  }
+
+  getIsAmountDisabled(key: string) {
+    return this.rewardInputTypes?.[key] === TokenType.ERC721;
+  }
+
+  getInputKey(type: "type" | "token-id" | "amount" | "address", index: number) {
+    switch (type) {
+      case "type":
+        return `${this.REWARDS_INPUT_PREFIX}-${this.REWARDS_INPUT_TYPE_PREFIX}-${index}`;
+      case "token-id":
+        return `${this.REWARDS_INPUT_PREFIX}-${this.REWARDS_INPUT_TOKENID_PREFIX}-${index}`;
+      case "amount":
+        return `${this.REWARDS_INPUT_PREFIX}-${this.REWARDS_INPUT_NUMBER_PREFIX}-${index}`;
+      case "address":
+        return `${this.REWARDS_INPUT_PREFIX}-${this.REWARDS_INPUT_ADDRESS_PREFIX}-${index}`;
+      default:
+        throw new Error("Invalid type");
+    }
+  }
+
+  @action
+  onTypeInputChange(index: number, value: TokenType) {
+    const typeKey = this.getInputKey("type", index);
+    const amountKey = this.getInputKey("amount", index);
+    const amountValue = this.rewardInputAmounts[amountKey];
+    this.rewardInputTypes[typeKey] = value;
+    if (value === TokenType.ERC721) {
+      if (!amountValue || amountValue !== "1") {
+        this.rewardInputAmounts[amountKey] = "1";
+      }
+    } else {
+      this.rewardInputAmounts[amountKey] = "";
+    }
+  }
+
+  @action
+  onAmountInputChange(typeKey: string, value: string) {
+    this.rewardInputAmounts[typeKey] = value;
   }
 
   get rewardsTypeSelectItems(): SelectItem[] {
