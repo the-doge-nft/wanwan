@@ -66,6 +66,10 @@ up() {
     fi
 
     __spacedEcho "listening to logs"
+
+    dbPush
+    dbSeed
+
     docker-compose logs -f
 }
 

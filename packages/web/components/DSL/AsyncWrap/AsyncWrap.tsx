@@ -5,7 +5,7 @@ import Spinner from "../Spinner/Spinner";
 export const NoDataFound: React.FC<PropsWithChildren> = ({ children }) => {
   return (
     <div className={css("text-xs", "py-8", "text-center", "text-slate-500")}>
-      No {children}
+      {children}
     </div>
   );
 };

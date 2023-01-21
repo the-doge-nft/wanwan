@@ -5,28 +5,23 @@ import Head from "next/head";
 import { useEffect, useMemo } from "react";
 import AspectRatio from "../components/DSL/AspectRatio/AspectRatio";
 import AsyncGrid from "../components/DSL/AsyncGrid/AsyncGrid";
+import { NoDataFound } from "../components/DSL/AsyncWrap/AsyncWrap";
 import Pane, { PaneType } from "../components/DSL/Pane/Pane";
 import { colors } from "../components/DSL/Theme";
 import PreviewLink from "../components/PreviewLink/PreviewLink";
 import env from "../environment";
 import { css } from "../helpers/css";
 import { encodeBase64 } from "../helpers/strings";
-import {
-  Competition,
-  Meme,
-  SearchParams,
-  SearchResponse,
-  Stats,
-} from "../interfaces";
+import { Competition, Meme, SearchParams, Stats } from "../interfaces";
 import AppLayout from "../layouts/App.layout";
-import http from "../services/http";
+import { newHttp } from "../services/http";
 import redirectTo404 from "../services/redirect/404";
 import HomeStore from "../store/Home.store";
 
 interface HomeProps {
   competitions: Competition[];
   memes: Meme[];
-  stats: Stats | null;
+  stats: Stats;
   searchParams: SearchParams;
 }
 
@@ -61,6 +56,9 @@ const Home: React.FC<HomeProps> = observer(
               <AsyncGrid
                 isLoading={store.isCompetitionsLoading}
                 data={store.competitions}
+                renderNoData={() => (
+                  <NoDataFound>No competitions found</NoDataFound>
+                )}
               >
                 {store.competitions.map((comp) => (
                   <div key={`competition-preview-${comp.id}`}>
@@ -93,7 +91,11 @@ const Home: React.FC<HomeProps> = observer(
               </AsyncGrid>
             </Pane>
             <Pane title={"Recent"}>
-              <AsyncGrid isLoading={store.isMemesLoading} data={store.memes}>
+              <AsyncGrid
+                isLoading={store.isMemesLoading}
+                data={store.memes}
+                renderNoData={() => <NoDataFound>No memes found</NoDataFound>}
+              >
                 {store.memes.map((meme) => (
                   <div key={`meme-preview-${meme.id}`}>
                     <PreviewLink
@@ -117,37 +119,35 @@ const Home: React.FC<HomeProps> = observer(
               </AsyncGrid>
             </Pane>
             <Pane title={"Stats"}>
-              {stats && (
-                <div
-                  className={css(
-                    "text-xs",
-                    "grid",
-                    "grid-rows-4",
-                    "grid-cols-1",
-                    "sm:grid-rows-2",
-                    "sm:grid-cols-2",
-                    "md:grid-rows-1",
-                    "md:grid-cols-4"
-                  )}
-                >
-                  <div className={css("inline-flex", "gap-1")}>
-                    <div className={css("font-bold")}>Users:</div>
-                    <div>{stats.totalUsers}</div>
-                  </div>
-                  <div className={css("inline-flex", "gap-1")}>
-                    <div className={css("font-bold")}>Memes:</div>
-                    <div>{stats.totalMemes}</div>
-                  </div>
-                  <div className={css("inline-flex", "gap-1")}>
-                    <div className={css("font-bold")}>Competitions:</div>
-                    <div>{stats.totalCompetitions}</div>
-                  </div>
-                  <div className={css("inline-flex", "gap-1")}>
-                    <div className={css("font-bold")}>Active Competitions:</div>
-                    <div>{stats.totalActiveCompetitions}</div>
-                  </div>
+              <div
+                className={css(
+                  "text-xs",
+                  "grid",
+                  "grid-rows-4",
+                  "grid-cols-1",
+                  "sm:grid-rows-2",
+                  "sm:grid-cols-2",
+                  "md:grid-rows-1",
+                  "md:grid-cols-4"
+                )}
+              >
+                <div className={css("inline-flex", "gap-1")}>
+                  <div className={css("font-bold")}>Users:</div>
+                  <div>{stats.totalUsers}</div>
                 </div>
-              )}
+                <div className={css("inline-flex", "gap-1")}>
+                  <div className={css("font-bold")}>Memes:</div>
+                  <div>{stats.totalMemes}</div>
+                </div>
+                <div className={css("inline-flex", "gap-1")}>
+                  <div className={css("font-bold")}>Competitions:</div>
+                  <div>{stats.totalCompetitions}</div>
+                </div>
+                <div className={css("inline-flex", "gap-1")}>
+                  <div className={css("font-bold")}>Active Competitions:</div>
+                  <div>{stats.totalActiveCompetitions}</div>
+                </div>
+              </div>
             </Pane>
           </div>
         </main>
@@ -169,16 +169,12 @@ export const getServerSideProps: GetServerSideProps<HomeProps> = async (
   try {
     const {
       data: { data: competitions },
-    } = await http.get<SearchResponse<Competition>>("/competition/search", {
-      params,
-    });
+    } = await newHttp.competitionSearch(params);
 
     const {
       data: { data: memes },
-    } = await http.get<SearchResponse<Meme>>("/meme/search", {
-      params,
-    });
-    const { data: stats } = await http.get<Stats>("/stats");
+    } = await newHttp.memeSearch(params);
+    const { data: stats } = await newHttp.stats();
     return {
       props: { competitions, memes, stats, searchParams: params },
     };
