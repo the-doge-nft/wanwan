@@ -5,6 +5,7 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
 contract MockERC721 is ERC721 {
+    using Counters for Counters.Counter;
     Counters.Counter private _tokenIdCounter;
 
     constructor() ERC721("MockERC721", "M721") {}
@@ -26,6 +27,6 @@ contract MockERC721 is ERC721 {
             _exists(tokenId),
             "ERC721Metadata: URI query for nonexistent token"
         );
-        return baseTokenURIs[tokenURITypes[tokenId]];
+        return "https://www.gainor.xyz/images/me.jpg";
     }
 }

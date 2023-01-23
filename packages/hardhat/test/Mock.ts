@@ -1,5 +1,6 @@
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import { ethers } from "hardhat";
+const { expect } = require("chai");
 
 describe("Lock", function () {
   // We define a fixture to reuse the same setup in every test.
@@ -25,7 +26,31 @@ describe("Lock", function () {
     it("Should mint a lot of erc20 tokens", async function () {
       const { erc20 } = await loadFixture(deployOneYearLockFixture);
       const [_, user] = await ethers.getSigners();
-      const userContarc = erc20.connect(user);
+      const userContract = erc20.connect(user);
+      await userContract.get(ethers.BigNumber.from(10));
+      expect(await userContract.balanceOf(user.address)).to.equal(10);
+      expect(await userContract.decimals()).to.equal(18);
+    });
+
+    it("Should mint an ERC721", async function () {
+      const { erc721 } = await loadFixture(deployOneYearLockFixture);
+      const [_, user] = await ethers.getSigners();
+      const userContract = erc721.connect(user);
+      await userContract.mint();
+      expect(await userContract.tokenURI(0)).to.equal(
+        "https://www.gainor.xyz/images/me.jpg"
+      );
+    });
+
+    it("Should mint and ERC1155", async function () {
+      const { erc1155 } = await loadFixture(deployOneYearLockFixture);
+      const [_, user] = await ethers.getSigners();
+      const userContract = erc1155.connect(user);
+      await userContract.setUri(0, "https://www.gainor.xyz/images/me.jpg");
+      await userContract.mint(0, 1);
+      expect(await userContract.uri(0)).to.equal(
+        "https://www.gainor.xyz/images/me.jpg"
+      );
     });
   });
 });
