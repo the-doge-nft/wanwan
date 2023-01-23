@@ -81,7 +81,14 @@ const MemeById: React.FC<Meme> = observer(({ ...meme }) => {
             </Link>
           </div>
         </div>
-        <div className={css("text-xs", "text-slate-600", "w-full")}>
+        <div
+          className={css(
+            "text-xs",
+            "text-slate-600",
+            "dark:text-neutral-600",
+            "w-full"
+          )}
+        >
           {format(new Date(meme.createdAt), "Pp")}
         </div>
         <div className={css("mt-8")}>
@@ -183,8 +190,10 @@ const MemeComment: React.FC<{
         "border-slate-400",
         "flex",
         "w-full",
-        "border-2",
+        "border-[1px]",
         "border-black",
+        "dark:border-neutral-600",
+        "dark:bg-neutral-900",
         {
           "pb-0": commentReply?.length > 0,
         }
@@ -207,6 +216,7 @@ const MemeComment: React.FC<{
             className={css(
               "hover:underline",
               "text-slate-500",
+              "dark:text-neutral-400",
               "hover:text-slate-900"
             )}
             onClick={() => setShowReply(!showReply)}

@@ -20,7 +20,8 @@ const styleToTypeMap = {
     defaultBgCss,
     "text-black",
     "dark:text-white",
-    "border-black"
+    "border-black",
+    "dark:border-neutral-700"
   ),
   [DropdownType.White]: css("bg-black", "text-white", "border-blue-700"),
 };

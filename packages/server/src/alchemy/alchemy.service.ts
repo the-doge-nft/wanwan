@@ -14,6 +14,10 @@ export class AlchemyService {
       this.config.get('appEnv') === AppEnv.production
         ? Network.ETH_MAINNET
         : Network.ETH_GOERLI;
+    this.pixelContractAddress =
+      this.config.get('appEnv') === AppEnv.production
+        ? '0x07887Ee0Bd24E774903963d50cF4Ec6a0a16977D'
+        : '0x0eAADb89776e98B5D9a278f4a11f4b3f20226276';
     this.alchemy = new Alchemy({
       apiKey: this.config.get('alchemy').apiKey,
       network,

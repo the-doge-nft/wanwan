@@ -1,10 +1,9 @@
 import { action, computed, makeObservable, observable } from "mobx";
 import { SelectItem } from "../components/DSL/Select/Select";
 import { formatEthereumAddress } from "../helpers/strings";
-import http from "../services/http";
+import { newHttp } from "../services/http";
 import { Navigable } from "../services/mixins/navigable";
 import { EmptyClass } from "./../services/mixins/index";
-import AppStore from "./App.store";
 
 export enum CreateCompetitionView {
   Create = "Create",
@@ -47,6 +46,7 @@ export default class CreateCompetitionStore extends Navigable(EmptyClass) {
   }
 
   onCompetitionSubmit(values: any) {
+    console.log(values);
     this.isLoading = true;
     const formValues = { ...values };
     const curators: string[] = [];
@@ -65,11 +65,11 @@ export default class CreateCompetitionStore extends Navigable(EmptyClass) {
     body.curators = curators;
     body.rewards = rewards;
     body.maxUserSubmissions = parseInt(body.maxUserSubmissions);
-    return http
-      .post(`/competition`, body)
+
+    return newHttp
+      .postCompetition(body)
       .then(() => {
         this.isLoading = false;
-        AppStore.events.publish(AppStore.events.events.COMPETITION_CREATED);
         this.currentView = CreateCompetitionView.Success;
       })
       .catch((e) => {

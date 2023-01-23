@@ -162,6 +162,13 @@ const Rewards: React.FC<CompetitionStoreProp> = observer(({ store }) => {
             const tokenIdKey = store.getInputKey("token-id", index);
             const amountKey = store.getInputKey("amount", index);
             const addressKey = store.getInputKey("address", index);
+            const place = index + 1;
+            let prefix = "st";
+            if (place === 2) {
+              prefix = "nd";
+            } else if (place === 3) {
+              prefix = "rd";
+            }
             return (
               <div
                 key={`${store.REWARDS_INPUT_PREFIX}-${index}`}
@@ -171,10 +178,12 @@ const Rewards: React.FC<CompetitionStoreProp> = observer(({ store }) => {
                   className={css(
                     "text-xs",
                     "text-slate-600",
-                    "dark:text-neutral-400"
+                    "dark:text-neutral-400",
+                    "mb-1"
                   )}
                 >
-                  {index + 1} place
+                  {place}
+                  {prefix} place
                 </div>
                 <div className={css("flex", "gap-2")}>
                   <SelectInput

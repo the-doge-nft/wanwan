@@ -2,6 +2,7 @@ import { Meme } from "@prisma/client";
 import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
 import env from "../environment";
 import { Competition, SearchResponse, Stats } from "../interfaces";
+import AppStore from "../store/App.store";
 import ApiErrorInterceptor from "./interceptors/api-error.interceptor";
 
 const config: AxiosRequestConfig = {
@@ -34,6 +35,13 @@ class Http {
 
   stats() {
     return this.http.get<Stats>("/stats");
+  }
+
+  postCompetition(body: object) {
+    return this.http.post<Competition>("/competition", body).then((res) => {
+      AppStore.events.publish(AppStore.events.events.COMPETITION_CREATED);
+      return res;
+    });
   }
 }
 

@@ -82,9 +82,9 @@ export class CompetitionController {
       throw new BadRequestException('Competition has ended');
     }
 
-    // if (!(await this.alchemy.getIsPixelHolder(user.address))) {
-    //   throw new BadRequestException('You must hold a pixel to vote');
-    // }
+    if (!(await this.alchemy.getIsPixelHolder(user.address))) {
+      throw new BadRequestException('You must hold a pixel to vote');
+    }
 
     return this.vote.vote({
       ...vote,

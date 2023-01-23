@@ -78,6 +78,11 @@ const Home: React.FC<HomeProps> = observer(
                             ? `${comp.media.width}/${comp.media.height}`
                             : "1/1"
                         }
+                        style={
+                          comp.media
+                            ? { backgroundImage: `url(${comp.media.url})` }
+                            : {}
+                        }
                       />
                     </PreviewLink>
                   </div>
