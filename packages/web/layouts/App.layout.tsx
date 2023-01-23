@@ -1,4 +1,5 @@
 import { PropsWithChildren } from "react";
+import Footer from "../components/Footer/Footer";
 import Header from "../components/Header/Header";
 import { css } from "../helpers/css";
 
@@ -19,11 +20,7 @@ const AppLayout: React.FC<PropsWithChildren> = ({ children }) => {
           <Header />
         </div>
         <div className={css("flex-grow")}>{children}</div>
-        <footer
-          className={css("text-xs", "text-slate-400", "text-center", "mt-10")}
-        >
-          No copyright, no trademark. Kabosu forever.
-        </footer>
+        <Footer />
       </div>
     </div>
   );

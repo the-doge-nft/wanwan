@@ -22,15 +22,14 @@ class Http {
     this.http.interceptors.response.use((res) => res, ApiErrorInterceptor);
   }
 
-  competitionSearch(params: SearchParams) {
-    return this.http.get<SearchResponse<Competition>>(
-      "/competition/search",
-      params
-    );
+  competitionSearch(params: SearchParams = {}) {
+    return this.http.get<SearchResponse<Competition>>("/competition/search", {
+      params,
+    });
   }
 
-  memeSearch(params: SearchParams) {
-    return this.http.get<SearchResponse<Meme>>("/meme/search", params);
+  memeSearch(params: SearchParams = {}) {
+    return this.http.get<SearchResponse<Meme>>("/meme/search", { params });
   }
 
   stats() {

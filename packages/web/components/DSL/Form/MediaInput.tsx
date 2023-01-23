@@ -116,6 +116,8 @@ const MediaInput: React.FC<MediaInputProps> = ({
             "rounded-sm",
             "p-7",
             "hover:border-black",
+            "dark:border-neutral-600",
+            "dark:hover:border-neutral-400",
             {
               "border-red-700": isError && !isDragActive,
               "border-gray-400": !isError && !isDragActive,

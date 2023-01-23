@@ -7,7 +7,6 @@ import AspectRatio from "../components/DSL/AspectRatio/AspectRatio";
 import AsyncGrid from "../components/DSL/AsyncGrid/AsyncGrid";
 import { NoDataFound } from "../components/DSL/AsyncWrap/AsyncWrap";
 import Pane, { PaneType } from "../components/DSL/Pane/Pane";
-import { colors } from "../components/DSL/Theme";
 import PreviewLink from "../components/PreviewLink/PreviewLink";
 import env from "../environment";
 import { css } from "../helpers/css";
@@ -79,11 +78,6 @@ const Home: React.FC<HomeProps> = observer(
                             ? `${comp.media.width}/${comp.media.height}`
                             : "1/1"
                         }
-                        style={
-                          comp?.media
-                            ? { backgroundImage: `url(${comp.media.url})` }
-                            : { backgroundColor: colors.slate[200] }
-                        }
                       />
                     </PreviewLink>
                   </div>
@@ -128,7 +122,8 @@ const Home: React.FC<HomeProps> = observer(
                   "sm:grid-rows-2",
                   "sm:grid-cols-2",
                   "md:grid-rows-1",
-                  "md:grid-cols-4"
+                  "md:grid-cols-4",
+                  "dark:text-white"
                 )}
               >
                 <div className={css("inline-flex", "gap-1")}>

@@ -74,7 +74,7 @@ export const FormLabel: React.FC<PropsWithChildren<FormLabelProps>> = ({
 }) => {
   return (
     <div
-      className={css("text-xs", "text-black", {
+      className={css("text-xs", "text-black", "dark:text-white", {
         [css("text-slate-500")]: isDisabled,
         [errorTextCss]: isInvalid,
         flex: isRequired,

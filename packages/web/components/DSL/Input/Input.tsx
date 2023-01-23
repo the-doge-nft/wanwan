@@ -43,6 +43,9 @@ export const textFieldBaseStyles = css(
   "focus:outline-none",
   "border-[1px]",
   "border-black",
+  "dark:border-neutral-600",
+  "text-black",
+  "dark:text-white",
   defaultBgCss
 );
 

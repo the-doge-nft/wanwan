@@ -30,9 +30,19 @@ interface ButtonProps {
 const buttonTypeStyles = {
   [ButtonType.Primary]: css(
     "bg-gray-200",
+    "dark:bg-neutral-700",
+    "hover:bg-gray-300",
+    "dark:hover:bg-neutral-800",
     "border-[1px]",
     "border-black",
-    "hover:bg-gray-300"
+    "dark:border-neutral-900",
+    "text-black",
+    "dark:text-white",
+    "disabled:cursor-not-allowed",
+    "disabled:hover:bg-gray-300",
+    "disabled:bg-gray-300",
+    "disabled:dark:bg-neutral-800",
+    "disabled:dark:hover:bg-neutral-800"
   ),
 };
 
@@ -60,9 +70,6 @@ const Button: React.FC<PropsWithChildren<ButtonProps>> = ({
         buttonTypeStyles[type],
         buttonSizeStyles[size],
         "relative",
-        "disabled:cursor-not-allowed",
-        "disabled:hover:bg-gray-300",
-        "disabled:bg-gray-300",
         "outline-0",
         { "w-full": block }
       )}
@@ -208,42 +215,66 @@ export const ConnectButton: React.FC<
                                 </Button>
                               </div>
                             </DropdownItem>
-                          </div>
-                        )}
-                        <div className={css("mt-2")}>
-                          <DropdownItem>
-                            <div
-                              className={css(
-                                "flex",
-                                "justify-between",
-                                "text-xs",
-                                "w-full"
-                              )}
-                            >
-                              <button
-                                className={css("hover:underline")}
-                                onClick={() => disconnect()}
-                              >
-                                Disconnect
-                              </button>
+                            <DropdownItem className={css("mt-2")}>
                               <div
                                 className={css(
                                   "flex",
-                                  "items-center",
-                                  "space-x-1",
-                                  "justify-between",
-                                  "text-gray-500",
-                                  "text-xs"
+                                  "justify-around",
+                                  "w-full"
                                 )}
                               >
-                                <div>net:</div>
-                                <div className={css("flex", "items-center")}>
-                                  {chain.name}
-                                </div>
+                                <Button
+                                  disabled={AppStore.settings.isLightMode}
+                                  onClick={() =>
+                                    AppStore.settings.setColorMode("light")
+                                  }
+                                >
+                                  light
+                                </Button>
+                                <Button
+                                  disabled={!AppStore.settings.isLightMode}
+                                  onClick={() =>
+                                    AppStore.settings.setColorMode("dark")
+                                  }
+                                >
+                                  dark
+                                </Button>
+                              </div>
+                            </DropdownItem>
+                          </div>
+                        )}
+                        <DropdownItem className={css("mt-2")}>
+                          <div
+                            className={css(
+                              "flex",
+                              "justify-between",
+                              "text-xs",
+                              "w-full"
+                            )}
+                          >
+                            <button
+                              className={css("hover:underline")}
+                              onClick={() => disconnect()}
+                            >
+                              Disconnect
+                            </button>
+                            <div
+                              className={css(
+                                "flex",
+                                "items-center",
+                                "space-x-1",
+                                "justify-between",
+                                "text-gray-500",
+                                "text-xs"
+                              )}
+                            >
+                              <div>net:</div>
+                              <div className={css("flex", "items-center")}>
+                                {chain.name}
                               </div>
                             </div>
-                          </DropdownItem>
-                        </div>
+                          </div>
+                        </DropdownItem>
                       </Dropdown>
                     </div>
                   );

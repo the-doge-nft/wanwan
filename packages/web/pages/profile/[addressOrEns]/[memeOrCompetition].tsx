@@ -6,7 +6,6 @@ import AspectRatio from "../../../components/DSL/AspectRatio/AspectRatio";
 import AsyncGrid from "../../../components/DSL/AsyncGrid/AsyncGrid";
 import Link from "../../../components/DSL/Link/Link";
 import Pane from "../../../components/DSL/Pane/Pane";
-import { colors } from "../../../components/DSL/Theme";
 import PreviewLink from "../../../components/PreviewLink/PreviewLink";
 import { css } from "../../../helpers/css";
 import { abbreviate, getEtherscanURL } from "../../../helpers/strings";
@@ -150,11 +149,6 @@ const ProfilePage: React.FC<ProfileProps> = observer(({ profile }) => {
                         comp?.media
                           ? `${comp.media.width}/${comp.media.height}`
                           : "1/1"
-                      }
-                      style={
-                        comp.media
-                          ? { backgroundImage: `url(${comp.media.url})` }
-                          : { background: colors.slate[200] }
                       }
                     />
                   </PreviewLink>

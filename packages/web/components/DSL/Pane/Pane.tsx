@@ -18,8 +18,13 @@ interface PaneProps {
 
 const paneTypeStyles = {
   [PaneType.Primary]: {
-    title: css("bg-slate-300", "text-slate-900"),
-    container: css("bg-slate-100", "border-[1px]", "border-black"),
+    title: css(
+      "bg-slate-300",
+      "text-slate-900",
+      "dark:bg-slate-800",
+      "dark:text-slate-300"
+    ),
+    container: css("bg-slate-100", "border-[1px]"),
     body: css("text-slate-900"),
   },
   [PaneType.Secondary]: {
@@ -39,7 +44,12 @@ const Pane: React.FC<PropsWithChildren<PaneProps>> = ({
   onChange,
 }) => {
   const basePaneStyles = {
-    container: css("border-[1px]", "border-black", className),
+    container: css(
+      "border-[1px]",
+      "border-black",
+      "dark:border-neutral-800",
+      className
+    ),
     title: css(
       "px-2",
       "py-1",
