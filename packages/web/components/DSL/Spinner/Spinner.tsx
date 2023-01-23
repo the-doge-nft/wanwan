@@ -22,8 +22,8 @@ const Spinner = ({ size = SpinnerSize.sm }: SpinnerProps) => {
       height={spinnerSizes[size]}
       width={spinnerSizes[size]}
       strokeWidth={5}
-      color={colors.slate[600]}
-      secondaryColor={colors.slate[400]}
+      color={colors.neutral[600]}
+      secondaryColor={colors.neutral[400]}
     />
   );
 };

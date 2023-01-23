@@ -5,16 +5,18 @@ import {
   useContractWrite,
   useNetwork,
   usePrepareContractWrite,
+  useWaitForTransaction,
 } from "wagmi";
-import {
+import Button, {
   ButtonSize,
   ConnectButton,
   Submit,
 } from "../components/DSL/Button/Button";
 import Form from "../components/DSL/Form/Form";
 import NumberInput from "../components/DSL/Form/NumberInput";
-import { required } from "../components/DSL/Form/validation";
+import { minValue, required } from "../components/DSL/Form/validation";
 import Pane from "../components/DSL/Pane/Pane";
+import { successToast } from "../components/DSL/Toast/Toast";
 import { css } from "../helpers/css";
 import AppLayout from "../layouts/App.layout";
 import erc1155Abi from "../services/abis/erc1155";
@@ -73,18 +75,28 @@ const ERC20Form: React.FC<DevAssetsFormProps> = observer(({ store }) => {
     address: ERC20_ADDRESS,
     abi: erc20Abi,
     functionName: "get",
+    args: [store.erc20Amount],
+  });
+  const { data: contractData, isLoading, write } = useContractWrite(config);
+  const { isLoading: isTxLoading } = useWaitForTransaction({
+    hash: contractData?.hash,
+    onSuccess: () => {
+      successToast("erc20 minted");
+    },
   });
   return (
     <Pane title={"MockERC20"}>
-      <Form onSubmit={async () => {}}>
+      <Form onSubmit={async () => write && write()}>
         <div className={css("flex", "flex-col", "gap-2")}>
           <NumberInput
             label={"Amount"}
             name={"amount"}
-            validate={required}
+            validate={[required, minValue(1)]}
+            value={store.erc20Amount}
+            onChange={(value) => (store.erc20Amount = value)}
             block
           />
-          <Submit block />
+          <Submit block isLoading={isLoading || isTxLoading} />
         </div>
       </Form>
     </Pane>
@@ -93,23 +105,27 @@ const ERC20Form: React.FC<DevAssetsFormProps> = observer(({ store }) => {
 
 const ERC721Form: React.FC<DevAssetsFormProps> = observer(({ store }) => {
   const { config } = usePrepareContractWrite({
-    address: ERC20_ADDRESS,
+    address: ERC721_ADDRESS,
     abi: erc721Abi,
     functionName: "mint",
   });
+  const { data: contractData, isLoading, write } = useContractWrite(config);
+  const { isLoading: isTxLoading } = useWaitForTransaction({
+    hash: contractData?.hash,
+    onSuccess: () => {
+      successToast("erc721 minted");
+    },
+  });
   return (
     <Pane title={"MockERC721"}>
-      <Form onSubmit={async () => {}}>
-        <div className={css("flex", "flex-col", "gap-2")}>
-          <NumberInput
-            label={"Amount"}
-            name={"amount"}
-            validate={required}
-            block
-          />
-          <Submit block />
-        </div>
-      </Form>
+      <div className={css("flex", "flex-col", "gap-2")}>
+        <Button
+          onClick={() => write && write()}
+          isLoading={isLoading || isTxLoading}
+        >
+          Submit
+        </Button>
+      </div>
     </Pane>
   );
 });
@@ -122,12 +138,13 @@ const ERC1155Form: React.FC<DevAssetsFormProps> = observer(({ store }) => {
     args: [store.erc1155TokenId, store.erc1155Amount],
   });
 
-  const {
-    data: contractData,
-    isLoading,
-    isSuccess,
-    write,
-  } = useContractWrite(config);
+  const { data: contractData, isLoading, write } = useContractWrite(config);
+  const { isLoading: isTxLoading } = useWaitForTransaction({
+    hash: contractData?.hash,
+    onSuccess: () => {
+      successToast("erc1155 minted");
+    },
+  });
 
   const { data } = useContractRead({
     address: ERC1155_ADDRESS,
@@ -154,13 +171,7 @@ const ERC1155Form: React.FC<DevAssetsFormProps> = observer(({ store }) => {
           )}
         />
       </div>
-      <Form
-        onSubmit={async () => {
-          if (write) {
-            write();
-          }
-        }}
-      >
+      <Form onSubmit={async () => write && write()}>
         <div className={css("flex", "flex-col", "gap-2")}>
           <div className={css("flex-col", "md:flex-row", "flex", "gap-2")}>
             <NumberInput
@@ -180,7 +191,7 @@ const ERC1155Form: React.FC<DevAssetsFormProps> = observer(({ store }) => {
               onChange={(value) => (store.erc1155Amount = value)}
             />
           </div>
-          <Submit block disabled={isLoading} />
+          <Submit block isLoading={isLoading || isTxLoading} />
         </div>
       </Form>
     </Pane>

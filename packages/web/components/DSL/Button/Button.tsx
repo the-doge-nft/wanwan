@@ -85,7 +85,8 @@ const Button: React.FC<PropsWithChildren<ButtonProps>> = ({
             "flex",
             "items-center",
             "justify-center",
-            "bg-gray-200"
+            "bg-gray-200",
+            "dark:bg-neutral-500"
           )}
         >
           <Spinner />
