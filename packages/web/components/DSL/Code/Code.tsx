@@ -14,6 +14,7 @@ const Code: React.FC<PropsWithChildren<{ className?: string }>> = ({
         "break-all",
         "inline-block",
         "text-gray-700",
+        "dark:text-gray-200",
         className
       )}
     >

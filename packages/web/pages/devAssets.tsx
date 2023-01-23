@@ -1,5 +1,5 @@
 import { observer } from "mobx-react-lite";
-import { useMemo } from "react";
+import { PropsWithChildren, useMemo } from "react";
 import {
   useContractRead,
   useContractWrite,
@@ -12,6 +12,7 @@ import Button, {
   ConnectButton,
   Submit,
 } from "../components/DSL/Button/Button";
+import Code from "../components/DSL/Code/Code";
 import Form from "../components/DSL/Form/Form";
 import NumberInput from "../components/DSL/Form/NumberInput";
 import { minValue, required } from "../components/DSL/Form/validation";
@@ -86,6 +87,7 @@ const ERC20Form: React.FC<DevAssetsFormProps> = observer(({ store }) => {
   });
   return (
     <Pane title={"MockERC20"}>
+      <ContractAddress>{ERC20_ADDRESS}</ContractAddress>
       <Form onSubmit={async () => write && write()}>
         <div className={css("flex", "flex-col", "gap-2")}>
           <NumberInput
@@ -118,6 +120,7 @@ const ERC721Form: React.FC<DevAssetsFormProps> = observer(({ store }) => {
   });
   return (
     <Pane title={"MockERC721"}>
+      <ContractAddress>{ERC721_ADDRESS}</ContractAddress>
       <div className={css("flex", "flex-col", "gap-2")}>
         <Button
           onClick={() => write && write()}
@@ -155,6 +158,7 @@ const ERC1155Form: React.FC<DevAssetsFormProps> = observer(({ store }) => {
 
   return (
     <Pane title={"MockERC1155"}>
+      <ContractAddress>{ERC1155_ADDRESS}</ContractAddress>
       <div className={css("flex", "justify-center", "mb-4", "mt-2")}>
         <div
           style={{ backgroundImage: `url(${data})` }}
@@ -163,7 +167,7 @@ const ERC1155Form: React.FC<DevAssetsFormProps> = observer(({ store }) => {
             "h-[100px]",
             "bg-cover",
             "bg-no-repeat",
-            "bg-green-200",
+            "bg-slate-200",
             "border-[1px]",
             "border-solid",
             "border-black",
@@ -197,5 +201,24 @@ const ERC1155Form: React.FC<DevAssetsFormProps> = observer(({ store }) => {
     </Pane>
   );
 });
+
+const ContractAddress: React.FC<PropsWithChildren> = ({ children }) => {
+  return (
+    <Code
+      className={css(
+        "bg-slate-100",
+        "p-0.5",
+        "border-[1px]",
+        "border-dashed",
+        "border-black",
+        "dark:border-neutral-300",
+        "dark:bg-neutral-800",
+        "mb-2"
+      )}
+    >
+      {children}
+    </Code>
+  );
+};
 
 export default DevAssets;

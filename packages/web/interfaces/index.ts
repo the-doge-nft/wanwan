@@ -27,6 +27,24 @@ export interface Reward {
   updatedAt: DatetimeString;
 }
 
+export enum TokenType {
+  ERC1155 = "ERC1155",
+  ERC721 = "ERC721",
+  ERC20 = "ERC20",
+}
+
+export interface Currency {
+  type: TokenType;
+  contractAddress: string;
+  tokenId?: string;
+  amount: string;
+}
+
+export interface RewardBody {
+  competitionRank: number;
+  currency: Currency;
+}
+
 export interface Competition {
   id: number;
   name: string;

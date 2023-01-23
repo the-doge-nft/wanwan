@@ -34,12 +34,15 @@ export class RewardService {
     return (await Promise.all(promises)).every((isValid) => !!isValid);
   }
 
-  private async getIsERC20RewardValid(address: string, reward: RewardsDto) {
+  private async getIsERC20RewardValid(
+    address: string,
+    reward: RewardsDto,
+  ): Promise<boolean> {
     const { contractAddress, amount } = reward.currency;
     const balances = await this.alchemy.getERC20Balances(address, [
       contractAddress,
     ]);
-    const balance = balances[0]?.tokenBalance;
+    const balance = balances.tokenBalances[0].tokenBalance;
     return ethers.BigNumber.from(balance).gte(amount);
   }
 

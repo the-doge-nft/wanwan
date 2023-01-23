@@ -74,6 +74,7 @@ class CurrencyDto {
   contractAddress: string;
 
   @IsString()
+  @IsOptional()
   @Validate(NftTokensTokenIdRequired)
   tokenId?: string;
 

@@ -40,7 +40,7 @@ const CreateCompetition: React.FC<CompetitionStoreProp> = observer(
 
 const CreateView: React.FC<CompetitionStoreProp> = observer(({ store }) => {
   return (
-    <Form onSubmit={(values) => store.onCompetitionSubmit(values)}>
+    <Form onSubmit={async (values) => store.onCompetitionSubmit(values)}>
       <div className={css("flex", "flex-col", "gap-2")}>
         <TextInput
           block

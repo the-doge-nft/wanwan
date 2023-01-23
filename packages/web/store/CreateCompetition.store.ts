@@ -1,6 +1,7 @@
 import { action, computed, makeObservable, observable } from "mobx";
 import { SelectItem } from "../components/DSL/Select/Select";
 import { formatEthereumAddress } from "../helpers/strings";
+import { RewardBody, TokenType } from "../interfaces";
 import { newHttp } from "../services/http";
 import { Navigable } from "../services/mixins/navigable";
 import { EmptyClass } from "./../services/mixins/index";
@@ -8,12 +9,6 @@ import { EmptyClass } from "./../services/mixins/index";
 export enum CreateCompetitionView {
   Create = "Create",
   Success = "Success",
-}
-
-export enum TokenType {
-  ERC1155 = "ERC1155",
-  ERC721 = "ERC721",
-  ERC20 = "ERC20",
 }
 
 export default class CreateCompetitionStore extends Navigable(EmptyClass) {
@@ -57,15 +52,18 @@ export default class CreateCompetitionStore extends Navigable(EmptyClass) {
         if (!curators.includes(formattedAddress)) {
           curators.push(formatEthereumAddress(value as string));
         }
-      } else {
-        body[key] = value;
       }
     }
-    const rewards: string[] = [];
+    body.name = values.name.trim();
+    body.description =
+      values.description !== "" ? values.description.trim() : null;
+    body.endsAt = values.endsAt;
+    body.maxUserSubmissions = parseInt(values.maxUserSubmissions);
     body.curators = curators;
-    body.rewards = rewards;
-    body.maxUserSubmissions = parseInt(body.maxUserSubmissions);
 
+    const rewards = this.getRewardItems(values);
+    body.rewards = rewards;
+    console.log(body.rewards);
     return newHttp
       .postCompetition(body)
       .then(() => {
@@ -197,5 +195,26 @@ export default class CreateCompetitionStore extends Navigable(EmptyClass) {
       { name: TokenType.ERC721, id: TokenType.ERC721 },
       { name: TokenType.ERC20, id: TokenType.ERC20 },
     ];
+  }
+
+  private getRewardItems(formBody: {
+    [key: string]: string | number;
+  }): RewardBody[] {
+    const rewards: RewardBody[] = [];
+    for (let i = 0; i < this._rewardsCount; i++) {
+      const typeKey = this.getInputKey("type", i);
+      const amountKey = this.getInputKey("amount", i);
+      const addressKey = this.getInputKey("address", i);
+      const tokenIdKey = this.getInputKey("token-id", i);
+      const type = formBody[typeKey] as TokenType;
+      const amount = formBody[amountKey] as string;
+      const contractAddress = formBody[addressKey] as string;
+      const tokenId = formBody[tokenIdKey] as string;
+      rewards.push({
+        competitionRank: i + 1,
+        currency: { type, contractAddress, tokenId, amount },
+      });
+    }
+    return rewards;
   }
 }
