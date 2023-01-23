@@ -33,7 +33,7 @@ const MemeSelector: React.FC<{ store: CompetitionIdStore }> = observer(
                 "w-full"
               )}
             >
-              <NoDataFound>memes</NoDataFound>
+              <NoDataFound>No memes found</NoDataFound>
             </div>
           )}
         >

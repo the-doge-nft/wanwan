@@ -16,7 +16,12 @@ export enum DropdownType {
 }
 
 const styleToTypeMap = {
-  [DropdownType.Primary]: css(defaultBgCss, "text-black", "border-black"),
+  [DropdownType.Primary]: css(
+    defaultBgCss,
+    "text-black",
+    "dark:text-white",
+    "border-black"
+  ),
   [DropdownType.White]: css("bg-black", "text-white", "border-blue-700"),
 };
 

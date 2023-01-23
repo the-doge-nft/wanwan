@@ -17,7 +17,7 @@ const UserSubmissions: React.FC<{ store: CompetitionIdStore }> = ({
       <AsyncWrap
         isLoading={false}
         hasData={store.userSubmittedMemes.length > 0}
-        renderNoData={() => <NoDataFound>memes</NoDataFound>}
+        renderNoData={() => <NoDataFound>No memes found</NoDataFound>}
       >
         {store.userSubmittedMemes.map((meme) => {
           const place = store.getMemePlaceInCompetition(meme.id);

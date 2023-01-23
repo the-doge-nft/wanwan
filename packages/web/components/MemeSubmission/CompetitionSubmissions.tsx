@@ -17,7 +17,7 @@ const CompetitionSubmissions: React.FC<{ store: CompetitionIdStore }> =
         <AsyncWrap
           isLoading={false}
           hasData={store.memes.length > 0}
-          renderNoData={() => <NoDataFound>memes</NoDataFound>}
+          renderNoData={() => <NoDataFound>No memes found</NoDataFound>}
         >
           {store.memes.map((meme) => {
             const score = meme.votes.reduce((acc, vote) => acc + vote.score, 0);

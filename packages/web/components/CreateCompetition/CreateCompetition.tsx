@@ -167,7 +167,13 @@ const Rewards: React.FC<CompetitionStoreProp> = observer(({ store }) => {
                 key={`${store.REWARDS_INPUT_PREFIX}-${index}`}
                 className={css()}
               >
-                <div className={css("text-xs", "text-slate-600")}>
+                <div
+                  className={css(
+                    "text-xs",
+                    "text-slate-600",
+                    "dark:text-neutral-400"
+                  )}
+                >
                   {index + 1} place
                 </div>
                 <div className={css("flex", "gap-2")}>
