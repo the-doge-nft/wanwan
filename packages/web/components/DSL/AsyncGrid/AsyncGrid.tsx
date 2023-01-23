@@ -30,7 +30,7 @@ const AsyncGrid: React.FC<PropsWithChildren<AsyncGridProps>> = ({
         renderNoData={
           renderNoData
             ? renderNoData
-            : () => <NoDataFound>competitions</NoDataFound>
+            : () => <NoDataFound>no data found</NoDataFound>
         }
       >
         {children}

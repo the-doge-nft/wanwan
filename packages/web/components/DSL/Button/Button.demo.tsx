@@ -8,27 +8,33 @@ const ButtonDemo = () => {
   return (
     <Demo title={"Button"}>
       <Variant title={"Primary (sm)"}>
-        <Button onClick={() => successToast("😉 Nice click")}>Click me</Button>
-        <div className={css("ml-2", "inline-block")}>
+        <div className={css("flex", "gap-2")}>
+          <Button onClick={() => successToast("😉 Nice click")}>
+            Click me
+          </Button>
           <Button isLoading onClick={() => successToast("😉")}>
             loading
           </Button>
+          <Button disabled>disabled</Button>
         </div>
       </Variant>
       <Variant title={"Primary (lg)"}>
-        <Button
-          size={ButtonSize.lg}
-          onClick={() => successToast("😉 Nice LARGE click")}
-        >
-          Click me
-        </Button>
-        <div className={css("ml-2", "inline-block")}>
+        <div className={css("flex", "gap-2")}>
+          <Button
+            size={ButtonSize.lg}
+            onClick={() => successToast("😉 Nice LARGE click")}
+          >
+            Click me
+          </Button>
           <Button
             size={ButtonSize.lg}
             isLoading
             onClick={() => successToast("😉")}
           >
             loading
+          </Button>
+          <Button disabled size={ButtonSize.lg}>
+            disabled
           </Button>
         </div>
       </Variant>

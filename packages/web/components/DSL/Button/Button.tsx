@@ -1,6 +1,7 @@
 import { ConnectButton as RainbowConnectButton } from "@rainbow-me/rainbowkit";
 import { observer } from "mobx-react-lite";
 import { PropsWithChildren, useState } from "react";
+import { BsFillMoonFill, BsFillSunFill } from "react-icons/bs";
 import { useDisconnect } from "wagmi";
 import { css } from "../../../helpers/css";
 import AppStore from "../../../store/App.store";
@@ -39,10 +40,12 @@ const buttonTypeStyles = {
     "text-black",
     "dark:text-white",
     "disabled:cursor-not-allowed",
-    "disabled:hover:bg-gray-300",
-    "disabled:bg-gray-300",
+    "disabled:hover:bg-gray-400",
+    "disabled:bg-gray-400",
+    "disabled:text-gray-600",
     "disabled:dark:bg-neutral-800",
-    "disabled:dark:hover:bg-neutral-800"
+    "disabled:dark:hover:bg-neutral-800",
+    "disabled:dark:text-neutral-400"
   ),
 };
 
@@ -220,8 +223,9 @@ export const ConnectButton: React.FC<
                               <div
                                 className={css(
                                   "flex",
-                                  "justify-around",
-                                  "w-full"
+                                  "justify-end",
+                                  "w-full",
+                                  "gap-2"
                                 )}
                               >
                                 <Button
@@ -230,7 +234,9 @@ export const ConnectButton: React.FC<
                                     AppStore.settings.setColorMode("light")
                                   }
                                 >
-                                  light
+                                  <div className={css("py-0.5")}>
+                                    <BsFillSunFill size={12} />
+                                  </div>
                                 </Button>
                                 <Button
                                   disabled={!AppStore.settings.isLightMode}
@@ -238,7 +244,9 @@ export const ConnectButton: React.FC<
                                     AppStore.settings.setColorMode("dark")
                                   }
                                 >
-                                  dark
+                                  <div className={css("py-0.5")}>
+                                    <BsFillMoonFill size={12} />
+                                  </div>
                                 </Button>
                               </div>
                             </DropdownItem>

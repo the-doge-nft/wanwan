@@ -161,7 +161,7 @@ const ERC1155Form: React.FC<DevAssetsFormProps> = observer(({ store }) => {
           className={css(
             "w-[100px]",
             "h-[100px]",
-            "bg-contain",
+            "bg-cover",
             "bg-no-repeat",
             "bg-green-200",
             "border-[1px]",

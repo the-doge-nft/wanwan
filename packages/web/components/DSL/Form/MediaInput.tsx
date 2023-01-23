@@ -130,7 +130,13 @@ const MediaInput: React.FC<MediaInputProps> = ({
           {isDragActive && (
             <>
               {renderIsDropActive && renderIsDropActive()}
-              {!renderIsDropActive && <div className={css("text-xs")}>wow</div>}
+              {!renderIsDropActive && (
+                <div
+                  className={css("text-xs", "text-black", "dark:text-white")}
+                >
+                  wow
+                </div>
+              )}
             </>
           )}
           {preview && (
@@ -160,7 +166,7 @@ const MediaInput: React.FC<MediaInputProps> = ({
               <div>
                 <Button disabled={disabled}>Select File</Button>
               </div>
-              <div className={css("text-center")}>
+              <div className={css("text-center", "text-neutral-600")}>
                 <div className={css("text-xs")}>
                   accepted:{" "}
                   {objectKeys(acceptedMimeToExtension).map(

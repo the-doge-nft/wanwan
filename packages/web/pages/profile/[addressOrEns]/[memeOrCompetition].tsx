@@ -57,6 +57,7 @@ const ProfilePage: React.FC<ProfileProps> = observer(({ profile }) => {
                 "bg-contain",
                 "border-[1px]",
                 "border-black",
+                "dark:border-neutral-600",
                 "rounded-full",
                 { "bg-slate-200": !profile.avatar }
               )}

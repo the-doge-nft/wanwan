@@ -48,8 +48,8 @@ const Dropdown: React.FC<PropsWithChildren<DropdownProps>> = ({
           "py-1",
           "border-[1px]",
           "rounded-sm",
-          "bg-gray-200",
-          "text-sm"
+          "text-sm",
+          defaultBgCss
         )}
       >
         {children}
