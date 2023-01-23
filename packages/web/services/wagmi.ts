@@ -12,8 +12,10 @@ import env from "../environment";
 import { isProd, vars } from "./../environment/vars";
 import http from "./http";
 
+const targetNetwork = isProd() ? mainnet : goerli;
+
 export const { chains, provider, webSocketProvider } = configureChains(
-  isProd() ? [mainnet] : [goerli],
+  [targetNetwork],
   [alchemyProvider({ apiKey: vars.AlchemyKey }), publicProvider()]
 );
 

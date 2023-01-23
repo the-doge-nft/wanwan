@@ -6,7 +6,10 @@ import Link, { LinkType } from "../DSL/Link/Link";
 
 const navItems: { name: string; link: string }[] = [];
 if (isDev()) {
-  navItems.push({ name: "dsl", link: "/dsl" });
+  navItems.push(
+    { name: "dsl", link: "/dsl" },
+    { name: "dev-assets", link: "/devAssets" }
+  );
 }
 
 const Header = () => {

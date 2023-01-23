@@ -19,7 +19,7 @@ const AppLayout: React.FC<PropsWithChildren> = ({ children }) => {
         <div className={css("py-3")}>
           <Header />
         </div>
-        <div className={css("flex-grow")}>{children}</div>
+        <div className={css("flex-grow", "flex", "flex-col")}>{children}</div>
         <Footer />
       </div>
     </div>
