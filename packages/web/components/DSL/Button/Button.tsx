@@ -42,7 +42,7 @@ const buttonTypeStyles = {
     "disabled:cursor-not-allowed",
     "disabled:hover:bg-gray-400",
     "disabled:bg-gray-400",
-    "disabled:text-gray-600",
+    "disabled:text-gray-700",
     "disabled:dark:bg-neutral-800",
     "disabled:dark:hover:bg-neutral-800",
     "disabled:dark:text-neutral-400"

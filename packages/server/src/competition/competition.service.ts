@@ -73,7 +73,10 @@ export class CompetitionService {
           - create with units + symbol
         */
       }
-      await this.reward.upsert({ where: { competitionId: competition.id } });
+      // @next -- upsert reward after currency has been upserted
+      await this.reward.upsert({
+        where: { competitionId: competition.id, create: {}, update: {} },
+      });
     }
   }
 
