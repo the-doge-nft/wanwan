@@ -13,4 +13,8 @@ export class CurrencyService {
   findFirst(args: Prisma.CurrencyFindFirstArgs) {
     return this.prisma.currency.findFirst(args);
   }
+
+  create(args: Prisma.CurrencyCreateArgs) {
+    return this.prisma.currency.create(args);
+  }
 }

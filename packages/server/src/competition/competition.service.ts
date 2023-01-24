@@ -68,6 +68,12 @@ export class CompetitionService {
         },
       });
       if (!currency) {
+        const currency = await this.currency.create({
+          data: {
+            type: reward.currency.type,
+            contractAddress: reward.currency.contractAddress,
+          },
+        });
         /* @next
           - check if currency is 721, 1155, or 20
           - create with units + symbol
