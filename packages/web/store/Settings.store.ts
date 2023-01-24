@@ -34,6 +34,7 @@ export default class SettingsStore {
       document.documentElement.classList.remove("dark");
       this.colorMode = "light";
     }
+    document.documentElement.style.colorScheme = this.colorMode;
   }
 
   @computed

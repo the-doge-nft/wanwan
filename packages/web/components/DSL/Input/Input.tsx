@@ -49,6 +49,12 @@ export const textFieldBaseStyles = css(
   defaultBgCss
 );
 
+const disabledStyles = css(
+  "text-slate-400",
+  "border-slate-500",
+  "cursor-not-allowed"
+);
+
 const Input = ({
   onChange,
   isLoading = false,
@@ -79,8 +85,7 @@ const Input = ({
         }}
         className={css(textFieldBaseStyles, className, {
           "w-full": block,
-          [css("text-slate-400", "border-slate-500", "cursor-not-allowed")]:
-            disabled,
+          [disabledStyles]: disabled,
         })}
       />
       {isLoading && (
