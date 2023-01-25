@@ -7,7 +7,12 @@ import { AppEnv } from './../config/config';
 @Injectable()
 export class AlchemyService {
   private alchemy: Alchemy;
-  private pixelContractAddress = '';
+  private pixelContractAddress: string;
+
+  private GOERLI_PIXEL_CONTRACT_ADDRESS =
+    '0x0eAADb89776e98B5D9a278f4a11f4b3f20226276';
+  private MAINNET_PIXEL_CONTRACT_ADDRESS =
+    '0x07887Ee0Bd24E774903963d50cF4Ec6a0a16977D';
 
   constructor(private readonly config: ConfigService<Config>) {
     const network =
@@ -16,8 +21,8 @@ export class AlchemyService {
         : Network.ETH_GOERLI;
     this.pixelContractAddress =
       this.config.get('appEnv') === AppEnv.production
-        ? '0x07887Ee0Bd24E774903963d50cF4Ec6a0a16977D'
-        : '0x0eAADb89776e98B5D9a278f4a11f4b3f20226276';
+        ? this.MAINNET_PIXEL_CONTRACT_ADDRESS
+        : this.GOERLI_PIXEL_CONTRACT_ADDRESS;
     this.alchemy = new Alchemy({
       apiKey: this.config.get('alchemy').apiKey,
       network,
@@ -28,8 +33,23 @@ export class AlchemyService {
     return this.verifyNftOwnership(address, this.pixelContractAddress);
   }
 
-  verifyNftOwnership(address: string, contractAddress: string) {
+  private verifyNftOwnership(address: string, contractAddress: string) {
     return this.alchemy.nft.verifyNftOwnership(address, contractAddress);
+  }
+
+  async getBalanceOfNFT(
+    ownerAddress: string,
+    contractAddress: string,
+    tokenId: string,
+  ) {
+    // @next we need to be worried about pagination here
+    const balance = await this.alchemy.nft.getNftsForOwner(ownerAddress, {
+      contractAddresses: [contractAddress],
+    });
+    const tokenIdBalance = balance.ownedNfts.filter(
+      (item) => item.tokenId === tokenId,
+    )?.[0]?.balance;
+    return tokenIdBalance || 0;
   }
 
   getERC20Balances(address: string, contractAddresses: string[]) {
@@ -38,6 +58,10 @@ export class AlchemyService {
 
   getOwnersForNFT(contractAddress: string, tokenId: string) {
     return this.alchemy.nft.getOwnersForNft(contractAddress, tokenId);
+  }
+
+  getIsSpamContract(address: string) {
+    return this.alchemy.nft.isSpamContract(address);
   }
 
   getOwnerNftsForContract(
@@ -53,5 +77,13 @@ export class AlchemyService {
     });
   }
 
-  getEnsFromAddress(address: string) {}
+  getERC20Metadata(address: string) {
+    return this.alchemy.core.getTokenMetadata(address);
+  }
+
+  getNftContractMetadata(address: string) {
+    return this.alchemy.nft.getContractMetadata(address);
+  }
+
+  // getEnsFromAddress(address: string) {}
 }

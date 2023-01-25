@@ -25,6 +25,7 @@ export interface Reward {
   currencyAmount: string;
   createdAt: DatetimeString;
   updatedAt: DatetimeString;
+  currency: Currency;
 }
 
 export enum TokenType {
@@ -36,10 +37,12 @@ export enum TokenType {
 export interface Currency {
   type: TokenType;
   contractAddress: string;
-  tokenId?: string;
-  amount: string;
+  decimals: number;
+  symbol: string;
+  name: string;
 }
 
+// @next -- currencyAmount and currencyTokenId should be here
 export interface RewardBody {
   competitionRank: number;
   currency: Currency;

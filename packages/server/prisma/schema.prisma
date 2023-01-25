@@ -159,7 +159,8 @@ model Currency {
   id              Int       @id @default(autoincrement())
   type            TokenType
   contractAddress String    @unique
-  units           Int
-  symbol          String
+  decimals        Int
+  symbol          String?
+  name            String?
   Reward          Reward[]
 }

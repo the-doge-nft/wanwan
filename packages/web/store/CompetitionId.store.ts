@@ -217,4 +217,9 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
   getMemePlaceInCompetition(id: number) {
     return this.memes.findIndex((meme) => meme.id === id) + 1;
   }
+
+  @computed
+  get rewards() {
+    return this.competition.rewards.sort((reward) => reward.competitionRank);
+  }
 }

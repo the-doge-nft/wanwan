@@ -213,7 +213,8 @@ const ContractAddress: React.FC<PropsWithChildren> = ({ children }) => {
         "border-black",
         "dark:border-neutral-300",
         "dark:bg-neutral-800",
-        "mb-2"
+        "mb-2",
+        "w-full"
       )}
     >
       {children}

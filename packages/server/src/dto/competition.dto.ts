@@ -84,6 +84,7 @@ class CurrencyDto {
 }
 
 export class RewardsDto {
+  // @next -- currencyTokenAmount and currencyTokenId here
   @IsNotEmpty()
   @IsInt()
   @Min(1)

@@ -212,6 +212,9 @@ export default class CreateCompetitionStore extends Navigable(EmptyClass) {
       const tokenId = formBody[tokenIdKey] as string;
       rewards.push({
         competitionRank: i + 1,
+        // @next
+        // currencyTokenAmount: amount,
+        // currencyTokenId: tokenId,
         currency: { type, contractAddress, tokenId, amount },
       });
     }

@@ -1,4 +1,4 @@
-# welcome.
+# wan, wan
 
 this is an app for running meme competitions on ethereum.
 

@@ -1,4 +1,5 @@
 import { format } from "date-fns";
+import { ethers } from "ethers";
 import { observer } from "mobx-react-lite";
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
@@ -13,14 +14,11 @@ import SelectedMemesForSubmission from "../../components/MemeSubmission/Selected
 import UserSubmissions from "../../components/MemeSubmission/UserSubmissions";
 import { css } from "../../helpers/css";
 import { abbreviate } from "../../helpers/strings";
-import { Competition, CompetitionMeme } from "../../interfaces";
+import { Competition, CompetitionMeme, Reward } from "../../interfaces";
 import AppLayout from "../../layouts/App.layout";
 import http from "../../services/http";
 import redirectTo404 from "../../services/redirect/404";
-import {
-  default as CompetitionByIdStore,
-  default as CompetitionIdStore,
-} from "../../store/CompetitionId.store";
+import { default as CompetitionByIdStore } from "../../store/CompetitionId.store";
 
 interface CompetitionByIdProps {
   competition: Competition;
@@ -35,7 +33,7 @@ const MemeById: React.FC<CompetitionByIdProps> = observer(
 
     const store = useMemo(
       () =>
-        new CompetitionIdStore(
+        new CompetitionByIdStore(
           parseInt(id as string),
           competition,
           memes ? memes : []
@@ -53,7 +51,6 @@ const MemeById: React.FC<CompetitionByIdProps> = observer(
       <AppLayout>
         <div className={css("mt-4", "flex", "flex-col", "gap-2")}>
           <CompetitionDetails store={store} />
-
           <div
             className={css("grid", {
               "grid-cols-1": store.showSubmitPane || store.showHasEntriesPane,
@@ -161,7 +158,14 @@ const CompetitionDetails: React.FC<{ store: CompetitionByIdStore }> = observer(
                 <div className={css("font-bold")}>Ends at:</div>
                 <div>{format(new Date(store.competition.endsAt), "Pp")}</div>
               </div>
+              <div className={css("mt-2")}>
+                <div className={css("font-bold")}>Rewards</div>
+                {store.rewards.map((reward) => (
+                  <Reward key={`reward-${reward.id}`} reward={reward} />
+                ))}
+              </div>
             </div>
+
             <div className={css("flex", "gap-1", "justify-end")}>
               <div>Created by:</div>
               <Link
@@ -177,6 +181,25 @@ const CompetitionDetails: React.FC<{ store: CompetitionByIdStore }> = observer(
     );
   }
 );
+
+const Reward: React.FC<{ reward: Reward }> = ({ reward }) => {
+  return (
+    <div className={css("flex", "gap-2", "items-center")}>
+      <div>{reward.competitionRank}</div>
+      <div>{reward.currency.type}</div>
+      {/* <div>{reward.currency.contractAddress}</div> */}
+      {/* <div>{reward.currency.name}</div> */}
+      <div>{reward.currency.symbol}</div>
+      <div>
+        {ethers.utils.formatUnits(
+          reward.currencyAmount,
+          reward.currency.decimals
+        )}
+      </div>
+      <Link href={""} isExternal />
+    </div>
+  );
+};
 
 export const getServerSideProps: GetServerSideProps<
   CompetitionByIdProps
