@@ -193,7 +193,7 @@ const Reward: React.FC<{ reward: Reward }> = ({ reward }) => {
       <div>{reward.currency.symbol}</div>
       <div>
         {ethers.utils.formatUnits(
-          reward.currencyAmount,
+          reward.currencyAmountAtoms,
           reward.currency.decimals
         )}
       </div>

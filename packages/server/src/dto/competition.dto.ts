@@ -12,12 +12,15 @@ import {
   IsString,
   Max,
   Min,
+  registerDecorator,
   Validate,
   ValidateNested,
   ValidationArguments,
+  ValidationOptions,
   ValidatorConstraint,
   ValidatorConstraintInterface,
 } from 'class-validator';
+import { BigNumber } from 'ethers';
 import {
   formatEthereumAddress,
   isValidEthereumAddress,
@@ -61,8 +64,35 @@ class NftTokensTokenIdRequired implements ValidatorConstraintInterface {
   }
 
   defaultMessage() {
-    return 'ERC1155 and ERC721 must have currency.tokenId specified';
+    return 'ERC1155 and ERC721 must have tokenId specified';
   }
+}
+
+function IsNumberStringGreaterThan(
+  minValue: number,
+  validationOptions?: ValidationOptions,
+) {
+  return function (object: object, propertyName: string) {
+    registerDecorator({
+      name: 'IsNumberStringGreaterThan',
+      target: object.constructor,
+      propertyName: propertyName,
+      constraints: [minValue],
+      options: validationOptions,
+      validator: {
+        validate(value: any, { constraints }: ValidationArguments) {
+          console.log(value, minValue);
+          return (
+            typeof value === 'string' &&
+            BigNumber.from(value).gte(constraints[0])
+          );
+        },
+        defaultMessage() {
+          return `Must be a string and greater than ${minValue}`;
+        },
+      },
+    });
+  };
 }
 
 class CurrencyDto {
@@ -70,16 +100,17 @@ class CurrencyDto {
   @IsEnum(TokenType)
   type: TokenType;
 
+  @IsNotEmpty()
   @IsString()
   contractAddress: string;
 
-  @IsString()
   @IsOptional()
+  @IsNumberStringGreaterThan(0)
   @Validate(NftTokensTokenIdRequired)
   tokenId?: string;
 
   @IsNotEmpty()
-  @IsString()
+  @IsNumberStringGreaterThan(1)
   amount: string;
 }
 

@@ -8,7 +8,7 @@ services:
     env_file:
       - .env
     ports:
-      - '${POSTGRES_PORT}:${POSTGRES_PORT}'
+      - '${POSTGRES_PORT}:5432'
     volumes:
       - meme-postgres:/var/lib/postgresql/data
 
@@ -16,7 +16,7 @@ services:
     container_name: meme-redis
     image: redis
     ports:
-      - '${REDIS_PORT}:${REDIS_PORT}'
+      - '${REDIS_PORT}:6379'
     volumes:
       - redis:/data
     command: >

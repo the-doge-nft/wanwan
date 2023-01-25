@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Prisma, TokenType } from '@prisma/client';
-import { ethers } from 'ethers';
+import { BigNumber } from 'ethers';
 import { AlchemyService } from '../alchemy/alchemy.service';
 import { RewardsDto } from '../dto/competition.dto';
 import { PrismaService } from './../prisma.service';
@@ -36,8 +36,15 @@ export class RewardService {
     const balances = await this.alchemy.getERC20Balances(address, [
       contractAddress,
     ]);
+    const metadata = await this.alchemy.getERC20Metadata(contractAddress);
     const balance = balances.tokenBalances[0].tokenBalance;
-    return ethers.BigNumber.from(balance).gte(amount);
+    const amountAtoms = BigNumber.from(amount).mul(
+      BigNumber.from(10).pow(metadata.decimals),
+    );
+
+    console.log('amount atoms', amountAtoms.toString());
+
+    return BigNumber.from(balance).gte(amountAtoms);
   }
 
   private async getIsNftRewardValid(address: string, reward: RewardsDto) {

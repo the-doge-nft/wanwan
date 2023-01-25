@@ -201,7 +201,7 @@ const Rewards: React.FC<CompetitionStoreProp> = observer(({ store }) => {
                       block
                       name={tokenIdKey}
                       label={"Token ID"}
-                      validate={[required, minValue(1)]}
+                      // validate={[required, minValue(0)]}
                     />
                   )}
                   <NumberInput
@@ -212,7 +212,7 @@ const Rewards: React.FC<CompetitionStoreProp> = observer(({ store }) => {
                       store.onAmountInputChange(amountKey, value)
                     }
                     name={amountKey}
-                    validate={[required, minValue(1)]}
+                    // validate={[required, minValue(1)]}
                     disabled={store.getIsAmountDisabled(typeKey)}
                   />
                 </div>

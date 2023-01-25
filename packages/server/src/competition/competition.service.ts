@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Competition, Prisma, User } from '@prisma/client';
 import { TokenMetadataResponse } from 'alchemy-sdk';
+import { BigNumber } from 'ethers';
 import { MediaService } from 'src/media/media.service';
 import { CurrencyService } from '../currency/currency.service';
 import { CompetitionDto, RewardsDto } from '../dto/competition.dto';
@@ -126,13 +127,19 @@ export class CompetitionService {
           },
         });
       }
+      const currencyAmountAtoms =
+        type === 'ERC20'
+          ? BigNumber.from(reward.currency.amount)
+              .mul(BigNumber.from(10).pow(currency.decimals))
+              .toString()
+          : reward.currency.amount;
       await this.reward.create({
         data: {
           competitionId: competition.id,
           currencyId: currency.id,
           competitionRank: reward.competitionRank,
           currencyTokenId: reward.currency.tokenId,
-          currencyAmount: reward.currency.amount,
+          currencyAmountAtoms,
         },
       });
     }

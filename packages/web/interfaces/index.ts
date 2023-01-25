@@ -22,7 +22,7 @@ export interface Reward {
   currencyId: number;
   competitionRank: number;
   currencyTokenId: string;
-  currencyAmount: string;
+  currencyAmountAtoms: string;
   createdAt: DatetimeString;
   updatedAt: DatetimeString;
   currency: Currency;

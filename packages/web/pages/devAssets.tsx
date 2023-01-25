@@ -1,3 +1,4 @@
+import { BigNumber } from "ethers";
 import { observer } from "mobx-react-lite";
 import { PropsWithChildren, useMemo } from "react";
 import {
@@ -76,7 +77,11 @@ const ERC20Form: React.FC<DevAssetsFormProps> = observer(({ store }) => {
     address: ERC20_ADDRESS,
     abi: erc20Abi,
     functionName: "get",
-    args: [store.erc20Amount],
+    args: [
+      store.erc20Amount !== ""
+        ? BigNumber.from(store.erc20Amount).mul(BigNumber.from(10).pow(18))
+        : "",
+    ],
   });
   const { data: contractData, isLoading, write } = useContractWrite(config);
   const { isLoading: isTxLoading } = useWaitForTransaction({
