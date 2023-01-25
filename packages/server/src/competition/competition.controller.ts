@@ -37,10 +37,14 @@ export class CompetitionController {
     @Body() competition: CompetitionDto,
     @Req() { user }: AuthenticatedRequest,
   ) {
-    return this.competition.create({
-      ...competition,
-      creator: user,
-    });
+    return this.competition
+      .create({
+        ...competition,
+        creator: user,
+      })
+      .catch((e) => {
+        throw new BadRequestException(e.message);
+      });
   }
 
   @Get('/')

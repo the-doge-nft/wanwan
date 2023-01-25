@@ -13,7 +13,7 @@ import MemeSelector from "../../components/MemeSubmission/MemeSelector";
 import SelectedMemesForSubmission from "../../components/MemeSubmission/SelectedMemesForSubmission";
 import UserSubmissions from "../../components/MemeSubmission/UserSubmissions";
 import { css } from "../../helpers/css";
-import { abbreviate } from "../../helpers/strings";
+import { abbreviate, jsonify } from "../../helpers/strings";
 import { Competition, CompetitionMeme, Reward } from "../../interfaces";
 import AppLayout from "../../layouts/App.layout";
 import http from "../../services/http";
@@ -185,6 +185,7 @@ const CompetitionDetails: React.FC<{ store: CompetitionByIdStore }> = observer(
 const Reward: React.FC<{ reward: Reward }> = ({ reward }) => {
   return (
     <div className={css("flex", "gap-2", "items-center")}>
+      <Link href={""} isExternal />
       <div>{reward.competitionRank}</div>
       <div>{reward.currency.type}</div>
       {/* <div>{reward.currency.contractAddress}</div> */}
@@ -196,7 +197,7 @@ const Reward: React.FC<{ reward: Reward }> = ({ reward }) => {
           reward.currency.decimals
         )}
       </div>
-      <Link href={""} isExternal />
+      <div>{jsonify(reward)}</div>
     </div>
   );
 };

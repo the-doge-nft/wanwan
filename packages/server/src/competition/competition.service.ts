@@ -10,6 +10,12 @@ import { CompetitionCuratorService } from './../competition-curator/competition-
 import { PrismaService } from './../prisma.service';
 import { RewardService } from './../reward/reward.service';
 
+export class RewardsNotValidError extends Error {
+  constructor(message: string) {
+    super(message);
+  }
+}
+
 @Injectable()
 export class CompetitionService {
   constructor(
@@ -71,15 +77,8 @@ export class CompetitionService {
       creator.address,
       rewards,
     );
-    if (
-      !(await this.reward.getIsAddressCustodyingRewards(
-        creator.address,
-        rewards,
-      ))
-    ) {
-      throw new Error(
-        'You must be holding the rewards to create a competition',
-      );
+    if (!isRewardsValid) {
+      throw new RewardsNotValidError('You are not custodying the rewards');
     }
 
     try {
@@ -97,7 +96,7 @@ export class CompetitionService {
       console.error(e);
       console.log('BIG ERROR');
       // since we rely on external apis in upsertRewards -- we delete the comp if it doesnt work here???
-      throw new Error('blah');
+      throw new Error('TODO HOW SHOULD WE HANDLE HERE');
     }
   }
 
@@ -116,7 +115,7 @@ export class CompetitionService {
             ? await this.alchemy.getERC20Metadata(contractAddress)
             : await this.alchemy.getNftContractMetadata(contractAddress);
         const decimals =
-          type === 'ERC20' ? (metadata as TokenMetadataResponse).decimals : 1;
+          type === 'ERC20' ? (metadata as TokenMetadataResponse).decimals : 0;
         currency = await this.currency.create({
           data: {
             type: reward.currency.type,

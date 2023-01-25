@@ -47,7 +47,6 @@ export class RewardService {
       contractAddress,
       tokenId,
     );
-    console.log(balance, parseInt(reward.currency.amount));
     return balance >= parseInt(reward.currency.amount);
   }
 
