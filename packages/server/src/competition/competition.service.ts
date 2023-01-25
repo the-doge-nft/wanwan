@@ -67,6 +67,10 @@ export class CompetitionService {
     rewards,
     ...competition
   }: CompetitionDto & { creator: User }) {
+    const isRewardsValid = await this.reward.getIsAddressCustodyingRewards(
+      creator.address,
+      rewards,
+    );
     if (
       !(await this.reward.getIsAddressCustodyingRewards(
         creator.address,
@@ -90,6 +94,8 @@ export class CompetitionService {
       await this.upsertRewards(comp, rewards);
       return this.findFirst({ where: { id: comp.id } });
     } catch (e) {
+      console.error(e);
+      console.log('BIG ERROR');
       // since we rely on external apis in upsertRewards -- we delete the comp if it doesnt work here???
       throw new Error('blah');
     }
