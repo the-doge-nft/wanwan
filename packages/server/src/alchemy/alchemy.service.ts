@@ -42,7 +42,7 @@ export class AlchemyService {
     contractAddress: string,
     tokenId: string,
   ) {
-    // @next we need to be worried about pagination here
+    // @next check pagination
     const balance = await this.alchemy.nft.getNftsForOwner(ownerAddress, {
       contractAddresses: [contractAddress],
     });

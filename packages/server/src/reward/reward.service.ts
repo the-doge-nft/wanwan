@@ -41,9 +41,6 @@ export class RewardService {
     const amountAtoms = BigNumber.from(amount).mul(
       BigNumber.from(10).pow(metadata.decimals),
     );
-
-    console.log('amount atoms', amountAtoms.toString());
-
     return BigNumber.from(balance).gte(amountAtoms);
   }
 
