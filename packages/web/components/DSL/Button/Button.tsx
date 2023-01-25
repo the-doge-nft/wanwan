@@ -8,6 +8,7 @@ import AppStore from "../../../store/App.store";
 import Dropdown, { DropdownItem } from "../Dropdown/Dropdown";
 import Link from "../Link/Link";
 import Spinner from "../Spinner/Spinner";
+import { borderColorCss } from "../Theme";
 
 enum ButtonType {
   Primary = "primary",
@@ -31,21 +32,20 @@ interface ButtonProps {
 const buttonTypeStyles = {
   [ButtonType.Primary]: css(
     "bg-gray-200",
-    "dark:bg-neutral-700",
+    "dark:bg-neutral-800",
     "hover:bg-gray-300",
-    "dark:hover:bg-neutral-800",
+    "dark:hover:bg-neutral-900",
     "border-[1px]",
-    "border-black",
-    "dark:border-neutral-900",
     "text-black",
     "dark:text-white",
     "disabled:cursor-not-allowed",
     "disabled:hover:bg-gray-400",
     "disabled:bg-gray-400",
-    "disabled:text-gray-700",
-    "disabled:dark:bg-neutral-800",
-    "disabled:dark:hover:bg-neutral-800",
-    "disabled:dark:text-neutral-400"
+    "disabled:text-gray-500",
+    "disabled:dark:bg-neutral-900",
+    "disabled:dark:hover:bg-neutral-900",
+    "disabled:dark:text-neutral-700",
+    borderColorCss
   ),
 };
 

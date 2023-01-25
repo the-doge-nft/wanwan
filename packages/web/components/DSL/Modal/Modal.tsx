@@ -2,7 +2,7 @@ import * as RadixDialog from "@radix-ui/react-dialog";
 import React, { PropsWithChildren } from "react";
 import { IoCloseOutline } from "react-icons/io5";
 import { css } from "../../../helpers/css";
-import { defaultBgCss } from "../Theme";
+import { bgColorCss } from "../Theme";
 
 export interface ModalProps {
   isOpen?: boolean;
@@ -37,7 +37,7 @@ const Modal: React.FC<PropsWithChildren<ModalProps>> = ({
         <RadixDialog.Content
           style={{ transform: "translate(-50%, -50%)", maxWidth: "390px" }}
           className={css(
-            defaultBgCss,
+            bgColorCss,
             "rounded-none",
             "top-1/2",
             "left-1/2",

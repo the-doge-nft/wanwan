@@ -1,6 +1,6 @@
 import { css } from "../../../helpers/css";
 import Spinner, { SpinnerSize } from "../Spinner/Spinner";
-import { defaultBgCss } from "../Theme";
+import { bgColorCss } from "../Theme";
 
 type NativeTextFieldProps =
   | React.HTMLProps<HTMLInputElement>
@@ -46,7 +46,7 @@ export const textFieldBaseStyles = css(
   "dark:border-neutral-600",
   "text-black",
   "dark:text-white",
-  defaultBgCss
+  bgColorCss
 );
 
 const disabledStyles = css(

@@ -2,13 +2,13 @@ import * as RadixSelect from "@radix-ui/react-select";
 import { BsChevronDown } from "react-icons/bs";
 import { css } from "../../../helpers/css";
 import { textFieldBaseStyles } from "../Input/Input";
-import { defaultBgCss } from "../Theme";
+import { bgColorCss, borderColorCss } from "../Theme";
 
 export type SelectItem = { name: string; id: string };
 
 export interface SelectProps {
   items: SelectItem[];
-  value: string;
+  value?: string;
   onChange: (value: string) => void;
   defaultValue?: string;
   block?: boolean;
@@ -52,11 +52,12 @@ const Select = ({
           className={css(
             "overflow-hidden",
             "text-black",
+            "dark:text-white",
             "text-sm",
             "border-[1px]",
-            "border-black",
             "z-20",
-            defaultBgCss
+            bgColorCss,
+            borderColorCss
           )}
         >
           <RadixSelect.Viewport className={css("p-2")}>

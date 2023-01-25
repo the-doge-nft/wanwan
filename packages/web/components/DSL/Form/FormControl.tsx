@@ -12,7 +12,7 @@ export interface BaseFormInputProps {
   description?: string;
 }
 
-export const BaseInvalidInputStyle = css("border-2", "!border-red-800");
+export const BaseInvalidInputStyle = css("border-[1px]", "!border-red-800");
 const errorTextCss = css("text-red-800");
 export interface FormControlProps
   extends Pick<BaseFormInputProps, "label" | "name" | "description"> {

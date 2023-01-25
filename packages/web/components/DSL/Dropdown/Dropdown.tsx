@@ -1,7 +1,7 @@
 import * as RadixDropdown from "@radix-ui/react-dropdown-menu";
 import { PropsWithChildren } from "react";
 import { css } from "../../../helpers/css";
-import { defaultBgCss } from "../Theme";
+import { bgColorCss, borderColorCss } from "../Theme";
 
 interface DropdownProps {
   trigger: JSX.Element;
@@ -17,11 +17,10 @@ export enum DropdownType {
 
 const styleToTypeMap = {
   [DropdownType.Primary]: css(
-    defaultBgCss,
+    bgColorCss,
+    borderColorCss,
     "text-black",
-    "dark:text-white",
-    "border-black",
-    "dark:border-neutral-700"
+    "dark:text-white"
   ),
   [DropdownType.White]: css("bg-black", "text-white", "border-blue-700"),
 };
@@ -49,7 +48,7 @@ const Dropdown: React.FC<PropsWithChildren<DropdownProps>> = ({
           "border-[1px]",
           "rounded-sm",
           "text-sm",
-          defaultBgCss
+          bgColorCss
         )}
       >
         {children}

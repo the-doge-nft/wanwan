@@ -1,6 +1,7 @@
 import { PropsWithChildren } from "react";
 import { AiOutlineMinus, AiOutlinePlus } from "react-icons/ai";
 import { css } from "../../../helpers/css";
+import { borderColorCss } from "../Theme";
 
 export enum PaneType {
   Primary = "primary",
@@ -44,12 +45,7 @@ const Pane: React.FC<PropsWithChildren<PaneProps>> = ({
   onChange,
 }) => {
   const basePaneStyles = {
-    container: css(
-      "border-[1px]",
-      "border-black",
-      "dark:border-neutral-800",
-      className
-    ),
+    container: css("border-[1px]", borderColorCss, className),
     title: css(
       "px-2",
       "py-1",

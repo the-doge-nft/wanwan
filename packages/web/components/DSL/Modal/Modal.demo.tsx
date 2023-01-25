@@ -6,7 +6,7 @@ import Modal from "./Modal";
 
 const ModalDemo = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [value, setValue] = useState();
+  const [value, setValue] = useState<string | undefined>();
   return (
     <Demo title={"Modal"}>
       <Button onClick={() => setIsOpen(true)}>Open</Button>

@@ -1,5 +1,5 @@
 import { Head, Html, Main, NextScript } from "next/document";
-import { defaultBgCss } from "../components/DSL/Theme";
+import { bgColorCss } from "../components/DSL/Theme";
 import { css } from "../helpers/css";
 
 export default function Document() {
@@ -13,7 +13,7 @@ export default function Document() {
           "!mr-0",
           "text-black",
           "dark:text-white",
-          defaultBgCss
+          bgColorCss
         )}
       >
         <Main />
