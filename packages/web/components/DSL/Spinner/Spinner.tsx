@@ -13,8 +13,8 @@ interface SpinnerProps {
 }
 
 const spinnerSizes = {
-  [SpinnerSize.sm]: 20,
-  [SpinnerSize.lg]: 26,
+  [SpinnerSize.sm]: 14,
+  [SpinnerSize.lg]: 20,
 };
 
 const Spinner = observer(({ size = SpinnerSize.sm }: SpinnerProps) => {

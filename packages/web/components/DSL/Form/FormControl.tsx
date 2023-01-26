@@ -1,6 +1,7 @@
 import React, { PropsWithChildren } from "react";
 import { useField } from "react-final-form";
 import { css } from "../../../helpers/css";
+import Text, { TextSize, TextType } from "../Text/Text";
 import { ValidatorFunction } from "./validation";
 
 export interface BaseFormInputProps {
@@ -82,7 +83,7 @@ export const FormLabel: React.FC<PropsWithChildren<FormLabelProps>> = ({
       })}
     >
       {isRequired && "*"}
-      {children}
+      <Text size={TextSize.sm}>{children}</Text>
     </div>
   );
 };
@@ -92,12 +93,14 @@ export const FormDescription: React.FC<
 > = ({ children, isInvalid }) => {
   return (
     <div
-      className={css("text-xs", "dark:text-neutral-400", "mb-0.5", "italic", {
+      className={css("mb-0.5", "italic", {
         "text-red-900": isInvalid,
         "text-slate-800": !isInvalid,
       })}
     >
-      {children}
+      <Text size={TextSize.xs} type={TextType.Grey}>
+        {children}
+      </Text>
     </div>
   );
 };

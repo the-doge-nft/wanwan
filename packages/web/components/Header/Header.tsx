@@ -1,8 +1,9 @@
 import env from "../../environment";
 import { isDev } from "../../environment/vars";
 import { css } from "../../helpers/css";
-import { ConnectButton } from "../DSL/Button/Button";
+import { ButtonSize, ConnectButton } from "../DSL/Button/Button";
 import Link, { LinkType } from "../DSL/Link/Link";
+import Text, { TextType } from "../DSL/Text/Text";
 
 const navItems: { name: string; link: string }[] = [];
 if (isDev()) {
@@ -18,7 +19,7 @@ const Header = () => {
       <div className={css("flex", "gap-2")}>
         {navItems.map((item) => (
           <Link key={item.name} href={item.link}>
-            {item.name}
+            <Text type={TextType.NoColor}>{item.name}</Text>
           </Link>
         ))}
       </div>
@@ -33,11 +34,11 @@ const Header = () => {
         )}
       >
         <Link type={LinkType.Secondary} href="/">
-          {env.app.name}
+          <Text type={TextType.NoColor}>{env.app.name}</Text>
         </Link>
       </div>
       <div className={css("z-10")}>
-        <ConnectButton />
+        <ConnectButton size={ButtonSize.lg} />
       </div>
     </div>
   );

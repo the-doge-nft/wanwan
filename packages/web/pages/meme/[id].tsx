@@ -15,6 +15,7 @@ import Button, { Submit } from "../../components/DSL/Button/Button";
 import Form from "../../components/DSL/Form/Form";
 import TextInput from "../../components/DSL/Form/TextInput";
 import Link, { LinkType } from "../../components/DSL/Link/Link";
+import Text, { TextSize, TextType } from "../../components/DSL/Text/Text";
 import { css } from "../../helpers/css";
 import { abbreviate } from "../../helpers/strings";
 import { Comment, Meme } from "../../interfaces";
@@ -65,32 +66,25 @@ const MemeById: React.FC<Meme> = observer(({ ...meme }) => {
             "w-full"
           )}
         >
-          <div className={css("md:col-span-10")}>
-            {meme.name && (
-              <div className={css("font-bold", "break-words")}>{meme.name}</div>
-            )}
+          <div className={css("md:col-span-10", "flex", "flex-col")}>
+            {meme.name && <Text bold>{meme.name}</Text>}
             {meme.description && (
-              <div className={css("break-words")}>{meme.description}</div>
+              <Text size={TextSize.sm}>{meme.description}</Text>
             )}
           </div>
           <div
             className={css("md:col-span-2", "flex", "justify-end", "items-end")}
           >
             <Link href={`/profile/${meme.user.address}/meme`}>
-              {abbreviate(meme.user.address)}
+              <Text type={TextType.NoColor} size={TextSize.sm}>
+                {abbreviate(meme.user.address)}
+              </Text>
             </Link>
           </div>
         </div>
-        <div
-          className={css(
-            "text-xs",
-            "text-slate-600",
-            "dark:text-neutral-600",
-            "w-full"
-          )}
-        >
+        <Text size={TextSize.xs} type={TextType.Grey}>
           {format(new Date(meme.createdAt), "Pp")}
-        </div>
+        </Text>
         <div className={css("mt-8")}>
           <CommentForm
             onSubmit={({ body }: { body: string }) =>
@@ -134,23 +128,33 @@ const CommentForm: React.FC<{
         name={"body"}
         // validate={required}
         label={
-          AppStore.auth.address ? (
-            <div className={css("text-sm")}>
-              {replyOrComment} as{" "}
-              <Link
-                type={LinkType.Secondary}
-                href={`/profile/${AppStore.auth.address}/meme`}
-              >
-                {abbreviate(AppStore.auth.address)}
-              </Link>
-            </div>
-          ) : (
-            <>{replyOrComment}</>
+          isReply ? undefined : (
+            <>
+              {AppStore.auth.address ? (
+                <span>
+                  <Text size={TextSize.sm}>{replyOrComment} as </Text>
+                  <Link
+                    href={`/profile/${AppStore.auth.address}/meme`}
+                    type={LinkType.Secondary}
+                  >
+                    <Text type={TextType.NoColor} size={TextSize.sm}>
+                      {abbreviate(AppStore.auth.address)}
+                    </Text>
+                  </Link>
+                </span>
+              ) : (
+                <Text size={TextSize.sm}>{replyOrComment}</Text>
+              )}
+            </>
           )
         }
       />
       <div className={css("flex", "justify-end", "mt-2", "gap-2")}>
-        {onCancel && <Button onClick={() => onCancel()}>Cancel</Button>}
+        {onCancel && (
+          <Button onClick={() => onCancel()}>
+            <Text size={TextSize.sm}>Cancel</Text>
+          </Button>
+        )}
         <Submit>{replyOrComment}</Submit>
       </div>
     </Form>
@@ -205,23 +209,24 @@ const MemeComment: React.FC<{
             type={LinkType.Secondary}
             href={`/profile/${comment.user.address}/meme`}
           >
-            {abbreviate(comment.user.address)}
+            <Text type={TextType.NoColor} size={TextSize.xs}>
+              {abbreviate(comment.user.address)}
+            </Text>
           </Link>
-          <BsDot />
-          <div>{diffFormatted} ago</div>
+          <Text size={TextSize.xs}>
+            <BsDot />
+          </Text>
+          <Text size={TextSize.xs}>{diffFormatted} ago</Text>
         </div>
-        <div className={css("text-sm")}>{comment.body}</div>
+        <Text>{comment.body}</Text>
         <div className={css("flex", "justify-start")}>
           <button
-            className={css(
-              "hover:underline",
-              "text-slate-500",
-              "dark:text-neutral-400",
-              "hover:text-slate-900"
-            )}
+            className={css("hover:underline")}
             onClick={() => setShowReply(!showReply)}
           >
-            {showReply ? "Cancel" : "Reply"}
+            <Text size={TextSize.xs} type={TextType.Grey}>
+              {showReply ? "Cancel" : "Reply"}
+            </Text>
           </button>
         </div>
         {showReply && (

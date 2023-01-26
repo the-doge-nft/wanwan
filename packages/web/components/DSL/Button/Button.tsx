@@ -7,7 +7,8 @@ import { css } from "../../../helpers/css";
 import AppStore from "../../../store/App.store";
 import Dropdown, { DropdownItem } from "../Dropdown/Dropdown";
 import Link from "../Link/Link";
-import Spinner from "../Spinner/Spinner";
+import Spinner, { SpinnerSize } from "../Spinner/Spinner";
+import Text, { TextSize, TextType } from "../Text/Text";
 import { borderColorCss } from "../Theme";
 
 enum ButtonType {
@@ -15,8 +16,9 @@ enum ButtonType {
 }
 
 export enum ButtonSize {
-  sm = "small",
-  lg = "large",
+  xs = "xs",
+  sm = "sm",
+  lg = "lg",
 }
 
 interface ButtonProps {
@@ -50,8 +52,15 @@ const buttonTypeStyles = {
 };
 
 const buttonSizeStyles = {
+  [ButtonSize.xs]: css(),
   [ButtonSize.sm]: css("py-0.5", "px-1", "rounded-sm", "text-xs"),
-  [ButtonSize.lg]: css("px-2", "py-1", "rounded-sm"),
+  [ButtonSize.lg]: css("px-1", "py-0.5", "rounded-sm"),
+};
+
+const buttonSizeToTypeSize = {
+  [ButtonSize.xs]: TextSize.xs,
+  [ButtonSize.sm]: TextSize.sm,
+  [ButtonSize.lg]: TextSize.lg,
 };
 
 const Button: React.FC<PropsWithChildren<ButtonProps>> = ({
@@ -77,7 +86,9 @@ const Button: React.FC<PropsWithChildren<ButtonProps>> = ({
         { "w-full": block }
       )}
     >
-      {children}
+      <Text type={TextType.NoColor} size={buttonSizeToTypeSize[size]}>
+        {children}
+      </Text>
       {isLoading && (
         <div
           className={css(
@@ -92,7 +103,9 @@ const Button: React.FC<PropsWithChildren<ButtonProps>> = ({
             "dark:bg-neutral-900"
           )}
         >
-          <Spinner />
+          <Spinner
+            size={size === ButtonSize.sm ? SpinnerSize.sm : SpinnerSize.lg}
+          />
         </div>
       )}
     </button>
@@ -189,12 +202,14 @@ export const ConnectButton: React.FC<
                         open={isDropDownOpen}
                         onOpenChange={setIsDropDownOpen}
                         trigger={
-                          <Button type={type}>{account.displayName}</Button>
+                          <Button type={type} size={size}>
+                            {account.displayName}
+                          </Button>
                         }
                       >
                         <DropdownItem>
                           <Link href={`/profile/${account.address}/meme`}>
-                            Profile
+                            <Text type={TextType.NoColor}>Profile</Text>
                           </Link>
                         </DropdownItem>
                         {AppStore.auth.isAuthed && (
@@ -265,22 +280,22 @@ export const ConnectButton: React.FC<
                               className={css("hover:underline")}
                               onClick={() => disconnect()}
                             >
-                              Disconnect
+                              <Text size={TextSize.sm}>Disconnect</Text>
                             </button>
                             <div
                               className={css(
                                 "flex",
                                 "items-center",
                                 "space-x-1",
-                                "justify-between",
-                                "text-gray-500",
-                                "text-xs"
+                                "justify-between"
                               )}
                             >
-                              <div>net:</div>
-                              <div className={css("flex", "items-center")}>
+                              <Text type={TextType.Grey} size={TextSize.xs}>
+                                net:
+                              </Text>
+                              <Text type={TextType.Grey} size={TextSize.xs}>
                                 {chain.name}
-                              </div>
+                              </Text>
                             </div>
                           </div>
                         </DropdownItem>

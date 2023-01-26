@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { FileRejection, useDropzone } from "react-dropzone";
+import { IoCloseOutline } from "react-icons/io5";
 import { objectKeys } from "../../../helpers/arrays";
 import { css } from "../../../helpers/css";
 import { bytesToSize } from "../../../helpers/numberFormatter";
@@ -199,7 +200,7 @@ const MediaInput: React.FC<MediaInputProps> = ({
                 }
               }}
             >
-              x
+              <IoCloseOutline size={14} />
             </Button>
           </div>
         )}

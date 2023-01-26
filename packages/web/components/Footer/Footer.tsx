@@ -1,17 +1,12 @@
 import { css } from "../../helpers/css";
+import Text, { TextSize, TextType } from "../DSL/Text/Text";
 
 const Footer = () => {
   return (
-    <footer
-      className={css(
-        "text-xs",
-        "text-slate-400",
-        "dark:text-neutral-600",
-        "text-center",
-        "mt-10"
-      )}
-    >
-      No copyright, no trademark. Kabosu forever.
+    <footer className={css("text-center", "mt-10")}>
+      <Text type={TextType.Grey} size={TextSize.xs}>
+        No copyright, no trademark. Kabosu forever.
+      </Text>
     </footer>
   );
 };

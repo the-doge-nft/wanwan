@@ -9,11 +9,6 @@ export enum LinkType {
   Tertiary = "tertiary",
 }
 
-export enum LinkSize {
-  sm = "sm",
-  lg = "lg",
-}
-
 const baseLinkStyles = css(
   "hover:underline",
   "hover:cursor-pointer",
@@ -31,17 +26,11 @@ const linkTypeStyles = {
   [LinkType.Tertiary]: css("text-slate-800", "hover:text-slate-400"),
 };
 
-const linkSizeStyles = {
-  [LinkSize.sm]: css("text-xs"),
-  [LinkSize.lg]: css("text-sm"),
-};
-
 interface LinkProps {
   isExternal?: boolean;
   href: string;
   children?: any;
   type?: LinkType;
-  size?: LinkSize;
   onClick?: () => void;
   className?: string;
 }
@@ -51,13 +40,11 @@ const Link: React.FC<LinkProps> = ({
   href,
   children,
   type = LinkType.Primary,
-  size = LinkSize.lg,
   onClick,
   className,
 }: LinkProps) => {
   const styles = css(
     linkTypeStyles[type],
-    linkSizeStyles[size],
     baseLinkStyles,
     "inline-block",
     className

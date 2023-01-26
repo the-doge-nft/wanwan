@@ -2,11 +2,11 @@ import "@rainbow-me/rainbowkit/styles.css";
 import { observer } from "mobx-react-lite";
 import { GetServerSideProps } from "next";
 import Head from "next/head";
-import { useEffect, useMemo } from "react";
+import { PropsWithChildren, useEffect, useMemo } from "react";
 import AspectRatio from "../components/DSL/AspectRatio/AspectRatio";
 import AsyncGrid from "../components/DSL/AsyncGrid/AsyncGrid";
-import { NoDataFound } from "../components/DSL/AsyncWrap/AsyncWrap";
 import Pane, { PaneType } from "../components/DSL/Pane/Pane";
+import Text, { TextSize } from "../components/DSL/Text/Text";
 import PreviewLink from "../components/PreviewLink/PreviewLink";
 import env from "../environment";
 import { css } from "../helpers/css";
@@ -48,22 +48,21 @@ const Home: React.FC<HomeProps> = observer(
         <main className={css()}>
           <div className={css("flex", "flex-col", "gap-4")}>
             <Pane title={"What is wanwan?"} type={PaneType.Secondary}>
-              wanwan is a platform for creating meme competitions. If you make
-              something good enough, you could win.
+              <Text size={TextSize.sm}>
+                wanwan is a platform for creating meme competitions. If you make
+                something good enough, you could win.
+              </Text>
             </Pane>
             <Pane title={"Competitions"}>
               <AsyncGrid
                 isLoading={store.isCompetitionsLoading}
                 data={store.competitions}
-                renderNoData={() => (
-                  <NoDataFound>No competitions found</NoDataFound>
-                )}
+                noDataLabel={"No competitions found"}
               >
                 {store.competitions.map((comp) => (
                   <div key={`competition-preview-${comp.id}`}>
                     <PreviewLink
                       name={comp.name}
-                      description={comp.description}
                       link={`/competition/${comp.id}`}
                     >
                       <AspectRatio
@@ -93,15 +92,11 @@ const Home: React.FC<HomeProps> = observer(
               <AsyncGrid
                 isLoading={store.isMemesLoading}
                 data={store.memes}
-                renderNoData={() => <NoDataFound>No memes found</NoDataFound>}
+                noDataLabel={"No memes found"}
               >
                 {store.memes.map((meme) => (
                   <div key={`meme-preview-${meme.id}`}>
-                    <PreviewLink
-                      name={meme.name}
-                      description={meme.description}
-                      link={`/meme/${meme.id}`}
-                    >
+                    <PreviewLink name={meme.name} link={`/meme/${meme.id}`}>
                       <AspectRatio
                         className={css(
                           "bg-cover",
@@ -127,26 +122,15 @@ const Home: React.FC<HomeProps> = observer(
                   "sm:grid-rows-2",
                   "sm:grid-cols-2",
                   "md:grid-rows-1",
-                  "md:grid-cols-4",
-                  "dark:text-white"
+                  "md:grid-cols-4"
                 )}
               >
-                <div className={css("inline-flex", "gap-1")}>
-                  <div className={css("font-bold")}>Users:</div>
-                  <div>{stats.totalUsers}</div>
-                </div>
-                <div className={css("inline-flex", "gap-1")}>
-                  <div className={css("font-bold")}>Memes:</div>
-                  <div>{stats.totalMemes}</div>
-                </div>
-                <div className={css("inline-flex", "gap-1")}>
-                  <div className={css("font-bold")}>Competitions:</div>
-                  <div>{stats.totalCompetitions}</div>
-                </div>
-                <div className={css("inline-flex", "gap-1")}>
-                  <div className={css("font-bold")}>Active Competitions:</div>
-                  <div>{stats.totalActiveCompetitions}</div>
-                </div>
+                <Stat label={"Users"}>{stats.totalUsers}</Stat>
+                <Stat label={"Memes"}>{stats.totalMemes}</Stat>
+                <Stat label={"Competitions"}>{stats.totalCompetitions}</Stat>
+                <Stat label={"Active Competitions"}>
+                  {stats.totalActiveCompetitions}
+                </Stat>
               </div>
             </Pane>
           </div>
@@ -155,6 +139,21 @@ const Home: React.FC<HomeProps> = observer(
     );
   }
 );
+
+interface StatProps {
+  label: string;
+}
+
+const Stat: React.FC<PropsWithChildren<StatProps>> = ({ label, children }) => {
+  return (
+    <div className={css("inline-flex", "gap-1", "items-center")}>
+      <Text bold size={TextSize.sm}>
+        {label}:
+      </Text>
+      <Text size={TextSize.sm}>{children}</Text>
+    </div>
+  );
+};
 
 export const getServerSideProps: GetServerSideProps<HomeProps> = async (
   context

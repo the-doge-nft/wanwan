@@ -1,6 +1,7 @@
 import { PropsWithChildren } from "react";
 import { AiOutlineMinus, AiOutlinePlus } from "react-icons/ai";
 import { css } from "../../../helpers/css";
+import Text, { TextType } from "../Text/Text";
 import { borderColorCss } from "../Theme";
 
 export enum PaneType {
@@ -19,17 +20,12 @@ interface PaneProps {
 
 const paneTypeStyles = {
   [PaneType.Primary]: {
-    title: css(
-      "bg-slate-300",
-      "text-slate-900",
-      "dark:bg-slate-800",
-      "dark:text-slate-300"
-    ),
+    title: css("bg-slate-300", "dark:bg-slate-800"),
     container: css("bg-slate-100", "border-[1px]"),
-    body: css("text-slate-900"),
+    body: css(),
   },
   [PaneType.Secondary]: {
-    title: css("bg-red-800", "text-white"),
+    title: css("bg-red-800"),
     container: css(),
     body: css(),
   },
@@ -50,7 +46,6 @@ const Pane: React.FC<PropsWithChildren<PaneProps>> = ({
       "px-2",
       "py-1",
       "font-bold",
-      "text-sm",
       "flex",
       "jusitfy-between",
       "items-center",
@@ -66,7 +61,15 @@ const Pane: React.FC<PropsWithChildren<PaneProps>> = ({
     >
       {title && (
         <div className={css(paneTypeStyles[type].title, basePaneStyles.title)}>
-          <div className={css("grow")}>{title}</div>
+          <div className={css("grow")}>
+            <Text
+              type={
+                type === PaneType.Primary ? TextType.Primary : TextType.White
+              }
+            >
+              {title}
+            </Text>
+          </div>
           {toggle && (
             <div
               className={css("cursor-pointer")}

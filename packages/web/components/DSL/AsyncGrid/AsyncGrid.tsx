@@ -1,18 +1,24 @@
-import { PropsWithChildren } from "react";
+import { PropsWithChildren, useCallback } from "react";
 import { css } from "../../../helpers/css";
 import AsyncWrap, { AsyncWrapProps, NoDataFound } from "../AsyncWrap/AsyncWrap";
 
-interface AsyncGridProps
-  extends Pick<AsyncWrapProps, "isLoading" | "renderNoData"> {
+interface AsyncGridProps extends Pick<AsyncWrapProps, "isLoading"> {
   data: object[];
+  noDataLabel?: string;
 }
 
 const AsyncGrid: React.FC<PropsWithChildren<AsyncGridProps>> = ({
   isLoading,
   children,
-  renderNoData,
+  noDataLabel,
   data,
 }) => {
+  const renderNoData = useCallback(
+    () => (
+      <NoDataFound>{noDataLabel ? noDataLabel : "No data found"}</NoDataFound>
+    ),
+    [noDataLabel]
+  );
   return (
     <div
       className={css("grid", "grid-rows-[min-content]", "gap-4")}
@@ -27,11 +33,7 @@ const AsyncGrid: React.FC<PropsWithChildren<AsyncGridProps>> = ({
       <AsyncWrap
         isLoading={isLoading}
         hasData={data.length > 0}
-        renderNoData={
-          renderNoData
-            ? renderNoData
-            : () => <NoDataFound>no data found</NoDataFound>
-        }
+        renderNoData={renderNoData}
       >
         {children}
       </AsyncWrap>

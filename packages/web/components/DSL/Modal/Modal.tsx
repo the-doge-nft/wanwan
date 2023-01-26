@@ -2,6 +2,7 @@ import * as RadixDialog from "@radix-ui/react-dialog";
 import React, { PropsWithChildren } from "react";
 import { IoCloseOutline } from "react-icons/io5";
 import { css } from "../../../helpers/css";
+import Text, { TextType } from "../Text/Text";
 import { bgColorCss } from "../Theme";
 
 export interface ModalProps {
@@ -56,7 +57,7 @@ const Modal: React.FC<PropsWithChildren<ModalProps>> = ({
         >
           {onChange && (
             <RadixDialog.Close
-              style={{ right: "4px", top: "4px" }}
+              style={{ right: "5px", top: "5px" }}
               className={css(
                 "absolute",
                 "text-white",
@@ -69,16 +70,11 @@ const Modal: React.FC<PropsWithChildren<ModalProps>> = ({
           )}
           <div className={css()}>
             <RadixDialog.Title
-              className={css(
-                "text-white",
-                "text-sm",
-                "font-bold",
-                "text-left",
-                "bg-red-800",
-                "p-1"
-              )}
+              className={css("text-left", "bg-red-800", "p-1")}
             >
-              {title}
+              <Text bold type={TextType.White}>
+                {title}
+              </Text>
             </RadixDialog.Title>
             <RadixDialog.Description>{description}</RadixDialog.Description>
           </div>

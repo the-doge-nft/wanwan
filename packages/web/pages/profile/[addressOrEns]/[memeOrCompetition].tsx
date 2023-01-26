@@ -6,6 +6,7 @@ import AspectRatio from "../../../components/DSL/AspectRatio/AspectRatio";
 import AsyncGrid from "../../../components/DSL/AsyncGrid/AsyncGrid";
 import Link from "../../../components/DSL/Link/Link";
 import Pane from "../../../components/DSL/Pane/Pane";
+import Text, { TextType } from "../../../components/DSL/Text/Text";
 import PreviewLink from "../../../components/PreviewLink/PreviewLink";
 import { css } from "../../../helpers/css";
 import { abbreviate, getEtherscanURL } from "../../../helpers/strings";
@@ -78,14 +79,20 @@ const ProfilePage: React.FC<ProfileProps> = observer(({ profile }) => {
                 "text-sm"
               )}
             >
-              <div>{store.profile.ens}</div>
+              <Text>
+                {store.profile.ens
+                  ? store.profile.ens
+                  : abbreviate(store.profile.address)}
+              </Text>
               {store.profile.address && (
                 <Link
                   isExternal
                   href={getEtherscanURL(profile.address, "address")}
                   className={css("inline-flex", "mt-2")}
                 >
-                  {abbreviate(store.profile.address)}
+                  <Text type={TextType.NoColor}>
+                    {abbreviate(store.profile.address)}
+                  </Text>
                 </Link>
               )}
             </div>

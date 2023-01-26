@@ -39,7 +39,7 @@ export const textFieldBaseStyles = css(
   "appearance-none",
   "disabled:bg-neutral-800",
   "placeholder-neutral-600",
-  "text-xs",
+  "text-sm",
   "focus:outline-none",
   "border-[1px]",
   "border-black",

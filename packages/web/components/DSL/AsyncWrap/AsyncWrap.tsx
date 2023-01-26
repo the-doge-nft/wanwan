@@ -1,19 +1,14 @@
 import React, { PropsWithChildren, ReactNode } from "react";
 import { css } from "../../../helpers/css";
 import Spinner from "../Spinner/Spinner";
+import Text, { TextSize, TextType } from "../Text/Text";
 
 export const NoDataFound: React.FC<PropsWithChildren> = ({ children }) => {
   return (
-    <div
-      className={css(
-        "text-xs",
-        "py-8",
-        "text-center",
-        "text-slate-500",
-        "dark:text-neutral-400"
-      )}
-    >
-      {children}
+    <div className={css("text-xs", "py-4", "text-center")}>
+      <Text type={TextType.Grey} size={TextSize.sm}>
+        {children}
+      </Text>
     </div>
   );
 };

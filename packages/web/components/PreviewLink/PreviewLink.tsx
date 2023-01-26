@@ -1,12 +1,13 @@
 import { PropsWithChildren } from "react";
 import { css } from "../../helpers/css";
 import Link from "../DSL/Link/Link";
+import Text, { TextSize, TextType } from "../DSL/Text/Text";
+import { borderColorCss } from "../DSL/Theme";
 
 interface PreviewLinkProps {
   link: string;
   name?: string | null;
   description?: string | null;
-  showDetails?: boolean;
 }
 
 const PreviewLink: React.FC<PropsWithChildren<PreviewLinkProps>> = ({
@@ -14,7 +15,6 @@ const PreviewLink: React.FC<PropsWithChildren<PreviewLinkProps>> = ({
   name,
   description,
   children,
-  showDetails = true,
 }) => {
   return (
     <div className={css("group")}>
@@ -23,51 +23,52 @@ const PreviewLink: React.FC<PropsWithChildren<PreviewLinkProps>> = ({
           className={css(
             "max-w-full",
             "h-full",
-            "group-hover:border-slate-500",
-            "dark:group-hover:border-neutral-700",
-            "group-hover:text-slate-500",
-            "dark:group-hover:text-neutral-200",
             "border-[1px]",
             "h-[115px]",
             "overflow-y-hidden",
-            "border-black",
-            "bg-slate-200",
-            "dark:bg-neutral-800"
+
+            borderColorCss,
+            "group-hover:border-red-800"
+            // "dark:group-hover:border-slate-800"
           )}
         >
           {children}
         </div>
       </Link>
-      {showDetails && (
-        <div className={css("text-xs", "group-hover:text-slate-500")}>
-          {name && (
-            <div
-              className={css(
-                "font-bold",
-                "whitespace-nowrap",
-                "overflow-hidden",
-                "overflow-ellipsis",
-                "dark:text-white"
-              )}
-            >
-              {name}
-            </div>
+      {name && (
+        <div
+          className={css(
+            "whitespace-nowrap",
+            "overflow-hidden",
+            "overflow-ellipsis",
+
+            "text-black",
+            "dark:text-white",
+
+            "group-hover:text-red-800"
           )}
-          {description && (
-            <div
-              className={css(
-                "text-slate-700",
-                "whitespace-nowrap",
-                "overflow-hidden",
-                "overflow-ellipsis",
-                "group-hover:text-slate-500",
-                "dark:text-neutral-300",
-                "dark:group-hover:text-neutral-500"
-              )}
-            >
-              {description}
-            </div>
+        >
+          <Text bold type={TextType.NoColor} size={TextSize.sm}>
+            {name}
+          </Text>
+        </div>
+      )}
+      {description && (
+        <div
+          className={css(
+            "whitespace-nowrap",
+            "overflow-hidden",
+            "overflow-ellipsis",
+
+            "text-slate-400",
+            "dark:text-neutral-600",
+
+            "group-hover:text-red-800"
           )}
+        >
+          <Text size={TextSize.xs} type={TextType.NoColor}>
+            {description}
+          </Text>
         </div>
       )}
     </div>
