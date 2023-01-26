@@ -174,30 +174,26 @@ const CompetitionDetails: React.FC<{ store: CompetitionByIdStore }> = observer(
             </div>
           </div>
         </Pane>
-        {/* <Pane title={"Stats"} type={PaneType.Secondary}>
-          <div className={css("flex", "justify-between", "items-end")}>
-            <div className={css("flex", "gap-1", "items-center")}>
-              <div className={css("font-bold")}>Votes:</div>
-              <div>{store.totalVotes}</div>
-            </div>
-            <div className={css("flex", "gap-1", "items-center")}>
-              <div className={css("font-bold")}>Submissions:</div>
-              <div>{store.memes.length}</div>
-            </div>
-            <div className={css("flex", "gap-1", "items-center")}>
-              <div className={css("font-bold")}>Max Entries:</div>
-              <div>{store.competition.maxUserSubmissions}</div>
-            </div>
-            <div className={css("flex", "gap-1", "items-center")}>
-              <div className={css("font-bold")}>Ends at:</div>
-              <div>{format(new Date(store.competition.endsAt), "Pp")}</div>
-            </div>
-          </div>
-        </Pane> */}
         <Pane title={"Rewards"} type={PaneType.Secondary}>
-          {store.rewards.map((reward) => (
-            <Reward key={`reward-${reward.id}`} reward={reward} />
-          ))}
+          {store.hasRewards &&
+            store.rewards.map((reward) => (
+              <Reward key={`reward-${reward.id}`} reward={reward} />
+            ))}
+          {!store.hasRewards && (
+            <div
+              className={css(
+                "text-gray-600",
+                "dark:text-neutral-500",
+                "text-xs",
+                "text-center",
+                "py-4"
+              )}
+            >
+              <div className={css("text-slate-500", "dark:text-neutral-400")}>
+                No rewards found
+              </div>
+            </div>
+          )}
         </Pane>
       </>
     );

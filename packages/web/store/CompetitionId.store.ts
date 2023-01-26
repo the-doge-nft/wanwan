@@ -222,4 +222,9 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
   get rewards() {
     return this.competition.rewards.sort((reward) => reward.competitionRank);
   }
+
+  @computed
+  get hasRewards() {
+    return this.rewards.length > 0;
+  }
 }
