@@ -1,3 +1,4 @@
+import { format } from "date-fns";
 import { css } from "../../../helpers/css";
 import Input, { BaseInputProps } from "../Input/Input";
 import FormControl, {
@@ -6,13 +7,17 @@ import FormControl, {
 } from "./FormControl";
 import { useControlledFormField, useFormField } from "./useFormField";
 
+export const dateToDateTimeLocalInput = (date: Date) => {
+  return format(date, "yyyy-MM-dd'T'HH:mm");
+};
+
 interface DateInputProps
   extends BaseFormInputProps,
     Pick<
       BaseInputProps,
       "max" | "min" | "placeholder" | "block" | "defaultValue" | "disabled"
     > {
-  type: "date" | "datetime-local";
+  type?: "date" | "datetime-local";
 }
 
 const DateInput = ({

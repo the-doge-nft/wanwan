@@ -1,7 +1,7 @@
 const redirectTo404 = () => {
   return {
     redirect: {
-      destination: "404",
+      destination: "/404",
       permanent: false,
     },
   };

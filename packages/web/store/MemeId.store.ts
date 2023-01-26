@@ -21,7 +21,7 @@ export default class MemeIdStore {
   }
 
   // @next -- should get data as a tree instead
-  getReply(parentId: number): Comment[] {
+  getReplies(parentId: number): Comment[] {
     const comments = this.comments.filter(
       (comment) => comment.parentCommentId === parentId
     );

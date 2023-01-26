@@ -56,7 +56,7 @@ const Modal: React.FC<PropsWithChildren<ModalProps>> = ({
         >
           {onChange && (
             <RadixDialog.Close
-              style={{ right: "5px", top: "5px" }}
+              style={{ right: "4px", top: "4px" }}
               className={css(
                 "absolute",
                 "text-white",
@@ -64,14 +64,14 @@ const Modal: React.FC<PropsWithChildren<ModalProps>> = ({
                 "border-white"
               )}
             >
-              <IoCloseOutline size={20} />
+              <IoCloseOutline size={18} />
             </RadixDialog.Close>
           )}
           <div className={css()}>
             <RadixDialog.Title
               className={css(
                 "text-white",
-                "text-base",
+                "text-sm",
                 "font-bold",
                 "text-left",
                 "bg-red-800",

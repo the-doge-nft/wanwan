@@ -25,6 +25,12 @@ const mustBeANumber = (value: any) =>
 const minValue = (min: any) => (value: any) =>
   isNaN(value) || value >= min ? undefined : `Must be greater than ${min}`;
 
+const minDate = (min: string) => (value: string) =>
+  new Date(value) > new Date(min) ? undefined : `Must be after ${min}`;
+
+const maxDate = (max: string) => (value: string) =>
+  new Date(value) < new Date(max) ? undefined : `Must be before ${max}`;
+
 const maxValue = (max: any, customString?: string) => (value: any) => {
   const stringToReturn = customString
     ? customString
@@ -70,4 +76,6 @@ export {
   composeValidators,
   maxDecimalPlaces,
   websiteUrl,
+  minDate,
+  maxDate,
 };

@@ -179,7 +179,7 @@ const MemeComment: React.FC<{
       }
     }
   }
-  const commentReply = store.getReply(comment.id);
+  const commentReply = store.getReplies(comment.id);
   return (
     <div
       key={`comment-${comment.id}`}
@@ -235,7 +235,7 @@ const MemeComment: React.FC<{
             />
           </div>
         )}
-        {commentReply && Array.isArray(commentReply) && (
+        {commentReply && (
           <div className={css("flex", "flex-col", "gap-2", "mt-2")}>
             {commentReply.map((reply) => (
               <MemeComment
@@ -247,18 +247,6 @@ const MemeComment: React.FC<{
                 }
               />
             ))}
-          </div>
-        )}
-        {commentReply && !Array.isArray(commentReply) && (
-          <div className={css("mt-2")}>
-            <MemeComment
-              key={`comment-${commentReply.id}`}
-              store={store}
-              comment={commentReply}
-              onCommentSubmit={(body) =>
-                store.onParentCommentSubmit(body, commentReply.id)
-              }
-            />
           </div>
         )}
       </div>

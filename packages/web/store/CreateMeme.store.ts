@@ -49,7 +49,7 @@ export default class CreateMemeStore extends Navigable(EmptyClass) {
   get title() {
     switch (this.currentView) {
       case CreateMemeView.Create:
-        return "Create Meme";
+        return "New Meme";
       case CreateMemeView.Success:
         return "Created";
       default:

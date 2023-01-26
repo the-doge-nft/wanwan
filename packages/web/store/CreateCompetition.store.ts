@@ -1,4 +1,6 @@
+import { add } from "date-fns";
 import { action, computed, makeObservable, observable } from "mobx";
+import { dateToDateTimeLocalInput } from "../components/DSL/Form/DateInput";
 import { SelectItem } from "../components/DSL/Select/Select";
 import { formatEthereumAddress } from "../helpers/strings";
 import { RewardBody, TokenType } from "../interfaces";
@@ -18,6 +20,10 @@ export default class CreateCompetitionStore extends Navigable(EmptyClass) {
   REWARDS_INPUT_ADDRESS_PREFIX = "rewards-address-input";
   REWARDS_INPUT_NUMBER_PREFIX = "rewards-number-input";
   REWARDS_INPUT_TOKENID_PREFIX = "rewards-tokenid-input";
+
+  minEndsAtDate = dateToDateTimeLocalInput(add(new Date(), { hours: 2 }));
+  maxEndsAtDate = dateToDateTimeLocalInput(add(new Date(), { years: 1 }));
+  defaultEndsAtDate = dateToDateTimeLocalInput(add(new Date(), { days: 1 }));
 
   @observable
   private _curatorsCount = 0;
@@ -80,7 +86,7 @@ export default class CreateCompetitionStore extends Navigable(EmptyClass) {
   get title() {
     switch (this.currentView) {
       case CreateCompetitionView.Create:
-        return "Create Competition";
+        return "New Competition";
       case CreateCompetitionView.Success:
         return "Competition Created";
       default:

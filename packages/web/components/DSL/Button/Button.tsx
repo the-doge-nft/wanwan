@@ -50,7 +50,7 @@ const buttonTypeStyles = {
 };
 
 const buttonSizeStyles = {
-  [ButtonSize.sm]: css("py-0.5", "px-1", "rounded-sm", "text-sm"),
+  [ButtonSize.sm]: css("py-0.5", "px-1", "rounded-sm", "text-xs"),
   [ButtonSize.lg]: css("px-2", "py-1", "rounded-sm"),
 };
 

@@ -4,7 +4,7 @@ import { jsonify } from "../../../helpers/strings";
 import Button from "../Button/Button";
 import { Demo } from "../Demo";
 import { Variant } from "../Variant";
-import DateInput from "./DateInput";
+import DateInput, { dateToDateTimeLocalInput } from "./DateInput";
 import Form from "./Form";
 import MediaInput from "./MediaInput";
 import NumberInput from "./NumberInput";
@@ -42,10 +42,18 @@ const FormDemo = () => {
                   acceptedMimeToExtension={{ "image/jpg": [".jpg", ".jpeg"] }}
                 />
                 <DateInput name={"date"} label={"<date>"} validate={required} />
+                <DateInput
+                  type={"datetime-local"}
+                  name={"datetime-local"}
+                  label={"<datetime>"}
+                  validate={required}
+                  defaultValue={dateToDateTimeLocalInput(new Date())}
+                />
                 <SelectInput
                   label={"<select>"}
                   name={"select"}
                   items={[{ id: "test", name: "test" }]}
+                  defaultValue={"test"}
                 />
                 <div className={css("flex", "justify-center", "mt-4")}>
                   <Button submit>submit</Button>

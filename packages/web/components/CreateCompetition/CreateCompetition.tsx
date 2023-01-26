@@ -1,4 +1,3 @@
-import { add } from "date-fns";
 import { observer } from "mobx-react-lite";
 import { css } from "../../helpers/css";
 import AppStore from "../../store/App.store";
@@ -16,7 +15,9 @@ import SelectInput from "../DSL/Form/SelectInput";
 import TextInput from "../DSL/Form/TextInput";
 import {
   isEthereumAddress,
+  maxDate,
   maxValue,
+  minDate,
   minValue,
   required,
 } from "../DSL/Form/validation";
@@ -66,14 +67,15 @@ const CreateView: React.FC<CompetitionStoreProp> = observer(({ store }) => {
           />
           <DateInput
             block
+            type={"datetime-local"}
             label={"Ends at"}
             name={"endsAt"}
-            validate={required}
-            // @next -- bad to have mixed validation here
-            min={add(new Date(), { days: 1 }).toISOString().split("T")[0]}
-            defaultValue={
-              add(new Date(), { days: 1 }).toISOString().split("T")[0]
-            }
+            validate={[
+              required,
+              minDate(store.minEndsAtDate),
+              maxDate(store.maxEndsAtDate),
+            ]}
+            defaultValue={store.defaultEndsAtDate}
             disabled={store.isLoading}
           />
         </div>
