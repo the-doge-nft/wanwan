@@ -1,7 +1,7 @@
 import { Env } from ".";
 
 const env: Env = {
-  app: { name: "[LOCAL] wanwan" },
+  app: { name: "wanwan" },
   api: { baseUrl: "http://localhost:3000" },
 };
 

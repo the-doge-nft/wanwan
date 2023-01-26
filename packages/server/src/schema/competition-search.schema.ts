@@ -1,7 +1,5 @@
 import { Competition } from '@prisma/client';
-// import Joi from 'joi';
-
-const Joi = require('joi');
+import * as Joi from 'joi';
 
 export const basePrismaFilterOps = ['equals', 'lt', 'lte', 'gt', 'gte'];
 export const stringPrismaFilterOps = [
@@ -28,6 +26,7 @@ export const competitionSearchKeyNames: (keyof Competition)[] = [
   'endsAt',
   'createdAt',
   'updatedAt',
+  'isActive',
 ];
 
 export const competitionSearchCustomKeys = ['address'];
@@ -44,11 +43,13 @@ export const competitionSearchSchema = Joi.object().keys({
           switch: [
             { is: 'id', then: Joi.number() },
             { is: 'maxUserSubmissions', then: Joi.number() },
+            { is: 'isActive', then: Joi.boolean() },
           ],
           otherwise: Joi.string(),
         }),
       operation: Joi.string()
         .required()
+        // @next -- these rules should be abstracted
         .when('value', {
           switch: [
             {
@@ -62,6 +63,10 @@ export const competitionSearchSchema = Joi.object().keys({
             {
               is: Joi.number(),
               then: Joi.string().valid(...numberPrismaFilterOps),
+            },
+            {
+              is: Joi.boolean(),
+              then: Joi.string().valid('equals'),
             },
           ],
         }),

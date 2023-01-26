@@ -11,7 +11,9 @@ interface DateInputProps
     Pick<
       BaseInputProps,
       "max" | "min" | "placeholder" | "block" | "defaultValue" | "disabled"
-    > {}
+    > {
+  type: "date" | "datetime-local";
+}
 
 const DateInput = ({
   name,
@@ -21,6 +23,7 @@ const DateInput = ({
   validate,
   description,
   defaultValue,
+  type = "date",
   ...rest
 }: DateInputProps) => {
   const { input, meta, isRequired } = useFormField(
@@ -39,7 +42,7 @@ const DateInput = ({
       <Input
         {...input}
         {...rest}
-        type={"date"}
+        type={type}
         value={input.value}
         className={css({
           [BaseInvalidInputStyle]: meta.error && meta.touched,

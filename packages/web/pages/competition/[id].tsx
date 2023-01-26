@@ -13,8 +13,13 @@ import MemeSelector from "../../components/MemeSubmission/MemeSelector";
 import SelectedMemesForSubmission from "../../components/MemeSubmission/SelectedMemesForSubmission";
 import UserSubmissions from "../../components/MemeSubmission/UserSubmissions";
 import { css } from "../../helpers/css";
-import { abbreviate, jsonify } from "../../helpers/strings";
-import { Competition, CompetitionMeme, Reward } from "../../interfaces";
+import { abbreviate, getEtherscanURL } from "../../helpers/strings";
+import {
+  Competition,
+  CompetitionMeme,
+  Reward,
+  TokenType,
+} from "../../interfaces";
 import AppLayout from "../../layouts/App.layout";
 import http from "../../services/http";
 import redirectTo404 from "../../services/redirect/404";
@@ -131,17 +136,16 @@ const MemeById: React.FC<CompetitionByIdProps> = observer(
 const CompetitionDetails: React.FC<{ store: CompetitionByIdStore }> = observer(
   ({ store }) => {
     return (
-      <Pane type={PaneType.Secondary} title={store.competition.name}>
-        <div className={css("text-sm")}>
-          {store.competition.description && (
-            <div>{store.competition.description}</div>
-          )}
-          <div
-            className={css("flex", "justify-between", "items-end", {
-              "mt-4": store.competition.description,
-            })}
-          >
-            <div>
+      <>
+        <Pane type={PaneType.Secondary} title={store.competition.name}>
+          <div className={css("flex", "flex-col", "gap-4")}>
+            <div className={css("text-sm")}>
+              {store.competition.description && (
+                <div>{store.competition.description}</div>
+              )}
+              {!store.competition.description && <div>no description</div>}
+            </div>
+            <div className={css("flex", "justify-between", "items-end")}>
               <div className={css("flex", "gap-1", "items-center")}>
                 <div className={css("font-bold")}>Votes:</div>
                 <div>{store.totalVotes}</div>
@@ -156,48 +160,76 @@ const CompetitionDetails: React.FC<{ store: CompetitionByIdStore }> = observer(
               </div>
               <div className={css("flex", "gap-1", "items-center")}>
                 <div className={css("font-bold")}>Ends at:</div>
-                <div>{format(new Date(store.competition.endsAt), "Pp")}</div>
+                <div>{format(new Date(store.competition.endsAt), "P")}</div>
               </div>
-              <div className={css("mt-2")}>
-                <div className={css("font-bold")}>Rewards</div>
-                {store.rewards.map((reward) => (
-                  <Reward key={`reward-${reward.id}`} reward={reward} />
-                ))}
+              <div className={css("flex", "gap-1", "items-center")}>
+                <div className={css("font-bold")}>Created by:</div>
+                <Link
+                  type={LinkType.Secondary}
+                  href={`/profile/${store.competition.user.address}/competition`}
+                >
+                  {abbreviate(store.competition.user.address)}
+                </Link>
               </div>
-            </div>
-
-            <div className={css("flex", "gap-1", "justify-end")}>
-              <div>Created by:</div>
-              <Link
-                type={LinkType.Secondary}
-                href={`/profile/${store.competition.user.address}/competition`}
-              >
-                {abbreviate(store.competition.user.address)}
-              </Link>
             </div>
           </div>
-        </div>
-      </Pane>
+        </Pane>
+        {/* <Pane title={"Stats"} type={PaneType.Secondary}>
+          <div className={css("flex", "justify-between", "items-end")}>
+            <div className={css("flex", "gap-1", "items-center")}>
+              <div className={css("font-bold")}>Votes:</div>
+              <div>{store.totalVotes}</div>
+            </div>
+            <div className={css("flex", "gap-1", "items-center")}>
+              <div className={css("font-bold")}>Submissions:</div>
+              <div>{store.memes.length}</div>
+            </div>
+            <div className={css("flex", "gap-1", "items-center")}>
+              <div className={css("font-bold")}>Max Entries:</div>
+              <div>{store.competition.maxUserSubmissions}</div>
+            </div>
+            <div className={css("flex", "gap-1", "items-center")}>
+              <div className={css("font-bold")}>Ends at:</div>
+              <div>{format(new Date(store.competition.endsAt), "Pp")}</div>
+            </div>
+          </div>
+        </Pane> */}
+        <Pane title={"Rewards"} type={PaneType.Secondary}>
+          {store.rewards.map((reward) => (
+            <Reward key={`reward-${reward.id}`} reward={reward} />
+          ))}
+        </Pane>
+      </>
     );
   }
 );
 
 const Reward: React.FC<{ reward: Reward }> = ({ reward }) => {
+  const isNft = [TokenType.ERC721, TokenType.ERC1155].includes(
+    reward.currency.type
+  );
   return (
     <div className={css("flex", "gap-2", "items-center")}>
-      <Link href={""} isExternal />
+      <Link
+        href={
+          isNft
+            ? getEtherscanURL(reward.currency.contractAddress, "token")
+            : getEtherscanURL(reward.currency.contractAddress, "token")
+        }
+        isExternal
+      />
       <div>{reward.competitionRank}</div>
       <div>{reward.currency.type}</div>
       {/* <div>{reward.currency.contractAddress}</div> */}
       {/* <div>{reward.currency.name}</div> */}
-      <div>{reward.currency.symbol}</div>
+      <div>{reward.currency.name}</div>
       <div>
         {ethers.utils.formatUnits(
           reward.currencyAmountAtoms,
           reward.currency.decimals
         )}
       </div>
-      <div>{jsonify(reward)}</div>
+      {/* <div>{jsonify(reward)}</div> */}
     </div>
   );
 };

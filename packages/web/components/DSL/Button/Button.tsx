@@ -165,7 +165,7 @@ export const ConnectButton: React.FC<
                           onConnectClick && onConnectClick();
                         }}
                       >
-                        connect
+                        Connect
                       </Button>
                     );
                   }

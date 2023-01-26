@@ -8,7 +8,10 @@ export const abbreviate = (input: string, spaces = 4) => {
   )}`;
 };
 
-export const getEtherscanURL = (address: string, type: "tx" | "address") => {
+export const getEtherscanURL = (
+  address: string,
+  type: "tx" | "address" | "token"
+) => {
   let link = `https://etherscan.io/${type}/${address}`;
   if (isDev() || isStaging()) {
     link = `https://goerli.etherscan.io/${type}/${address}`;

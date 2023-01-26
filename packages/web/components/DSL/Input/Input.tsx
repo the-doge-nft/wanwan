@@ -27,7 +27,7 @@ export interface BaseInputProps
   name?: string;
   block?: boolean;
   className?: string;
-  type?: "text" | "textarea" | "number" | "date";
+  type?: "text" | "textarea" | "number" | "date" | "datetime-local";
 }
 
 export type InputProps = BaseInputProps & ValueProps;

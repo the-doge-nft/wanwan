@@ -57,6 +57,7 @@ export interface Competition {
   createdAt: DatetimeString;
   updatedAt: DatetimeString;
   createdById: number;
+  isActive: boolean;
   media?: Media;
   curators: User[];
   rewards: Reward[];
