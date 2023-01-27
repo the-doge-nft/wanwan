@@ -26,10 +26,8 @@ const PreviewLink: React.FC<PropsWithChildren<PreviewLinkProps>> = ({
             "border-[1px]",
             "h-[115px]",
             "overflow-y-hidden",
-
             borderColorCss,
             "group-hover:border-red-800"
-            // "dark:group-hover:border-slate-800"
           )}
         >
           {children}
@@ -41,10 +39,8 @@ const PreviewLink: React.FC<PropsWithChildren<PreviewLinkProps>> = ({
             "whitespace-nowrap",
             "overflow-hidden",
             "overflow-ellipsis",
-
             "text-black",
             "dark:text-white",
-
             "group-hover:text-red-800"
           )}
         >
@@ -59,10 +55,8 @@ const PreviewLink: React.FC<PropsWithChildren<PreviewLinkProps>> = ({
             "whitespace-nowrap",
             "overflow-hidden",
             "overflow-ellipsis",
-
             "text-slate-400",
             "dark:text-neutral-600",
-
             "group-hover:text-red-800"
           )}
         >

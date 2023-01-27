@@ -126,6 +126,7 @@ const CommentForm: React.FC<{
         block
         type={"textarea"}
         name={"body"}
+        placeholder={"What are your thoughts?"}
         // validate={required}
         label={
           isReply ? undefined : (
@@ -213,10 +214,12 @@ const MemeComment: React.FC<{
               {abbreviate(comment.user.address)}
             </Text>
           </Link>
-          <Text size={TextSize.xs}>
+          <Text size={TextSize.xs} type={TextType.Grey}>
             <BsDot />
           </Text>
-          <Text size={TextSize.xs}>{diffFormatted} ago</Text>
+          <Text size={TextSize.xs} type={TextType.Grey}>
+            {diffFormatted} ago
+          </Text>
         </div>
         <Text>{comment.body}</Text>
         <div className={css("flex", "justify-start")}>
