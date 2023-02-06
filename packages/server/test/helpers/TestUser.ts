@@ -11,7 +11,17 @@ export default class TestUser {
   private readonly wallet: Wallet;
   private agent: superRequest.SuperAgentTest;
 
-  constructor(server: any) {
+  static async createAuthed(server) {
+    const user = new this(server);
+    await user.auth();
+    return user;
+  }
+
+  static createUnauthed(server) {
+    return new this(server);
+  }
+
+  private constructor(server: any) {
     this.agent = superRequest.agent(server);
     this.wallet = ethers.Wallet.createRandom();
   }
@@ -120,11 +130,5 @@ export default class TestUser {
     return this.agent
       .post(`/competition/${competitionId}`)
       .send({ memeId, score });
-  }
-
-  static async createAuthed(server) {
-    const user = new this(server);
-    await user.auth();
-    return user;
   }
 }

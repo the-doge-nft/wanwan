@@ -55,14 +55,14 @@ describe('AppController (e2e)', () => {
   });
 
   it('/auth/nonce (GET)', () => {
-    const user = new TestUser(server);
+    const user = TestUser.createUnauthed(server);
     return user.getAuthNonce().then(({ body }) => {
       expect(body.nonce).toBeDefined();
     });
   });
 
   it('/auth/verify (POST)', () => {
-    const user = new TestUser(server);
+    const user = TestUser.createUnauthed(server);
     return user.auth().then((res) => {
       expect(res.status).toEqual(201);
       const { body } = res;
