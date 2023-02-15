@@ -4,6 +4,7 @@ import { observer } from "mobx-react-lite";
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 import { useEffect, useMemo } from "react";
+import { Address, useContractWrite, usePrepareContractWrite } from "wagmi";
 import Button from "../../components/DSL/Button/Button";
 import Input from "../../components/DSL/Input/Input";
 import Link, { LinkType } from "../../components/DSL/Link/Link";
@@ -14,7 +15,7 @@ import MemeSelector from "../../components/MemeSubmission/MemeSelector";
 import SelectedMemesForSubmission from "../../components/MemeSubmission/SelectedMemesForSubmission";
 import UserSubmissions from "../../components/MemeSubmission/UserSubmissions";
 import { css } from "../../helpers/css";
-import { abbreviate, getEtherscanURL } from "../../helpers/strings";
+import { abbreviate, getEtherscanURL, jsonify } from "../../helpers/strings";
 import {
   Competition,
   CompetitionMeme,
@@ -25,6 +26,11 @@ import AppLayout from "../../layouts/App.layout";
 import http from "../../services/http";
 import redirectTo404 from "../../services/redirect/404";
 import { default as CompetitionByIdStore } from "../../store/CompetitionId.store";
+
+import erc1155Abi from "../../services/abis/erc1155";
+import erc20Abi from "../../services/abis/erc20";
+import erc721Abi from "../../services/abis/erc721";
+import AppStore from "../../store/App.store";
 
 interface CompetitionByIdProps {
   competition: Competition;
@@ -226,10 +232,17 @@ const CompetitionDetails: React.FC<{ store: CompetitionByIdStore }> = observer(
           isExpanded={store.showRewards}
           onChange={(val) => (store.showRewards = val)}
         >
-          {store.hasRewards &&
-            store.rewards.map((reward) => (
-              <Reward key={`reward-${reward.id}`} reward={reward} />
-            ))}
+          {store.hasRewards && (
+            <div className={css("flex", "flex-col", "gap-1")}>
+              {store.rewards.map((reward) => (
+                <RewardItem
+                  key={`reward-${reward.id}`}
+                  reward={reward}
+                  store={store}
+                />
+              ))}
+            </div>
+          )}
           {!store.hasRewards && (
             <div
               className={css(
@@ -251,32 +264,97 @@ const CompetitionDetails: React.FC<{ store: CompetitionByIdStore }> = observer(
   }
 );
 
-const Reward: React.FC<{ reward: Reward }> = ({ reward }) => {
-  const isNft = [TokenType.ERC721, TokenType.ERC1155].includes(
-    reward.currency.type
-  );
-  return (
-    <div className={css("flex", "gap-2", "items-center")}>
-      <Link
-        href={
-          isNft
-            ? getEtherscanURL(reward.currency.contractAddress, "token")
-            : getEtherscanURL(reward.currency.contractAddress, "token")
-        }
-        isExternal
-      />
-      <Text size={TextSize.sm}>{reward.competitionRank}</Text>
-      <Text size={TextSize.sm}>{reward.currency.type}</Text>
-      <Text size={TextSize.sm}>{reward.currency.name}</Text>
-      <Text size={TextSize.sm}>
-        {ethers.utils.formatUnits(
-          reward.currencyAmountAtoms,
-          reward.currency.decimals
+const RewardItem: React.FC<{ reward: Reward; store: CompetitionByIdStore }> =
+  observer(({ reward, store }) => {
+    const isNft = [TokenType.ERC721, TokenType.ERC1155].includes(
+      reward.currency.type
+    );
+    return (
+      <div className={css("flex", "gap-2", "items-center")}>
+        <div className={css("flex", "items-center", "gap-4")}>
+          <Link
+            href={
+              isNft
+                ? getEtherscanURL(reward.currency.contractAddress, "token")
+                : getEtherscanURL(reward.currency.contractAddress, "token")
+            }
+            isExternal
+          />
+          <Text size={TextSize.sm}>{reward.competitionRank}</Text>
+          <Text size={TextSize.sm}>
+            {reward.currency.name ? reward.currency.name : "no name found"} (
+            {ethers.utils.formatUnits(
+              reward.currencyAmountAtoms,
+              reward.currency.decimals
+            )}
+            )
+          </Text>
+        </div>
+        <div className={css("grow")}></div>
+        {store.isCreator && <DistributeReward reward={reward} store={store} />}
+        {!store.isCreator && !reward.txId && (
+          <Text size={TextSize.xs} type={TextType.Grey}>
+            waiting on distribution
+          </Text>
         )}
-      </Text>
-    </div>
-  );
-};
+        {!store.isCreator && reward.txId && (
+          <Text size={TextSize.xs}>{reward.txId}</Text>
+        )}
+      </div>
+    );
+  });
+
+const DistributeReward = observer(
+  ({ reward, store }: { reward: Reward; store: CompetitionByIdStore }) => {
+    const tokenTypeToContract = {
+      [TokenType.ERC1155]: {
+        abi: erc1155Abi,
+        method: "safeTransferFrom",
+        args: [
+          AppStore.auth.address,
+          store.memes[0].user.address,
+          reward.currencyTokenId,
+          ethers.utils.formatUnits(
+            reward.currencyAmountAtoms,
+            reward.currency.decimals
+          ),
+          "",
+        ],
+      },
+      [TokenType.ERC721]: {
+        abi: erc721Abi,
+        method: "safeTransferFrom",
+        args: [],
+      },
+      [TokenType.ERC20]: {
+        abi: erc20Abi,
+        method: "transfer",
+        args: [],
+      },
+    };
+
+    const contractInfo = tokenTypeToContract[reward.currency.type];
+    const { config, error } = usePrepareContractWrite({
+      address: reward.currency.contractAddress as Address,
+      abi: contractInfo.abi,
+      functionName: contractInfo.method,
+      args: contractInfo.args,
+    });
+    console.log(contractInfo.args);
+    console.log(config, error);
+    const { write } = useContractWrite(config);
+    return (
+      <div>
+        {!reward.txId && (
+          <div>
+            {error && jsonify(error)} {!error && <Button>Distribute</Button>}
+          </div>
+        )}
+        {reward.txId && <div>{reward.txId}</div>}
+      </div>
+    );
+  }
+);
 
 export const getServerSideProps: GetServerSideProps<
   CompetitionByIdProps

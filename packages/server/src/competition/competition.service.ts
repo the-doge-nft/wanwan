@@ -177,7 +177,7 @@ export class CompetitionService {
 
   async getIsCompetitionActive(id: number) {
     const competition = await this.prisma.competition.findFirst({
-      where: { id, endsAt: { gte: new Date() } },
+      where: { id, endsAt: { gt: new Date() } },
     });
     return !!competition;
   }

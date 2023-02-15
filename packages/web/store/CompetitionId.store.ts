@@ -237,4 +237,12 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
   get hasRewards() {
     return this.rewards.length > 0;
   }
+
+  @computed
+  get isCreator() {
+    return (
+      AppStore.auth.isAuthed &&
+      AppStore.auth.profile?.user?.id === this.competition.createdById
+    );
+  }
 }
