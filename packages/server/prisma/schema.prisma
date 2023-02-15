@@ -58,7 +58,6 @@ model Competition {
   updatedAt          DateTime            @default(now())
   createdById        Int
   user               User                @relation(fields: [createdById], references: [id])
-  isActive           Boolean             @default(true)
   submissions        Submission[]
   rewards            Reward[]
   curators           CompeitionCurator[]

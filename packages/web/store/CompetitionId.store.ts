@@ -26,6 +26,12 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
   showUserEntriesContent = true;
 
   @observable
+  showRewards = true;
+
+  @observable
+  showDetails = true;
+
+  @observable
   isSubmitLoading = false;
 
   @observable
@@ -143,7 +149,11 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
 
   @computed
   get showSubmitPane() {
-    return AppStore.auth.isAuthed && this.canUserSelectMemes;
+    return (
+      AppStore.auth.isAuthed &&
+      this.canUserSelectMemes &&
+      this.competition.isActive
+    );
   }
 
   @computed

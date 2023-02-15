@@ -1,5 +1,6 @@
 import { PropsWithChildren } from "react";
 import { css } from "../../helpers/css";
+import Text, { TextSize } from "./Text/Text";
 import { bgColorCss } from "./Theme";
 
 export const Demo: React.FC<PropsWithChildren<{ title?: string }>> = ({
@@ -16,7 +17,13 @@ export const Demo: React.FC<PropsWithChildren<{ title?: string }>> = ({
         bgColorCss
       )}
     >
-      {title && <div className={css("text-sm", "italic", "mb-1")}>{title}</div>}
+      {title && (
+        <div className={css("mb-1")}>
+          <Text size={TextSize.lg} italic>
+            {title}
+          </Text>
+        </div>
+      )}
       <div>{children}</div>
     </div>
   );

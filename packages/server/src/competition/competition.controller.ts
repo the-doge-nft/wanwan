@@ -37,6 +37,7 @@ export class CompetitionController {
     @Body() competition: CompetitionDto,
     @Req() { user }: AuthenticatedRequest,
   ) {
+    // @next -- cache
     const isPixelHolder = await this.alchemy.getIsPixelHolder(user.address);
     if (!isPixelHolder) {
       throw new BadRequestException(

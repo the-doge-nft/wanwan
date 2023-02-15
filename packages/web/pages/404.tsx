@@ -1,4 +1,5 @@
 import Link from "../components/DSL/Link/Link";
+import Text from "../components/DSL/Text/Text";
 import { css } from "../helpers/css";
 import AppLayout from "../layouts/App.layout";
 
@@ -14,8 +15,8 @@ const Custom404 = () => {
           "h-full"
         )}
       >
-        <div>¯\_(ツ)_/¯</div>
-        <div>Couldn{"'"}t find what you were looking for</div>
+        <Text>¯\_(ツ)_/¯</Text>
+        <Text>Couldn{"'"}t find what you were looking for</Text>
         <Link href={"/"}>go home</Link>
       </div>
     </AppLayout>

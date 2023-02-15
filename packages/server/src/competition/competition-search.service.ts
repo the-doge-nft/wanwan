@@ -39,8 +39,13 @@ export class CompetitionSearchService extends Search<
       return builder.where('user', {
         address: { [filter.operation]: filter.value },
       });
+    } else if (filter.key === 'isActive') {
+      let operation = 'lt';
+      if (filter.value) {
+        operation = 'gt';
+      }
+      return builder.where('endsAt', { [operation]: new Date() });
     }
-    return;
   }
 
   afterGetAll(results) {

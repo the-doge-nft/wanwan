@@ -19,6 +19,7 @@ interface TextProps {
   size?: TextSize;
   type?: TextType;
   bold?: boolean;
+  italic?: boolean;
 }
 
 const textSizeStyles = {
@@ -39,6 +40,7 @@ const Text: React.FC<PropsWithChildren<TextProps>> = ({
   size = TextSize.lg,
   type = TextType.Primary,
   bold = false,
+  italic = false,
   children,
 }) => {
   return (
@@ -49,6 +51,7 @@ const Text: React.FC<PropsWithChildren<TextProps>> = ({
         "break-words",
         {
           "font-bold": bold,
+          italic: italic,
         }
       )}
     >

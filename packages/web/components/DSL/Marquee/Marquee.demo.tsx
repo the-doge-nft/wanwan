@@ -1,5 +1,5 @@
-import { css } from "../../../helpers/css";
 import { Demo } from "../Demo";
+import Text from "../Text/Text";
 import Marquee from "./Marquee";
 
 const MarqueeDemo = () => {
@@ -7,9 +7,7 @@ const MarqueeDemo = () => {
     <Demo title={"Marquee"}>
       <Marquee>
         {new Array(10).fill(undefined).map((item, index) => (
-          <div key={`marque-demo-${index}`} className={css("mr-2")}>
-            memes
-          </div>
+          <Text key={`marque-demo-${index}`}>memes</Text>
         ))}
       </Marquee>
     </Demo>

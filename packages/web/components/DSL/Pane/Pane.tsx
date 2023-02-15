@@ -12,7 +12,6 @@ export enum PaneType {
 interface PaneProps {
   title?: React.ReactNode;
   type?: PaneType;
-  toggle?: boolean;
   isExpanded?: boolean;
   onChange?: (isExpanded: boolean) => void;
   className?: string;
@@ -35,7 +34,6 @@ const Pane: React.FC<PropsWithChildren<PaneProps>> = ({
   children,
   title,
   type = PaneType.Primary,
-  toggle,
   isExpanded = true,
   className,
   onChange,
@@ -70,16 +68,18 @@ const Pane: React.FC<PropsWithChildren<PaneProps>> = ({
               {title}
             </Text>
           </div>
-          {toggle && (
+          {onChange && (
             <div
               className={css("cursor-pointer")}
-              onClick={() => onChange && onChange(!isExpanded)}
+              onClick={() => onChange(!isExpanded)}
             >
-              {isExpanded ? (
-                <AiOutlineMinus size={16} />
-              ) : (
-                <AiOutlinePlus size={16} />
-              )}
+              <Text type={TextType.White}>
+                {isExpanded ? (
+                  <AiOutlineMinus size={16} />
+                ) : (
+                  <AiOutlinePlus size={16} />
+                )}
+              </Text>
             </div>
           )}
         </div>

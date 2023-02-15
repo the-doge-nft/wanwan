@@ -3,6 +3,7 @@ import { AiOutlineMinus } from "react-icons/ai";
 import { css } from "../../helpers/css";
 import CompetitionIdStore from "../../store/CompetitionId.store";
 import AspectRatio from "../DSL/AspectRatio/AspectRatio";
+import Text, { TextSize, TextType } from "../DSL/Text/Text";
 
 const SelectedMemeForSubmission: React.FC<{ store: CompetitionIdStore }> =
   observer(({ store }) => {
@@ -20,8 +21,9 @@ const SelectedMemeForSubmission: React.FC<{ store: CompetitionIdStore }> =
           "overflow-y-hidden",
           "overflow-x-auto",
           {
-            "border-slate-400": !store.isMemesToSubmitMax,
-            "border-black": store.isMemesToSubmitMax,
+            "border-slate-400 dark:border-neutral-700":
+              !store.isMemesToSubmitMax,
+            "border-black dark:border-neutral-700": store.isMemesToSubmitMax,
             "items-start": store.selectedMemes.length > 0,
             "items-center": store.selectedMemes.length === 0,
           }
@@ -68,7 +70,8 @@ const SelectedMemeForSubmission: React.FC<{ store: CompetitionIdStore }> =
                   "text-red-400",
                   "items-center",
                   "justify-center",
-                  "group-hover:bg-slate-100"
+                  "group-hover:bg-white",
+                  "dark:group-hover:bg-neutral-900"
                 )}
               >
                 <div
@@ -98,9 +101,9 @@ const SelectedMemeForSubmission: React.FC<{ store: CompetitionIdStore }> =
           </div>
         ))}
         {!store.hasSelectedMemes && (
-          <div className={css("text-slate-700", "text-xs")}>
-            select at most: {store.countMemeUserCanSubmit}
-          </div>
+          <Text size={TextSize.xs} type={TextType.Grey}>
+            Select at most: {store.countMemeUserCanSubmit}
+          </Text>
         )}
       </div>
     );

@@ -37,7 +37,6 @@ export const textFieldBaseStyles = css(
   "py-1",
   "px-2",
   "appearance-none",
-  "disabled:bg-neutral-800",
   "placeholder-neutral-600",
   "text-sm",
   "focus:outline-none",
@@ -52,7 +51,9 @@ export const textFieldBaseStyles = css(
 const disabledStyles = css(
   "text-slate-400",
   "border-slate-500",
-  "cursor-not-allowed"
+  "cursor-not-allowed",
+  "dark:disabled:bg-neutral-800",
+  "disabled:bg-slate-200"
 );
 
 const Input = ({

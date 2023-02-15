@@ -8,6 +8,7 @@ import Button from "../../components/DSL/Button/Button";
 import Input from "../../components/DSL/Input/Input";
 import Link, { LinkType } from "../../components/DSL/Link/Link";
 import Pane, { PaneType } from "../../components/DSL/Pane/Pane";
+import Text, { TextSize, TextType } from "../../components/DSL/Text/Text";
 import CompetitionSubmissions from "../../components/MemeSubmission/CompetitionSubmissions";
 import MemeSelector from "../../components/MemeSubmission/MemeSelector";
 import SelectedMemesForSubmission from "../../components/MemeSubmission/SelectedMemesForSubmission";
@@ -80,7 +81,6 @@ const MemeById: React.FC<CompetitionByIdProps> = observer(
                 <Pane
                   type={PaneType.Secondary}
                   title={"Enter"}
-                  toggle
                   isExpanded={store.showSubmitContent}
                   onChange={(value) => (store.showSubmitContent = value)}
                 >
@@ -118,7 +118,6 @@ const MemeById: React.FC<CompetitionByIdProps> = observer(
                 <Pane
                   type={PaneType.Secondary}
                   title={`Your Entries: (${store.userEntriesCount})`}
-                  toggle
                   isExpanded={store.showUserEntriesContent}
                   onChange={(value) => (store.showUserEntriesContent = value)}
                 >
@@ -137,33 +136,58 @@ const CompetitionDetails: React.FC<{ store: CompetitionByIdStore }> = observer(
   ({ store }) => {
     return (
       <>
-        <Pane type={PaneType.Secondary} title={store.competition.name}>
-          <div className={css("flex", "flex-col", "gap-4")}>
-            <div className={css("text-sm")}>
-              {store.competition.description && (
-                <div>{store.competition.description}</div>
+        <Pane
+          type={PaneType.Secondary}
+          title={store.competition.name}
+          onChange={(val) => (store.showDetails = val)}
+          isExpanded={store.showDetails}
+        >
+          <div className={css("flex", "flex-col", "gap-4", "flex-wrap")}>
+            {store.competition.description && (
+              <div>
+                <Text size={TextSize.sm}>{store.competition.description}</Text>
+              </div>
+            )}
+            <div
+              className={css(
+                "flex",
+                "justify-between",
+                "items-end",
+                "flex-wrap"
               )}
-              {!store.competition.description && <div>no description</div>}
-            </div>
-            <div className={css("flex", "justify-between", "items-end")}>
+            >
               <div className={css("flex", "gap-1", "items-center")}>
-                <div className={css("font-bold")}>Votes:</div>
-                <div>{store.totalVotes}</div>
+                <Text size={TextSize.sm} bold>
+                  Votes:
+                </Text>
+                <Text size={TextSize.sm}>{store.totalVotes}</Text>
               </div>
               <div className={css("flex", "gap-1", "items-center")}>
-                <div className={css("font-bold")}>Submissions:</div>
-                <div>{store.memes.length}</div>
+                <Text size={TextSize.sm} bold>
+                  Submissions:
+                </Text>
+                <Text size={TextSize.sm}>{store.memes.length}</Text>
               </div>
               <div className={css("flex", "gap-1", "items-center")}>
-                <div className={css("font-bold")}>Max Entries:</div>
-                <div>{store.competition.maxUserSubmissions}</div>
+                <Text size={TextSize.sm} bold>
+                  Max Entries:
+                </Text>
+                <Text size={TextSize.sm}>
+                  {store.competition.maxUserSubmissions}
+                </Text>
               </div>
               <div className={css("flex", "gap-1", "items-center")}>
-                <div className={css("font-bold")}>Ends at:</div>
-                <div>{format(new Date(store.competition.endsAt), "P")}</div>
+                <Text size={TextSize.sm} bold>
+                  Ends at:
+                </Text>
+                <Text size={TextSize.sm}>
+                  {format(new Date(store.competition.endsAt), "Pp")}
+                </Text>
               </div>
               <div className={css("flex", "gap-1", "items-center")}>
-                <div className={css("font-bold")}>Created by:</div>
+                <Text size={TextSize.sm} bold>
+                  Created by:
+                </Text>
                 <Link
                   type={LinkType.Secondary}
                   href={`/profile/${store.competition.user.address}/competition`}
@@ -172,9 +196,36 @@ const CompetitionDetails: React.FC<{ store: CompetitionByIdStore }> = observer(
                 </Link>
               </div>
             </div>
+            <div className={css("text-right")}>
+              <div
+                className={css(
+                  "rounded-full",
+                  "border-[1px]",
+                  "px-2",
+                  "py-1",
+                  "inline-flex",
+                  "items-center",
+                  "border-black",
+                  "dark:border-neutral-700",
+                  {
+                    "bg-red-800 text-white": !store.competition.isActive,
+                    "text-black": store.competition.isActive,
+                  }
+                )}
+              >
+                <Text size={TextSize.xs} type={TextType.NoColor}>
+                  {store.competition.isActive ? "active" : "ended"}
+                </Text>
+              </div>
+            </div>
           </div>
         </Pane>
-        <Pane title={"Rewards"} type={PaneType.Secondary}>
+        <Pane
+          title={`Rewards: (${store.rewards.length})`}
+          type={PaneType.Secondary}
+          isExpanded={store.showRewards}
+          onChange={(val) => (store.showRewards = val)}
+        >
           {store.hasRewards &&
             store.rewards.map((reward) => (
               <Reward key={`reward-${reward.id}`} reward={reward} />
@@ -189,9 +240,9 @@ const CompetitionDetails: React.FC<{ store: CompetitionByIdStore }> = observer(
                 "py-4"
               )}
             >
-              <div className={css("text-slate-500", "dark:text-neutral-400")}>
-                No rewards found
-              </div>
+              <Text size={TextSize.sm} type={TextType.Grey}>
+                No rewards
+              </Text>
             </div>
           )}
         </Pane>
@@ -214,18 +265,15 @@ const Reward: React.FC<{ reward: Reward }> = ({ reward }) => {
         }
         isExternal
       />
-      <div>{reward.competitionRank}</div>
-      <div>{reward.currency.type}</div>
-      {/* <div>{reward.currency.contractAddress}</div> */}
-      {/* <div>{reward.currency.name}</div> */}
-      <div>{reward.currency.name}</div>
-      <div>
+      <Text size={TextSize.sm}>{reward.competitionRank}</Text>
+      <Text size={TextSize.sm}>{reward.currency.type}</Text>
+      <Text size={TextSize.sm}>{reward.currency.name}</Text>
+      <Text size={TextSize.sm}>
         {ethers.utils.formatUnits(
           reward.currencyAmountAtoms,
           reward.currency.decimals
         )}
-      </div>
-      {/* <div>{jsonify(reward)}</div> */}
+      </Text>
     </div>
   );
 };

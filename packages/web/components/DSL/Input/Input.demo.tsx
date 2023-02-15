@@ -17,7 +17,7 @@ const InputDemo = () => {
             <Input defaultValue={"yeet"} />
           </Variant>
           <Variant title={"Controlled"} className={css("flex", "flex-col")}>
-            <Input value={text} onChange={setText} />
+            <Input value={text} onChange={setText} disabled />
             <Code className={css("max-w-xxs", "text-xs")}>{text}</Code>
           </Variant>
         </div>

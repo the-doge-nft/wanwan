@@ -3,7 +3,8 @@ import { AiOutlinePlus } from "react-icons/ai";
 import { css } from "../../helpers/css";
 import CompetitionIdStore from "../../store/CompetitionId.store";
 import AspectRatio from "../DSL/AspectRatio/AspectRatio";
-import AsyncWrap, { NoDataFound } from "../DSL/AsyncWrap/AsyncWrap";
+import AsyncWrap from "../DSL/AsyncWrap/AsyncWrap";
+import Text, { TextSize, TextType } from "../DSL/Text/Text";
 
 const MemeSelector: React.FC<{ store: CompetitionIdStore }> = observer(
   ({ store }) => {
@@ -33,7 +34,9 @@ const MemeSelector: React.FC<{ store: CompetitionIdStore }> = observer(
                 "w-full"
               )}
             >
-              <NoDataFound>No memes found</NoDataFound>
+              <Text size={TextSize.xs} type={TextType.Grey}>
+                No memes found
+              </Text>
             </div>
           )}
         >
@@ -78,7 +81,8 @@ const MemeSelector: React.FC<{ store: CompetitionIdStore }> = observer(
                     "text-slate-500",
                     "items-center",
                     "justify-center",
-                    "group-hover:bg-slate-100"
+                    "group-hover:bg-white",
+                    "dark:group-hover:bg-neutral-900"
                   )}
                 >
                   <div

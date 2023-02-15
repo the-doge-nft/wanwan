@@ -26,10 +26,9 @@ export const competitionSearchKeyNames: (keyof Competition)[] = [
   'endsAt',
   'createdAt',
   'updatedAt',
-  'isActive',
 ];
 
-export const competitionSearchCustomKeys = ['address'];
+export const competitionSearchCustomKeys = ['address', 'isActive'];
 
 export const competitionSearchSchema = Joi.object().keys({
   filters: Joi.array().items(

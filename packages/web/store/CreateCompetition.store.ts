@@ -1,7 +1,9 @@
 import { add } from "date-fns";
+import { zonedTimeToUtc } from "date-fns-tz";
 import { action, computed, makeObservable, observable } from "mobx";
 import { dateToDateTimeLocalInput } from "../components/DSL/Form/DateInput";
 import { SelectItem } from "../components/DSL/Select/Select";
+import { getTimezone } from "../helpers/dates";
 import { formatEthereumAddress } from "../helpers/strings";
 import { RewardBody, TokenType } from "../interfaces";
 import { newHttp } from "../services/http";
@@ -21,7 +23,7 @@ export default class CreateCompetitionStore extends Navigable(EmptyClass) {
   REWARDS_INPUT_NUMBER_PREFIX = "rewards-number-input";
   REWARDS_INPUT_TOKENID_PREFIX = "rewards-tokenid-input";
 
-  minEndsAtDate = dateToDateTimeLocalInput(add(new Date(), { hours: 2 }));
+  minEndsAtDate = dateToDateTimeLocalInput(add(new Date(), { minutes: 1 }));
   maxEndsAtDate = dateToDateTimeLocalInput(add(new Date(), { years: 1 }));
   defaultEndsAtDate = dateToDateTimeLocalInput(add(new Date(), { days: 1 }));
 
@@ -63,7 +65,9 @@ export default class CreateCompetitionStore extends Navigable(EmptyClass) {
     body.name = values.name.trim();
     body.description =
       values.description !== "" ? values.description.trim() : null;
-    body.endsAt = values.endsAt;
+
+    body.endsAt = zonedTimeToUtc(values.endsAt, getTimezone());
+
     body.maxUserSubmissions = parseInt(values.maxUserSubmissions);
     body.curators = curators;
 

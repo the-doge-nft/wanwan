@@ -57,6 +57,7 @@ export class CompetitionService {
       curators: competition?.curators.map((item) => item.user),
       media: media ? this.media.addExtra(media) : undefined,
       submissions: undefined,
+      isActive: new Date(competition.endsAt) > new Date(),
     };
   }
 
