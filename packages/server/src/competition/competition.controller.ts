@@ -7,8 +7,9 @@ import {
   Post,
   Query,
   Req,
-  UseGuards
+  UseGuards,
 } from '@nestjs/common';
+import UpdateReward from 'src/dto/updateReward.dto';
 import { AlchemyService } from '../alchemy/alchemy.service';
 import { AuthGuard } from '../auth/auth.guard';
 import { CompetitionDto } from '../dto/competition.dto';
@@ -16,6 +17,7 @@ import IdDto from '../dto/id.dto';
 import SearchDto from '../dto/search.dto';
 import VoteDto from '../dto/vote.dto';
 import { AuthenticatedRequest } from '../interface';
+import { RewardService } from '../reward/reward.service';
 import { VoteService } from '../vote/vote.service';
 import { MemeService } from './../meme/meme.service';
 import { CompetitionSearchService } from './competition-search.service';
@@ -29,6 +31,7 @@ export class CompetitionController {
     private readonly vote: VoteService,
     private readonly alchemy: AlchemyService,
     private readonly search: CompetitionSearchService,
+    private readonly reward: RewardService,
   ) {}
 
   @Post('/')
@@ -116,5 +119,28 @@ export class CompetitionController {
   @Get(':id/meme/ranked')
   async getRankedMemes(@Param() { id }: IdDto) {
     return this.meme.getRankedMemesByCompetition(id);
+  }
+
+  @Post('/:id/reward')
+  async updateReward(
+    @Body() { txId, rewardId }: UpdateReward,
+    @Param() { id }: IdDto,
+    @Req() { user }: AuthenticatedRequest,
+  ) {
+    if (await this.competition.getIsCompetitionActive(rewardId)) {
+      throw new BadRequestException(
+        'Competition is active, must wait until inactive to update rewards',
+      );
+    }
+
+    const reward = await this.reward.findFirst({
+      where: { id: rewardId, competition: { id, createdById: user.id } },
+    });
+    if (!reward) {
+      throw new BadRequestException('Reward not found');
+    }
+
+    //@next -- run validation on the txId
+    return this.reward.update({ where: { id }, data: { txId } });
   }
 }

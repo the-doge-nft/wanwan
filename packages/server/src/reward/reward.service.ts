@@ -60,4 +60,10 @@ export class RewardService {
   create(args: Prisma.RewardCreateArgs) {
     return this.prisma.reward.create(args);
   }
+  update(args: Prisma.RewardUpdateArgs) {
+    return this.prisma.reward.update(args);
+  }
+  findFirst(args: Prisma.RewardFindFirstArgs) {
+    return this.prisma.reward.findFirst(args);
+  }
 }

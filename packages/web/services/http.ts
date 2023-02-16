@@ -43,6 +43,25 @@ class Http {
       return res;
     });
   }
+
+  getCompetition(id: number) {
+    return this.http.get<Competition>(`/competition/${id}`);
+  }
+
+  updateReward({
+    competitionId,
+    rewardId,
+    txId,
+  }: {
+    competitionId: number;
+    rewardId: number;
+    txId: string;
+  }) {
+    return this.http.post(`/competition/${competitionId}/reward`, {
+      rewardId,
+      txId,
+    });
+  }
 }
 
 export const newHttp = new Http();

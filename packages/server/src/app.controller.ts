@@ -17,6 +17,7 @@ import { AuthenticatedRequest } from './interface';
 import { MediaService } from './media/media.service';
 import { MemeService } from './meme/meme.service';
 import { ProfileService } from './profile/profile.service';
+import { RewardService } from './reward/reward.service';
 import { StatsService } from './stats/stats.service';
 import { SubmissionService } from './submission/submission.service';
 
@@ -30,6 +31,7 @@ export class AppController {
     private readonly submission: SubmissionService,
     private readonly profile: ProfileService,
     private readonly stats: StatsService,
+    private readonly reward: RewardService,
   ) {}
 
   @Get()

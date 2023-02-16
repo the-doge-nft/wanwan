@@ -3,6 +3,7 @@ import { fuzzyDeepSearch } from "../helpers/arrays";
 import { Competition, CompetitionMeme } from "../interfaces";
 import http from "../services/http";
 import { Reactionable } from "../services/mixins/reactionable";
+import { newHttp } from "./../services/http";
 import { EmptyClass } from "./../services/mixins/index";
 import AppStore from "./App.store";
 
@@ -145,6 +146,12 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
     return http
       .post(`/competition/${this.id}/vote`, { score: 0, memeId })
       .then(() => this.getRankedMemes());
+  }
+
+  getCompetition() {
+    return newHttp
+      .getCompetition(this.id)
+      .then(({ data }) => (this.competition = data));
   }
 
   @computed
