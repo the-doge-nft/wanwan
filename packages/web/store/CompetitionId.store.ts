@@ -38,11 +38,7 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
   @observable
   userSubmittedMemes: CompetitionMeme[] = [];
 
-  constructor(
-    private readonly id: number,
-    competition: Competition,
-    memes: CompetitionMeme[]
-  ) {
+  constructor(competition: Competition, memes: CompetitionMeme[]) {
     super();
     makeObservable(this);
     this.competition = competition;
@@ -64,7 +60,9 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
   @action
   getUserSubmittedMemes() {
     return http
-      .get<CompetitionMeme[]>(`/competition/${this.id}/meme/submissions`)
+      .get<CompetitionMeme[]>(
+        `/competition/${this.competition.id}/meme/submissions`
+      )
       .then(
         ({ data }) =>
           (this.userSubmittedMemes = data.sort((a, b) => b.score - a.score))
@@ -74,7 +72,7 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
   @action
   getRankedMemes() {
     return http
-      .get<CompetitionMeme[]>(`/competition/${this.id}/meme/ranked`)
+      .get<CompetitionMeme[]>(`/competition/${this.competition.id}/meme/ranked`)
       .then(({ data }) => (this.memes = data));
   }
 
@@ -109,7 +107,7 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
   onSubmit() {
     this.isSubmitLoading = true;
     const promises = this.selectedMemeIds.map((memeId) =>
-      http.post("/submission", { memeId, competitionId: this.id })
+      http.post("/submission", { memeId, competitionId: this.competition.id })
     );
     return Promise.all(promises)
       .then(() => {
@@ -132,25 +130,25 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
 
   upVote(memeId: number) {
     return http
-      .post(`/competition/${this.id}/vote`, { score: 1, memeId })
+      .post(`/competition/${this.competition.id}/vote`, { score: 1, memeId })
       .then(() => this.getRankedMemes());
   }
 
   downVote(memeId: number) {
     return http
-      .post(`/competition/${this.id}/vote`, { score: -1, memeId })
+      .post(`/competition/${this.competition.id}/vote`, { score: -1, memeId })
       .then(() => this.getRankedMemes());
   }
 
   zeroVote(memeId: number) {
     return http
-      .post(`/competition/${this.id}/vote`, { score: 0, memeId })
+      .post(`/competition/${this.competition.id}/vote`, { score: 0, memeId })
       .then(() => this.getRankedMemes());
   }
 
   getCompetition() {
     return newHttp
-      .getCompetition(this.id)
+      .getCompetition(this.competition.id)
       .then(({ data }) => (this.competition = data));
   }
 

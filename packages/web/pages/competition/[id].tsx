@@ -1,6 +1,5 @@
 import { observer } from "mobx-react-lite";
 import { GetServerSideProps } from "next";
-import { useRouter } from "next/router";
 import { useEffect, useMemo } from "react";
 import CompetitionSubmissions from "../../components/CompetitionById/CompetitionSubmissions";
 import MemeSelector from "../../components/CompetitionById/MemeSelector";
@@ -27,18 +26,9 @@ interface CompetitionByIdProps {
 
 const CompetitionById: React.FC<CompetitionByIdProps> = observer(
   ({ competition, memes }) => {
-    const {
-      query: { id },
-    } = useRouter();
-
     const store = useMemo(
-      () =>
-        new CompetitionByIdStore(
-          parseInt(id as string),
-          competition,
-          memes ? memes : []
-        ),
-      [id, competition, memes]
+      () => new CompetitionByIdStore(competition, memes ? memes : []),
+      [competition, memes]
     );
 
     useEffect(() => {
