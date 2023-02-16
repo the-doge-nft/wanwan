@@ -291,14 +291,16 @@ const RewardItem: React.FC<{ reward: Reward; store: CompetitionByIdStore }> =
           </Text>
         </div>
         <div className={css("grow")}></div>
-        {store.isCreator && <DistributeReward reward={reward} store={store} />}
-        {!store.isCreator && !reward.txId && (
-          <Text size={TextSize.xs} type={TextType.Grey}>
-            waiting on distribution
-          </Text>
+        {store.isCreator && !store.competition.isActive && (
+          <DistributeReward reward={reward} store={store} />
         )}
-        {!store.isCreator && reward.txId && (
-          <Text size={TextSize.xs}>{reward.txId}</Text>
+        {!store.isCreator && !store.competition.isActive && (
+          <>
+            {reward.txId && <Text size={TextSize.xs}>{reward.txId}</Text>}{" "}
+            {!reward.txId && (
+              <Text size={TextSize.xs}>waiting on distribution</Text>
+            )}
+          </>
         )}
       </div>
     );
@@ -312,7 +314,7 @@ const DistributeReward = observer(
         method: "safeTransferFrom",
         args: [
           AppStore.auth.address,
-          store.memes[0].user.address,
+          store.memes[0]?.user.address,
           reward.currencyTokenId,
           ethers.utils.formatUnits(
             reward.currencyAmountAtoms,
