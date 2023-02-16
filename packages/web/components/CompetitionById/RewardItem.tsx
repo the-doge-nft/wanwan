@@ -82,9 +82,7 @@ const RewardItem: React.FC<{
             )}
           </>
         )}
-        {canDistribute && rewardStore.hasTxId && (
-          <Text size={TextSize.xs}>{reward.txId}</Text>
-        )}
+        {rewardStore.hasTxId && <Text size={TextSize.xs}>{reward.txId}</Text>}
       </div>
     );
   }

@@ -3,6 +3,7 @@ import {
   Body,
   Controller,
   Get,
+  Logger,
   Param,
   Post,
   Query,
@@ -25,6 +26,7 @@ import { CompetitionService } from './competition.service';
 
 @Controller('competition')
 export class CompetitionController {
+  private readonly logger = new Logger(CompetitionController.name);
   constructor(
     private readonly competition: CompetitionService,
     private readonly meme: MemeService,
@@ -122,11 +124,13 @@ export class CompetitionController {
   }
 
   @Post('/:id/reward')
+  @UseGuards(AuthGuard)
   async updateReward(
     @Body() { txId, rewardId }: UpdateReward,
     @Param() { id }: IdDto,
     @Req() { user }: AuthenticatedRequest,
   ) {
+    this.logger.log(txId, rewardId, id, user.id);
     if (await this.competition.getIsCompetitionActive(rewardId)) {
       throw new BadRequestException(
         'Competition is active, must wait until inactive to update rewards',
@@ -141,6 +145,6 @@ export class CompetitionController {
     }
 
     //@next -- run validation on the txId
-    return this.reward.update({ where: { id }, data: { txId } });
+    return this.reward.update({ where: { id: rewardId }, data: { txId } });
   }
 }

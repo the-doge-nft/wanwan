@@ -101,7 +101,7 @@ const CompetitionSubmissions: React.FC<{ store: CompetitionIdStore }> =
                         }}
                         className={css("text-slate-400", {
                           "text-slate-800": userVoteScore === -1,
-                          "cursor-pointer hover:text-slate-400":
+                          "cursor-pointer hover:text-slate-800":
                             store.competition.isActive,
                         })}
                       >

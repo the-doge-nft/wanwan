@@ -60,7 +60,7 @@ const CreateView: React.FC<CompetitionStoreProp> = observer(({ store }) => {
         <div className={css("flex", "gap-2")}>
           <NumberInput
             block
-            label={"Max user submissions"}
+            label={"Max subs per user"}
             name={"maxUserSubmissions"}
             validate={[required, minValue(1), maxValue(5)]}
             disabled={store.isLoading}

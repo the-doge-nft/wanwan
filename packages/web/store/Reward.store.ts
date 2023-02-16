@@ -4,6 +4,7 @@ import { newHttp } from "./../services/http";
 
 export default class RewardStore {
   constructor(private readonly reward: Reward) {
+    console.log("debug:: reward", reward);
     makeObservable(this);
   }
 
