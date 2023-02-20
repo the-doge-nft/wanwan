@@ -146,10 +146,13 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
       .then(() => this.getRankedMemes());
   }
 
+  @action
   getCompetition() {
-    return newHttp
-      .getCompetition(this.competition.id)
-      .then(({ data }) => (this.competition = data));
+    console.log("debug:: GET COMPETITION");
+    return newHttp.getCompetition(this.competition.id).then(({ data }) => {
+      this.competition = data;
+      console.log("debug:: new competition", this.competition);
+    });
   }
 
   @computed

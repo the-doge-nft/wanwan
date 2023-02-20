@@ -16,6 +16,7 @@ import erc721Abi from "../../services/abis/erc721";
 import AppStore from "../../store/App.store";
 import RewardStore from "../../store/Reward.store";
 import Button from "../DSL/Button/Button";
+import Code from "../DSL/Code/Code";
 import Link from "../DSL/Link/Link";
 import Text, { TextSize, TextType } from "../DSL/Text/Text";
 
@@ -36,18 +37,11 @@ const RewardItem: React.FC<{
     competitionId,
   }) => {
     const rewardStore = useMemo(() => new RewardStore(reward), [reward]);
-    const isNft = [TokenType.ERC721, TokenType.ERC1155].includes(
-      reward.currency.type
-    );
     return (
       <div className={css("flex", "gap-2", "items-center")}>
         <div className={css("flex", "items-center", "gap-4")}>
           <Link
-            href={
-              isNft
-                ? getEtherscanURL(reward.currency.contractAddress, "token")
-                : getEtherscanURL(reward.currency.contractAddress, "token")
-            }
+            href={getEtherscanURL(reward.currency.contractAddress, "token")}
             isExternal
           />
           <Text size={TextSize.sm}>{reward.competitionRank}</Text>
@@ -62,27 +56,32 @@ const RewardItem: React.FC<{
         </div>
         <div className={css("grow")}></div>
 
-        {!isActive && !rewardStore.hasTxId && (
-          <>
-            {canDistribute && toAddress && (
-              <DistributeReward
-                reward={reward}
-                toAddress={toAddress}
-                onSuccess={(txId: string) => {
-                  rewardStore
-                    .updateReward({ txId, competitionId })
-                    .then(() => onSuccess());
-                }}
-              />
-            )}
-            {!canDistribute && (
-              <Text size={TextSize.xs} type={TextType.Grey}>
-                waiting on distribution
-              </Text>
-            )}
-          </>
-        )}
-        {rewardStore.hasTxId && <Text size={TextSize.xs}>{reward.txId}</Text>}
+        <div>
+          {!isActive && !rewardStore.hasTxId && (
+            <>
+              {canDistribute && toAddress && (
+                <DistributeReward
+                  reward={reward}
+                  toAddress={toAddress}
+                  onSuccess={(txId: string) => {
+                    rewardStore
+                      .updateReward({ txId, competitionId })
+                      .then(() => onSuccess());
+                  }}
+                />
+              )}
+              {!canDistribute && (
+                <Text size={TextSize.xs} type={TextType.Grey}>
+                  waiting on distribution
+                </Text>
+              )}
+            </>
+          )}
+          {rewardStore.hasTxId && <Text size={TextSize.xs}>{reward.txId}</Text>}
+          <div className={css("break-words")}>
+            <Code>{jsonify(reward)}</Code>
+          </div>
+        </div>
       </div>
     );
   }

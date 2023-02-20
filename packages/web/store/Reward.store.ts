@@ -1,11 +1,15 @@
-import { computed, makeObservable } from "mobx";
+import { computed, makeObservable, observable } from "mobx";
 import { Reward } from "../interfaces";
 import { newHttp } from "./../services/http";
 
 export default class RewardStore {
-  constructor(private readonly reward: Reward) {
-    console.log("debug:: reward", reward);
+  @observable
+  reward: Reward;
+
+  constructor(reward: Reward) {
     makeObservable(this);
+    this.reward = reward;
+    console.log("debug:: reward", this.reward);
   }
 
   updateReward({

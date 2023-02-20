@@ -88,7 +88,7 @@ const ProfilePage: React.FC<ProfileProps> = observer(({ profile }) => {
                 <Link
                   isExternal
                   href={getEtherscanURL(profile.address, "address")}
-                  className={css("inline-flex", "mt-2")}
+                  className={css("inline-flex")}
                 >
                   <Text type={TextType.NoColor}>
                     {abbreviate(store.profile.address)}
@@ -120,11 +120,7 @@ const ProfilePage: React.FC<ProfileProps> = observer(({ profile }) => {
             {store.view === ProfileView.Meme &&
               store.memes.map((meme) => (
                 <div key={`meme-preview-${meme.id}`}>
-                  <PreviewLink
-                    name={meme.name}
-                    description={meme.description}
-                    link={`/meme/${meme.id}`}
-                  >
+                  <PreviewLink name={meme.name} link={`/meme/${meme.id}`}>
                     <AspectRatio
                       className={css(
                         "bg-cover",
