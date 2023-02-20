@@ -47,6 +47,9 @@ const buttonTypeStyles = {
     "disabled:dark:bg-neutral-900",
     "disabled:dark:hover:bg-neutral-900",
     "disabled:dark:text-neutral-700",
+    "inline-flex",
+    "items-center",
+    "justify-center",
     borderColorCss
   ),
 };
@@ -60,7 +63,7 @@ const buttonSizeStyles = {
 const buttonSizeToTypeSize = {
   [ButtonSize.xs]: TextSize.xs,
   [ButtonSize.sm]: TextSize.sm,
-  [ButtonSize.lg]: TextSize.lg,
+  [ButtonSize.lg]: TextSize.sm,
 };
 
 const Button: React.FC<PropsWithChildren<ButtonProps>> = ({

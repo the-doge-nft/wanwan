@@ -1,10 +1,10 @@
 import { observer } from "mobx-react-lite";
 import { GetServerSideProps } from "next";
 import { useEffect, useMemo } from "react";
+import CompetitionMemeSelector from "../../components/CompetitionById/CompetitionMemeSelector";
+import CompetitionSelectedMemesForSubmission from "../../components/CompetitionById/CompetitionSelectedMemeForSubmission";
 import CompetitionSubmissions from "../../components/CompetitionById/CompetitionSubmissions";
-import MemeSelector from "../../components/CompetitionById/MemeSelector";
-import SelectedMemesForSubmission from "../../components/CompetitionById/SelectedMemesForSubmission";
-import UserSubmissions from "../../components/CompetitionById/UserSubmissions";
+import CompetitionUserSubmissions from "../../components/CompetitionById/CompetitionUserSubmissions";
 import Button from "../../components/DSL/Button/Button";
 import Input from "../../components/DSL/Input/Input";
 import Pane, { PaneType } from "../../components/DSL/Pane/Pane";
@@ -17,7 +17,7 @@ import redirectTo404 from "../../services/redirect/404";
 import { default as CompetitionByIdStore } from "../../store/CompetitionId.store";
 
 import CompetitionDetails from "../../components/CompetitionById/CompetitionDetails";
-import RewardItem from "../../components/CompetitionById/RewardItem";
+import CompetitionRewards from "../../components/CompetitionById/CompetitionRewards";
 
 interface CompetitionByIdProps {
   competition: Competition;
@@ -54,21 +54,7 @@ const CompetitionById: React.FC<CompetitionByIdProps> = observer(
             isExpanded={store.showRewards}
             onChange={(val) => (store.showRewards = val)}
           >
-            {store.hasRewards && (
-              <div className={css("flex", "flex-col", "gap-1")}>
-                {store.rewards.map((reward, index) => (
-                  <RewardItem
-                    key={`reward-${reward.id}`}
-                    reward={reward}
-                    canDistribute={store.isCreator}
-                    isActive={store.competition.isActive}
-                    toAddress={store?.memes?.[index]?.user?.address}
-                    onSuccess={() => store.getCompetition()}
-                    competitionId={store.competition.id}
-                  />
-                ))}
-              </div>
-            )}
+            {store.hasRewards && <CompetitionRewards store={store} />}
             {!store.hasRewards && (
               <div
                 className={css(
@@ -136,8 +122,8 @@ const CompetitionById: React.FC<CompetitionByIdProps> = observer(
                         Submit
                       </Button>
                     </div>
-                    <MemeSelector store={store} />
-                    <SelectedMemesForSubmission store={store} />
+                    <CompetitionMemeSelector store={store} />
+                    <CompetitionSelectedMemesForSubmission store={store} />
                   </div>
                 </Pane>
               )}
@@ -149,7 +135,7 @@ const CompetitionById: React.FC<CompetitionByIdProps> = observer(
                   isExpanded={store.showUserEntriesContent}
                   onChange={(value) => (store.showUserEntriesContent = value)}
                 >
-                  <UserSubmissions store={store} />
+                  <CompetitionUserSubmissions store={store} />
                 </Pane>
               )}
             </div>

@@ -37,7 +37,7 @@ const textTypeStyles = {
 };
 
 const Text: React.FC<PropsWithChildren<TextProps>> = ({
-  size = TextSize.lg,
+  size = TextSize.sm,
   type = TextType.Primary,
   bold = false,
   italic = false,

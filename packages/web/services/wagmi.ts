@@ -3,7 +3,6 @@ import {
   createAuthenticationAdapter,
   getDefaultWallets,
 } from "@rainbow-me/rainbowkit";
-import { GetSiweMessageOptions } from "@rainbow-me/rainbowkit-siwe-next-auth";
 import { SiweMessage } from "siwe";
 import { configureChains, createClient, goerli, mainnet } from "wagmi";
 import { alchemyProvider } from "wagmi/providers/alchemy";
@@ -22,14 +21,10 @@ export const { chains, provider, webSocketProvider } = configureChains(
 const { wallets } = getDefaultWallets({ appName: env.app.name, chains });
 const connectors = connectorsForWallets([...wallets]);
 export const client = createClient({
-  autoConnect: true,
+  autoConnect: false,
   connectors,
   provider,
   webSocketProvider,
-});
-
-export const getSiweMessageOptions: GetSiweMessageOptions = () => ({
-  statement: "Sign in to Meme2Earn",
 });
 
 interface CreateRainbowAdapterProps {
@@ -50,7 +45,7 @@ export const createRainbowAuthAdapter = ({
       return new SiweMessage({
         domain: window.location.host,
         address,
-        statement: "Sign in to Meme2Earn",
+        statement: `Sign in to ${env.app.name}}`,
         uri: window.location.origin,
         version: "1",
         chainId,

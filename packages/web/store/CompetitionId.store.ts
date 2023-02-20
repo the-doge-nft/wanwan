@@ -160,7 +160,8 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
     return (
       AppStore.auth.isAuthed &&
       this.canUserSelectMemes &&
-      this.competition.isActive
+      this.competition.isActive &&
+      AppStore.auth.profile?.user.id !== this.competition.createdById
     );
   }
 

@@ -6,8 +6,8 @@ import AspectRatio from "../DSL/AspectRatio/AspectRatio";
 import AsyncWrap from "../DSL/AsyncWrap/AsyncWrap";
 import Text, { TextSize, TextType } from "../DSL/Text/Text";
 
-const MemeSelector: React.FC<{ store: CompetitionIdStore }> = observer(
-  ({ store }) => {
+const CompetitionMemeSelector: React.FC<{ store: CompetitionIdStore }> =
+  observer(({ store }) => {
     if (store.isMemesToSubmitMax) {
       return <></>;
     }
@@ -114,6 +114,5 @@ const MemeSelector: React.FC<{ store: CompetitionIdStore }> = observer(
         </AsyncWrap>
       </div>
     );
-  }
-);
-export default MemeSelector;
+  });
+export default CompetitionMemeSelector;

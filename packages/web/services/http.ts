@@ -48,16 +48,8 @@ class Http {
     return this.http.get<Competition>(`/competition/${id}`);
   }
 
-  updateReward({
-    competitionId,
-    rewardId,
-    txId,
-  }: {
-    competitionId: number;
-    rewardId: number;
-    txId: string;
-  }) {
-    return this.http.post(`/competition/${competitionId}/reward`, {
+  updateReward({ rewardId, txId }: { rewardId: number; txId: string }) {
+    return this.http.post(`/competition/reward/${rewardId}`, {
       rewardId,
       txId,
     });

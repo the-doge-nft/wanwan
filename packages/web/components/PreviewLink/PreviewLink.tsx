@@ -44,7 +44,7 @@ const PreviewLink: React.FC<PropsWithChildren<PreviewLinkProps>> = ({
             "group-hover:text-red-800"
           )}
         >
-          <Text bold type={TextType.NoColor} size={TextSize.sm}>
+          <Text type={TextType.NoColor} size={TextSize.sm}>
             {name}
           </Text>
         </div>

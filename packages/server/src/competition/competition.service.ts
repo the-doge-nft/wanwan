@@ -181,4 +181,14 @@ export class CompetitionService {
     });
     return !!competition;
   }
+
+  async getIsCompetitionCreatedByUser(createdById: number, id: number) {
+    const competition = await this.findFirst({
+      where: {
+        id,
+        createdById,
+      },
+    });
+    return !!competition;
+  }
 }

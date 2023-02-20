@@ -123,28 +123,36 @@ export class CompetitionController {
     return this.meme.getRankedMemesByCompetition(id);
   }
 
-  @Post('/:id/reward')
+  @Post('/reward/:id')
   @UseGuards(AuthGuard)
   async updateReward(
-    @Body() { txId, rewardId }: UpdateReward,
+    @Body() { txId }: UpdateReward,
     @Param() { id }: IdDto,
     @Req() { user }: AuthenticatedRequest,
   ) {
-    this.logger.log(txId, rewardId, id, user.id);
-    if (await this.competition.getIsCompetitionActive(rewardId)) {
+    this.logger.log(txId, id, user.id);
+
+    const competition = await this.competition.findFirst({
+      where: { rewards: { some: { id: id } }, createdById: user.id },
+    });
+    if (!competition) {
+      throw new BadRequestException('Competition not found');
+    }
+
+    if (await this.competition.getIsCompetitionActive(competition.id)) {
       throw new BadRequestException(
         'Competition is active, must wait until inactive to update rewards',
       );
     }
 
     const reward = await this.reward.findFirst({
-      where: { id: rewardId, competition: { id, createdById: user.id } },
+      where: { id: id, competitionId: competition.id },
     });
     if (!reward) {
       throw new BadRequestException('Reward not found');
     }
 
     //@next -- run validation on the txId
-    return this.reward.update({ where: { id: rewardId }, data: { txId } });
+    return this.reward.update({ where: { id: id }, data: { txId } });
   }
 }

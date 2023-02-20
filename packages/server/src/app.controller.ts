@@ -78,6 +78,15 @@ export class AppController {
       throw new BadRequestException('Competition not active');
     }
 
+    if (
+      await this.competition.getIsCompetitionCreatedByUser(
+        user.id,
+        submission.competitionId,
+      )
+    ) {
+      throw new BadRequestException("You can't submit to your own competition");
+    }
+
     const competition = await this.competition.findFirst({
       where: { id: submission.competitionId },
     });

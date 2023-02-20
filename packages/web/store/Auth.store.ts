@@ -48,7 +48,7 @@ export default class AuthStore extends Reactionable(EmptyClass) {
     );
   }
 
-  getStatus() {
+  private getStatus() {
     http
       .get("/auth/status")
       .then(({ data: isLoggedIn }) => {

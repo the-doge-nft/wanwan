@@ -4,7 +4,7 @@ import AspectRatio from "../DSL/AspectRatio/AspectRatio";
 import AsyncWrap, { NoDataFound } from "../DSL/AsyncWrap/AsyncWrap";
 import PreviewLink from "../PreviewLink/PreviewLink";
 
-const UserSubmissions: React.FC<{ store: CompetitionIdStore }> = ({
+const CompetitionUserSubmissions: React.FC<{ store: CompetitionIdStore }> = ({
   store,
 }) => {
   return (
@@ -69,4 +69,4 @@ const UserSubmissions: React.FC<{ store: CompetitionIdStore }> = ({
     </div>
   );
 };
-export default UserSubmissions;
+export default CompetitionUserSubmissions;
