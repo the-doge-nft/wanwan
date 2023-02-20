@@ -9,7 +9,7 @@ import type { AppProps } from "next/app";
 import { useEffect } from "react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useAccount, WagmiConfig } from "wagmi";
+import { useAccount, useDisconnect, WagmiConfig } from "wagmi";
 import { colors } from "../components/DSL/Theme";
 import { toastTransition } from "../components/DSL/Toast/Toast";
 import Modals from "../components/Modals/Modals";
@@ -34,20 +34,14 @@ const App = observer(({ Component, pageProps }: AppProps) => {
       AppStore.destroy();
     };
   }, []);
-
-  const { address, isDisconnected, isConnected } = useAccount();
-  useEffect(() => {
-    AppStore.auth.address = isDisconnected ? undefined : address;
-    console.log("setting address", address);
-  }, [address, isDisconnected]);
   return (
     <>
       <WagmiConfig client={client}>
         <RainbowKitAuthenticationProvider
           status={AppStore.auth.status}
           adapter={createRainbowAuthAdapter({
-            onVerifySuccess: () => AppStore.auth.onLogin(),
-            onLogoutSuccess: () => AppStore.auth.onLogout(),
+            onVerifySuccess: (address) => AppStore.auth.onLoginSuccess(address),
+            onLogoutSuccess: () => AppStore.auth.onLogoutSuccess(),
           })}
         >
           <RainbowKitProvider
@@ -59,6 +53,7 @@ const App = observer(({ Component, pageProps }: AppProps) => {
           >
             <Component {...pageProps} />
             <Modals />
+            <WagmiAccountSwitchWatcher />
           </RainbowKitProvider>
         </RainbowKitAuthenticationProvider>
       </WagmiConfig>
@@ -70,6 +65,20 @@ const App = observer(({ Component, pageProps }: AppProps) => {
       />
     </>
   );
+});
+
+const WagmiAccountSwitchWatcher = observer(() => {
+  const { address } = useAccount();
+  const { disconnect } = useDisconnect();
+  useEffect(() => {
+    if (
+      AppStore.auth.address !== undefined &&
+      AppStore.auth.address !== address
+    ) {
+      AppStore.auth.onAccountSwitch();
+    }
+  }, [address, disconnect]);
+  return <></>;
 });
 
 export default App;

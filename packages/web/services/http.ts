@@ -1,5 +1,6 @@
 import { Meme } from "@prisma/client";
 import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
+import { SiweMessage } from "siwe";
 import env from "../environment";
 import { Competition, SearchResponse, Stats } from "../interfaces";
 import AppStore from "../store/App.store";
@@ -53,6 +54,14 @@ class Http {
       rewardId,
       txId,
     });
+  }
+
+  logout() {
+    return this.http.get("/auth/logout");
+  }
+
+  login(body: { message: SiweMessage; signature: string }) {
+    return this.http.post("/auth/login", body);
   }
 }
 

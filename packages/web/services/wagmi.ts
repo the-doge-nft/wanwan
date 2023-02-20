@@ -9,7 +9,7 @@ import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
 import env from "../environment";
 import { isProd, vars } from "./../environment/vars";
-import http from "./http";
+import http, { newHttp } from "./http";
 
 const targetNetwork = isProd() ? mainnet : goerli;
 
@@ -28,7 +28,7 @@ export const client = createClient({
 });
 
 interface CreateRainbowAdapterProps {
-  onVerifySuccess: () => void;
+  onVerifySuccess: (address: string) => void;
   onLogoutSuccess: () => void;
 }
 
@@ -45,7 +45,7 @@ export const createRainbowAuthAdapter = ({
       return new SiweMessage({
         domain: window.location.host,
         address,
-        statement: `Sign in to ${env.app.name}}`,
+        statement: "Sign in to wanwan",
         uri: window.location.origin,
         version: "1",
         chainId,
@@ -56,16 +56,16 @@ export const createRainbowAuthAdapter = ({
       return message.prepareMessage();
     },
     verify: async ({ message, signature }) => {
-      const res = await http.post("/auth/login", { message, signature });
+      const res = await newHttp.login({ message, signature });
       if (res.status === 201) {
-        await onVerifySuccess();
+        await onVerifySuccess(res.data.address);
         return true;
       }
       return false;
     },
     signOut: async () => {
       try {
-        await http.get("/auth/logout");
+        await newHttp.logout();
       } catch (e) {
         console.log(e);
       } finally {

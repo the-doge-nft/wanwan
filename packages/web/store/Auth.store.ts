@@ -5,6 +5,7 @@ import { encodeBase64 } from "../helpers/strings";
 import http from "../services/http";
 import { Reactionable } from "../services/mixins/reactionable";
 import { Meme, Profile, SearchResponse } from "./../interfaces/index";
+import { newHttp } from "./../services/http";
 import { EmptyClass } from "./../services/mixins/index";
 import AppStore from "./App.store";
 
@@ -98,14 +99,28 @@ export default class AuthStore extends Reactionable(EmptyClass) {
     }
   }
 
-  onLogin() {
+  onLoginSuccess(address: string) {
+    this.address = address as Address;
     this.getStatus();
     AppStore.events.publish(AppStore.events.events.LOGIN);
   }
 
-  onLogout() {
+  onLogoutSuccess() {
+    this.address = undefined;
     this.getStatus();
     AppStore.events.publish(AppStore.events.events.LOGOUT);
+  }
+
+  onAccountSwitch() {
+    console.log("account switch");
+    return this.logout();
+  }
+
+  logout() {
+    return newHttp
+      .logout()
+      .then(() => this.onLogoutSuccess())
+      .catch((e) => console.warn("already logged out"));
   }
 
   destroy() {
