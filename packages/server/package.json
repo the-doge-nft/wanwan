@@ -22,7 +22,8 @@
     "start:repl": "nest start --entryFile repl",
     "prisma:generate": "npx prisma generate",
     "prisma:push": "npx prisma db push",
-    "prisma:seed": "npx prisma db seed"
+    "prisma:seed": "npx prisma db seed",
+    "prisma:migrate": "npx prisma migrate dev"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.229.0",

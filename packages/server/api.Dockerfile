@@ -1,7 +1,6 @@
 # https://github.com/prisma/prisma/issues/16553#issuecomment-1353302617
 FROM node:18.12.1-alpine3.16 as development
 
-# we need pnpm first
 RUN npm install -g pnpm
 WORKDIR /usr/src/app
 # copy package.json and package-lock.json to the container
@@ -19,6 +18,7 @@ RUN pnpm run prisma:generate
 ###########################################################
 
 FROM node:18.12.1-alpine3.16 as build
+RUN npm install -g pnpm
 WORKDIR /usr/src/app
 COPY --chown=node:node package.json ./
 COPY --chown=node:node pnpm-lock.yaml ./
@@ -27,7 +27,7 @@ COPY --chown=node:node --from=development /usr/src/app/node_modules ./node_modul
 COPY --chown=node:node . .
 RUN pnpm run build
 ENV NODE_ENV production
-RUN pnpm install --frozen-lockfile --only=production && pnpm cache clean --force
+RUN pnpm install --frozen-lockfile --only=production
 USER node
 
 ###########################################################
