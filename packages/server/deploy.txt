@@ -21,3 +21,14 @@ jobs:
 pipeline:
     - release pipeline that deploys your service whenever you push to a git repository
     - setup a pipeline for a particular service to a test environment, runs automated testing, then deploys to the production env
+
+
+
+STEPS:
+    - setup db on rds
+    - setup ecs web cluster
+    - setup ecs backend service for redis
+    - on merge to dev
+        - run prisma migrate
+        - deploy service from copilot
+

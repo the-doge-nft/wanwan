@@ -39,6 +39,6 @@ lerna-debug.log*
 .pnpm-store
 
 .env
-.env.test
-.env.production
+.test.env
+.production.env
 uploads/
