@@ -19,11 +19,11 @@ const linkTypeStyles = {
   [LinkType.Primary]: css("text-red-800", "hover:text-red-600"),
   [LinkType.Secondary]: css(
     "text-black",
-    "hover:text-red-800",
+    "hover:text-red-600",
     "dark:text-white",
-    "dark:hover:text-red-800"
+    "dark:hover:text-red-600"
   ),
-  [LinkType.Tertiary]: css("text-slate-800", "hover:text-slate-400"),
+  [LinkType.Tertiary]: css("text-neutral-800", "hover:text-neutral-400"),
 };
 
 interface LinkProps {

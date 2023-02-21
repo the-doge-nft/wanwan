@@ -49,7 +49,7 @@ export const textFieldBaseStyles = css(
 );
 
 const disabledStyles = css(
-  "text-slate-400",
+  "text-neutral-400",
   "border-slate-500",
   "cursor-not-allowed",
   "dark:disabled:bg-neutral-800",

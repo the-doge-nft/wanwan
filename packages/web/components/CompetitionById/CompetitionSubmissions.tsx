@@ -7,7 +7,7 @@ import CompetitionIdStore from "../../store/CompetitionId.store";
 import AspectRatio from "../DSL/AspectRatio/AspectRatio";
 import AsyncWrap, { NoDataFound } from "../DSL/AsyncWrap/AsyncWrap";
 import Link, { LinkType } from "../DSL/Link/Link";
-import Pane from "../DSL/Pane/Pane";
+import Pane, { PaneType } from "../DSL/Pane/Pane";
 import Text, { TextSize, TextType } from "../DSL/Text/Text";
 
 const CompetitionSubmissions: React.FC<{ store: CompetitionIdStore }> =
@@ -21,9 +21,21 @@ const CompetitionSubmissions: React.FC<{ store: CompetitionIdStore }> =
         >
           {store.memes.map((meme) => {
             const score = meme.votes.reduce((acc, vote) => acc + vote.score, 0);
-            const userVoteScore = meme.votes.filter(
+            const userVoteScore = meme.votes.find(
               (vote) => vote.user.address === AppStore.auth.address
-            )[0]?.score;
+            )?.score;
+            const baseArrowStyles = css(
+              "text-neutral-500",
+              "hover:text-red-600",
+              "dark:hover:text-red-600"
+            );
+            const scoreStyles = css(
+              "text-black",
+              "dark:text-white",
+              "text-center",
+              "font-bold",
+              { "text-red-800": score < 0 }
+            );
             return (
               <Link
                 className={css("hover:no-underline")}
@@ -31,18 +43,12 @@ const CompetitionSubmissions: React.FC<{ store: CompetitionIdStore }> =
                 key={`meme-preview-${meme.id}`}
               >
                 <Pane
+                  type={PaneType.Grey}
                   hover
                   title={
-                    <div
-                      className={css(
-                        "group-hover:text-red-800",
-                        "text-black",
-                        "dark:text-white"
-                      )}
-                    >
+                    <div className={css("text-black", "dark:text-white")}>
                       <Text type={TextType.NoColor}>Posted by </Text>
                       <Link
-                        className={css("group-hover:text-red-800")}
                         type={LinkType.Secondary}
                         href={`/profile/${meme.user.address}/meme`}
                       >
@@ -66,21 +72,17 @@ const CompetitionSubmissions: React.FC<{ store: CompetitionIdStore }> =
                             });
                           }
                         }}
-                        className={css("text-slate-400", {
-                          "text-slate-800 dark:text-white": userVoteScore === 1,
-                          "cursor-pointer hover:text-red-600":
-                            store.competition.isActive,
+                        className={css({
+                          "text-black dark:text-white": userVoteScore === 1,
+                          [baseArrowStyles]: userVoteScore !== 1,
                         })}
                       >
                         <RxArrowUp size={22} />
                       </div>
-                      <div
-                        className={css("text-center", "font-bold", {
-                          "text-slate-600 dark:text-white": score > 0,
-                          "text-slate-400": score === 0,
-                        })}
-                      >
-                        {score}
+                      <div className={css(scoreStyles)}>
+                        <Text type={TextType.NoColor} size={TextSize.sm}>
+                          {score}
+                        </Text>
                       </div>
                       <div
                         onClick={(e) => {
@@ -95,32 +97,20 @@ const CompetitionSubmissions: React.FC<{ store: CompetitionIdStore }> =
                             });
                           }
                         }}
-                        className={css("text-slate-400", {
-                          "text-slate-800 dark:text-white":
-                            userVoteScore === -1,
-                          "cursor-pointer hover:text-slate-800":
-                            store.competition.isActive,
+                        className={css({
+                          "text-black dark:text-white": userVoteScore === -1,
+                          [baseArrowStyles]: userVoteScore !== -1,
                         })}
                       >
                         <RxArrowDown size={22} />
                       </div>
                     </div>
                     <div className={css("grow")}>
-                      <div
-                        className={css(
-                          "flex",
-                          "flex-col",
-                          "group-hover:text-red-800",
-                          "text-black",
-                          "dark:text-white"
-                        )}
-                      >
-                        <Text type={TextType.NoColor} size={TextSize.sm} bold>
+                      <div className={css("flex", "flex-col")}>
+                        <Text size={TextSize.sm} bold>
                           {meme.name}
                         </Text>
-                        <Text type={TextType.NoColor} size={TextSize.sm}>
-                          {meme.description}
-                        </Text>
+                        <Text size={TextSize.sm}>{meme.description}</Text>
                         <AspectRatio
                           className={css(
                             "bg-contain",
@@ -141,21 +131,16 @@ const CompetitionSubmissions: React.FC<{ store: CompetitionIdStore }> =
                             "flex",
                             "justify-end",
                             "items-center",
-                            "mt-2.5",
-                            "text-slate-500",
-                            "group-hover:text-red-800"
+                            "mt-2.5"
                           )}
                         >
                           <Link
-                            type={LinkType.Tertiary}
+                            type={LinkType.Secondary}
                             href={`/meme/${meme.id}`}
                             className={css(
                               "inline-flex",
                               "items-center",
-                              "gap-1",
-                              "group-hover:text-red-800",
-                              "text-slate-900",
-                              "dark:text-white"
+                              "gap-1"
                             )}
                           >
                             <Text size={TextSize.sm} type={TextType.NoColor}>

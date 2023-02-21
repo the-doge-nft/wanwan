@@ -76,7 +76,7 @@ export const FormLabel: React.FC<PropsWithChildren<FormLabelProps>> = ({
   return (
     <div
       className={css("text-xs", "text-black", "dark:text-white", {
-        [css("text-slate-500")]: isDisabled,
+        [css("text-neutral-500")]: isDisabled,
         [errorTextCss]: isInvalid,
         flex: isRequired,
         "mb-0.5": mb,
@@ -95,7 +95,7 @@ export const FormDescription: React.FC<
     <div
       className={css("mb-0.5", "italic", {
         "text-red-900": isInvalid,
-        "text-slate-800": !isInvalid,
+        "text-neutral-800": !isInvalid,
       })}
     >
       <Text size={TextSize.xs} type={TextType.Grey}>

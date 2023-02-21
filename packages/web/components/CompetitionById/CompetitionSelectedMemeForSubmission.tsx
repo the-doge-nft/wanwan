@@ -92,7 +92,7 @@ const CompetitionSelectedMemeForSubmission: React.FC<{
               "whitespace-nowrap",
               "overflow-hidden",
               "overflow-ellipsis",
-              "text-slate-600",
+              "text-neutral-600",
               "group-hover:text-red-800"
             )}
           >

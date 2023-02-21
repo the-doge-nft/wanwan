@@ -102,7 +102,12 @@ const InfiniteScroll: React.FC<PropsWithChildren<InfinteScrollProps>> = ({
       <div ref={loadMoreRef}>
         {!hasMore && dataLength > 0 && (
           <div
-            className={css("text-sm", "text-slate-600", "text-center", "mt-14")}
+            className={css(
+              "text-sm",
+              "text-neutral-600",
+              "text-center",
+              "mt-14"
+            )}
           >
             {endDataMessage ? endDataMessage : defaultEndMessage}
           </div>

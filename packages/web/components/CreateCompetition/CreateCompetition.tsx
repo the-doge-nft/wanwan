@@ -179,7 +179,7 @@ const Rewards: React.FC<CompetitionStoreProp> = observer(({ store }) => {
                 <div
                   className={css(
                     "text-xs",
-                    "text-slate-600",
+                    "text-neutral-600",
                     "dark:text-neutral-400",
                     "mb-1"
                   )}

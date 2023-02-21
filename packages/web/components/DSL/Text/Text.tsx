@@ -31,7 +31,7 @@ const textSizeStyles = {
 const textTypeStyles = {
   [TextType.Primary]: css("text-black", "dark:text-white"),
   [TextType.Secondary]: css(),
-  [TextType.Grey]: css("text-slate-400", "dark:text-neutral-600"),
+  [TextType.Grey]: css("text-neutral-400", "dark:text-neutral-600"),
   [TextType.White]: css("text-white"),
   [TextType.NoColor]: css(),
 };

@@ -78,7 +78,7 @@ const CompetitionMemeSelector: React.FC<{ store: CompetitionIdStore }> =
                     "bg-[rgba(0, 0, 0, 0.61)]",
                     "hidden",
                     "group-hover:flex",
-                    "text-slate-500",
+                    "text-neutral-500",
                     "items-center",
                     "justify-center",
                     "group-hover:bg-white",
@@ -89,7 +89,7 @@ const CompetitionMemeSelector: React.FC<{ store: CompetitionIdStore }> =
                     className={css(
                       "border-[1px]",
                       "border-slate-500",
-                      "text-slate-500"
+                      "text-neutral-500"
                     )}
                   >
                     <AiOutlinePlus size={20} />
@@ -103,8 +103,8 @@ const CompetitionMemeSelector: React.FC<{ store: CompetitionIdStore }> =
                   "whitespace-nowrap",
                   "overflow-hidden",
                   "overflow-ellipsis",
-                  "text-slate-600",
-                  "group-hover:text-slate-500"
+                  "text-neutral-600",
+                  "group-hover:text-neutral-500"
                 )}
               >
                 {meme.name}

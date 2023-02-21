@@ -1,5 +1,6 @@
 import { AxiosError } from "axios";
 import { errorToast } from "../../components/DSL/Toast/Toast";
+import ApiError from "../exceptions/Api.error";
 
 const ApiErrorInterceptor = (error: AxiosError) => {
   console.log("debug:: GOT ERROR", error);
@@ -16,7 +17,7 @@ const ApiErrorInterceptor = (error: AxiosError) => {
       } else {
         errorToast("Did not work");
       }
-      // throw new ApiError(Array.isArray(message) ? message[0] : message);
+      throw new ApiError(Array.isArray(message) ? message[0] : message);
     } else if (status === 400) {
       errorToast("400 error");
     } else if (status === 401) {

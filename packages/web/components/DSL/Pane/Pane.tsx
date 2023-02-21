@@ -8,6 +8,7 @@ import { borderColorCss } from "../Theme";
 export enum PaneType {
   Primary = "primary",
   Secondary = "secondary",
+  Grey = "grey",
 }
 
 interface PaneProps {
@@ -29,7 +30,7 @@ const Pane: React.FC<PropsWithChildren<PaneProps>> = observer(
   }) => {
     const basePaneStyles = {
       container: css("border-[1px]", borderColorCss, {
-        "hover:border-red-800 group dark:hover:border-red-800": hover,
+        "hover:border-red-600 group dark:hover:border-red-600": hover,
       }),
       title: css(
         "px-2",
@@ -51,6 +52,11 @@ const Pane: React.FC<PropsWithChildren<PaneProps>> = observer(
       },
       [PaneType.Secondary]: {
         title: css("bg-red-800"),
+        container: css(),
+        body: css(),
+      },
+      [PaneType.Grey]: {
+        title: css("bg-neutral-300", "dark:bg-neutral-800"),
         container: css(),
         body: css(),
       },
