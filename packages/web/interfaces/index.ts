@@ -45,7 +45,12 @@ export interface Currency {
 // @next -- currencyAmount and currencyTokenId should be here
 export interface RewardBody {
   competitionRank: number;
-  currency: Currency;
+  currency: {
+    type: TokenType;
+    contractAddress: string;
+    tokenId: string;
+    amount: string;
+  };
 }
 
 export interface Competition {
