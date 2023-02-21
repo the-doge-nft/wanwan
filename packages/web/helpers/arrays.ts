@@ -3,7 +3,7 @@
  * @param obj
  */
 export const objectKeys = <Obj>(obj: Obj): (keyof Obj)[] => {
-  return Object.keys(obj) as (keyof Obj)[];
+  return Object.keys(obj as object) as (keyof Obj)[];
 };
 
 export function arrayMerge<T>(array1: T[], array2: T[]): T[] {
