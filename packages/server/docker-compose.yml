@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  postgres:
+    container_name: meme-postgres
+    image: postgres:15.1-alpine
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - '${POSTGRES_PORT}:5432'
+    volumes:
+      - meme-postgres:/var/lib/postgresql/data
+
+  redis:
+    container_name: meme-redis
+    image: redis
+    ports:
+      - '${REDIS_PORT}:6379'
+    volumes:
+      - redis:/data
+    command: >
+      --requirepass ${REDIS_PASSWORD}
+
+  api:
+    container_name: meme-api
+    build:
+      dockerfile: api.Dockerfile
+      context: .
+      target: development
+    volumes:
+      - .:/usr/src/app
+      # anonymous volume so container deps are not overwritten by host
+      - /usr/src/app/node_modules
+    env_file:
+      - .env
+    command: pnpm run start:dev
+    ports:
+      - '${PORT}:${PORT}'
+    depends_on:
+      - postgres
+      - redis
+
+volumes:
+  redis:
+    driver: local
+  meme-postgres:

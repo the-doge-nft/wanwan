@@ -1,0 +1,166 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                  Int                 @id @default(autoincrement())
+  address             String              @unique
+  description         String?
+  externalUrl         String?
+  twitterUsername     String?
+  isVerified          Boolean             @default(false)
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @default(now())
+  lastAuthedAt        DateTime
+  deletedAt           DateTime?
+  isSuperAdmin        Boolean             @default(false)
+  memes               Meme[]
+  media               Media[]
+  competitions        Competition[]
+  votes               Vote[]
+  competitionCurators CompeitionCurator[]
+  Reward              Reward[]
+  Comment             Comment[]
+  Submission          Submission[]
+}
+
+model Meme {
+  id          Int          @id @default(autoincrement())
+  name        String?
+  description String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @default(now())
+  deletedAt   DateTime?
+  createdById Int
+  user        User         @relation(fields: [createdById], references: [id])
+  mediaId     Int          @unique
+  media       Media        @relation(fields: [mediaId], references: [id])
+  submissions Submission[]
+  votes       Vote[]
+  comments    Comment[]
+}
+
+model Competition {
+  id                 Int                 @id @default(autoincrement())
+  name               String
+  description        String?
+  maxUserSubmissions Int
+  endsAt             DateTime
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @default(now())
+  createdById        Int
+  user               User                @relation(fields: [createdById], references: [id])
+  submissions        Submission[]
+  rewards            Reward[]
+  curators           CompeitionCurator[]
+}
+
+model CompeitionCurator {
+  id            Int         @id @default(autoincrement())
+  competitionId Int
+  compeition    Competition @relation(fields: [competitionId], references: [id])
+  userId        Int
+  user          User        @relation(fields: [userId], references: [id])
+  createdAt     DateTime    @default(now())
+  deletedAt     DateTime?
+
+  @@unique([competitionId, userId])
+}
+
+model Media {
+  id           Int      @id @default(autoincrement())
+  width        Int
+  height       Int
+  filename     String
+  filesize     Int
+  s3BucketName String
+  createdById  Int
+  createdAt    DateTime @default(now())
+  user         User     @relation(fields: [createdById], references: [id])
+  meme         Meme?
+}
+
+model Submission {
+  id            Int         @id @default(autoincrement())
+  memeId        Int
+  meme          Meme        @relation(fields: [memeId], references: [id])
+  competitionId Int
+  competition   Competition @relation(fields: [competitionId], references: [id])
+  createdAt     DateTime    @default(now())
+  deletedAt     DateTime?
+  createdById   Int
+  user          User        @relation(fields: [createdById], references: [id])
+
+  @@unique([memeId, competitionId])
+}
+
+model Vote {
+  id            Int      @id @default(autoincrement())
+  competitionId Int
+  createdById   Int
+  user          User     @relation(fields: [createdById], references: [id])
+  memeId        Int
+  meme          Meme     @relation(fields: [memeId], references: [id])
+  score         Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @default(now())
+
+  @@unique([createdById, memeId, competitionId])
+}
+
+model Comment {
+  id              Int       @id @default(autoincrement())
+  body            String
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @default(now())
+  deletedAt       DateTime?
+  createdById     Int
+  user            User      @relation(fields: [createdById], references: [id])
+  memeId          Int
+  meme            Meme      @relation(fields: [memeId], references: [id])
+  parentCommentId Int?
+  parent          Comment?  @relation("CommentHistory", fields: [parentCommentId], references: [id])
+  child           Comment[] @relation("CommentHistory")
+}
+
+enum TokenType {
+  ERC721
+  ERC1155
+  ERC20
+}
+
+model Reward {
+  id                  Int         @id @default(autoincrement())
+  txId                String?     @unique
+  competitionId       Int
+  competition         Competition @relation(fields: [competitionId], references: [id])
+  receivedById        Int?
+  recevier            User?       @relation(fields: [receivedById], references: [id])
+  currencyId          Int
+  currency            Currency    @relation(fields: [currencyId], references: [id])
+  competitionRank     Int
+  currencyTokenId     String?
+  currencyAmountAtoms String
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime    @default(now())
+
+  @@unique([competitionId, competitionRank])
+}
+
+model Currency {
+  id              Int       @id @default(autoincrement())
+  type            TokenType
+  contractAddress String    @unique
+  decimals        Int
+  symbol          String?
+  name            String?
+  Reward          Reward[]
+}

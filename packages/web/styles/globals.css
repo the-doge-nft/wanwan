@@ -1,0 +1,110 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+#__next {
+    height: 100%;
+    min-height: inherit;
+    display: flex;
+    flex-direction: column;
+}
+
+html {
+    padding: 0;
+    margin: 0;
+    overflow-x: hidden;
+    color: magenta;
+}
+
+body {
+    padding: 0;
+    margin: 0;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+[data-rk] {
+    flex-grow: 1;
+    display: grid;
+}
+
+/* hack for display block / display none on toast enter and exit */
+:root {
+    --animate-duration: 0.01s;
+    --animate-delay: 0.01s;
+    --animate-repeat: 1;
+}
+
+.animate__animated {
+    -webkit-animation-duration: 0.01s;
+    animation-duration: 0.01s;
+    -webkit-animation-duration: var(--animate-duration);
+    animation-duration: var(--animate-duration);
+    -webkit-animation-fill-mode: both;
+    animation-fill-mode: both;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.animate__animated.fadeIn {
+    animation-name: fadeIn;
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0;
+    }
+}
+
+.animate__animated.fadeOut {
+    animation-name: fadeOut;
+}
+
+/* needed for our aspect ratio component */
+[style*="--aspect-ratio"]>img {
+    height: auto;
+}
+
+[style*="--aspect-ratio"] {
+    position: relative;
+}
+
+[style*="--aspect-ratio"]> :first-child {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+}
+
+[style*="--aspect-ratio"]::before {
+    content: "";
+    display: block;
+    width: 100%;
+}
+
+@supports not (aspect-ratio: 1/1) {
+    [style*="--aspect-ratio"]::before {
+        height: 0;
+        padding-bottom: calc(100% / (var(--aspect-ratio)));
+    }
+}
+
+@supports (aspect-ratio: 1/1) {
+    [style*="--aspect-ratio"]::before {
+        aspect-ratio: calc(var(--aspect-ratio));
+    }
+}
+
