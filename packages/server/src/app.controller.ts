@@ -80,8 +80,8 @@ export class AppController {
 
     if (
       await this.competition.getIsCompetitionCreatedByUser(
-        user.id,
         submission.competitionId,
+        user.id,
       )
     ) {
       throw new BadRequestException("You can't submit to your own competition");

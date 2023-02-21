@@ -15,7 +15,6 @@ import { Competition, Meme, SearchParams, Stats } from "../interfaces";
 import AppLayout from "../layouts/App.layout";
 import { newHttp } from "../services/http";
 import redirectTo404 from "../services/redirect/404";
-import AppStore from "../store/App.store";
 import HomeStore from "../store/Home.store";
 
 interface HomeProps {
@@ -53,7 +52,6 @@ const Home: React.FC<HomeProps> = observer(
                 wanwan is a platform for creating meme competitions. If you make
                 something good enough, you could win.
               </Text>
-              {AppStore.auth.address}
             </Pane>
             <Pane title={"Competitions"}>
               <AsyncGrid

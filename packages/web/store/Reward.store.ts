@@ -23,16 +23,6 @@ export default class RewardStore {
   }
 
   @computed
-  get txId() {
-    return this.reward.txId;
-  }
-
-  @computed
-  get hasTxId() {
-    return !!this.txId;
-  }
-
-  @computed
   private get tokenTypeToContract() {
     return {
       [TokenType.ERC1155]: {
@@ -92,6 +82,5 @@ export default class RewardStore {
       txId,
       rewardId: this.reward.id,
     });
-    // .then(({ data }) => (this.reward = data));
   }
 }

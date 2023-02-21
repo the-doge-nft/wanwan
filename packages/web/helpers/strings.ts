@@ -19,6 +19,14 @@ export const getEtherscanURL = (
   return link;
 };
 
+export const getOpenSeaURL = (address: string, tokenId: string | number) => {
+  let link = `https://opensea.io/assets/${address}/${tokenId}`;
+  if (isDev() || isStaging()) {
+    link = `https://testnets.opensea.io/assets/${address}/${tokenId}`;
+  }
+  return link;
+};
+
 export const jsonify = (toString: any) => JSON.stringify(toString);
 
 export const isValidHttpUrl = (value: string) => {

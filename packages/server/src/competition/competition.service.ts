@@ -50,7 +50,10 @@ export class CompetitionService {
     };
   }
 
-  private addExtra(competition: CompetitionWithDefaultInclude) {
+  private addExtra(competition: CompetitionWithDefaultInclude | null) {
+    if (competition === null) {
+      return null;
+    }
     const media = competition?.submissions[0]?.meme?.media;
     return {
       ...competition,
@@ -182,7 +185,7 @@ export class CompetitionService {
     return !!competition;
   }
 
-  async getIsCompetitionCreatedByUser(createdById: number, id: number) {
+  async getIsCompetitionCreatedByUser(id: number, createdById: number) {
     const competition = await this.findFirst({
       where: {
         id,

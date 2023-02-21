@@ -72,7 +72,7 @@ const CompetitionDetails: React.FC<{ store: CompetitionByIdStore }> = observer(
                 "dark:border-neutral-700",
                 {
                   "bg-red-800 text-white": !store.competition.isActive,
-                  "text-black": store.competition.isActive,
+                  "text-black dark:text-white": store.competition.isActive,
                 }
               )}
             >

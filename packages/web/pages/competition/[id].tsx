@@ -8,7 +8,6 @@ import CompetitionUserSubmissions from "../../components/CompetitionById/Competi
 import Button from "../../components/DSL/Button/Button";
 import Input from "../../components/DSL/Input/Input";
 import Pane, { PaneType } from "../../components/DSL/Pane/Pane";
-import Text, { TextSize, TextType } from "../../components/DSL/Text/Text";
 import { css } from "../../helpers/css";
 import { Competition, CompetitionMeme } from "../../interfaces";
 import AppLayout from "../../layouts/App.layout";
@@ -54,22 +53,7 @@ const CompetitionById: React.FC<CompetitionByIdProps> = observer(
             isExpanded={store.showRewards}
             onChange={(val) => (store.showRewards = val)}
           >
-            {store.hasRewards && <CompetitionRewards store={store} />}
-            {!store.hasRewards && (
-              <div
-                className={css(
-                  "text-gray-600",
-                  "dark:text-neutral-500",
-                  "text-xs",
-                  "text-center",
-                  "py-4"
-                )}
-              >
-                <Text size={TextSize.sm} type={TextType.Grey}>
-                  No rewards
-                </Text>
-              </div>
-            )}
+            <CompetitionRewards store={store} />
           </Pane>
           <div
             className={css("grid", {

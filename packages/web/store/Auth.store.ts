@@ -18,7 +18,7 @@ export default class AuthStore extends Reactionable(EmptyClass) {
   address?: Address = undefined;
 
   @observable
-  profile?: Profile;
+  profile?: Profile = undefined;
 
   @observable
   memes: Array<Meme> = [];
@@ -42,6 +42,9 @@ export default class AuthStore extends Reactionable(EmptyClass) {
           if (this.address) {
             this.getProfile();
             this.getUserMemes();
+          } else {
+            this.profile = undefined;
+            this.memes = [];
           }
         }
       ),
@@ -65,7 +68,8 @@ export default class AuthStore extends Reactionable(EmptyClass) {
     if (!this.address) {
       throw new Error("Address not available");
     }
-    http.get(`/profile/${this.address}`).then(({ data }) => {
+    console.log("getting profile");
+    return http.get(`/profile/${this.address}`).then(({ data }) => {
       this.profile = data;
     });
   }
@@ -112,7 +116,6 @@ export default class AuthStore extends Reactionable(EmptyClass) {
   }
 
   onAccountSwitch() {
-    console.log("account switch");
     return this.logout();
   }
 

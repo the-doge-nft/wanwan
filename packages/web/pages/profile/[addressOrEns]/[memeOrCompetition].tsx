@@ -139,7 +139,6 @@ const ProfilePage: React.FC<ProfileProps> = observer(({ profile }) => {
                 <div key={`comp-preview-${comp.id}`}>
                   <PreviewLink
                     name={comp.name}
-                    description={comp.description}
                     link={`/competition/${comp.id}`}
                   >
                     <AspectRatio

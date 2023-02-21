@@ -55,7 +55,7 @@ const Link: React.FC<LinkProps> = ({
       {isExternal ? (
         <a
           href={href}
-          className={css(styles, "items-center")}
+          className={css(styles, "items-center", "inline-flex")}
           target={isExternal ? "_blank" : "_self"}
           rel={"noreferrer"}
           onClick={onClick}

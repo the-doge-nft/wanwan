@@ -52,9 +52,6 @@ const CompetitionUserSubmissions: React.FC<{ store: CompetitionIdStore }> = ({
                     "border-black",
                     "text-xs",
                     "rounded-full",
-                    "group-hover:bg-slate-300",
-                    "group-hover:text-slate-500",
-                    "group-hover:border-slate-500",
                     "leading-[0.6rem]"
                   )}
                 >

@@ -31,22 +31,18 @@ const CompetitionSubmissions: React.FC<{ store: CompetitionIdStore }> =
                 key={`meme-preview-${meme.id}`}
               >
                 <Pane
-                  className={css(
-                    "hover:border-slate-500",
-                    "!hover:text-red-800",
-                    "group"
-                  )}
+                  hover
                   title={
                     <div
                       className={css(
-                        "group-hover:text-slate-500",
+                        "group-hover:text-red-800",
                         "text-black",
                         "dark:text-white"
                       )}
                     >
                       <Text type={TextType.NoColor}>Posted by </Text>
                       <Link
-                        className={css("group-hover:text-slate-500")}
+                        className={css("group-hover:text-red-800")}
                         type={LinkType.Secondary}
                         href={`/profile/${meme.user.address}/meme`}
                       >
@@ -71,8 +67,8 @@ const CompetitionSubmissions: React.FC<{ store: CompetitionIdStore }> =
                           }
                         }}
                         className={css("text-slate-400", {
-                          "text-slate-800": userVoteScore === 1,
-                          "cursor-pointer hover:text-slate-800":
+                          "text-slate-800 dark:text-white": userVoteScore === 1,
+                          "cursor-pointer hover:text-red-600":
                             store.competition.isActive,
                         })}
                       >
@@ -80,7 +76,7 @@ const CompetitionSubmissions: React.FC<{ store: CompetitionIdStore }> =
                       </div>
                       <div
                         className={css("text-center", "font-bold", {
-                          "text-slate-600": score > 0,
+                          "text-slate-600 dark:text-white": score > 0,
                           "text-slate-400": score === 0,
                         })}
                       >
@@ -100,7 +96,8 @@ const CompetitionSubmissions: React.FC<{ store: CompetitionIdStore }> =
                           }
                         }}
                         className={css("text-slate-400", {
-                          "text-slate-800": userVoteScore === -1,
+                          "text-slate-800 dark:text-white":
+                            userVoteScore === -1,
                           "cursor-pointer hover:text-slate-800":
                             store.competition.isActive,
                         })}
@@ -113,7 +110,7 @@ const CompetitionSubmissions: React.FC<{ store: CompetitionIdStore }> =
                         className={css(
                           "flex",
                           "flex-col",
-                          "group-hover:text-slate-500",
+                          "group-hover:text-red-800",
                           "text-black",
                           "dark:text-white"
                         )}
@@ -134,7 +131,7 @@ const CompetitionSubmissions: React.FC<{ store: CompetitionIdStore }> =
                             "border-black",
                             "mt-3",
                             "mb-2",
-                            "group-hover:border-slate-500"
+                            "group-hover:border-red-800"
                           )}
                           ratio={`${meme.media.width}/${meme.media.height}`}
                           style={{ backgroundImage: `url(${meme.media.url})` }}
@@ -146,7 +143,7 @@ const CompetitionSubmissions: React.FC<{ store: CompetitionIdStore }> =
                             "items-center",
                             "mt-2.5",
                             "text-slate-500",
-                            "group-hover:text-slate-500"
+                            "group-hover:text-red-800"
                           )}
                         >
                           <Link
@@ -156,8 +153,9 @@ const CompetitionSubmissions: React.FC<{ store: CompetitionIdStore }> =
                               "inline-flex",
                               "items-center",
                               "gap-1",
-                              "group-hover:text-slate-500",
-                              "text-slate-900"
+                              "group-hover:text-red-800",
+                              "text-slate-900",
+                              "dark:text-white"
                             )}
                           >
                             <Text size={TextSize.sm} type={TextType.NoColor}>

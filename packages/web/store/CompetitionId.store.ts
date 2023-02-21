@@ -1,8 +1,9 @@
 import { action, computed, makeObservable, observable, toJS } from "mobx";
 import { fuzzyDeepSearch } from "../helpers/arrays";
-import { Competition, CompetitionMeme } from "../interfaces";
+import { Competition, CompetitionMeme, Reward } from "../interfaces";
 import http from "../services/http";
 import { Reactionable } from "../services/mixins/reactionable";
+import { TokenType } from "./../interfaces/index";
 import { newHttp } from "./../services/http";
 import { EmptyClass } from "./../services/mixins/index";
 import AppStore from "./App.store";
@@ -13,6 +14,9 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
 
   @observable
   memes: CompetitionMeme[] = [];
+
+  @observable
+  _rewards: Reward[] = [];
 
   @observable
   searchValue = "";
@@ -42,6 +46,7 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
     super();
     makeObservable(this);
     this.competition = competition;
+    this._rewards = competition.rewards;
     this.memes = memes;
   }
 
@@ -148,10 +153,12 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
 
   @action
   getCompetition() {
-    console.log("debug:: GET COMPETITION");
     return newHttp.getCompetition(this.competition.id).then(({ data }) => {
       this.competition = data;
+      this._rewards = data.rewards;
+      console.log("debug:: GET COMPETITION", data);
       console.log("debug:: new competition", this.competition);
+      console.log("debug:: new rewards", this.rewards);
     });
   }
 
@@ -161,6 +168,7 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
       AppStore.auth.isAuthed &&
       this.canUserSelectMemes &&
       this.competition.isActive &&
+      !!AppStore.auth.profile &&
       AppStore.auth.profile?.user.id !== this.competition.createdById
     );
   }
@@ -239,12 +247,9 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
 
   @computed
   get rewards() {
-    return this.competition.rewards.sort((reward) => reward.competitionRank);
-  }
-
-  @computed
-  get hasRewards() {
-    return this.rewards.length > 0;
+    return [...this._rewards].sort(
+      (a, b) => a.competitionRank - b.competitionRank
+    );
   }
 
   @computed
@@ -253,5 +258,13 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
       AppStore.auth.isAuthed &&
       AppStore.auth.profile?.user?.id === this.competition.createdById
     );
+  }
+
+  getIsRewardNFT(id: number) {
+    const reward = this.rewards.find((reward) => reward.id === id);
+    if (!reward) {
+      throw new Error("Could not find reward");
+    }
+    return [TokenType.ERC1155, TokenType.ERC721].includes(reward.currency.type);
   }
 }

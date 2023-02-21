@@ -21,7 +21,7 @@ export const { chains, provider, webSocketProvider } = configureChains(
 const { wallets } = getDefaultWallets({ appName: env.app.name, chains });
 const connectors = connectorsForWallets([...wallets]);
 export const client = createClient({
-  autoConnect: false,
+  autoConnect: true,
   connectors,
   provider,
   webSocketProvider,
