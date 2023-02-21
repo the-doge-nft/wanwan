@@ -1,0 +1,7 @@
+# all files specified here will be ignored from the built image
+
+api.Dockerfile
+.dockerignore
+node_modules
+dist
+
