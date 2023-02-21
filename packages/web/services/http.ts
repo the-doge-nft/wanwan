@@ -1,8 +1,7 @@
-import { Meme } from "@prisma/client";
 import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
 import { SiweMessage } from "siwe";
 import env from "../environment";
-import { Competition, SearchResponse, Stats } from "../interfaces";
+import { Competition, Meme, SearchResponse, Stats } from "../interfaces";
 import AppStore from "../store/App.store";
 import ApiErrorInterceptor from "./interceptors/api-error.interceptor";
 
