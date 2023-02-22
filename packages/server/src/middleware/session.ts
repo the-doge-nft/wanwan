@@ -9,11 +9,9 @@ export function getExpressRedisSession(app: INestApplication): any {
   const configService = app.get<ConfigService>(ConfigService<Config>);
   const redisConfig = configService.get<Config['redis']>('redis');
   const sessionConfig = configService.get<Config['session']>('session');
-
   Logger.log(
     `[REDIS SESSION] connecting -- host: ${redisConfig.host}, port: ${redisConfig.port}, password: ${redisConfig.password}}`,
   );
-
   const redisClient = createClient({
     socket: {
       host: redisConfig.host,
