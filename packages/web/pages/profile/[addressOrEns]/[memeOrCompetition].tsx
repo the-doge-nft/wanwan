@@ -49,8 +49,8 @@ const ProfilePage: React.FC<ProfileProps> = observer(({ profile }) => {
           >
             <div
               className={css(
-                "h-[100px]",
-                "w-[100px]",
+                "h-[85px]",
+                "w-[85px]",
                 "sm:h-[120px]",
                 "sm:w-[120px]",
                 "bg-center",
@@ -59,6 +59,7 @@ const ProfilePage: React.FC<ProfileProps> = observer(({ profile }) => {
                 "border-[1px]",
                 "border-black",
                 "dark:border-neutral-600",
+                "dark:bg-neutral-800",
                 "rounded-full",
                 { "bg-slate-200": !profile.avatar }
               )}
