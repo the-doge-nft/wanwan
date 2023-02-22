@@ -19,8 +19,6 @@ services:
       - '${REDIS_PORT}:6379'
     volumes:
       - redis:/data
-    command: >
-      --requirepass ${REDIS_PASSWORD}
 
   api:
     container_name: meme-api

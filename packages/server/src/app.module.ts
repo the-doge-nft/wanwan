@@ -48,18 +48,16 @@ import { VoteService } from './vote/vote.service';
         const redisConfig = await configService.get('redis');
         try {
           Logger.log(
-            `[REDIST STORE]: ${redisConfig.password} - ${redisConfig.host} - ${redisConfig.port}}`,
+            `[REDIST STORE]: ${redisConfig.host} - ${redisConfig.port}}`,
           );
           const store = await redisStore({
             ttl: 60,
             socket: {
               host: redisConfig.host,
               port: redisConfig.port,
-              tls: !configService.get('isDev'),
             },
-            password: redisConfig.password,
           });
-          Logger.error(`[REDIS STORE]: created`);
+          Logger.log(`[REDIS STORE]: created`);
           return { store: () => store };
         } catch (e) {
           Logger.error(`[REDIS STORE]: ${e}`);

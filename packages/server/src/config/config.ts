@@ -23,7 +23,6 @@ export interface Config {
   redis: {
     host: string;
     port: number;
-    password: string;
   };
   alchemy: {
     apiKey: string;
@@ -54,7 +53,6 @@ const configSchema = Joi.object<Config>({
   redis: Joi.object({
     host: Joi.string().required(),
     port: Joi.number().required(),
-    password: Joi.string().required(),
   }).required(),
   alchemy: Joi.object({
     apiKey: Joi.string().required(),
@@ -83,7 +81,6 @@ const config: Config = new (function () {
   this.redis = {
     host: process.env.REDIS_HOST,
     port: parseInt(process.env.REDIS_PORT),
-    password: process.env.REDIS_PASSWORD,
   };
   this.alchemy = {
     apiKey: process.env.ALCHEMY_API_KEY,
