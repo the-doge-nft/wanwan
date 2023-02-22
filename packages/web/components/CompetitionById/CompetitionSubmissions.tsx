@@ -24,11 +24,10 @@ const CompetitionSubmissions: React.FC<{ store: CompetitionIdStore }> =
             const userVoteScore = meme.votes.find(
               (vote) => vote.user.address === AppStore.auth.address
             )?.score;
-            const baseArrowStyles = css(
-              "text-neutral-500",
-              "hover:text-red-600",
-              "dark:hover:text-red-600"
-            );
+            const baseArrowStyles = css("text-neutral-500", {
+              "hover:text-red-800 dark:hover:text-red-800":
+                store.competition.isActive,
+            });
             const scoreStyles = css(
               "text-black",
               "dark:text-white",
