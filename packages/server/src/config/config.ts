@@ -33,6 +33,7 @@ export interface Config {
   sentry: {
     dns: string;
   };
+  isDev: boolean;
 }
 
 const configSchema = Joi.object<Config>({
@@ -63,35 +64,37 @@ const configSchema = Joi.object<Config>({
   sentry: Joi.object({
     dns: Joi.string().required(),
   }).required(),
+  isDev: Joi.boolean().required(),
 });
 
-const config: Config = {
-  port: parseInt(process.env.PORT) || 3000,
-  appEnv: (process.env.APP_ENV as AppEnv) || AppEnv.development,
-  aws: {
+const config: Config = new (function () {
+  this.port = parseInt(process.env.PORT) || 3000;
+  this.appEnv = (process.env.APP_ENV as AppEnv) || AppEnv.development;
+  this.aws = {
     region: process.env.AWS_REGION,
     accessKey: process.env.AWS_ACCESS_KEY,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
     mediaBucketName: process.env.AWS_MEDIA_BUCKET_NAME,
-  },
-  session: {
+  };
+  this.session = {
     secret: process.env.SESSION_SECRET,
     name: process.env.SESSION_NAME,
-  },
-  redis: {
+  };
+  this.redis = {
     host: process.env.REDIS_HOST,
     port: parseInt(process.env.REDIS_PORT),
     password: process.env.REDIS_PASSWORD,
-  },
-  alchemy: {
+  };
+  this.alchemy = {
     apiKey: process.env.ALCHEMY_API_KEY,
     wsEndpoint: process.env.ALCHEMY_WS_ENDPOINT,
     httpEndpoint: process.env.ALCHEMY_HTTP_ENDPOINT,
-  },
-  sentry: {
+  };
+  this.sentry = {
     dns: process.env.SENTRY_DNS,
-  },
-};
+  };
+  this.isDev = this.appEnv === AppEnv.development;
+})();
 
 class MissingEnvVarError extends Error {}
 
