@@ -47,16 +47,17 @@ import { VoteService } from './vote/vote.service';
       useFactory: async (configService: ConfigService<Config>) => {
         const redisConfig = await configService.get('redis');
         try {
+          Logger.log(
+            `[REDIST STORE]: ${redisConfig.password} - ${redisConfig.host} - ${redisConfig.port}}`,
+          );
           const store = await redisStore({
             ttl: 60,
-            password: redisConfig.password,
             socket: {
               host: redisConfig.host,
               port: redisConfig.port,
-              passphrase: redisConfig.password,
               tls: !configService.get('isDev'),
-              rejectUnauthorized: true,
             },
+            password: redisConfig.password,
           });
           Logger.error(`[REDIS STORE]: created`);
           return { store: () => store };
