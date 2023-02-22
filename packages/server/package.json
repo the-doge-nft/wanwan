@@ -24,7 +24,8 @@
     "prisma:push": "npx prisma db push",
     "prisma:seed": "npx prisma db seed",
     "prisma:migrate": "npx prisma migrate dev",
-    "prisma:deploy": "npx prisma migrate deploy"
+    "start:migrate:prod": "npx prisma migrate deploy && pnpm start:prod",
+    "start:prd": "node dist/src/main.js"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.229.0",

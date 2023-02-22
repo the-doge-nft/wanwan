@@ -36,4 +36,4 @@ FROM node:18.12.1-alpine3.16 as production
 WORKDIR /usr/src/app
 COPY --chown=node:node --from=build /usr/src/app/node_modules ./node_modules
 COPY --chown=node:node --from=build /usr/src/app/dist ./dist
-CMD ["node", "dist/src/main.js"]
+CMD ["pnpm", "start:migrate:prod"]
