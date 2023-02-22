@@ -6,6 +6,7 @@ import { createClient } from 'redis';
 import { Config } from './../config/config';
 
 export function getExpressRedisSession(app: INestApplication): any {
+  console.log('DEBUG:: EXPRESS SESSION INIT');
   Logger.log('[MIDDLEWARE INIT]');
 
   const configService = app.get<ConfigService>(ConfigService<Config>);
@@ -13,7 +14,7 @@ export function getExpressRedisSession(app: INestApplication): any {
   const sessionConfig = configService.get<Config['session']>('session');
 
   Logger.log(
-    `[REDIS] connecting -- host: ${redisConfig.host}, port: ${redisConfig.port}, password: ${redisConfig.password}}`,
+    `[REDIS SESSION] connecting -- host: ${redisConfig.host}, port: ${redisConfig.port}, password: ${redisConfig.password}}`,
   );
 
   const redisClient = createClient({
@@ -26,8 +27,8 @@ export function getExpressRedisSession(app: INestApplication): any {
   });
   redisClient
     .connect()
-    .then(() => Logger.log('[REDIS] connected'))
-    .catch((e) => Logger.error(`[REDIS] ${e}`));
+    .then(() => Logger.log('[REDIS SESSION] connected'))
+    .catch((e) => Logger.error(`[REDIS SESSION] ${e}`));
   const RedisStore = createRedisStore(session);
   return session({
     store: new RedisStore({ client: redisClient }),

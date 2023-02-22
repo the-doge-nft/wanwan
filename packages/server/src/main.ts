@@ -20,8 +20,8 @@ async function bootstrap() {
   });
 
   const swaggerConfig = new DocumentBuilder()
-    .setTitle('Meme2Earn')
-    .setDescription('Meme2Earn API')
+    .setTitle('Wan Wan')
+    .setDescription('Wan Wan API')
     .setVersion('1.0')
     .build();
   const document = SwaggerModule.createDocument(app, swaggerConfig);
