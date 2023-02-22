@@ -17,7 +17,7 @@ export class StatsService {
     const totalCompetitions = await this.competition.count();
     const totalActiveCompetitions = await this.competition.count({
       where: {
-        endsAt: { lte: new Date() },
+        endsAt: { gte: new Date() },
       },
     });
     return {

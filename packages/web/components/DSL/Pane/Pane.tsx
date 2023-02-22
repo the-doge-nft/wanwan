@@ -30,7 +30,7 @@ const Pane: React.FC<PropsWithChildren<PaneProps>> = observer(
   }) => {
     const basePaneStyles = {
       container: css("border-[1px]", borderColorCss, {
-        "hover:border-red-600 group dark:hover:border-red-600": hover,
+        "hover:border-red-800 group dark:hover:border-red-800": hover,
       }),
       title: css(
         "px-2",

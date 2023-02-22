@@ -88,7 +88,7 @@ const Home: React.FC<HomeProps> = observer(
                 ))}
               </AsyncGrid>
             </Pane>
-            <Pane title={"Recent"}>
+            <Pane title={"Recent Uploads"}>
               <AsyncGrid
                 isLoading={store.isMemesLoading}
                 data={store.memes}
@@ -126,7 +126,7 @@ const Home: React.FC<HomeProps> = observer(
                 )}
               >
                 <Stat label={"Users"}>{stats.totalUsers}</Stat>
-                <Stat label={"Memes"}>{stats.totalMemes}</Stat>
+                <Stat label={"Uploads"}>{stats.totalMemes}</Stat>
                 <Stat label={"Competitions"}>{stats.totalCompetitions}</Stat>
                 <Stat label={"Active Competitions"}>
                   {stats.totalActiveCompetitions}
@@ -147,10 +147,10 @@ interface StatProps {
 const Stat: React.FC<PropsWithChildren<StatProps>> = ({ label, children }) => {
   return (
     <div className={css("inline-flex", "gap-1", "items-center")}>
+      <Text size={TextSize.sm}>{label}:</Text>
       <Text bold size={TextSize.sm}>
-        {label}:
+        {children}
       </Text>
-      <Text size={TextSize.sm}>{children}</Text>
     </div>
   );
 };
