@@ -96,6 +96,8 @@ const config: Config = new (function () {
   this.isDev = this.appEnv === AppEnv.development;
 })();
 
+console.log(`DEBUG::::: ${config.isDev}`);
+
 class MissingEnvVarError extends Error {}
 
 const { error } = configSchema.validate(config);
