@@ -6,6 +6,8 @@ import { createClient } from 'redis';
 import { Config } from './../config/config';
 
 export function getExpressRedisSession(app: INestApplication): any {
+  Logger.log('[MIDDLEWARE INIT]');
+
   const configService = app.get<ConfigService>(ConfigService<Config>);
   const redisConfig = configService.get<Config['redis']>('redis');
   const sessionConfig = configService.get<Config['session']>('session');

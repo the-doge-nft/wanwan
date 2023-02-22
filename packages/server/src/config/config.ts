@@ -97,6 +97,7 @@ const config: Config = new (function () {
 })();
 
 console.log(`DEBUG::::: ${config.isDev}`);
+console.log(`DEBUG::::: ${config.appEnv}`);
 
 class MissingEnvVarError extends Error {}
 
