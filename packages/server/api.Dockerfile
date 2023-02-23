@@ -37,4 +37,5 @@ RUN npm install -g pnpm
 WORKDIR /usr/src/app
 COPY --chown=node:node --from=build /usr/src/app/node_modules ./node_modules
 COPY --chown=node:node --from=build /usr/src/app/dist ./dist
+COPY --chown=node:node --from=build /usr/src/app/package.json ./package.json
 CMD ["pnpm", "start:migrate:prod"]
