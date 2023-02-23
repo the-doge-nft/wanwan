@@ -13,10 +13,8 @@ export function getExpressRedisSession(app: INestApplication): any {
     `[REDIS SESSION] connecting -- host: ${redisConfig.host}, port: ${redisConfig.port}}`,
   );
   const redisClient = createClient({
-    socket: {
-      host: redisConfig.host,
-      port: redisConfig.port,
-    },
+    url: `redis://:@${redisConfig.host}:${redisConfig.port}`,
+    legacyMode: true,
   });
   redisClient
     .connect()
