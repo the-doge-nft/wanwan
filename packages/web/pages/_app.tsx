@@ -6,6 +6,7 @@ import {
 import "@rainbow-me/rainbowkit/styles.css";
 import { observer } from "mobx-react-lite";
 import type { AppProps } from "next/app";
+import Head from "next/head";
 import { useEffect } from "react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -36,6 +37,9 @@ const App = observer(({ Component, pageProps }: AppProps) => {
   }, []);
   return (
     <>
+      <Head>
+        <title>{env.app.name}</title>
+      </Head>
       <WagmiConfig client={client}>
         <RainbowKitAuthenticationProvider
           status={AppStore.auth.status}
