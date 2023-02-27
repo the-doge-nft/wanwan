@@ -71,7 +71,10 @@ export class AuthController {
   @Get('logout')
   async postLogout(@SessionDeco() session: SessionType) {
     return new Promise((resolve) => {
-      session.destroy(() => resolve({ success: true }));
+      session.destroy(() => {
+        this.logger.log('SESSION DESTROYED');
+        resolve({ success: true });
+      });
     });
   }
 }

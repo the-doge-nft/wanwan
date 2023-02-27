@@ -19,16 +19,12 @@ const AsyncGrid: React.FC<PropsWithChildren<AsyncGridProps>> = ({
     ),
     [noDataLabel]
   );
+
   return (
     <div
-      className={css("grid", "grid-rows-[min-content]", "gap-4")}
-      style={
-        data.length > 0
-          ? {
-              gridTemplateColumns: "repeat(4, minmax(150px, 1fr))",
-            }
-          : {}
-      }
+      className={css({
+        "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2": data.length > 0,
+      })}
     >
       <AsyncWrap
         isLoading={isLoading}

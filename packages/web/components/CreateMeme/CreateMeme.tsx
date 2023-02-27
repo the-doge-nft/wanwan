@@ -7,6 +7,7 @@ import Form from "../DSL/Form/Form";
 import MediaInput from "../DSL/Form/MediaInput";
 import TextInput from "../DSL/Form/TextInput";
 import { required } from "../DSL/Form/validation";
+import Text, { TextSize } from "../DSL/Text/Text";
 
 const CreateMeme: React.FC<{ store: CreateMemeStore }> = observer(
   ({ store }) => {
@@ -67,7 +68,34 @@ const CreateMemeForm: React.FC<{ store: CreateMemeStore }> = observer(
 );
 
 const Success = () => {
-  return <div>Success!</div>;
+  return (
+    <div>
+      <div className={css("text-center")}>
+        <div>
+          <code>{`
+          ____
+        o8%8888,    
+      o88%8888888.  
+     8'-    -:8888b   
+    8'         8888  
+   d8.-=. ,==-.:888b  
+   >8 \`~\` :\`~\' d8888   
+   88         ,88888   
+   88b. \`-~  ':88888  
+   888b ~==~ .:88888 
+   88888o--:':::8888      
+   \`88888| :::' 8888b  
+   8888^^'       8888b  
+  d888           ,%888b.   
+ d88%            %%%8--'-.  
+/88:.__ ,       _%-' ---  -  
+    '''::===..-'   =  --
+    `}</code>
+        </div>
+        <Text size={TextSize.lg}>Meme Created</Text>
+      </div>
+    </div>
+  );
 };
 
 export default CreateMeme;

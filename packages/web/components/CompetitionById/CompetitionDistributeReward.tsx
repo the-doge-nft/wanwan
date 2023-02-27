@@ -7,7 +7,7 @@ import {
 } from "wagmi";
 import { jsonify } from "../../helpers/strings";
 import { Reward } from "../../interfaces";
-import { newHttp } from "../../services/http";
+import { Http } from "../../services/http";
 import RewardStore from "../../store/Reward.store";
 import Button from "../DSL/Button/Button";
 
@@ -25,12 +25,10 @@ const CompetitionDistributeReward: React.FC<{
   const { isLoading } = useWaitForTransaction({
     hash: data?.hash,
     onSuccess: (params) => {
-      newHttp
-        .updateReward({
-          txId: params.transactionHash,
-          rewardId: reward.id,
-        })
-        .then(() => onSuccess());
+      Http.updateReward({
+        txId: params.transactionHash,
+        rewardId: reward.id,
+      }).then(() => onSuccess());
     },
   });
   return (

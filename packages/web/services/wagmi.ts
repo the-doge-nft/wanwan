@@ -9,7 +9,7 @@ import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
 import env from "../environment";
 import { isProd, vars } from "./../environment/vars";
-import http, { newHttp } from "./http";
+import { Http } from "./http";
 
 const targetNetwork = isProd() ? mainnet : goerli;
 
@@ -38,7 +38,7 @@ export const createRainbowAuthAdapter = ({
 }: CreateRainbowAdapterProps) =>
   createAuthenticationAdapter({
     getNonce: async () => {
-      const { data } = await http.get("/auth/nonce");
+      const { data } = await Http.getNonce();
       return data.nonce;
     },
     createMessage: ({ nonce, address, chainId }) => {
@@ -56,7 +56,7 @@ export const createRainbowAuthAdapter = ({
       return message.prepareMessage();
     },
     verify: async ({ message, signature }) => {
-      const res = await newHttp.login({ message, signature });
+      const res = await Http.login({ message, signature });
       if (res.status === 201) {
         await onVerifySuccess(res.data.address);
         return true;
@@ -65,7 +65,7 @@ export const createRainbowAuthAdapter = ({
     },
     signOut: async () => {
       try {
-        await newHttp.logout();
+        await Http.logout();
       } catch (e) {
         console.log(e);
       } finally {

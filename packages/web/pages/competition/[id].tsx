@@ -11,7 +11,7 @@ import Pane, { PaneType } from "../../components/DSL/Pane/Pane";
 import { css } from "../../helpers/css";
 import { Competition, CompetitionMeme } from "../../interfaces";
 import AppLayout from "../../layouts/App.layout";
-import http from "../../services/http";
+import { Http } from "../../services/http";
 import redirectTo404 from "../../services/redirect/404";
 import { default as CompetitionByIdStore } from "../../store/CompetitionId.store";
 
@@ -135,12 +135,10 @@ export const getServerSideProps: GetServerSideProps<
 > = async (context) => {
   const { id } = context.query;
   try {
-    const { data: competition } = await http.get<Competition>(
-      `/competition/${id}`
-    );
-    const { data: memes } = await http.get<CompetitionMeme[]>(
-      `/competition/${id}/meme/ranked`
-    );
+    const [{ data: competition }, { data: memes }] = await Promise.all([
+      Http.getCompetition(id as string),
+      Http.getCompetitionMemes(id as string),
+    ]);
     return {
       props: {
         competition,

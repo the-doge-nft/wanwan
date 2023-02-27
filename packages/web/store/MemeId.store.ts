@@ -1,6 +1,6 @@
 import { computed, makeObservable, observable } from "mobx";
 import { Comment } from "../interfaces";
-import http from "../services/http";
+import { Http } from "./../services/http";
 import AppStore from "./App.store";
 
 export default class MemeIdStore {
@@ -16,7 +16,7 @@ export default class MemeIdStore {
   }
 
   private async getComments() {
-    const { data } = await http.get<Comment[]>(`/meme/${this.id}/comment`);
+    const { data } = await Http.getComments(this.id);
     this.comments = data;
   }
 
@@ -30,14 +30,15 @@ export default class MemeIdStore {
 
   async onCommentSubmit(body: string) {
     return AppStore.auth.runOrAuthPrompt(async () => {
-      await http.post(`/meme/${this.id}/comment`, { body: body.trim() });
+      await Http.postComment({ memeId: this.id, body: body.trim() });
       this.getComments();
     });
   }
 
   async onParentCommentSubmit(body: string, parentCommentId: number) {
     return AppStore.auth.runOrAuthPrompt(async () => {
-      await http.post(`/meme/${this.id}/comment`, {
+      await Http.postComment({
+        memeId: this.id,
         parentCommentId,
         body: body.trim(),
       });

@@ -1,35 +1,38 @@
-import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
+import axios, { AxiosInstance } from "axios";
 import { SiweMessage } from "siwe";
 import env from "../environment";
-import { Competition, Meme, SearchResponse, Stats } from "../interfaces";
+import {
+  Comment,
+  Competition,
+  CompetitionMeme,
+  MediaRequirements,
+  Meme,
+  Reward,
+  SearchResponse,
+  Stats,
+  Submission,
+} from "../interfaces";
 import AppStore from "../store/App.store";
 import ApiErrorInterceptor from "./interceptors/api-error.interceptor";
 
-const config: AxiosRequestConfig = {
-  baseURL: env.api.baseUrl,
-  withCredentials: true,
-};
-
-const http = axios.create(config);
-http.interceptors.response.use((res) => res, ApiErrorInterceptor);
-
-export default http;
-
 interface SearchParams {}
-class Http {
+class _Http {
   http: AxiosInstance;
   constructor() {
-    this.http = axios.create(config);
+    this.http = axios.create({
+      baseURL: env.api.baseUrl,
+      withCredentials: true,
+    });
     this.http.interceptors.response.use((res) => res, ApiErrorInterceptor);
   }
 
-  competitionSearch(params: SearchParams = {}) {
+  searchCompetition(params: SearchParams = {}) {
     return this.http.get<SearchResponse<Competition>>("/competition/search", {
       params,
     });
   }
 
-  memeSearch(params: SearchParams = {}) {
+  searchMeme(params: SearchParams = {}) {
     return this.http.get<SearchResponse<Meme>>("/meme/search", { params });
   }
 
@@ -44,12 +47,30 @@ class Http {
     });
   }
 
-  getCompetition(id: number) {
+  postSubmission({
+    memeId,
+    competitionId,
+  }: {
+    memeId: number | string;
+    competitionId: number | string;
+  }) {
+    return this.http.post<Submission>("/submission", { memeId, competitionId });
+  }
+
+  postMeme(formData: FormData) {
+    return this.http.post<Meme>("/meme", formData);
+  }
+
+  getCompetition(id: number | string) {
     return this.http.get<Competition>(`/competition/${id}`);
   }
 
+  getCompetitionMemes(id: number | string) {
+    return this.http.get<CompetitionMeme[]>(`/competition/${id}/meme/ranked`);
+  }
+
   updateReward({ rewardId, txId }: { rewardId: number; txId: string }) {
-    return this.http.post(`/competition/reward/${rewardId}`, {
+    return this.http.post<Reward>(`/competition/reward/${rewardId}`, {
       rewardId,
       txId,
     });
@@ -62,6 +83,66 @@ class Http {
   login(body: { message: SiweMessage; signature: string }) {
     return this.http.post("/auth/login", body);
   }
+
+  getMeme(id: string) {
+    return this.http.get<Meme>(`/meme/${id}`);
+  }
+
+  getCompetitionMemeSubmissions(competitionId: number | SVGStringList) {
+    return this.http.get<CompetitionMeme[]>(
+      `/competition/${competitionId}/meme/submissions`
+    );
+  }
+
+  getProfile(addressOrEns: string) {
+    return this.http.get(`/profile/${addressOrEns}`);
+  }
+
+  getNonce() {
+    return this.http.get("/auth/nonce");
+  }
+
+  getStatus() {
+    return this.http.get("/auth/status");
+  }
+
+  getComments(memeId: string) {
+    return this.http.get<Comment[]>(`/meme/${memeId}/comment`);
+  }
+
+  postComment({
+    memeId,
+    body,
+    parentCommentId,
+  }: {
+    memeId: string | number;
+    body: string;
+    parentCommentId?: string | number;
+  }) {
+    return this.http.post<Comment>(`/meme/${memeId}/comment`, {
+      body,
+      parentCommentId,
+    });
+  }
+
+  getMediaRequirements() {
+    return this.http.get<MediaRequirements>("/media/requirements");
+  }
+
+  postVote({
+    competitionId,
+    score,
+    memeId,
+  }: {
+    competitionId: number | string;
+    score: number | string;
+    memeId: number | string;
+  }) {
+    return this.http.post(`/competition/${competitionId}/vote`, {
+      score,
+      memeId,
+    });
+  }
 }
 
-export const newHttp = new Http();
+export const Http = new _Http();

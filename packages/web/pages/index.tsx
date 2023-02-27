@@ -13,7 +13,7 @@ import { css } from "../helpers/css";
 import { encodeBase64 } from "../helpers/strings";
 import { Competition, Meme, SearchParams, Stats } from "../interfaces";
 import AppLayout from "../layouts/App.layout";
-import { newHttp } from "../services/http";
+import { Http } from "../services/http";
 import redirectTo404 from "../services/redirect/404";
 import HomeStore from "../store/Home.store";
 
@@ -88,7 +88,7 @@ const Home: React.FC<HomeProps> = observer(
                 ))}
               </AsyncGrid>
             </Pane>
-            <Pane title={"Recent Uploads"}>
+            <Pane title={"Recent Memes"}>
               <AsyncGrid
                 isLoading={store.isMemesLoading}
                 data={store.memes}
@@ -126,7 +126,7 @@ const Home: React.FC<HomeProps> = observer(
                 )}
               >
                 <Stat label={"Users"}>{stats.totalUsers}</Stat>
-                <Stat label={"Uploads"}>{stats.totalMemes}</Stat>
+                <Stat label={"Memes"}>{stats.totalMemes}</Stat>
                 <Stat label={"Competitions"}>{stats.totalCompetitions}</Stat>
                 <Stat label={"Active Competitions"}>
                   {stats.totalActiveCompetitions}
@@ -166,14 +166,20 @@ export const getServerSideProps: GetServerSideProps<HomeProps> = async (
     }),
   };
   try {
-    const {
-      data: { data: competitions },
-    } = await newHttp.competitionSearch(params);
+    const [
+      {
+        data: { data: competitions },
+      },
+      {
+        data: { data: memes },
+      },
+      { data: stats },
+    ] = await Promise.all([
+      Http.searchCompetition(params),
+      Http.searchMeme(params),
+      Http.stats(),
+    ]);
 
-    const {
-      data: { data: memes },
-    } = await newHttp.memeSearch(params);
-    const { data: stats } = await newHttp.stats();
     return {
       props: { competitions, memes, stats, searchParams: params },
     };

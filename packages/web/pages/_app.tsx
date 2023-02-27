@@ -19,6 +19,19 @@ import { chains, client, createRainbowAuthAdapter } from "../services/wagmi";
 import AppStore from "../store/App.store";
 import "../styles/globals.css";
 
+const logIt = () => {
+  console.log(
+    `%c
+   ________   _______     _______      ________   _______     _______ 
+  ╱  ╱  ╱  ╲ ╱       ╲╲ ╱╱   ╱   ╲    ╱  ╱  ╱  ╲ ╱       ╲╲ ╱╱   ╱   ╲
+ ╱         ╱╱        ╱╱╱╱        ╱   ╱         ╱╱        ╱╱╱╱        ╱
+╱╱        ╱╱         ╱╱         ╱   ╱╱        ╱╱         ╱╱         ╱ 
+╲╲_______╱ ╲___╱____╱ ╲__╱_____╱    ╲╲_______╱ ╲___╱____╱ ╲__╱_____╱                                                 
+`,
+    `font-family: monospace`
+  );
+};
+
 const App = observer(({ Component, pageProps }: AppProps) => {
   const theme = lightTheme({
     borderRadius: "none",
@@ -35,6 +48,7 @@ const App = observer(({ Component, pageProps }: AppProps) => {
       AppStore.destroy();
     };
   }, []);
+  useEffect(logIt, []);
   return (
     <>
       <Head>
@@ -82,6 +96,19 @@ const WagmiAccountSwitchWatcher = observer(() => {
       AppStore.auth.onAccountSwitch();
     }
   }, [address, disconnect]);
+
+  useEffect(() => {
+    if (address) {
+      AppStore.auth.getStatus({
+        onUnauthed: () => {
+          disconnect();
+        },
+        onAuthed: () => {
+          AppStore.auth.address = address;
+        },
+      });
+    }
+  }, []);
   return <></>;
 });
 

@@ -5,7 +5,7 @@ import { Reward, TokenType } from "../interfaces";
 import erc1155Abi from "../services/abis/erc1155";
 import erc20Abi from "../services/abis/erc20";
 import erc721Abi from "../services/abis/erc721";
-import { newHttp } from "./../services/http";
+import { Http } from "./../services/http";
 import AppStore from "./App.store";
 
 export default class RewardStore {
@@ -78,7 +78,7 @@ export default class RewardStore {
   }
 
   private updateReward({ txId }: { txId: string }) {
-    return newHttp.updateReward({
+    return Http.updateReward({
       txId,
       rewardId: this.reward.id,
     });

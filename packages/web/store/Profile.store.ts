@@ -1,6 +1,6 @@
 import { action, computed, makeObservable, observable } from "mobx";
 import { encodeBase64 } from "../helpers/strings";
-import http from "../services/http";
+import { Http } from "../services/http";
 import { errorToast } from "./../components/DSL/Toast/Toast";
 import { Competition, Meme, Profile } from "./../interfaces/index";
 import AppStore from "./App.store";
@@ -57,23 +57,20 @@ export default class ProfileStore {
   }
 
   getUserMemes() {
-    return http
-      .get(`/meme/search`, {
-        params: {
-          offset: 0,
-          count: 10,
-          config: encodeBase64({
-            filters: [
-              {
-                key: "address",
-                operation: "equals",
-                value: this.profile.address,
-              },
-            ],
-            sorts: [{ key: "createdAt", direction: "desc" }],
-          }),
-        },
-      })
+    return Http.searchMeme({
+      offset: 0,
+      count: 10,
+      config: encodeBase64({
+        filters: [
+          {
+            key: "address",
+            operation: "equals",
+            value: this.profile.address,
+          },
+        ],
+        sorts: [{ key: "createdAt", direction: "desc" }],
+      }),
+    })
       .then(({ data }) => {
         this.memes = data.data;
       })
@@ -81,23 +78,20 @@ export default class ProfileStore {
   }
 
   getUserCompetitions() {
-    return http
-      .get("/competition/search", {
-        params: {
-          offset: 0,
-          count: 10,
-          config: encodeBase64({
-            filters: [
-              {
-                key: "address",
-                operation: "equals",
-                value: this.profile.address,
-              },
-            ],
-            sorts: [{ key: "createdAt", direction: "desc" }],
-          }),
-        },
-      })
+    return Http.searchCompetition({
+      offset: 0,
+      count: 10,
+      config: encodeBase64({
+        filters: [
+          {
+            key: "address",
+            operation: "equals",
+            value: this.profile.address,
+          },
+        ],
+        sorts: [{ key: "createdAt", direction: "desc" }],
+      }),
+    })
       .then(({ data }) => (this.competitions = data.data))
       .catch((e) => errorToast("Could not get competitions"));
   }
