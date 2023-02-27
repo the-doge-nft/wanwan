@@ -24,12 +24,14 @@ export class EthersService implements OnModuleInit {
     } else if (appEnv === AppEnv.test) {
       this.network = 'localhost';
     } else {
+      this.logger.error('App environment unknown');
       throw new Error('App environment unknown');
     }
   }
 
   async onModuleInit() {
     try {
+      this.logger.log('ethers service init');
       this.initWS();
     } catch (e) {
       console.error(e);
@@ -37,7 +39,9 @@ export class EthersService implements OnModuleInit {
   }
 
   initWS() {
-    const logMessage = `Creating WS provider on network: ${this.network}`;
+    const logMessage = `Creating WS provider on network: ${
+      this.network
+    } : ${this.configService.get('appEnv')}`;
     this.logger.log(logMessage);
     this.sentryClient.instance().captureMessage(logMessage);
 

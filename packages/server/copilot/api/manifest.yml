@@ -16,10 +16,13 @@ http:
   healthcheck:
     path: '/'
     success_codes: '200'
+    healthy_threshold: 2
     unhealthy_threshold: 4
-    timeout: 10s
+    interval: 15s
+    timeout: 5s
     # we need a longer graceperiod as we run our migrations to on container start
-    graceperiod: 120s
+    graceperiod: 100s
+    port: 3000
 
 # Configuration for your containers and service.
 image:
