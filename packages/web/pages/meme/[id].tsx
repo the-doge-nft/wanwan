@@ -29,7 +29,7 @@ interface MemeByIdProps {
   meme: Meme;
 }
 
-const MemeById: React.FC<Meme> = observer(({ ...meme }) => {
+const MemeById = observer(({ meme }: MemeByIdProps) => {
   const {
     query: { id },
   } = useRouter();
@@ -269,7 +269,7 @@ export const getServerSideProps: GetServerSideProps<MemeByIdProps> = async (
   try {
     const { data: meme } = await Http.getMeme(id as string);
     return {
-      props: meme,
+      props: { meme },
     };
   } catch (e) {
     return redirectTo404();

@@ -9,10 +9,13 @@ import getValidationPipe from './middleware/validation';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  const config = app.get<ConfigService>(ConfigService<Config>);
+  const isDev = config.get('isDev');
   app.use(getExpressRedisSession(app));
   app.useGlobalPipes(getValidationPipe());
   app.enableCors({
-    origin: true,
+    origin: isDev ? '*' : /\.wanwan\.me$/,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     preflightContinue: false,
     credentials: true,
@@ -27,7 +30,7 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup('api', app, document);
 
-  const port = app.get<ConfigService>(ConfigService<Config>).get('port');
+  const port = config.get('port');
   Logger.log(`[APP] listening on port: ${port}`);
   await app.listen(port);
 }
