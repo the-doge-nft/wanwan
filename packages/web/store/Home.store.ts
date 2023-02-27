@@ -1,6 +1,6 @@
 import { makeObservable, observable } from "mobx";
 import { Competition, Meme, SearchParams } from "../interfaces";
-import http from "../services/http";
+import Http from "../services/http";
 import AppStore from "./App.store";
 
 export default class HomeStore {
@@ -41,16 +41,14 @@ export default class HomeStore {
 
   private getMemes() {
     this.isMemesLoading = true;
-    return http
-      .get("/meme/search", { params: this.params })
+    return Http.searchMeme(this.params)
       .then(({ data }) => (this.memes = data.data))
       .finally(() => (this.isMemesLoading = false));
   }
 
   private getCompetitions() {
     this.isCompetitionsLoading = true;
-    return http
-      .get("/competition/search", { params: this.params })
+    return Http.searchCompetition(this.params)
       .then(({ data }) => (this.competitions = data.data))
       .finally(() => (this.isCompetitionsLoading = false));
   }
