@@ -55,10 +55,10 @@ class QueryBuilder<T, K extends GenericFindManyArgs> {
       skip: this._offset ? this._offset : undefined,
     };
 
-    console.log(
-      'debug:: querying with the following config',
-      JSON.stringify(config, undefined, 2),
-    );
+    // console.log(
+    //   'debug:: querying with the following config',
+    //   JSON.stringify(config, undefined, 2),
+    // );
 
     //@ts-ignore
     return this.prisma[this.model].findMany(config);

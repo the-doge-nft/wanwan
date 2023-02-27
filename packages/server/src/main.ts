@@ -15,9 +15,9 @@ async function bootstrap() {
   app.use(getExpressRedisSession(app));
   app.useGlobalPipes(getValidationPipe());
   app.enableCors({
-    origin: isDev ? '*' : /\.wanwan\.me$/,
+    origin: isDev ? 'http://localhost:3001' : /\.wanwan\.me$/,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    preflightContinue: false,
+    preflightContinue: true,
     credentials: true,
     allowedHeaders: 'Content-Type, Accept',
   });

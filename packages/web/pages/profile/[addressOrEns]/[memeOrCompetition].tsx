@@ -4,12 +4,11 @@ import { useRouter } from "next/router";
 import { useEffect, useMemo } from "react";
 import AspectRatio from "../../../components/DSL/AspectRatio/AspectRatio";
 import AsyncGrid from "../../../components/DSL/AsyncGrid/AsyncGrid";
-import Link from "../../../components/DSL/Link/Link";
+import Link, { LinkType } from "../../../components/DSL/Link/Link";
 import Pane from "../../../components/DSL/Pane/Pane";
-import Text, { TextType } from "../../../components/DSL/Text/Text";
 import PreviewLink from "../../../components/PreviewLink/PreviewLink";
 import { css } from "../../../helpers/css";
-import { abbreviate, getEtherscanURL } from "../../../helpers/strings";
+import { abbreviate, getRainobwURL } from "../../../helpers/strings";
 import { Profile } from "../../../interfaces";
 import AppLayout from "../../../layouts/App.layout";
 import Http from "../../../services/http";
@@ -73,29 +72,23 @@ const ProfilePage: React.FC<ProfileProps> = observer(({ profile }) => {
             />
             <div
               className={css(
-                "mt-1",
+                "mt-2",
+                "ml-2",
                 "flex",
                 "flex-col",
                 "items-center",
                 "text-sm"
               )}
             >
-              <Text>
+              <Link
+                type={LinkType.Secondary}
+                isExternal
+                href={getRainobwURL(profile.address)}
+              >
                 {store.profile.ens
                   ? store.profile.ens
                   : abbreviate(store.profile.address)}
-              </Text>
-              {store.profile.address && (
-                <Link
-                  isExternal
-                  href={getEtherscanURL(profile.address, "address")}
-                  className={css("inline-flex")}
-                >
-                  <Text type={TextType.NoColor}>
-                    {abbreviate(store.profile.address)}
-                  </Text>
-                </Link>
-              )}
+              </Link>
             </div>
           </div>
         </div>

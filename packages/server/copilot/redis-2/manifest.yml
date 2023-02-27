@@ -1,9 +1,9 @@
-# The manifest for the "redis-test" service.
+# The manifest for the "redis-2" service.
 # Read the full specification for the "Backend Service" type at:
 #  https://aws.github.io/copilot-cli/docs/manifest/backend-service/
 
 # Your service name will be used in naming your resources like log groups, ECS services, etc.
-name: redis-test
+name: redis-2
 type: Backend Service
 
 # Your service does not allow any traffic.
@@ -12,6 +12,7 @@ type: Backend Service
 image:
   # Docker build arguments. For additional overrides: https://aws.github.io/copilot-cli/docs/manifest/backend-service/#image-build
   build: redis.Dockerfile
+  port: 6379
 
 cpu: 256       # Number of CPU units for the task.
 memory: 512    # Amount of memory in MiB used by the task.

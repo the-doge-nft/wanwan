@@ -12,7 +12,14 @@ http:
   # To match all requests you can use the "/" path.
   path: '/'
   # You can specify a custom health check path. The default is "/".
-  # healthcheck: '/'
+  # https://aws.github.io/copilot-cli/docs/include/http-healthcheck/
+  healthcheck:
+    path: '/'
+    success_codes: '200'
+    unhealthy_threshold: 4
+    timeout: 10s
+    # we need a longer graceperiod as we run our migrations to on container start
+    graceperiod: 120s
 
 # Configuration for your containers and service.
 image:
