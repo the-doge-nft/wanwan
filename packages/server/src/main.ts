@@ -6,9 +6,16 @@ import { AppModule } from './app.module';
 import { Config } from './config/config';
 import { getExpressRedisSession } from './middleware/session';
 import getValidationPipe from './middleware/validation';
+import { PrismaService } from './prisma.service';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    logger: ['log', 'error', 'warn', 'debug', 'verbose'],
+  });
+
+  // https://docs.nestjs.com/recipes/prisma#issues-with-enableshutdownhooks
+  const prismaService = app.get(PrismaService);
+  await prismaService.enableShutdownHooks(app);
 
   const config = app.get<ConfigService>(ConfigService<Config>);
   const isDev = config.get('isDev');

@@ -3,7 +3,7 @@ version: '3.8'
 services:
   postgres:
     container_name: meme-postgres
-    image: postgres:15.1-alpine
+    image: postgres:14.6-alpine
     restart: always
     env_file:
       - .env
@@ -14,7 +14,7 @@ services:
 
   redis:
     container_name: meme-redis
-    image: redis
+    image: redis:7.0.8-alpine
     ports:
       - '${REDIS_PORT}:6379'
     volumes:
@@ -33,6 +33,21 @@ services:
     env_file:
       - .env
     command: pnpm run start:dev
+    ports:
+      - '${PORT}:${PORT}'
+    depends_on:
+      - postgres
+      - redis
+  
+  apiprod:
+    container_name: meme-api-prod
+    build:
+      dockerfile: api.Dockerfile
+      context: .
+      target: production
+    env_file:
+      - .env
+    command: pnpm run start:migrate:prod
     ports:
       - '${PORT}:${PORT}'
     depends_on:

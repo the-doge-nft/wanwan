@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-const merge = require('lodash.merge');
+import merge from 'lodash.merge';
 
 export interface GenericFindManyArgs {
   select?: any;

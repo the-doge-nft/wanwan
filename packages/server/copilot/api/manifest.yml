@@ -30,8 +30,6 @@ image:
   build: 
     dockerfile: api.Dockerfile
     target: production
-    args:
-      PORT: 3000
   # Port exposed through your container to route traffic to it.
   port: 3000
 
@@ -55,10 +53,10 @@ network:
 
 # You can override any of the values defined above by environment.
 environments:
- test:
-  env_file: .test.env
-prod:
-  env_file: .production.env
+  test:
+    env_file: .test.env
+  prod:
+    env_file: .production.env
   #  count: 2               # Number of tasks to run for the "test" environment.
   #  deployment:            # The deployment strategy for the "test" environment.
       # rolling: 'recreate' # Stops existing tasks before new ones are started for faster deployments.
