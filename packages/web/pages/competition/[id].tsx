@@ -11,7 +11,7 @@ import Pane, { PaneType } from "../../components/DSL/Pane/Pane";
 import { css } from "../../helpers/css";
 import { Competition, CompetitionMeme } from "../../interfaces";
 import AppLayout from "../../layouts/App.layout";
-import { Http } from "../../services/http";
+import Http from "../../services/http";
 import redirectTo404 from "../../services/redirect/404";
 import { default as CompetitionByIdStore } from "../../store/CompetitionId.store";
 

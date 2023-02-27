@@ -12,7 +12,7 @@ import { css } from "../../../helpers/css";
 import { abbreviate, getEtherscanURL } from "../../../helpers/strings";
 import { Profile } from "../../../interfaces";
 import AppLayout from "../../../layouts/App.layout";
-import { Http } from "../../../services/http";
+import Http from "../../../services/http";
 import redirectTo404 from "../../../services/redirect/404";
 import ProfileStore, { ProfileView } from "../../../store/Profile.store";
 

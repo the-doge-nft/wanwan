@@ -145,4 +145,5 @@ class _Http {
   }
 }
 
-export const Http = new _Http();
+const Http = new _Http();
+export default Http;

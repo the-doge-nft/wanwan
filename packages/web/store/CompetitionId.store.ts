@@ -3,7 +3,7 @@ import { fuzzyDeepSearch } from "../helpers/arrays";
 import { Competition, CompetitionMeme, Reward } from "../interfaces";
 import { Reactionable } from "../services/mixins/reactionable";
 import { TokenType } from "./../interfaces/index";
-import { Http } from "./../services/http";
+import Http from "./../services/http";
 import { EmptyClass } from "./../services/mixins/index";
 import AppStore from "./App.store";
 

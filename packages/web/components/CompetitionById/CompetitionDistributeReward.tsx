@@ -7,7 +7,7 @@ import {
 } from "wagmi";
 import { jsonify } from "../../helpers/strings";
 import { Reward } from "../../interfaces";
-import { Http } from "../../services/http";
+import Http from "../../services/http";
 import RewardStore from "../../store/Reward.store";
 import Button from "../DSL/Button/Button";
 

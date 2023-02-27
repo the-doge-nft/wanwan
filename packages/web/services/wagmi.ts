@@ -9,7 +9,7 @@ import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
 import env from "../environment";
 import { isProd, vars } from "./../environment/vars";
-import { Http } from "./http";
+import Http from "./http";
 
 const targetNetwork = isProd() ? mainnet : goerli;
 

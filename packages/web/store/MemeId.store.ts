@@ -1,6 +1,6 @@
 import { computed, makeObservable, observable } from "mobx";
 import { Comment } from "../interfaces";
-import { Http } from "./../services/http";
+import Http from "./../services/http";
 import AppStore from "./App.store";
 
 export default class MemeIdStore {

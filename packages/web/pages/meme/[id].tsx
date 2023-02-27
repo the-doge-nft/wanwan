@@ -20,7 +20,7 @@ import { css } from "../../helpers/css";
 import { abbreviate } from "../../helpers/strings";
 import { Comment, Meme } from "../../interfaces";
 import AppLayout from "../../layouts/App.layout";
-import { Http } from "../../services/http";
+import Http from "../../services/http";
 import redirectTo404 from "../../services/redirect/404";
 import AppStore from "../../store/App.store";
 import MemeIdStore from "../../store/MemeId.store";

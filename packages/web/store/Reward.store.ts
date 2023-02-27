@@ -5,7 +5,7 @@ import { Reward, TokenType } from "../interfaces";
 import erc1155Abi from "../services/abis/erc1155";
 import erc20Abi from "../services/abis/erc20";
 import erc721Abi from "../services/abis/erc721";
-import { Http } from "./../services/http";
+import Http from "./../services/http";
 import AppStore from "./App.store";
 
 export default class RewardStore {

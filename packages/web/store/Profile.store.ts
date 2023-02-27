@@ -1,6 +1,6 @@
 import { action, computed, makeObservable, observable } from "mobx";
 import { encodeBase64 } from "../helpers/strings";
-import { Http } from "../services/http";
+import Http from "../services/http";
 import { errorToast } from "./../components/DSL/Toast/Toast";
 import { Competition, Meme, Profile } from "./../interfaces/index";
 import AppStore from "./App.store";

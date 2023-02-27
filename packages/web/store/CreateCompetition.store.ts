@@ -6,7 +6,7 @@ import { SelectItem } from "../components/DSL/Select/Select";
 import { getTimezone } from "../helpers/dates";
 import { formatEthereumAddress } from "../helpers/strings";
 import { RewardBody, TokenType } from "../interfaces";
-import { Http } from "../services/http";
+import Http from "../services/http";
 import { Navigable } from "../services/mixins/navigable";
 import { EmptyClass } from "./../services/mixins/index";
 

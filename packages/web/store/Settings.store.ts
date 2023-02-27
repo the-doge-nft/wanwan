@@ -1,7 +1,7 @@
 import { computed, makeObservable, observable } from "mobx";
 import { THEME_KEY } from "../components/DSL/Theme";
 import { MediaRequirements } from "../interfaces";
-import { Http } from "./../services/http";
+import Http from "./../services/http";
 
 type ColorMode = "light" | "dark";
 export default class SettingsStore {

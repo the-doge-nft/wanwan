@@ -1,7 +1,7 @@
 import { computed, makeObservable, observable } from "mobx";
 import { EmptyClass } from "../services/mixins";
 import { Navigable } from "../services/mixins/navigable";
-import { Http } from "./../services/http";
+import Http from "./../services/http";
 import AppStore from "./App.store";
 
 export enum CreateMemeView {

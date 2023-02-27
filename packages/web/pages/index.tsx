@@ -13,7 +13,7 @@ import { css } from "../helpers/css";
 import { encodeBase64 } from "../helpers/strings";
 import { Competition, Meme, SearchParams, Stats } from "../interfaces";
 import AppLayout from "../layouts/App.layout";
-import { Http } from "../services/http";
+import Http from "../services/http";
 import redirectTo404 from "../services/redirect/404";
 import HomeStore from "../store/Home.store";
 

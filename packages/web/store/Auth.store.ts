@@ -4,7 +4,7 @@ import { Address } from "wagmi";
 import { encodeBase64 } from "../helpers/strings";
 import { Reactionable } from "../services/mixins/reactionable";
 import { Meme, Profile } from "./../interfaces/index";
-import { Http } from "./../services/http";
+import Http from "./../services/http";
 import { EmptyClass } from "./../services/mixins/index";
 import AppStore from "./App.store";
 
