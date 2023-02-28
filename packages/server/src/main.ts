@@ -24,7 +24,7 @@ async function bootstrap() {
   app.enableCors({
     origin: isDev ? 'http://localhost:3001' : /\.wanwan\.me$/,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    preflightContinue: true,
+    preflightContinue: false,
     credentials: true,
     allowedHeaders: 'Content-Type, Accept',
   });

@@ -19,7 +19,7 @@ export default class CreateMemeStore extends Navigable(EmptyClass) {
   constructor() {
     super();
     makeObservable(this);
-    this.currentView = CreateMemeView.Success;
+    this.currentView = CreateMemeView.Create;
   }
 
   async onMemeSubmit(values: any) {
@@ -54,7 +54,7 @@ export default class CreateMemeStore extends Navigable(EmptyClass) {
       case CreateMemeView.Create:
         return "New Meme";
       case CreateMemeView.Success:
-        return "Created";
+        return "You did it";
       default:
         return "";
     }

@@ -91,7 +91,7 @@ export default class CreateCompetitionStore extends Navigable(EmptyClass) {
       case CreateCompetitionView.Create:
         return "New Competition";
       case CreateCompetitionView.Success:
-        return "Competition Created";
+        return "You did it";
       default:
         return "";
     }
