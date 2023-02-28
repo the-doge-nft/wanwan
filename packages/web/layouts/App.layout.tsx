@@ -1,5 +1,4 @@
 import { PropsWithChildren } from "react";
-import Footer from "../components/Footer/Footer";
 import Header from "../components/Header/Header";
 import { css } from "../helpers/css";
 
@@ -20,7 +19,7 @@ const AppLayout: React.FC<PropsWithChildren> = ({ children }) => {
           <Header />
         </div>
         <div className={css("flex-grow", "flex", "flex-col")}>{children}</div>
-        <Footer />
+        {/* <Footer /> */}
       </div>
     </div>
   );
