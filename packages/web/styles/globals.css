@@ -72,6 +72,11 @@ body {
     background: theme("colors.red.800");
 }
 
+/* no blur on progress bar */
+#nprogress .peg {
+    display: none;
+}
+
 .animate__animated.fadeOut {
     animation-name: fadeOut;
 }
