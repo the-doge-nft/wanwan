@@ -5,7 +5,6 @@ import {
   formatEthereumAddress,
   isValidEthereumAddress,
 } from './../helpers/strings';
-import { PrismaService } from './../prisma.service';
 import { UserService } from './../user/user.service';
 
 export class NameNotFoundError extends Error {
@@ -17,7 +16,6 @@ export class NameNotFoundError extends Error {
 @Injectable()
 export class ProfileService {
   constructor(
-    private readonly prisma: PrismaService,
     private readonly ethers: EthersService,
     private readonly user: UserService,
     private readonly meme: MemeService,

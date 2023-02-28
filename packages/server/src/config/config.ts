@@ -10,6 +10,7 @@ export enum AppEnv {
 export interface Config {
   port: number;
   appEnv: AppEnv;
+  databaseUrl: string;
   aws: {
     region: string;
     accessKey: string;
@@ -37,15 +38,16 @@ export interface Config {
 
 const configSchema = Joi.object<Config>({
   port: Joi.number().integer().required(),
+  appEnv: Joi.string()
+    .valid(AppEnv.development, AppEnv.staging, AppEnv.test)
+    .required(),
+  databaseUrl: Joi.string().required(),
   aws: Joi.object({
     region: Joi.string().required(),
     accessKey: Joi.string().required(),
     secretAccessKey: Joi.string().required(),
     mediaBucketName: Joi.string().required(),
   }).required(),
-  appEnv: Joi.string()
-    .valid(AppEnv.development, AppEnv.staging, AppEnv.test)
-    .required(),
   session: Joi.object({
     secret: Joi.string().required(),
     name: Joi.string().required(),
@@ -68,6 +70,7 @@ const configSchema = Joi.object<Config>({
 const config: Config = new (function () {
   this.port = parseInt(process.env.PORT) || 3000;
   this.appEnv = (process.env.APP_ENV as AppEnv) || AppEnv.development;
+  this.databaseUrl = process.env.DATABASE_URL;
   this.aws = {
     region: process.env.AWS_REGION,
     accessKey: process.env.AWS_ACCESS_KEY,
@@ -92,9 +95,6 @@ const config: Config = new (function () {
   };
   this.isDev = this.appEnv === AppEnv.development;
 })();
-
-console.log(`DEBUG::::: ${config.isDev}`);
-console.log(`DEBUG::::: ${config.appEnv}`);
 
 class MissingEnvVarError extends Error {}
 
