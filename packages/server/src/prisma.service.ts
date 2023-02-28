@@ -13,7 +13,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
 
   constructor(private readonly config: ConfigService) {
     super({
-      log: ['query', 'info', 'warn', 'error'],
+      log: ['warn', 'error'],
     });
   }
 
