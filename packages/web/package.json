@@ -31,6 +31,7 @@
     "mobx-react-lite": "^3.4.0",
     "next": "13.0.5",
     "next-auth": "^4.18.7",
+    "nprogress": "^0.2.0",
     "postcss-custom-properties-fallback": "^1.0.2",
     "react": "18.2.0",
     "react-dom": "18.2.0",
@@ -47,6 +48,7 @@
   "devDependencies": {
     "@types/lodash": "^4.14.191",
     "@types/lodash.merge": "^4.6.7",
+    "@types/nprogress": "^0.2.0",
     "autoprefixer": "^10.4.13",
     "postcss": "^8.4.19",
     "tailwindcss": "^3.2.4"
