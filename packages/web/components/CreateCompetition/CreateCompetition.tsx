@@ -109,12 +109,14 @@ const CreateView: React.FC<CompetitionStoreProp> = observer(({ store }) => {
 });
 
 const SuccessView = () => {
-  <div>
-    <div className={css("text-center")}>
-      <Text>~~~</Text>
-      <Text size={TextSize.lg}>Competition Created</Text>
+  return (
+    <div>
+      <div className={css("text-center")}>
+        <Text>~~~</Text>
+        <Text size={TextSize.lg}>Competition Created</Text>
+      </div>
     </div>
-  </div>;
+  );
 };
 
 const Curators: React.FC<CompetitionStoreProp> = observer(({ store }) => {
