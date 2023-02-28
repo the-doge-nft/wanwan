@@ -35,6 +35,8 @@ environments:
   test:
     variables:
       POSTGRES_PASSWORD: test
+  prod:
+    env_file: .production.env
 
   # count: 2               # Number of tasks to run for the "test" environment.
 #    deployment:            # The deployment strategy for the "test" environment.

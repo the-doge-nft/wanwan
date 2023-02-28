@@ -39,7 +39,7 @@ export interface Config {
 const configSchema = Joi.object<Config>({
   port: Joi.number().integer().required(),
   appEnv: Joi.string()
-    .valid(AppEnv.development, AppEnv.staging, AppEnv.test)
+    .valid(AppEnv.development, AppEnv.staging, AppEnv.test, AppEnv.production)
     .required(),
   databaseUrl: Joi.string().required(),
   aws: Joi.object({
