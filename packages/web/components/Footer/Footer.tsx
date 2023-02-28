@@ -7,7 +7,7 @@ const Footer = () => {
     <footer className={css("mt-10", "text-center")}>
       <Divider />
       <Text type={TextType.Grey} size={TextSize.xs}>
-        Built for and by meme lovers
+        ( ͡◉ ͜ʖ ͡◉)
       </Text>
     </footer>
   );
