@@ -1,10 +1,9 @@
 import { action, computed, makeObservable, observable, toJS } from "mobx";
 import { fuzzyDeepSearch } from "../helpers/arrays";
 import { Competition, CompetitionMeme, Reward } from "../interfaces";
-import http from "../services/http";
 import { Reactionable } from "../services/mixins/reactionable";
 import { TokenType } from "./../interfaces/index";
-import { newHttp } from "./../services/http";
+import Http from "./../services/http";
 import { EmptyClass } from "./../services/mixins/index";
 import AppStore from "./App.store";
 
@@ -64,21 +63,17 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
 
   @action
   getUserSubmittedMemes() {
-    return http
-      .get<CompetitionMeme[]>(
-        `/competition/${this.competition.id}/meme/submissions`
-      )
-      .then(
-        ({ data }) =>
-          (this.userSubmittedMemes = data.sort((a, b) => b.score - a.score))
-      );
+    return Http.getCompetitionMemeSubmissions(this.competition.id).then(
+      ({ data }) =>
+        (this.userSubmittedMemes = data.sort((a, b) => b.score - a.score))
+    );
   }
 
   @action
   getRankedMemes() {
-    return http
-      .get<CompetitionMeme[]>(`/competition/${this.competition.id}/meme/ranked`)
-      .then(({ data }) => (this.memes = data));
+    return Http.getCompetitionMemes(this.competition.id).then(
+      ({ data }) => (this.memes = data)
+    );
   }
 
   @action
@@ -112,7 +107,7 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
   onSubmit() {
     this.isSubmitLoading = true;
     const promises = this.selectedMemeIds.map((memeId) =>
-      http.post("/submission", { memeId, competitionId: this.competition.id })
+      Http.postSubmission({ memeId, competitionId: this.competition.id })
     );
     return Promise.all(promises)
       .then(() => {
@@ -134,31 +129,34 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
   }
 
   upVote(memeId: number) {
-    return http
-      .post(`/competition/${this.competition.id}/vote`, { score: 1, memeId })
-      .then(() => this.getRankedMemes());
+    return Http.postVote({
+      competitionId: this.competition.id,
+      memeId,
+      score: 1,
+    });
   }
 
   downVote(memeId: number) {
-    return http
-      .post(`/competition/${this.competition.id}/vote`, { score: -1, memeId })
-      .then(() => this.getRankedMemes());
+    return Http.postVote({
+      competitionId: this.competition.id,
+      memeId,
+      score: -1,
+    });
   }
 
   zeroVote(memeId: number) {
-    return http
-      .post(`/competition/${this.competition.id}/vote`, { score: 0, memeId })
-      .then(() => this.getRankedMemes());
+    return Http.postVote({
+      competitionId: this.competition.id,
+      memeId,
+      score: 0,
+    });
   }
 
   @action
   getCompetition() {
-    return newHttp.getCompetition(this.competition.id).then(({ data }) => {
+    return Http.getCompetition(this.competition.id).then(({ data }) => {
       this.competition = data;
       this._rewards = data.rewards;
-      console.log("debug:: GET COMPETITION", data);
-      console.log("debug:: new competition", this.competition);
-      console.log("debug:: new rewards", this.rewards);
     });
   }
 
@@ -266,5 +264,9 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
       throw new Error("Could not find reward");
     }
     return [TokenType.ERC1155, TokenType.ERC721].includes(reward.currency.type);
+  }
+
+  runThenRefreshMemes(runIt: () => Promise<any>) {
+    return runIt().then(() => this.getRankedMemes());
   }
 }

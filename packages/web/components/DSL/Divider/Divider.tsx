@@ -14,8 +14,8 @@ export const Divider: React.FC<PropsWithChildren<DividerProps>> = ({
   return (
     <div
       className={css(
-        "border-slate-300",
-        "dark:border-neutral-600",
+        "dark:border-neutral-700",
+        "border-neutral-400",
         "border-t-[1px]",
         {
           [verticalStyles]: orientation === "vertical",

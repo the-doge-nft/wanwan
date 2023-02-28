@@ -1,4 +1,4 @@
-import { CacheModule, Module } from '@nestjs/common';
+import { CacheModule, Logger, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { SentryModule } from '@travelerdev/nestjs-sentry';
 import { redisStore } from 'cache-manager-redis-store';
@@ -22,10 +22,10 @@ import { PrismaService } from './prisma.service';
 import { ProfileService } from './profile/profile.service';
 import { RewardService } from './reward/reward.service';
 import { S3Service } from './s3/s3.service';
+import { StatsService } from './stats/stats.service';
 import { SubmissionService } from './submission/submission.service';
 import { UserService } from './user/user.service';
 import { VoteService } from './vote/vote.service';
-import { StatsService } from './stats/stats.service';
 
 @Module({
   imports: [
@@ -46,17 +46,23 @@ import { StatsService } from './stats/stats.service';
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService<Config>) => {
         const redisConfig = await configService.get('redis');
-        const store = await redisStore({
-          ttl: 60,
-          password: redisConfig.password,
-          socket: {
-            host: redisConfig.host,
-            port: redisConfig.port,
-            passphrase: redisConfig.password,
-            rejectUnauthorized: true,
-          },
-        });
-        return { store: () => store };
+        try {
+          Logger.log(
+            `[REDIST STORE]: ${redisConfig.host} - ${redisConfig.port}}`,
+          );
+          const store = await redisStore({
+            ttl: 60,
+            socket: {
+              host: redisConfig.host,
+              port: redisConfig.port,
+            },
+          });
+          Logger.log(`[REDIS STORE]: created`);
+          return { store: () => store };
+        } catch (e) {
+          Logger.error(`[REDIS STORE]: ${e}`);
+          throw e;
+        }
       },
       inject: [ConfigService],
     }),

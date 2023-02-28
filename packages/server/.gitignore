@@ -34,9 +34,11 @@ lerna-debug.log*
 !.vscode/launch.json
 !.vscode/extensions.json
 
-.env.staging
-.env.production
 .pnpm-store
 
 .env
+.test.env
+.production.env
 uploads/
+backups/
+notes.txt

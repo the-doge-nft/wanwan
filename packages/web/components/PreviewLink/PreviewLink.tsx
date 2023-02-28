@@ -27,7 +27,7 @@ const PreviewLink: React.FC<PropsWithChildren<PreviewLinkProps>> = ({
             "h-[115px]",
             "overflow-y-hidden",
             borderColorCss,
-            "group-hover:border-red-600"
+            "group-hover:border-red-800"
           )}
         >
           {children}
@@ -41,7 +41,7 @@ const PreviewLink: React.FC<PropsWithChildren<PreviewLinkProps>> = ({
             "overflow-ellipsis",
             "text-black",
             "dark:text-white",
-            "group-hover:text-red-600"
+            "group-hover:text-red-800"
           )}
         >
           <Text type={TextType.NoColor} size={TextSize.sm}>
@@ -57,7 +57,7 @@ const PreviewLink: React.FC<PropsWithChildren<PreviewLinkProps>> = ({
             "overflow-ellipsis",
             "text-neutral-400",
             "dark:text-neutral-600",
-            "group-hover:text-red-600"
+            "group-hover:text-red-800"
           )}
         >
           <Text size={TextSize.xs} type={TextType.NoColor}>

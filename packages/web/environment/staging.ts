@@ -1,7 +1,7 @@
 import { Env } from ".";
 const env: Env = {
-  app: { name: "[STAGING] wanwan" },
-  api: { baseUrl: "" },
+  app: { name: "wanwan" },
+  api: { baseUrl: "https://api.test.wanwan.me" },
 };
 
 export default env;

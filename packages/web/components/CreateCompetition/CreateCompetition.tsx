@@ -21,6 +21,7 @@ import {
   minValue,
   required,
 } from "../DSL/Form/validation";
+import Text, { TextSize } from "../DSL/Text/Text";
 
 interface CompetitionStoreProp {
   store: CreateCompetitionStore;
@@ -108,7 +109,14 @@ const CreateView: React.FC<CompetitionStoreProp> = observer(({ store }) => {
 });
 
 const SuccessView = () => {
-  return <div>Success</div>;
+  return (
+    <div>
+      <div className={css("text-center")}>
+        <Text>~~~</Text>
+        <Text size={TextSize.lg}>Competition Created</Text>
+      </div>
+    </div>
+  );
 };
 
 const Curators: React.FC<CompetitionStoreProp> = observer(({ store }) => {

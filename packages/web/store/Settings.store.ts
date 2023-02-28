@@ -1,7 +1,7 @@
 import { computed, makeObservable, observable } from "mobx";
 import { THEME_KEY } from "../components/DSL/Theme";
 import { MediaRequirements } from "../interfaces";
-import http from "../services/http";
+import Http from "./../services/http";
 
 type ColorMode = "light" | "dark";
 export default class SettingsStore {
@@ -17,7 +17,7 @@ export default class SettingsStore {
 
   init() {
     this.setColorMode(localStorage.getItem(THEME_KEY) as ColorMode & null);
-    http.get<MediaRequirements>("/media/requirements").then(({ data }) => {
+    Http.getMediaRequirements().then(({ data }) => {
       this.mediaRequirements = data;
     });
   }

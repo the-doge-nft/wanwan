@@ -6,13 +6,23 @@ import { AppModule } from './app.module';
 import { Config } from './config/config';
 import { getExpressRedisSession } from './middleware/session';
 import getValidationPipe from './middleware/validation';
+import { PrismaService } from './prisma.service';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    logger: ['log', 'error', 'warn', 'debug', 'verbose'],
+  });
+
+  // https://docs.nestjs.com/recipes/prisma#issues-with-enableshutdownhooks
+  const prismaService = app.get(PrismaService);
+  await prismaService.enableShutdownHooks(app);
+
+  const config = app.get<ConfigService>(ConfigService<Config>);
+  const isDev = config.get('isDev');
   app.use(getExpressRedisSession(app));
   app.useGlobalPipes(getValidationPipe());
   app.enableCors({
-    origin: true,
+    origin: isDev ? 'http://localhost:3001' : /\.wanwan\.me$/,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     preflightContinue: false,
     credentials: true,
@@ -20,15 +30,15 @@ async function bootstrap() {
   });
 
   const swaggerConfig = new DocumentBuilder()
-    .setTitle('Meme2Earn')
-    .setDescription('Meme2Earn API')
+    .setTitle('Wan Wan')
+    .setDescription('Wan Wan API')
     .setVersion('1.0')
     .build();
   const document = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup('api', app, document);
 
-  const port = app.get<ConfigService>(ConfigService<Config>).get('port');
-  Logger.log(`listening on port: ${port}`);
+  const port = config.get('port');
+  Logger.log(`[APP] listening on port: ${port}`);
   await app.listen(port);
 }
 

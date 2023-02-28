@@ -4,15 +4,14 @@ import { useRouter } from "next/router";
 import { useEffect, useMemo } from "react";
 import AspectRatio from "../../../components/DSL/AspectRatio/AspectRatio";
 import AsyncGrid from "../../../components/DSL/AsyncGrid/AsyncGrid";
-import Link from "../../../components/DSL/Link/Link";
+import Link, { LinkType } from "../../../components/DSL/Link/Link";
 import Pane from "../../../components/DSL/Pane/Pane";
-import Text, { TextType } from "../../../components/DSL/Text/Text";
 import PreviewLink from "../../../components/PreviewLink/PreviewLink";
 import { css } from "../../../helpers/css";
-import { abbreviate, getEtherscanURL } from "../../../helpers/strings";
+import { abbreviate, getRainobwURL } from "../../../helpers/strings";
 import { Profile } from "../../../interfaces";
 import AppLayout from "../../../layouts/App.layout";
-import http from "../../../services/http";
+import Http from "../../../services/http";
 import redirectTo404 from "../../../services/redirect/404";
 import ProfileStore, { ProfileView } from "../../../store/Profile.store";
 
@@ -49,8 +48,8 @@ const ProfilePage: React.FC<ProfileProps> = observer(({ profile }) => {
           >
             <div
               className={css(
-                "h-[100px]",
-                "w-[100px]",
+                "h-[85px]",
+                "w-[85px]",
                 "sm:h-[120px]",
                 "sm:w-[120px]",
                 "bg-center",
@@ -59,6 +58,7 @@ const ProfilePage: React.FC<ProfileProps> = observer(({ profile }) => {
                 "border-[1px]",
                 "border-black",
                 "dark:border-neutral-600",
+                "dark:bg-neutral-800",
                 "rounded-full",
                 { "bg-slate-200": !profile.avatar }
               )}
@@ -72,29 +72,23 @@ const ProfilePage: React.FC<ProfileProps> = observer(({ profile }) => {
             />
             <div
               className={css(
-                "mt-1",
+                "mt-2",
+                "ml-2",
                 "flex",
                 "flex-col",
                 "items-center",
                 "text-sm"
               )}
             >
-              <Text>
+              <Link
+                type={LinkType.Secondary}
+                isExternal
+                href={getRainobwURL(profile.address)}
+              >
                 {store.profile.ens
                   ? store.profile.ens
                   : abbreviate(store.profile.address)}
-              </Text>
-              {store.profile.address && (
-                <Link
-                  isExternal
-                  href={getEtherscanURL(profile.address, "address")}
-                  className={css("inline-flex")}
-                >
-                  <Text type={TextType.NoColor}>
-                    {abbreviate(store.profile.address)}
-                  </Text>
-                </Link>
-              )}
+              </Link>
             </div>
           </div>
         </div>
@@ -174,7 +168,7 @@ export const getServerSideProps: GetServerSideProps<ProfileProps> = async (
 ) => {
   const { addressOrEns } = context.query;
   try {
-    const { data: profile } = await http.get(`/profile/${addressOrEns}`);
+    const { data: profile } = await Http.getProfile(addressOrEns as string);
     return {
       props: { profile },
     };

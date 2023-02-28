@@ -2,10 +2,9 @@ import { AuthenticationStatus } from "@rainbow-me/rainbowkit";
 import { computed, makeObservable, observable } from "mobx";
 import { Address } from "wagmi";
 import { encodeBase64 } from "../helpers/strings";
-import http from "../services/http";
 import { Reactionable } from "../services/mixins/reactionable";
-import { Meme, Profile, SearchResponse } from "./../interfaces/index";
-import { newHttp } from "./../services/http";
+import { Meme, Profile } from "./../interfaces/index";
+import Http from "./../services/http";
 import { EmptyClass } from "./../services/mixins/index";
 import AppStore from "./App.store";
 
@@ -29,7 +28,7 @@ export default class AuthStore extends Reactionable(EmptyClass) {
   }
 
   init() {
-    this.getStatus();
+    // this.getStatus();
     AppStore.events.subscribe(
       AppStore.events.events.MEME_CREATED,
       this,
@@ -40,6 +39,7 @@ export default class AuthStore extends Reactionable(EmptyClass) {
         () => this.address,
         () => {
           if (this.address) {
+            console.log("debug:: auth runnint");
             this.getProfile();
             this.getUserMemes();
           } else {
@@ -52,15 +52,26 @@ export default class AuthStore extends Reactionable(EmptyClass) {
     );
   }
 
-  private getStatus() {
-    http
-      .get("/auth/status")
+  getStatus({
+    onAuthed,
+    onUnauthed,
+  }: {
+    onAuthed?: () => void;
+    onUnauthed?: () => void;
+  } = {}) {
+    Http.getStatus()
       .then(({ data: isLoggedIn }) => {
         this.status = isLoggedIn ? "authenticated" : "unauthenticated";
+        if (this.status === "authenticated") {
+          onAuthed && onAuthed();
+        } else if (this.status === "unauthenticated") {
+          onUnauthed && onUnauthed();
+        }
       })
       .catch((e) => {
         console.error(e);
         this.status = "unauthenticated";
+        onUnauthed && onUnauthed();
       });
   }
 
@@ -69,8 +80,9 @@ export default class AuthStore extends Reactionable(EmptyClass) {
       throw new Error("Address not available");
     }
     console.log("getting profile");
-    return http.get(`/profile/${this.address}`).then(({ data }) => {
+    return Http.getProfile(this.address).then(({ data }) => {
       this.profile = data;
+      return data;
     });
   }
 
@@ -78,21 +90,15 @@ export default class AuthStore extends Reactionable(EmptyClass) {
     if (!this.address) {
       throw new Error("Address not available");
     }
-    http
-      .get<SearchResponse<Meme>>("/meme/search", {
-        params: {
-          offset: 0,
-          // if the user has more than 100k we break
-          count: 100000,
-          config: encodeBase64({
-            filters: [
-              { key: "address", operation: "equals", value: this.address },
-            ],
-            sorts: [{ key: "createdAt", direction: "desc" }],
-          }),
-        },
-      })
-      .then(({ data }) => (this.memes = data.data));
+    Http.searchMeme({
+      offset: 0,
+      // if the user has more than 100k we break
+      count: 100000,
+      config: encodeBase64({
+        filters: [{ key: "address", operation: "equals", value: this.address }],
+        sorts: [{ key: "createdAt", direction: "desc" }],
+      }),
+    }).then(({ data }) => (this.memes = data.data));
   }
 
   runOrAuthPrompt(fn: () => void) {
@@ -120,8 +126,7 @@ export default class AuthStore extends Reactionable(EmptyClass) {
   }
 
   logout() {
-    return newHttp
-      .logout()
+    return Http.logout()
       .then(() => this.onLogoutSuccess())
       .catch((e) => console.warn("already logged out"));
   }

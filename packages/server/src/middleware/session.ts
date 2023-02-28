@@ -9,12 +9,17 @@ export function getExpressRedisSession(app: INestApplication): any {
   const configService = app.get<ConfigService>(ConfigService<Config>);
   const redisConfig = configService.get<Config['redis']>('redis');
   const sessionConfig = configService.get<Config['session']>('session');
-
+  Logger.log(
+    `[REDIS SESSION] connecting -- host: ${redisConfig.host}, port: ${redisConfig.port}}`,
+  );
   const redisClient = createClient({
-    url: `redis://:${redisConfig.password}@${redisConfig.host}:${redisConfig.port}`,
+    url: `redis://:@${redisConfig.host}:${redisConfig.port}`,
     legacyMode: true,
   });
-  redisClient.connect().catch(Logger.error);
+  redisClient
+    .connect()
+    .then(() => Logger.log('[REDIS SESSION] connected'))
+    .catch((e) => Logger.error(`[REDIS SESSION] ${e}`));
   const RedisStore = createRedisStore(session);
   return session({
     store: new RedisStore({ client: redisClient }),

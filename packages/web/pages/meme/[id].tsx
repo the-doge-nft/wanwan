@@ -20,7 +20,7 @@ import { css } from "../../helpers/css";
 import { abbreviate } from "../../helpers/strings";
 import { Comment, Meme } from "../../interfaces";
 import AppLayout from "../../layouts/App.layout";
-import http from "../../services/http";
+import Http from "../../services/http";
 import redirectTo404 from "../../services/redirect/404";
 import AppStore from "../../store/App.store";
 import MemeIdStore from "../../store/MemeId.store";
@@ -29,7 +29,7 @@ interface MemeByIdProps {
   meme: Meme;
 }
 
-const MemeById: React.FC<Meme> = observer(({ ...meme }) => {
+const MemeById = observer(({ meme }: MemeByIdProps) => {
   const {
     query: { id },
   } = useRouter();
@@ -40,7 +40,7 @@ const MemeById: React.FC<Meme> = observer(({ ...meme }) => {
   return (
     <AppLayout>
       <div className={css("mt-4")}>
-        <div className={css("px-24")}>
+        <div className={css("", "sm:px-24")}>
           <AspectRatio
             className={css(
               "bg-contain",
@@ -267,9 +267,9 @@ export const getServerSideProps: GetServerSideProps<MemeByIdProps> = async (
 ) => {
   const { id } = context.query;
   try {
-    const { data: meme } = await http.get(`/meme/${id}`);
+    const { data: meme } = await Http.getMeme(id as string);
     return {
-      props: meme,
+      props: { meme },
     };
   } catch (e) {
     return redirectTo404();

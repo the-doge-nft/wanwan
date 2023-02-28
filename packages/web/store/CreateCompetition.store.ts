@@ -6,7 +6,7 @@ import { SelectItem } from "../components/DSL/Select/Select";
 import { getTimezone } from "../helpers/dates";
 import { formatEthereumAddress } from "../helpers/strings";
 import { RewardBody, TokenType } from "../interfaces";
-import { newHttp } from "../services/http";
+import Http from "../services/http";
 import { Navigable } from "../services/mixins/navigable";
 import { EmptyClass } from "./../services/mixins/index";
 
@@ -74,8 +74,7 @@ export default class CreateCompetitionStore extends Navigable(EmptyClass) {
     const rewards = this.getRewardItems(values);
     body.rewards = rewards;
     console.log(body.rewards);
-    return newHttp
-      .postCompetition(body)
+    return Http.postCompetition(body)
       .then(() => {
         this.isLoading = false;
         this.currentView = CreateCompetitionView.Success;
@@ -92,7 +91,7 @@ export default class CreateCompetitionStore extends Navigable(EmptyClass) {
       case CreateCompetitionView.Create:
         return "New Competition";
       case CreateCompetitionView.Success:
-        return "Competition Created";
+        return "You did it";
       default:
         return "";
     }

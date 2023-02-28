@@ -22,13 +22,12 @@ const CompetitionSubmissions: React.FC<{ store: CompetitionIdStore }> =
           {store.memes.map((meme) => {
             const score = meme.votes.reduce((acc, vote) => acc + vote.score, 0);
             const userVoteScore = meme.votes.find(
-              (vote) => vote.user.address === AppStore.auth.address
+              (vote) => vote.user.id === AppStore.auth.profile?.user.id
             )?.score;
-            const baseArrowStyles = css(
-              "text-neutral-500",
-              "hover:text-red-600",
-              "dark:hover:text-red-600"
-            );
+            const baseArrowStyles = css("text-neutral-500", {
+              "hover:text-red-800 dark:hover:text-red-800":
+                store.competition.isActive,
+            });
             const scoreStyles = css(
               "text-black",
               "dark:text-white",
@@ -37,14 +36,9 @@ const CompetitionSubmissions: React.FC<{ store: CompetitionIdStore }> =
               { "text-red-800": score < 0 }
             );
             return (
-              <Link
-                className={css("hover:no-underline")}
-                href={`/meme/${meme.id}`}
-                key={`meme-preview-${meme.id}`}
-              >
+              <div key={`meme-preview-${meme.id}`} className={css("relative")}>
                 <Pane
                   type={PaneType.Grey}
-                  hover
                   title={
                     <div className={css("text-black", "dark:text-white")}>
                       <Text type={TextType.NoColor}>Posted by </Text>
@@ -65,9 +59,13 @@ const CompetitionSubmissions: React.FC<{ store: CompetitionIdStore }> =
                           if (store.competition.isActive) {
                             AppStore.auth.runOrAuthPrompt(() => {
                               if (userVoteScore === 1) {
-                                store.zeroVote(meme.id);
+                                store.runThenRefreshMemes(() =>
+                                  store.zeroVote(meme.id)
+                                );
                               } else {
-                                store.upVote(meme.id);
+                                store.runThenRefreshMemes(() =>
+                                  store.upVote(meme.id)
+                                );
                               }
                             });
                           }
@@ -75,6 +73,7 @@ const CompetitionSubmissions: React.FC<{ store: CompetitionIdStore }> =
                         className={css({
                           "text-black dark:text-white": userVoteScore === 1,
                           [baseArrowStyles]: userVoteScore !== 1,
+                          "cursor-pointer": store.competition.isActive,
                         })}
                       >
                         <RxArrowUp size={22} />
@@ -90,9 +89,13 @@ const CompetitionSubmissions: React.FC<{ store: CompetitionIdStore }> =
                           if (store.competition.isActive) {
                             AppStore.auth.runOrAuthPrompt(() => {
                               if (userVoteScore === -1) {
-                                store.zeroVote(meme.id);
+                                store.runThenRefreshMemes(() =>
+                                  store.zeroVote(meme.id)
+                                );
                               } else {
-                                store.downVote(meme.id);
+                                store.runThenRefreshMemes(() =>
+                                  store.downVote(meme.id)
+                                );
                               }
                             });
                           }
@@ -100,6 +103,7 @@ const CompetitionSubmissions: React.FC<{ store: CompetitionIdStore }> =
                         className={css({
                           "text-black dark:text-white": userVoteScore === -1,
                           [baseArrowStyles]: userVoteScore !== -1,
+                          "cursor-pointer": store.competition.isActive,
                         })}
                       >
                         <RxArrowDown size={22} />
@@ -111,21 +115,27 @@ const CompetitionSubmissions: React.FC<{ store: CompetitionIdStore }> =
                           {meme.name}
                         </Text>
                         <Text size={TextSize.sm}>{meme.description}</Text>
-                        <AspectRatio
-                          className={css(
-                            "bg-contain",
-                            "bg-center",
-                            "bg-no-repeat",
-                            "h-full",
-                            "border-[1px]",
-                            "border-black",
-                            "mt-3",
-                            "mb-2",
-                            "group-hover:border-red-800"
-                          )}
-                          ratio={`${meme.media.width}/${meme.media.height}`}
-                          style={{ backgroundImage: `url(${meme.media.url})` }}
-                        />
+                        <Link href={`/meme/${meme.id}`}>
+                          <AspectRatio
+                            className={css(
+                              "bg-contain",
+                              "bg-center",
+                              "bg-no-repeat",
+                              "h-full",
+                              "border-[1px]",
+                              "border-black",
+                              "mt-3",
+                              "mb-2",
+                              "group-hover:border-red-800",
+                              "hover:border-red-800"
+                            )}
+                            ratio={`${meme.media.width}/${meme.media.height}`}
+                            style={{
+                              backgroundImage: `url(${meme.media.url})`,
+                            }}
+                          />
+                        </Link>
+
                         <div
                           className={css(
                             "flex",
@@ -152,7 +162,8 @@ const CompetitionSubmissions: React.FC<{ store: CompetitionIdStore }> =
                     </div>
                   </div>
                 </Pane>
-              </Link>
+                {/* </Link> */}
+              </div>
             );
           })}
         </AsyncWrap>

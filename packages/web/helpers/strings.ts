@@ -19,10 +19,14 @@ export const getEtherscanURL = (
   return link;
 };
 
+export const getRainobwURL = (addressOrEns: string) => {
+  return `https://rainbow.me/${addressOrEns}`;
+};
+
 export const getOpenSeaURL = (address: string, tokenId: string | number) => {
-  let link = `https://opensea.io/assets/${address}/${tokenId}`;
+  let link = `https://opensea.io/assets/ethereum/${address}/${tokenId}`;
   if (isDev() || isStaging()) {
-    link = `https://testnets.opensea.io/assets/${address}/${tokenId}`;
+    link = `https://testnets.opensea.io/assets/goerli/${address}/${tokenId}`;
   }
   return link;
 };

@@ -1,7 +1,7 @@
 import { computed, makeObservable, observable } from "mobx";
-import http from "../services/http";
 import { EmptyClass } from "../services/mixins";
 import { Navigable } from "../services/mixins/navigable";
+import Http from "./../services/http";
 import AppStore from "./App.store";
 
 export enum CreateMemeView {
@@ -26,12 +26,15 @@ export default class CreateMemeStore extends Navigable(EmptyClass) {
     this.isSubmitLoading = true;
 
     const formData = new FormData();
-    if (!this.file) throw new Error("No file");
-    formData.append("file", this.file);
-    if (values.name) formData.append("name", values.name);
-    if (values.description) formData.append("description", values.description);
+    formData.append("file", this.file!);
+    if (values.name) {
+      formData.append("name", values.name);
+    }
+    if (values.description) {
+      formData.append("description", values.description);
+    }
 
-    await http.post("/meme", formData);
+    await Http.postMeme(formData);
     this.isSubmitLoading = false;
     this.currentView = CreateMemeView.Success;
     AppStore.events.publish(AppStore.events.events.MEME_CREATED);
@@ -51,7 +54,7 @@ export default class CreateMemeStore extends Navigable(EmptyClass) {
       case CreateMemeView.Create:
         return "New Meme";
       case CreateMemeView.Success:
-        return "Created";
+        return "You did it";
       default:
         return "";
     }

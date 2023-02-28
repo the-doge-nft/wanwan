@@ -71,3 +71,9 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](LICENSE).
+
+## ops notes
+
+- copilot init
+- copilot svc deploy --name api --env test
+- for https, a load balancer listener must be applied when spinng up the environment

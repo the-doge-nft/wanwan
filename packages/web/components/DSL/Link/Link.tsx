@@ -16,12 +16,13 @@ const baseLinkStyles = css(
 );
 
 const linkTypeStyles = {
-  [LinkType.Primary]: css("text-red-800", "hover:text-red-600"),
+  [LinkType.Primary]: css("text-red-800", "hover:underline"),
   [LinkType.Secondary]: css(
     "text-black",
-    "hover:text-red-600",
+    "hover:underline",
     "dark:text-white",
-    "dark:hover:text-red-600"
+    "hover:text-red-800",
+    "dark:hover:text-red-800"
   ),
   [LinkType.Tertiary]: css("text-neutral-800", "hover:text-neutral-400"),
 };

@@ -1,10 +1,33 @@
-import { INestApplication, Injectable, OnModuleInit } from '@nestjs/common';
+import {
+  INestApplication,
+  Injectable,
+  Logger,
+  OnModuleInit,
+} from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { PrismaClient } from '@prisma/client';
 
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit {
+  private readonly logger = new Logger(PrismaService.name);
+
+  constructor(private readonly config: ConfigService) {
+    super({
+      log: ['warn', 'error'],
+    });
+  }
+
   async onModuleInit() {
-    await this.$connect();
+    this.logger.log(
+      `Connecting to database: ${this.config.get('databaseUrl')}`,
+    );
+    try {
+      await this.$connect();
+      this.logger.log('Connected to database');
+    } catch (e) {
+      this.logger.error('Could not connect to database');
+      this.logger.error(e);
+    }
   }
 
   async enableShutdownHooks(app: INestApplication) {

@@ -6,6 +6,7 @@ import {
 import "@rainbow-me/rainbowkit/styles.css";
 import { observer } from "mobx-react-lite";
 import type { AppProps } from "next/app";
+import Head from "next/head";
 import { useEffect } from "react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -17,6 +18,19 @@ import env from "../environment";
 import { chains, client, createRainbowAuthAdapter } from "../services/wagmi";
 import AppStore from "../store/App.store";
 import "../styles/globals.css";
+
+const logIt = () => {
+  console.log(
+    `%c
+   ________   _______     _______      ________   _______     _______ 
+  ╱  ╱  ╱  ╲ ╱       ╲╲ ╱╱   ╱   ╲    ╱  ╱  ╱  ╲ ╱       ╲╲ ╱╱   ╱   ╲
+ ╱         ╱╱        ╱╱╱╱        ╱   ╱         ╱╱        ╱╱╱╱        ╱
+╱╱        ╱╱         ╱╱         ╱   ╱╱        ╱╱         ╱╱         ╱ 
+╲╲_______╱ ╲___╱____╱ ╲__╱_____╱    ╲╲_______╱ ╲___╱____╱ ╲__╱_____╱                                                 
+`,
+    `font-family: monospace`
+  );
+};
 
 const App = observer(({ Component, pageProps }: AppProps) => {
   const theme = lightTheme({
@@ -34,8 +48,12 @@ const App = observer(({ Component, pageProps }: AppProps) => {
       AppStore.destroy();
     };
   }, []);
+  useEffect(logIt, []);
   return (
     <>
+      <Head>
+        <title>{env.app.name}</title>
+      </Head>
       <WagmiConfig client={client}>
         <RainbowKitAuthenticationProvider
           status={AppStore.auth.status}
@@ -78,6 +96,19 @@ const WagmiAccountSwitchWatcher = observer(() => {
       AppStore.auth.onAccountSwitch();
     }
   }, [address, disconnect]);
+
+  useEffect(() => {
+    if (address) {
+      AppStore.auth.getStatus({
+        onUnauthed: () => {
+          disconnect();
+        },
+        onAuthed: () => {
+          AppStore.auth.address = address;
+        },
+      });
+    }
+  }, []);
   return <></>;
 });
 
