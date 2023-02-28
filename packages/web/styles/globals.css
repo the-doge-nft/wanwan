@@ -68,6 +68,10 @@ body {
     }
 }
 
+#nprogress .bar {
+    background: theme("colors.red.800");
+}
+
 .animate__animated.fadeOut {
     animation-name: fadeOut;
 }
