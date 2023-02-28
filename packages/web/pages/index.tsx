@@ -49,8 +49,7 @@ const Home: React.FC<HomeProps> = observer(
           <div className={css("flex", "flex-col", "gap-4")}>
             <Pane title={"What is wanwan?"} type={PaneType.Secondary}>
               <Text size={TextSize.sm}>
-                wanwan is a platform for creating meme competitions. If you make
-                something good enough, you could win.
+                wanwan is a platform for meme competitions.
               </Text>
             </Pane>
             <Pane title={"Competitions"}>
