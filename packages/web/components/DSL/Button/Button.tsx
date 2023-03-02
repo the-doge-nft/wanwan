@@ -1,6 +1,7 @@
 import { ConnectButton as RainbowConnectButton } from "@rainbow-me/rainbowkit";
 import { observer } from "mobx-react-lite";
 import { PropsWithChildren, useState } from "react";
+import { AiOutlinePlus } from "react-icons/ai";
 import { BsFillMoonFill, BsFillSunFill } from "react-icons/bs";
 import { useDisconnect } from "wagmi";
 import { css } from "../../../helpers/css";
@@ -217,27 +218,7 @@ export const ConnectButton: React.FC<
                           </Link>
                         </DropdownItem>
                         {AppStore.auth.isAuthed && (
-                          <div className={css("my-2")}>
-                            <DropdownItem>
-                              <div className={css("flex", "flex-col", "gap-2")}>
-                                <Button
-                                  onClick={() =>
-                                    (AppStore.modals.isCreateMemeModalOpen =
-                                      true)
-                                  }
-                                >
-                                  + Meme
-                                </Button>
-                                <Button
-                                  onClick={() =>
-                                    (AppStore.modals.isCreateCompetitionModalOpen =
-                                      true)
-                                  }
-                                >
-                                  + Competition
-                                </Button>
-                              </div>
-                            </DropdownItem>
+                          <div className={css("mt-4", "mb-2")}>
                             <DropdownItem className={css("mt-2")}>
                               <div
                                 className={css(
@@ -315,5 +296,48 @@ export const ConnectButton: React.FC<
     );
   }
 );
+
+export const CreateButton = () => {
+  return (
+    <Dropdown
+      trigger={
+        <Button>
+          <div className={css("flex", "items-center", "gap-0.5")}>
+            <AiOutlinePlus size={15} />
+            Create
+          </div>
+        </Button>
+      }
+      align={"center"}
+    >
+      <div className={css("py-2")}>
+        <DropdownItem>
+          <Button
+            onClick={() => (AppStore.modals.isCreateMemeModalOpen = true)}
+            block
+          >
+            <div className={css("flex", "items-center", "gap-0.5")}>
+              <AiOutlinePlus size={15} />
+              Meme
+            </div>
+          </Button>
+        </DropdownItem>
+        <DropdownItem className={css("mt-2")}>
+          <Button
+            onClick={() =>
+              (AppStore.modals.isCreateCompetitionModalOpen = true)
+            }
+            block
+          >
+            <div className={css("flex", "items-center", "gap-0.5")}>
+              <AiOutlinePlus size={15} />
+              Competition
+            </div>
+          </Button>
+        </DropdownItem>
+      </div>
+    </Dropdown>
+  );
+};
 
 export default Button;

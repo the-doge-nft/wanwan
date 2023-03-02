@@ -70,9 +70,18 @@ const CreateMemeForm: React.FC<{ store: CreateMemeStore }> = observer(
 const Success = () => {
   return (
     <div>
-      <div className={css("text-center")}>
+      <div
+        className={css(
+          "text-center",
+          "flex",
+          "items-center",
+          "gap-2",
+          "justify-center"
+        )}
+      >
         <Text>~~~</Text>
         <Text size={TextSize.lg}>Meme Created</Text>
+        <Text>~~~</Text>
       </div>
     </div>
   );

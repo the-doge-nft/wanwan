@@ -6,6 +6,7 @@ import AspectRatio from "../../../components/DSL/AspectRatio/AspectRatio";
 import AsyncGrid from "../../../components/DSL/AsyncGrid/AsyncGrid";
 import Link, { LinkType } from "../../../components/DSL/Link/Link";
 import Pane from "../../../components/DSL/Pane/Pane";
+import Text, { TextSize } from "../../../components/DSL/Text/Text";
 import PreviewLink from "../../../components/PreviewLink/PreviewLink";
 import { css } from "../../../helpers/css";
 import { abbreviate, getRainobwURL } from "../../../helpers/strings";
@@ -65,7 +66,7 @@ const ProfilePage: React.FC<ProfileProps> = observer(({ profile }) => {
               style={
                 profile.avatar
                   ? {
-                      backgroundImage: `url(${profile.avatar})`,
+                      backgroundImage: `url(${store.profile.avatar})`,
                     }
                   : {}
               }
@@ -83,12 +84,20 @@ const ProfilePage: React.FC<ProfileProps> = observer(({ profile }) => {
               <Link
                 type={LinkType.Secondary}
                 isExternal
-                href={getRainobwURL(profile.address)}
+                href={getRainobwURL(store.profile.address)}
               >
                 {store.profile.ens
                   ? store.profile.ens
                   : abbreviate(store.profile.address)}
               </Link>
+            </div>
+            <div className={css("flex", "gap-0.5", "items-baseline")}>
+              {/* <Text size={TextSize.xl}>🗣️:</Text> */}
+              <Text size={TextSize.sm}>wan:</Text>
+
+              <Text size={TextSize.sm} bold>
+                {store.profile.wan}
+              </Text>
             </div>
           </div>
         </div>

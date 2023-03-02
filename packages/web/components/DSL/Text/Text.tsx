@@ -5,6 +5,7 @@ export enum TextSize {
   xs = "xs",
   sm = "sm",
   lg = "lg",
+  xl = "xl",
 }
 
 export enum TextType {
@@ -26,6 +27,7 @@ const textSizeStyles = {
   [TextSize.xs]: css("text-xs"),
   [TextSize.sm]: css("text-sm"),
   [TextSize.lg]: css("text-base"),
+  [TextSize.xl]: css("text-lg"),
 };
 
 const textTypeStyles = {
