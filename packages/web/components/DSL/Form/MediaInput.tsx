@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { FileRejection, useDropzone } from "react-dropzone";
 import { IoCloseOutline } from "react-icons/io5";
 import { objectKeys } from "../../../helpers/arrays";
@@ -94,6 +94,16 @@ const MediaInput: React.FC<MediaInputProps> = ({
     noClick: noClick,
   });
 
+  const acceptedExtensionsLabel = useMemo(() => {
+    const extensions = objectKeys(acceptedMimeToExtension).reduce(
+      (acc: any, key) => {
+        return [...acc, ...acceptedMimeToExtension[key]];
+      },
+      []
+    );
+    return extensions.join(", ");
+  }, [acceptedMimeToExtension]);
+
   return (
     <FormControl
       description={description}
@@ -169,16 +179,7 @@ const MediaInput: React.FC<MediaInputProps> = ({
               </div>
               <div className={css("text-center", "text-neutral-600")}>
                 <div className={css("text-xs")}>
-                  accepted:{" "}
-                  {objectKeys(acceptedMimeToExtension).map(
-                    (mime, index, arr) => {
-                      if (index === arr.length - 1) {
-                        return ", " + acceptedMimeToExtension[mime].join(", ");
-                      } else {
-                        return acceptedMimeToExtension[mime].join(", ");
-                      }
-                    }
-                  )}
+                  accepted: {acceptedExtensionsLabel}
                 </div>
                 <div className={css("mt-0.5", "text-xs")}>
                   Max Size: {bytesToSize(maxSizeBytes)}

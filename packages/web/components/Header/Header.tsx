@@ -1,9 +1,10 @@
-import env from "../../environment";
+import { observer } from "mobx-react-lite";
 import { isDev } from "../../environment/vars";
 import { css } from "../../helpers/css";
-import { ButtonSize, ConnectButton } from "../DSL/Button/Button";
+import AppStore from "../../store/App.store";
+import { ButtonSize, ConnectButton, CreateButton } from "../DSL/Button/Button";
 import Link, { LinkType } from "../DSL/Link/Link";
-import Text, { TextType } from "../DSL/Text/Text";
+import Logo from "../Logo/Logo";
 
 const navItems: { name: string; link: string }[] = [];
 if (isDev()) {
@@ -13,17 +14,24 @@ if (isDev()) {
   );
 }
 
-const Header = () => {
+const Header = observer(() => {
   return (
     <div className={css("flex", "justify-between", "relative")}>
       <div className={css("flex", "gap-2")}>
-        {navItems.map((item) => (
+        {/* {navItems.map((item) => (
           <Link key={item.name} href={item.link}>
             <Text type={TextType.NoColor}>{item.name}</Text>
           </Link>
-        ))}
+        ))} */}
+        <Link
+          type={LinkType.Secondary}
+          href="/"
+          className={css("flex", "items-center", "gap-0.5")}
+        >
+          <Logo />
+        </Link>
       </div>
-      <div
+      {/* <div
         className={css(
           "absolute",
           "left-1/2",
@@ -33,15 +41,20 @@ const Header = () => {
           "font-bold"
         )}
       >
-        <Link type={LinkType.Secondary} href="/">
+        <Link
+          type={LinkType.Secondary}
+          href="/"
+          className={css("flex", "items-center", "gap-0.5")}
+        >
           <Text type={TextType.NoColor}>{env.app.name}</Text>
         </Link>
-      </div>
-      <div className={css("z-10")}>
+      </div> */}
+      <div className={css("z-10", "flex", "items-center", "gap-2")}>
+        {AppStore.auth.isAuthed && <CreateButton />}
         <ConnectButton size={ButtonSize.lg} />
       </div>
     </div>
   );
-};
+});
 
 export default Header;

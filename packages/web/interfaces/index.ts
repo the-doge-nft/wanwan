@@ -133,6 +133,7 @@ export interface Profile {
   avatar: string;
   user: User;
   memes: Array<Meme>;
+  wan: number;
 }
 
 export interface MediaRequirements {

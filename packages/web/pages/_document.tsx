@@ -5,7 +5,7 @@ import { css } from "../helpers/css";
 export default function Document() {
   return (
     <Html>
-      <Head title={"Meme2Earn"} />
+      <Head title={"wanwan"} />
       <body className={css("font-ComicNeue", "mr-0", "!mr-0", bgColorCss)}>
         <Main />
         <NextScript />

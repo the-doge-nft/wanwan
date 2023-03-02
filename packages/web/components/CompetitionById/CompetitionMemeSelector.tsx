@@ -1,10 +1,11 @@
 import { observer } from "mobx-react-lite";
 import { AiOutlinePlus } from "react-icons/ai";
 import { css } from "../../helpers/css";
+import AppStore from "../../store/App.store";
 import CompetitionIdStore from "../../store/CompetitionId.store";
 import AspectRatio from "../DSL/AspectRatio/AspectRatio";
 import AsyncWrap from "../DSL/AsyncWrap/AsyncWrap";
-import Text, { TextSize, TextType } from "../DSL/Text/Text";
+import Button from "../DSL/Button/Button";
 
 const CompetitionMemeSelector: React.FC<{ store: CompetitionIdStore }> =
   observer(({ store }) => {
@@ -31,12 +32,19 @@ const CompetitionMemeSelector: React.FC<{ store: CompetitionIdStore }> =
                 "flex",
                 "justify-center",
                 "items-center",
-                "w-full"
+                "w-full",
+                "flex-col",
+                "gap-4"
               )}
             >
-              <Text size={TextSize.xs} type={TextType.Grey}>
-                No memes found
-              </Text>
+              <Button
+                onClick={() => (AppStore.modals.isCreateMemeModalOpen = true)}
+              >
+                <div className={css("flex", "items-center", "gap-0.5")}>
+                  <AiOutlinePlus size={15} />
+                  Meme
+                </div>
+              </Button>
             </div>
           )}
         >

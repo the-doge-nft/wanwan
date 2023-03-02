@@ -21,4 +21,24 @@ export class UserService {
   findFirst(args?: Prisma.UserFindFirstArgs) {
     return this.prisma.user.findFirst(args);
   }
+
+  async getWanScore(address: string) {
+    const memeFactor = 1;
+    const voteFactor = 2;
+    const submissionFactor = 4;
+    const [memes, votes, submissions] = await Promise.all([
+      this.prisma.meme.count({
+        where: { user: { address } },
+      }),
+      this.prisma.vote.count({
+        where: { user: { address } },
+      }),
+      this.prisma.submission.count({
+        where: { user: { address } },
+      }),
+    ]);
+    const wan =
+      memes / memeFactor + votes / voteFactor + submissions / submissionFactor;
+    return wan;
+  }
 }

@@ -70,10 +70,26 @@ const App = observer(({ Component, pageProps }: AppProps) => {
       router.events.off("routeChangeError", handleRouteDone);
     };
   }, []);
+  const description = "Run competitions, create memes, win prizes";
+  const title = "wanwan";
+  const url = "https://wanwan.me";
+  const twitterUsername = "@ownthedoge";
+  const socialCardUrl = "https://wanwan.me/images/twitter-card.png";
   return (
     <>
       <Head>
         <title>{env.app.name}</title>
+        <meta name="description" content={description} key="desc" />
+        <meta property="og:site_name" content={title} />
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={description} />
+        <meta property="og:image" content={socialCardUrl} />
+        <meta property="og:url" content={url} />
+        <meta name="twitter:title" content={title} />
+        <meta name="twitter:description" content={description} />
+        <meta name="twitter:image" content={socialCardUrl} />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:site" content={twitterUsername} />
       </Head>
       <WagmiConfig client={client}>
         <RainbowKitAuthenticationProvider

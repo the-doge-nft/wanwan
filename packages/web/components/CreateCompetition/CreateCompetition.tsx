@@ -111,9 +111,18 @@ const CreateView: React.FC<CompetitionStoreProp> = observer(({ store }) => {
 const SuccessView = () => {
   return (
     <div>
-      <div className={css("text-center")}>
+      <div
+        className={css(
+          "text-center",
+          "flex",
+          "items-center",
+          "gap-2",
+          "justify-center"
+        )}
+      >
         <Text>~~~</Text>
         <Text size={TextSize.lg}>Competition Created</Text>
+        <Text>~~~</Text>
       </div>
     </div>
   );

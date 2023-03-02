@@ -50,10 +50,10 @@ export const textFieldBaseStyles = css(
 
 const disabledStyles = css(
   "text-neutral-400",
-  "border-slate-500",
+  "border-neutral-500",
   "cursor-not-allowed",
   "dark:disabled:bg-neutral-800",
-  "disabled:bg-slate-200"
+  "disabled:bg-neutral-200"
 );
 
 const Input = ({

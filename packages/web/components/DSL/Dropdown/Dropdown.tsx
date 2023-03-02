@@ -1,9 +1,10 @@
 import * as RadixDropdown from "@radix-ui/react-dropdown-menu";
+import { DropdownMenuContentProps } from "@radix-ui/react-dropdown-menu";
 import { PropsWithChildren } from "react";
 import { css } from "../../../helpers/css";
 import { bgColorCss, borderColorCss } from "../Theme";
 
-interface DropdownProps {
+interface DropdownProps extends Pick<DropdownMenuContentProps, "align"> {
   trigger: JSX.Element;
   open?: boolean;
   onOpenChange?: (value: boolean) => void;
@@ -31,6 +32,7 @@ const Dropdown: React.FC<PropsWithChildren<DropdownProps>> = ({
   open,
   onOpenChange,
   type = DropdownType.Primary,
+  align = "end",
 }) => {
   return (
     <RadixDropdown.Root open={open} onOpenChange={onOpenChange}>
@@ -39,6 +41,8 @@ const Dropdown: React.FC<PropsWithChildren<DropdownProps>> = ({
       </RadixDropdown.Trigger>
       <RadixDropdown.Content
         style={{ minWidth: "200px" }}
+        collisionPadding={10}
+        align={align}
         className={css(
           styleToTypeMap[type],
           "w-full",

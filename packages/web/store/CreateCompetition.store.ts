@@ -89,7 +89,7 @@ export default class CreateCompetitionStore extends Navigable(EmptyClass) {
   get title() {
     switch (this.currentView) {
       case CreateCompetitionView.Create:
-        return "New Competition";
+        return "New competition";
       case CreateCompetitionView.Success:
         return "You did it";
       default:
