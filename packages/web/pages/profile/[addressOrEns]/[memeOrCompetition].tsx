@@ -93,7 +93,7 @@ const ProfilePage: React.FC<ProfileProps> = observer(({ profile }) => {
             </div>
             <div className={css("flex", "gap-0.5", "items-baseline")}>
               {/* <Text size={TextSize.xl}>🗣️:</Text> */}
-              <Text size={TextSize.sm}>wan:</Text>
+              <Text size={TextSize.sm}>WAN:</Text>
 
               <Text size={TextSize.sm} bold>
                 {store.profile.wan}
