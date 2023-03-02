@@ -38,7 +38,7 @@ const CompetitionById: React.FC<CompetitionByIdProps> = observer(
     }, []);
     return (
       <AppLayout>
-        <div className={css("mt-4", "flex", "flex-col", "gap-2")}>
+        <div className={css("flex", "flex-col", "gap-2")}>
           <Pane
             type={PaneType.Secondary}
             title={store.competition.name}
