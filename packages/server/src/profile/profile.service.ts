@@ -43,6 +43,7 @@ export class ProfileService {
       where: { user: { address } },
       orderBy: { createdAt: 'desc' },
     });
-    return { ens, address, avatar, user, memes };
+    const wan = await this.user.getWanScore(address);
+    return { ens, address, avatar, user, memes, wan };
   }
 }
