@@ -236,7 +236,13 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
 
   @computed
   get totalVotes() {
-    return this.memes.reduce((acc, meme) => acc + meme.votes.length, 0);
+    return this.memes.reduce(
+      (acc, meme) =>
+        acc +
+        meme.votes.filter((vote) => vote.competitionId === this.competition.id)
+          .length,
+      0
+    );
   }
 
   getMemePlaceInCompetition(id: number) {

@@ -16,8 +16,8 @@ const Logo = ({ size = 40 }: LogoProps) => {
         fill="#fff"
         fillOpacity={0}
         stroke="currentColor"
-        stroke-miterlimit="10"
-        stroke-width="2"
+        strokeMiterlimit="10"
+        strokeWidth="2"
       />
       <g>
         <line x1="54.5" y1="9.5" x2="66.5" y2="3.5" fill="currentColor" />
