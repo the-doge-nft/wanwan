@@ -39,7 +39,6 @@ export default class AuthStore extends Reactionable(EmptyClass) {
         () => this.address,
         () => {
           if (this.address) {
-            console.log("debug:: auth runnint");
             this.getProfile();
             this.getUserMemes();
           } else {
