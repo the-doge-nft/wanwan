@@ -24,4 +24,9 @@ export class SubmissionService {
       include: this.defaultInclude,
     });
   }
+
+  async update(args: Prisma.SubmissionUpdateArgs) {
+    const submission = await this.prisma.submission.update(args)
+    return this.findMany({where: {id: submission.id}})
+  }
 }

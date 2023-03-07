@@ -19,7 +19,6 @@ export default class RewardStore {
     makeObservable(this);
     this.reward = reward;
     this.toAddress = toAddress;
-    console.log("debug:: reward", this.reward);
   }
 
   @computed

@@ -10,7 +10,7 @@ import {
   Reward,
   SearchResponse,
   Stats,
-  Submission,
+  Submission
 } from "../interfaces";
 import AppStore from "../store/App.store";
 import ApiErrorInterceptor from "./interceptors/api-error.interceptor";
@@ -142,6 +142,10 @@ class _Http {
       score,
       memeId,
     });
+  }
+
+  postCurateCompetitionMeme({competitionId, memeId}: {competitionId: number, memeId: number}) {
+    return this.http.post(`/competition/${competitionId}/meme/submissions/curate`, {memeId})
   }
 }
 

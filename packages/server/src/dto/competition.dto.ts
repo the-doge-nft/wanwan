@@ -81,7 +81,6 @@ function IsNumberStringGreaterThan(
       options: validationOptions,
       validator: {
         validate(value: any, { constraints }: ValidationArguments) {
-          console.log(value, minValue);
           return (
             typeof value === 'string' &&
             BigNumber.from(value).gte(constraints[0])

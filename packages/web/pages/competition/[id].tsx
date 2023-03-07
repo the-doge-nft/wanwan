@@ -1,13 +1,9 @@
 import { observer } from "mobx-react-lite";
 import { GetServerSideProps } from "next";
 import { useEffect, useMemo } from "react";
-import CompetitionMemeSelector from "../../components/CompetitionById/CompetitionMemeSelector";
-import CompetitionSelectedMemesForSubmission from "../../components/CompetitionById/CompetitionSelectedMemeForSubmission";
 import CompetitionSubmissions from "../../components/CompetitionById/CompetitionSubmissions";
 import CompetitionUserSubmissions from "../../components/CompetitionById/CompetitionUserSubmissions";
-import Button from "../../components/DSL/Button/Button";
-import Input from "../../components/DSL/Input/Input";
-import Pane, { PaneType } from "../../components/DSL/Pane/Pane";
+import { CollapsablePane, PaneType } from "../../components/DSL/Pane/Pane";
 import { css } from "../../helpers/css";
 import { Competition, CompetitionMeme } from "../../interfaces";
 import AppLayout from "../../layouts/App.layout";
@@ -17,6 +13,8 @@ import { default as CompetitionByIdStore } from "../../store/CompetitionId.store
 
 import CompetitionDetails from "../../components/CompetitionById/CompetitionDetails";
 import CompetitionRewards from "../../components/CompetitionById/CompetitionRewards";
+import CompetitionSubmit from "../../components/CompetitionById/CompetitionSubmit";
+import CurateModal from "../../components/CompetitionById/CurateModal";
 
 interface CompetitionByIdProps {
   competition: Competition;
@@ -39,22 +37,22 @@ const CompetitionById: React.FC<CompetitionByIdProps> = observer(
     return (
       <AppLayout>
         <div className={css("flex", "flex-col", "gap-2")}>
-          <Pane
+          <CollapsablePane
             type={PaneType.Secondary}
             title={store.competition.name}
             onChange={(val) => (store.showDetails = val)}
             isExpanded={store.showDetails}
           >
             <CompetitionDetails store={store} />
-          </Pane>
-          <Pane
+          </CollapsablePane>
+          <CollapsablePane
             title={`Rewards: (${store.rewards.length})`}
             type={PaneType.Secondary}
             isExpanded={store.showRewards}
             onChange={(val) => (store.showRewards = val)}
           >
             <CompetitionRewards store={store} />
-          </Pane>
+          </CollapsablePane>
           <div
             className={css("grid", {
               "grid-cols-1": store.showSubmitPane || store.showHasEntriesPane,
@@ -76,55 +74,37 @@ const CompetitionById: React.FC<CompetitionByIdProps> = observer(
               )}
             >
               {store.showSubmitPane && (
-                <Pane
+                <CollapsablePane
                   type={PaneType.Secondary}
-                  title={"Enter"}
+                  title={"Enter Competition"}
                   isExpanded={store.showSubmitContent}
                   onChange={(value) => (store.showSubmitContent = value)}
                 >
-                  <div className={css("flex", "flex-col", "gap-2")}>
-                    <div
-                      className={css(
-                        "flex",
-                        "justify-between",
-                        "align-items-center",
-                        "gap-2"
-                      )}
-                    >
-                      <Input
-                        block
-                        value={store.searchValue}
-                        onChange={store.onSearchChange}
-                        placeholder={"search your catalogue"}
-                        type={"text"}
-                      />
-                      <Button
-                        onClick={() => store.onSubmit()}
-                        isLoading={store.isSubmitLoading}
-                        disabled={!store.canSubmit}
-                      >
-                        Submit
-                      </Button>
-                    </div>
-                    <CompetitionMemeSelector store={store} />
-                    <CompetitionSelectedMemesForSubmission store={store} />
-                  </div>
-                </Pane>
+                  <CompetitionSubmit store={store} />
+                </CollapsablePane>
               )}
-
               {store.showHasEntriesPane && (
-                <Pane
+                <CollapsablePane
                   type={PaneType.Secondary}
                   title={`Your Entries: (${store.userEntriesCount})`}
                   isExpanded={store.showUserEntriesContent}
                   onChange={(value) => (store.showUserEntriesContent = value)}
                 >
                   <CompetitionUserSubmissions store={store} />
-                </Pane>
+                </CollapsablePane>
               )}
             </div>
           </div>
         </div>
+        {store.isCurateModalOpen && store.memeToCurate && <CurateModal 
+          onConfirm={() => {
+            store.runThenRefreshMemes(() => store.hideSubmission()).then(() => store.isCurateModalOpen = false)
+          }} 
+          onChange={(isOpen) => store.isCurateModalOpen = isOpen} 
+          isOpen={store.isCurateModalOpen} 
+          competition={store.competition} 
+          meme={store.memeToCurate}
+        />}
       </AppLayout>
     );
   }

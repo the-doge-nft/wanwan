@@ -145,6 +145,7 @@ const Curators: React.FC<CompetitionStoreProp> = observer(({ store }) => {
                 name={key}
                 label={`Curator ${index + 1}`}
                 validate={[required, isEthereumAddress]}
+                placeholder={"ethereum address"}
               />
             );
           })}

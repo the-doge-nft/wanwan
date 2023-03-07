@@ -43,8 +43,9 @@ export class CompetitionService {
       user: true,
       // grab the first submission for the cover image for the competiiton
       submissions: {
+        where: { deletedAt: null },
         include: { meme: { include: { media: true } } },
-        orderBy: { createdAt: 'asc' },
+        orderBy: { createdAt: 'desc' },
         take: 1,
       },
     };
@@ -193,5 +194,20 @@ export class CompetitionService {
       },
     });
     return !!competition;
+  }
+
+  async getCurators(competitionId: number) {
+    const competitionCurator = await this.prisma.compeitionCurator.findMany({
+      where: { competitionId },
+      include: { user: true },
+    });
+    return competitionCurator.map((curator) => curator.user);
+  }
+
+  async hideMemeSubmission(competitionId: number, memeId: number) {
+    return this.prisma.submission.update({
+      where: { memeId_competitionId: { memeId, competitionId } },
+      data: { deletedAt: new Date() },
+    });
   }
 }
