@@ -10,7 +10,7 @@ import AppStore from "./App.store";
 
 export default class AuthStore extends Reactionable(EmptyClass) {
   @observable
-  status: AuthenticationStatus = "loading";
+  status: AuthenticationStatus = "unauthenticated";
 
   // must be explicit undefined for mobx react to fire
   @observable
@@ -78,7 +78,6 @@ export default class AuthStore extends Reactionable(EmptyClass) {
     if (!this.address) {
       throw new Error("Address not available");
     }
-    console.log("getting profile");
     return Http.getProfile(this.address).then(({ data }) => {
       this.profile = data;
       return data;

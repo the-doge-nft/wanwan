@@ -1,5 +1,5 @@
 import { observer } from "mobx-react-lite";
-import { PropsWithChildren } from "react";
+import { PropsWithChildren, useCallback } from "react";
 import { AiOutlineMinus, AiOutlinePlus } from "react-icons/ai";
 import { css } from "../../../helpers/css";
 import Text, { TextType } from "../Text/Text";
@@ -14,24 +14,13 @@ export enum PaneType {
 interface PaneProps {
   title?: React.ReactNode;
   type?: PaneType;
-  isExpanded?: boolean;
-  onChange?: (isExpanded: boolean) => void;
-  hover?: boolean;
+  rightOfTitle?: React.ReactNode;
 }
 
 const Pane: React.FC<PropsWithChildren<PaneProps>> = observer(
-  ({
-    children,
-    title,
-    type = PaneType.Primary,
-    isExpanded = true,
-    hover,
-    onChange,
-  }) => {
+  ({ children, title, type = PaneType.Primary, rightOfTitle }) => {
     const basePaneStyles = {
-      container: css("border-[1px]", borderColorCss, {
-        "hover:border-red-800 group dark:hover:border-red-800": hover,
-      }),
+      container: css("border-[1px]", borderColorCss),
       title: css(
         "px-2",
         "py-1",
@@ -80,23 +69,10 @@ const Pane: React.FC<PropsWithChildren<PaneProps>> = observer(
                 {title}
               </Text>
             </div>
-            {onChange && (
-              <div
-                className={css("cursor-pointer")}
-                onClick={() => onChange(!isExpanded)}
-              >
-                <Text type={TextType.White}>
-                  {isExpanded ? (
-                    <AiOutlineMinus size={16} />
-                  ) : (
-                    <AiOutlinePlus size={16} />
-                  )}
-                </Text>
-              </div>
-            )}
+            {rightOfTitle && rightOfTitle}
           </div>
         )}
-        {isExpanded && (
+        {children && (
           <div className={css(paneTypeStyles[type].body, basePaneStyles.body)}>
             {children}
           </div>
@@ -105,5 +81,36 @@ const Pane: React.FC<PropsWithChildren<PaneProps>> = observer(
     );
   }
 );
+
+interface CollapsablePaneProps extends PaneProps {
+  isExpanded: boolean;
+  onChange: (isExpanded: boolean) => void;
+}
+
+export const CollapsablePane: React.FC<
+  PropsWithChildren<CollapsablePaneProps>
+> = observer(({ isExpanded, onChange, children, ...rest }) => {
+  const renderRightOfTitle = useCallback(() => {
+    return (
+      <div
+        className={css("cursor-pointer")}
+        onClick={() => onChange(!isExpanded)}
+      >
+        <Text type={TextType.White}>
+          {isExpanded ? (
+            <AiOutlineMinus size={16} />
+          ) : (
+            <AiOutlinePlus size={16} />
+          )}
+        </Text>
+      </div>
+    );
+  }, [isExpanded, onChange]);
+  return (
+    <Pane {...rest} rightOfTitle={renderRightOfTitle()}>
+      {isExpanded && children}
+    </Pane>
+  );
+});
 
 export default Pane;

@@ -10,12 +10,13 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import UpdateReward from 'src/dto/updateReward.dto';
 import { AlchemyService } from '../alchemy/alchemy.service';
 import { AuthGuard } from '../auth/auth.guard';
 import { CompetitionDto } from '../dto/competition.dto';
 import IdDto from '../dto/id.dto';
+import { MemeIdDto } from '../dto/memeId.dto';
 import SearchDto from '../dto/search.dto';
+import UpdateReward from '../dto/updateReward.dto';
 import VoteDto from '../dto/vote.dto';
 import { AuthenticatedRequest } from '../interface';
 import { RewardService } from '../reward/reward.service';
@@ -46,7 +47,7 @@ export class CompetitionController {
     const isPixelHolder = await this.alchemy.getIsPixelHolder(user.address);
     if (!isPixelHolder) {
       throw new BadRequestException(
-        'You must hold a pixel to create a competition',
+        'You must hold a Doge Pixel to create a competition',
       );
     }
     return this.competition
@@ -99,7 +100,7 @@ export class CompetitionController {
     }
 
     if (!(await this.alchemy.getIsPixelHolder(user.address))) {
-      throw new BadRequestException('You must hold a pixel to vote');
+      throw new BadRequestException('You must hold a Doge Pixel to vote');
     }
 
     return this.vote.vote({
@@ -120,7 +121,31 @@ export class CompetitionController {
 
   @Get(':id/meme/ranked')
   async getRankedMemes(@Param() { id }: IdDto) {
-    return this.meme.getRankedMemesByCompetition(id);
+    return this.meme.getRankedMemesByCompetitionId(id);
+  }
+
+  @Post(':id/meme/submissions/curate')
+  @UseGuards(AuthGuard)
+  async postCurateMeme(
+    @Param() { id }: IdDto,
+    @Req() { user }: AuthenticatedRequest,
+    @Body() { memeId }: MemeIdDto,
+  ) {
+    if (!(await this.competition.getIsCompetitionActive(id))) {
+      throw new BadRequestException('Competition has ended');
+    }
+
+    const curators = await this.competition.getCurators(id);
+    const curatorIds = curators.map((user) => user.id);
+    if (!curatorIds.includes(user.id)) {
+      throw new BadRequestException(
+        'You are not a curator of this competition',
+      );
+    }
+
+    console.log('hiding', id, memeId);
+
+    return this.competition.hideMemeSubmission(id, memeId);
   }
 
   @Post('/reward/:id')
@@ -130,8 +155,6 @@ export class CompetitionController {
     @Param() { id }: IdDto,
     @Req() { user }: AuthenticatedRequest,
   ) {
-    this.logger.log(txId, id, user.id);
-
     const competition = await this.competition.findFirst({
       where: { rewards: { some: { id: id } }, createdById: user.id },
     });

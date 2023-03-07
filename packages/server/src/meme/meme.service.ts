@@ -105,9 +105,9 @@ export class MemeService {
     return !!(await this.findFirst({ where: { id, createdById } }));
   }
 
-  async getRankedMemesByCompetition(competitionId: number) {
+  async getRankedMemesByCompetitionId(competitionId: number) {
     const memes = await this.prisma.meme.findMany({
-      where: { submissions: { some: { competitionId } } },
+      where: { submissions: { some: { competitionId }, every: {deletedAt: null} } },
       include: {
         media: true,
         user: true,

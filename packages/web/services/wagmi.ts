@@ -2,9 +2,11 @@ import {
   connectorsForWallets,
   createAuthenticationAdapter,
   getDefaultWallets,
+  Wallet,
 } from "@rainbow-me/rainbowkit";
 import { SiweMessage } from "siwe";
-import { configureChains, createClient, goerli, mainnet } from "wagmi";
+import { Chain, configureChains, createClient, goerli, mainnet } from "wagmi";
+import { SafeConnector, SafeConnectorOptions } from "wagmi/connectors/safe";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
 import env from "../environment";
@@ -18,10 +20,35 @@ export const { chains, provider, webSocketProvider } = configureChains(
   [alchemyProvider({ apiKey: vars.AlchemyKey }), publicProvider()]
 );
 
+// See the official integration guide for auto-connecting
+// https://github.com/safe-global/safe-apps-sdk/tree/main/packages/safe-apps-wagmi#integration-steps
+export const safeWallet = ({
+  chains,
+  options = {},
+}: {
+  chains: Chain[];
+  options?: SafeConnectorOptions;
+}): Wallet => ({
+  id: "SAFE",
+  name: "Safe",
+  iconUrl: "/images/twitter-card.png",
+  hidden: () => false,
+  iconBackground: "#000",
+  createConnector: () => ({
+    connector: new SafeConnector({ chains, options }),
+  }),
+});
+
 const { wallets } = getDefaultWallets({ appName: env.app.name, chains });
-const connectors = connectorsForWallets([...wallets]);
+const connectors = connectorsForWallets([
+  ...wallets,
+  {
+    groupName: "Other",
+    wallets: [safeWallet({ chains })],
+  },
+]);
 export const client = createClient({
-  autoConnect: true,
+  autoConnect: false,
   connectors,
   provider,
   webSocketProvider,

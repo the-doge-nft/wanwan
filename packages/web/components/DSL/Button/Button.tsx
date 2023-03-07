@@ -153,7 +153,6 @@ export const ConnectButton: React.FC<
             mounted,
             authenticationStatus,
           }) => {
-            console.log("authenctication status", authenticationStatus);
             const shouldRenderConnect =
               !mounted ||
               !account ||

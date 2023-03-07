@@ -39,6 +39,12 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
   isSubmitLoading = false;
 
   @observable
+  isCurateModalOpen = false;
+
+  @observable
+  private _memeIdToCurate?: number;
+
+  @observable
   userSubmittedMemes: CompetitionMeme[] = [];
 
   constructor(competition: Competition, memes: CompetitionMeme[]) {
@@ -274,5 +280,33 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
 
   runThenRefreshMemes(runIt: () => Promise<any>) {
     return runIt().then(() => this.getRankedMemes());
+  }
+
+  @computed
+  get isUserCurator() {
+    return (
+      AppStore.auth?.profile?.user?.id &&
+      this.competition.curators
+        .map((user) => user.id)
+        .includes(AppStore.auth.profile.user.id)
+    );
+  }
+
+  @computed
+  get memeToCurate() {
+    return this.memes.filter((meme) => meme.id === this._memeIdToCurate)[0];
+  }
+
+  @action
+  setMemeToCurate(id: number) {
+    this.isCurateModalOpen = true;
+    this._memeIdToCurate = id;
+  }
+
+  hideSubmission() {
+    return Http.postCurateCompetitionMeme({
+      competitionId: this.competition.id,
+      memeId: this._memeIdToCurate!,
+    });
   }
 }

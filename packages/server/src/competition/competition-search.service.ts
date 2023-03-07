@@ -5,6 +5,7 @@ import {
   competitionSearchSchema,
 } from 'src/schema/competition-search.schema';
 import { Search } from 'src/search/search';
+import QueryBuilder from '../search/query-builder';
 import { competitionSearchCustomKeys } from './../schema/competition-search.schema';
 import { CompetitionService } from './competition.service';
 
@@ -23,11 +24,14 @@ export class CompetitionSearchService extends Search<
     super();
   }
 
-  protected beforeGetAll(builder) {
+  protected beforeGetAll(
+    builder: QueryBuilder<Competition, Prisma.CompetitionFindManyArgs>,
+  ) {
     builder.include('curators', { include: { user: true } });
     builder.include('rewards', { include: { currency: true } });
     builder.include('user', true);
     builder.include('submissions', {
+      where: { deletedAt: null },
       include: { meme: { include: { media: true } } },
       orderBy: { createdAt: 'asc' },
       take: 1,

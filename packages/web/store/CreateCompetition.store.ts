@@ -49,7 +49,6 @@ export default class CreateCompetitionStore extends Navigable(EmptyClass) {
   }
 
   onCompetitionSubmit(values: any) {
-    console.log(values);
     this.isLoading = true;
     const formValues = { ...values };
     const curators: string[] = [];
@@ -73,7 +72,6 @@ export default class CreateCompetitionStore extends Navigable(EmptyClass) {
 
     const rewards = this.getRewardItems(values);
     body.rewards = rewards;
-    console.log(body.rewards);
     return Http.postCompetition(body)
       .then(() => {
         this.isLoading = false;
