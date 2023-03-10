@@ -190,9 +190,9 @@ const MemeComment: React.FC<{
       key={`comment-${comment.id}`}
       className={css(
         "text-xs",
-        "bg-slate-100",
+        "bg-white",
         "p-2",
-        "border-slate-400",
+        "border-black",
         "flex",
         "w-full",
         "border-[1px]",
@@ -224,7 +224,11 @@ const MemeComment: React.FC<{
         <Text>{comment.body}</Text>
         <div className={css("flex", "justify-start")}>
           <button
-            className={css("hover:underline")}
+            className={css(
+              "hover:underline",
+              "text-neutral-400",
+              "dark:text-neutral-600"
+            )}
             onClick={() => setShowReply(!showReply)}
           >
             <Text size={TextSize.xs} type={TextType.Grey}>
