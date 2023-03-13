@@ -34,6 +34,7 @@ export interface Config {
     dns: string;
   };
   isDev: boolean;
+  isProd: boolean;
 }
 
 const configSchema = Joi.object<Config>({
@@ -65,6 +66,7 @@ const configSchema = Joi.object<Config>({
     dns: Joi.string().required(),
   }).required(),
   isDev: Joi.boolean().required(),
+  isProd: Joi.boolean().required(),
 });
 
 const config: Config = new (function () {
@@ -94,6 +96,7 @@ const config: Config = new (function () {
     dns: process.env.SENTRY_DNS,
   };
   this.isDev = this.appEnv === AppEnv.development;
+  this.isProd = this.appEnv === AppEnv.production;
 })();
 
 class MissingEnvVarError extends Error {}

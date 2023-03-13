@@ -1,4 +1,5 @@
 import { Logger } from '@nestjs/common';
+import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
@@ -18,16 +19,21 @@ async function bootstrap() {
   await prismaService.enableShutdownHooks(app);
 
   const config = app.get<ConfigService>(ConfigService<Config>);
-  const isDev = config.get('isDev');
+  const isProd = config.get('isProd');
   app.use(getExpressRedisSession(app));
   app.useGlobalPipes(getValidationPipe());
-  app.enableCors({
-    origin: isDev ? 'http://localhost:3001' : /\.wanwan\.me$/,
+
+  const corsConfig: CorsOptions = {
+    origin: ['http://localhost:3001', 'https://test.wanwan.me'],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    preflightContinue: false,
+    preflightContinue: true,
     credentials: true,
     allowedHeaders: 'Content-Type, Accept',
-  });
+  };
+  if (isProd) {
+    corsConfig.origin = /\.wanwan\.me$/;
+  }
+  app.enableCors(corsConfig);
 
   const swaggerConfig = new DocumentBuilder()
     .setTitle('Wan Wan')

@@ -41,7 +41,7 @@ export class EthersService implements OnModuleInit {
   initWS() {
     const logMessage = `Creating WS provider on network: ${
       this.network
-    } : ${this.configService.get('appEnv')}`;
+    }:${this.configService.get('appEnv')}`;
     this.logger.log(logMessage);
     this.sentryClient.instance().captureMessage(logMessage);
 
