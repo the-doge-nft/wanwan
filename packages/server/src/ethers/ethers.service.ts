@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { InjectSentry, SentryService } from '@travelerdev/nestjs-sentry';
 import { ethers } from 'ethers';
 import { AppEnv, Config } from '../config/config';
+import { CacheService } from './../cache/cache.service';
 
 @Injectable()
 export class EthersService implements OnModuleInit {
@@ -12,11 +13,16 @@ export class EthersService implements OnModuleInit {
   public provider: ethers.providers.WebSocketProvider;
   public zeroAddress = ethers.constants.AddressZero;
 
+  private getEnsCacheKey(address: string) {
+    return `ens:${address.toLowerCase()}`;
+  }
+
   constructor(
-    private configService: ConfigService<Config>,
+    private readonly config: ConfigService<Config>,
+    private readonly cache: CacheService,
     @InjectSentry() private readonly sentryClient: SentryService,
   ) {
-    const appEnv = this.configService.get('appEnv');
+    const appEnv = this.config.get('appEnv');
     if (appEnv === AppEnv.production) {
       this.network = 'mainnet';
     } else if (appEnv === AppEnv.development || appEnv === AppEnv.staging) {
@@ -41,23 +47,23 @@ export class EthersService implements OnModuleInit {
   initWS() {
     const logMessage = `Creating WS provider on network: ${
       this.network
-    }:${this.configService.get('appEnv')}`;
+    }:${this.config.get('appEnv')}`;
     this.logger.log(logMessage);
     this.sentryClient.instance().captureMessage(logMessage);
 
-    if (this.configService.get('appEnv') === AppEnv.test) {
+    if (this.config.get('appEnv') === AppEnv.test) {
       this.provider = new ethers.providers.WebSocketProvider(
         `ws://127.0.0.1:8545`,
       );
     } else {
       this.provider = new ethers.providers.WebSocketProvider(
-        this.configService.get('alchemy').wsEndpoint,
+        this.config.get('alchemy').wsEndpoint,
         this.network,
       );
     }
     // this.eventEmitter.emit(Events.ETHERS_WS_PROVIDER_CONNECTED, this.provider);
 
-    if (this.configService.get('appEnv') !== AppEnv.test) {
+    if (this.config.get('appEnv') !== AppEnv.test) {
       this.keepAlive({
         provider: this.provider,
         onDisconnect: () => {
@@ -110,6 +116,15 @@ export class EthersService implements OnModuleInit {
         clearTimeout(pingTimeout);
       }
     });
+  }
+
+  async refreshEnsCache(address: string) {
+    const ens = await this.getEnsName(address);
+    return this.cache.set(this.getEnsCacheKey(address), ens, 60 * 60 * 2);
+  }
+
+  getCachedEnsName(address: string) {
+    return this.cache.get<string>(this.getEnsCacheKey(address));
   }
 
   getEnsName(address: string) {

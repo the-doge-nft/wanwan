@@ -1,4 +1,5 @@
 type DatetimeString = string;
+type Nullable<T> = T | null;
 
 export interface User {
   id: number;
@@ -12,6 +13,7 @@ export interface User {
   lastAuthedAt: DatetimeString;
   deletedAt: DatetimeString;
   isSuperAdmin: boolean;
+  ens: Nullable<string>;
 }
 
 export interface Reward {

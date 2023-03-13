@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { Competition, Prisma, PrismaClient } from '@prisma/client';
+import { CompetitionWithDefaultInclude } from '../interface';
 import {
   competitionSearchKeyNames,
   competitionSearchSchema,
-} from 'src/schema/competition-search.schema';
-import { Search } from 'src/search/search';
+} from '../schema/competition-search.schema';
 import QueryBuilder from '../search/query-builder';
+import { Search } from '../search/search';
 import { competitionSearchCustomKeys } from './../schema/competition-search.schema';
 import { CompetitionService } from './competition.service';
 
@@ -52,7 +53,7 @@ export class CompetitionSearchService extends Search<
     }
   }
 
-  afterGetAll(results) {
+  async afterGetAll(results: Array<CompetitionWithDefaultInclude>) {
     return this.competition.addExtras(results);
   }
 

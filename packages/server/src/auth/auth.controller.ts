@@ -1,4 +1,5 @@
 import { Controller, Get, Logger, UseGuards } from '@nestjs/common';
+import { EthersService } from './../ethers/ethers.service';
 import { UserService } from './../user/user.service';
 
 import {
@@ -19,7 +20,10 @@ type SessionType = Session & { nonce: string; siwe: any };
 export class AuthController {
   private readonly logger = new Logger(AuthController.name);
 
-  constructor(private readonly user: UserService) {}
+  constructor(
+    private readonly user: UserService,
+    private readonly ethers: EthersService,
+  ) {}
 
   @Get('nonce')
   async getNonce(@SessionDeco() session: SessionType) {
@@ -45,6 +49,8 @@ export class AuthController {
 
       // @next -- we need to expire the cookie at some point
       // session.cookie.expires = new Date(fields.expirationTime);
+
+      await this.ethers.refreshEnsCache(address);
 
       return this.user.upsert({
         where: { address },

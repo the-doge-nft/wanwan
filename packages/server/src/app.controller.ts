@@ -12,6 +12,7 @@ import {
 import { AppService } from './app.service';
 import { AuthGuard } from './auth/auth.guard';
 import { CompetitionService } from './competition/competition.service';
+import ProfileDto from './dto/profile.dto';
 import SubmissionDto from './dto/submission.dto';
 import { AuthenticatedRequest } from './interface';
 import { MediaService } from './media/media.service';
@@ -19,6 +20,7 @@ import { MemeService } from './meme/meme.service';
 import { ProfileService } from './profile/profile.service';
 import { StatsService } from './stats/stats.service';
 import { SubmissionService } from './submission/submission.service';
+import { UserService } from './user/user.service';
 
 @Controller()
 export class AppController {
@@ -30,6 +32,7 @@ export class AppController {
     private readonly submission: SubmissionService,
     private readonly profile: ProfileService,
     private readonly stats: StatsService,
+    private readonly users: UserService,
   ) {}
 
   @Get()
@@ -109,6 +112,15 @@ export class AppController {
   @Get('profile/:addressOrEns')
   async getProfile(@Param() { addressOrEns }: { addressOrEns: string }) {
     return this.profile.get(addressOrEns);
+  }
+
+  @UseGuards(AuthGuard)
+  @Post('/profile')
+  async postProfile(
+    @Req() { user }: AuthenticatedRequest,
+    @Body() profile: ProfileDto,
+  ) {
+    return this.users.update({ where: { id: user.id }, data: profile });
   }
 
   @Get('stats')

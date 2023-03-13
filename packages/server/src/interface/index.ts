@@ -17,4 +17,13 @@ export type CompetitionWithDefaultInclude = Prisma.CompetitionGetPayload<{
   };
 }>;
 
-export type MemeWithMedia = Prisma.MemeGetPayload<{ include: { media: true } }>;
+export type MemeWithDefaultInclude = Prisma.MemeGetPayload<{
+  include: { media: true; user: true };
+}>;
+export interface UserWithEns extends User {
+  ens: string;
+}
+
+export type CommentWithDefaultInclude = Prisma.CommentGetPayload<{
+  include: { user: true };
+}>;

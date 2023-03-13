@@ -77,7 +77,7 @@ const MemeById = observer(({ meme }: MemeByIdProps) => {
           >
             <Link href={`/profile/${meme.user.address}/meme`}>
               <Text type={TextType.NoColor} size={TextSize.sm}>
-                {abbreviate(meme.user.address)}
+                {meme.user.ens ? meme.user.ens : abbreviate(meme.user.address)}
               </Text>
             </Link>
           </div>
@@ -96,6 +96,7 @@ const MemeById = observer(({ meme }: MemeByIdProps) => {
               .filter((comment) => !comment.parentCommentId)
               .map((comment) => (
                 <MemeComment
+                  isRootNode={true}
                   store={store}
                   key={`meme-comment-${comment.id}`}
                   comment={comment}
@@ -139,7 +140,9 @@ const CommentForm: React.FC<{
                     type={LinkType.Secondary}
                   >
                     <Text type={TextType.NoColor} size={TextSize.sm}>
-                      {abbreviate(AppStore.auth.address)}
+                      {AppStore.auth.profile?.ens
+                        ? AppStore.auth.profile.ens
+                        : abbreviate(AppStore.auth.address)}
                     </Text>
                   </Link>
                 </span>
@@ -166,7 +169,8 @@ const MemeComment: React.FC<{
   comment: Comment;
   onCommentSubmit: (body: string) => Promise<void>;
   store: MemeIdStore;
-}> = ({ onCommentSubmit, comment, store }) => {
+  isRootNode?: boolean;
+}> = ({ onCommentSubmit, comment, store, isRootNode }) => {
   const [showReply, setShowReply] = useState(false);
   const today = new Date();
   const commentCreatedAt = new Date(comment.createdAt);
@@ -199,8 +203,10 @@ const MemeComment: React.FC<{
         "border-black",
         "dark:border-neutral-600",
         "dark:bg-neutral-900",
+        "pr-0",
         {
           "pb-0": commentReply?.length > 0,
+          "border-r-0 border-b-0": !isRootNode,
         }
       )}
     >
@@ -211,7 +217,9 @@ const MemeComment: React.FC<{
             href={`/profile/${comment.user.address}/meme`}
           >
             <Text type={TextType.NoColor} size={TextSize.xs}>
-              {abbreviate(comment.user.address)}
+              {comment.user.ens
+                ? comment.user.ens
+                : abbreviate(comment.user.address)}
             </Text>
           </Link>
           <Text size={TextSize.xs} type={TextType.Grey}>
@@ -251,6 +259,7 @@ const MemeComment: React.FC<{
           <div className={css("flex", "flex-col", "gap-2", "mt-2")}>
             {commentReply.map((reply) => (
               <MemeComment
+                isRootNode={false}
                 key={`comment-${reply.id}`}
                 store={store}
                 comment={reply}

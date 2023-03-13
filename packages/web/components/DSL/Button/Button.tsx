@@ -207,7 +207,9 @@ export const ConnectButton: React.FC<
                         onOpenChange={setIsDropDownOpen}
                         trigger={
                           <Button type={type} size={size}>
-                            {account.displayName}
+                            {AppStore.auth.profile?.ens
+                              ? AppStore.auth.profile.ens
+                              : account.displayName}
                           </Button>
                         }
                       >
@@ -216,6 +218,20 @@ export const ConnectButton: React.FC<
                             <Text type={TextType.NoColor}>Profile</Text>
                           </Link>
                         </DropdownItem>
+                        {/* <DropdownItem>
+                          <span
+                            onClick={() => {
+                              AppStore.modals.isSettingsModalOpen = true;
+                            }}
+                            className={css(
+                              "text-red-800",
+                              "hover:underline",
+                              "cursor-pointer"
+                            )}
+                          >
+                            <Text type={TextType.NoColor}>Settings</Text>
+                          </span>
+                        </DropdownItem> */}
                         {AppStore.auth.isAuthed && (
                           <div className={css("mt-4", "mb-2")}>
                             <DropdownItem className={css("mt-2")}>

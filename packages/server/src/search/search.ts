@@ -44,7 +44,6 @@ export abstract class Search<T, K extends object> {
     const take = query?.count ? query.count : this.takeDefault;
     const offset = query?.offset ? query.offset : this.offsetDefault;
     const data = await this.search(filters, sorts, take, offset);
-
     let nextQueryParam,
       next = null;
     if (data.length === take) {
@@ -115,7 +114,8 @@ export abstract class Search<T, K extends object> {
     });
 
     this.beforeGetAll(builder);
-    return this.afterGetAll(await builder.paginate(take, offset).getAll());
+    const data = await builder.paginate(take, offset).getAll();
+    return this.afterGetAll(data);
   }
 
   private decodeBase64(value: string) {
@@ -130,7 +130,7 @@ export abstract class Search<T, K extends object> {
     return;
   }
 
-  protected afterGetAll(results: T[]) {
+  protected async afterGetAll(results: T[]) {
     return results;
   }
 

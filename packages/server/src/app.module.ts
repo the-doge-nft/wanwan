@@ -1,11 +1,13 @@
 import { CacheModule, Logger, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ScheduleModule } from '@nestjs/schedule';
 import { SentryModule } from '@travelerdev/nestjs-sentry';
 import { redisStore } from 'cache-manager-redis-store';
 import { AlchemyService } from './alchemy/alchemy.service';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
+import { CacheService } from './cache/cache.service';
 import { CommentService } from './comment/comment.service';
 import { CompetitionCuratorService } from './competition-curator/competition-curator.service';
 import { CompetitionSearchService } from './competition/competition-search.service';
@@ -29,6 +31,7 @@ import { VoteService } from './vote/vote.service';
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     ConfigModule.forRoot({
       isGlobal: true,
       load: [() => config],
@@ -70,7 +73,6 @@ import { VoteService } from './vote/vote.service';
   ],
   controllers: [AppController, MemeController, CompetitionController],
   providers: [
-    AppService,
     PrismaService,
     UserService,
     S3Service,
@@ -89,6 +91,8 @@ import { VoteService } from './vote/vote.service';
     CompetitionSearchService,
     MemeSearchService,
     StatsService,
+    CacheService,
+    AppService,
     // Search,
   ],
 })

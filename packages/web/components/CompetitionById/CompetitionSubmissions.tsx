@@ -14,28 +14,31 @@ import Text, { TextSize, TextType } from "../DSL/Text/Text";
 
 const CompetitionSubmissions: React.FC<{ store: CompetitionIdStore }> =
   observer(({ store }) => {
-    const renderRightOfTitle = useCallback((memeId: number) => {
-      if (store.isUserCurator) {
-        return (
-          <button
-            onClick={() => {
-              store.setMemeToCurate(memeId)
-            }}
-            className={css(
-              "text-black",
-              "absolute",
-              "right-[5px]",
-              "top-[5xp]",
-              "text-black",
-              "dark:text-white"
-            )}
-          >
-            <IoCloseOutline size={18} />
-          </button>
-        );
-      }
-      return null;
-    }, [store.isUserCurator, store.setMemeToCurate]);
+    const renderRightOfTitle = useCallback(
+      (memeId: number) => {
+        if (store.isUserCurator) {
+          return (
+            <button
+              onClick={() => {
+                store.setMemeToCurate(memeId);
+              }}
+              className={css(
+                "text-black",
+                "absolute",
+                "right-[5px]",
+                "top-[5xp]",
+                "text-black",
+                "dark:text-white"
+              )}
+            >
+              <IoCloseOutline size={18} />
+            </button>
+          );
+        }
+        return null;
+      },
+      [store.isUserCurator, store.setMemeToCurate]
+    );
     return (
       <div className={css("flex", "flex-col", "gap-2")}>
         <AsyncWrap
@@ -71,7 +74,9 @@ const CompetitionSubmissions: React.FC<{ store: CompetitionIdStore }> =
                         type={LinkType.Secondary}
                         href={`/profile/${meme.user.address}/meme`}
                       >
-                        {abbreviate(meme.user.address)}
+                        {meme.user.ens
+                          ? meme.user.ens
+                          : abbreviate(meme.user.address)}
                       </Link>
                     </div>
                   }

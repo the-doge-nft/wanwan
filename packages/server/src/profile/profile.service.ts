@@ -38,6 +38,7 @@ export class ProfileService {
       }
       avatar = await this.ethers.getAvatar(addressOrEns);
     }
+    await this.ethers.refreshEnsCache(address);
     const user = await this.user.findFirst({ where: { address } });
     const memes = await this.meme.findMany({
       where: { user: { address } },

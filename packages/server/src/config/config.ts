@@ -35,6 +35,7 @@ export interface Config {
   };
   isDev: boolean;
   isProd: boolean;
+  isStaging: boolean;
 }
 
 const configSchema = Joi.object<Config>({
@@ -67,6 +68,7 @@ const configSchema = Joi.object<Config>({
   }).required(),
   isDev: Joi.boolean().required(),
   isProd: Joi.boolean().required(),
+  isStaging: Joi.boolean().required(),
 });
 
 const config: Config = new (function () {
@@ -97,6 +99,7 @@ const config: Config = new (function () {
   };
   this.isDev = this.appEnv === AppEnv.development;
   this.isProd = this.appEnv === AppEnv.production;
+  this.isStaging = this.appEnv === AppEnv.staging;
 })();
 
 class MissingEnvVarError extends Error {}

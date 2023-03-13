@@ -55,7 +55,9 @@ const CompetitionDetails: React.FC<{ store: CompetitionByIdStore }> = observer(
                 type={LinkType.Secondary}
                 href={`/profile/${store.competition.user.address}/competition`}
               >
-                {abbreviate(store.competition.user.address)}
+                {store.competition.user.ens
+                  ? store.competition.user.ens
+                  : abbreviate(store.competition.user.address)}
               </Link>
             </div>
           </div>

@@ -10,6 +10,7 @@ import { AlchemyService } from './../alchemy/alchemy.service';
 import { CompetitionCuratorService } from './../competition-curator/competition-curator.service';
 import { PrismaService } from './../prisma.service';
 import { RewardService } from './../reward/reward.service';
+import { UserService } from './../user/user.service';
 
 export class RewardsNotValidError extends Error {
   constructor(message: string) {
@@ -26,6 +27,7 @@ export class CompetitionService {
     private readonly competitionCurator: CompetitionCuratorService,
     private readonly media: MediaService,
     private readonly alchemy: AlchemyService,
+    private readonly user: UserService,
   ) {}
 
   private get defaultInclude(): Prisma.CompetitionInclude {
@@ -51,7 +53,7 @@ export class CompetitionService {
     };
   }
 
-  private addExtra(competition: CompetitionWithDefaultInclude | null) {
+  private async addExtra(competition: CompetitionWithDefaultInclude | null) {
     if (competition === null) {
       return null;
     }
@@ -59,14 +61,19 @@ export class CompetitionService {
     return {
       ...competition,
       curators: competition?.curators.map((item) => item.user),
+      user: await this.user.addExtra(competition.user),
       media: media ? this.media.addExtra(media) : undefined,
       submissions: undefined,
       isActive: new Date(competition.endsAt) > new Date(),
     };
   }
 
-  addExtras(competitions: Array<CompetitionWithDefaultInclude>) {
-    return competitions.map((item) => this.addExtra(item));
+  async addExtras(competitions: Array<CompetitionWithDefaultInclude>) {
+    const comps = [];
+    for (const comp of competitions) {
+      comps.push(await this.addExtra(comp));
+    }
+    return comps;
   }
 
   count(args?: Prisma.CompetitionCountArgs) {

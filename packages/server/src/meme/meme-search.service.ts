@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Meme, Prisma, PrismaClient } from '@prisma/client';
-import { MemeWithMedia } from 'src/interface';
+import { MemeWithDefaultInclude } from 'src/interface';
 import QueryBuilder from 'src/search/query-builder';
 import {
   memeCustomKeyNames,
@@ -42,7 +42,8 @@ export class MemeSearchService extends Search<Meme, Prisma.MemeFindManyArgs> {
     return;
   }
 
-  afterGetAll(results: Array<MemeWithMedia>) {
-    return this.meme.addExtras(results);
+  async afterGetAll(results: Array<MemeWithDefaultInclude>) {
+    const res = await this.meme.addExtras(results);
+    return res;
   }
 }

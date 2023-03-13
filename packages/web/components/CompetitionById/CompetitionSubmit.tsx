@@ -43,7 +43,7 @@ const CompetitionSubmit = observer(({ store }: CompetitionSubmitProps) => {
       <CompetitionSelectedMemeForSubmission store={store} />
     </div>
   );
-})
+});
 
 const CompetitionMemeSelector: React.FC<{ store: CompetitionIdStore }> =
   observer(({ store }) => {
@@ -104,7 +104,7 @@ const CompetitionMemeSelector: React.FC<{ store: CompetitionIdStore }> =
                 className={css(
                   "border-[1px]",
                   "border-black",
-                  "hover:border-slate-500",
+                  "hover:border-neutral-500",
                   "relative"
                 )}
               >
@@ -134,7 +134,7 @@ const CompetitionMemeSelector: React.FC<{ store: CompetitionIdStore }> =
                   <div
                     className={css(
                       "border-[1px]",
-                      "border-slate-500",
+                      "border-neutral-500",
                       "text-neutral-500"
                     )}
                   >
@@ -179,7 +179,8 @@ const CompetitionSelectedMemeForSubmission: React.FC<{
         "overflow-y-hidden",
         "overflow-x-auto",
         {
-          "border-slate-400 dark:border-neutral-700": !store.isMemesToSubmitMax,
+          "border-neutral-400 dark:border-neutral-700":
+            !store.isMemesToSubmitMax,
           "border-black dark:border-neutral-700": store.isMemesToSubmitMax,
           "items-start": store.selectedMemes.length > 0,
           "items-center": store.selectedMemes.length === 0,

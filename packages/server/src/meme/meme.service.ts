@@ -1,14 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma.service';
-import { MemeWithMedia } from './../interface/index';
+import { MemeWithDefaultInclude } from './../interface/index';
 import { MediaService } from './../media/media.service';
+import { UserService } from './../user/user.service';
 
 @Injectable()
 export class MemeService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly media: MediaService,
+    private readonly user: UserService,
   ) {}
 
   private get defaultInclude() {
@@ -18,12 +20,20 @@ export class MemeService {
     };
   }
 
-  addExtra(item: MemeWithMedia) {
-    return { ...item, media: this.media.addExtra(item.media) };
+  async addExtra(item: MemeWithDefaultInclude) {
+    return {
+      ...item,
+      media: this.media.addExtra(item.media),
+      user: await this.user.addExtra(item.user),
+    };
   }
 
-  addExtras(memes: Array<MemeWithMedia>) {
-    return memes.map((item) => this.addExtra(item));
+  async addExtras(memes: Array<MemeWithDefaultInclude>) {
+    const memesWithExtras = [];
+    for (const meme of memes) {
+      memesWithExtras.push(await this.addExtra(meme));
+    }
+    return memesWithExtras;
   }
 
   count(args?: Prisma.MemeCountArgs) {
@@ -47,7 +57,7 @@ export class MemeService {
           mediaId: media.id,
         },
         include: this.defaultInclude,
-      })) as MemeWithMedia,
+      })) as MemeWithDefaultInclude,
     );
   }
 
@@ -66,9 +76,11 @@ export class MemeService {
         },
       },
     });
-    const memesWithMedia: MemeWithMedia[] = subsWithMemes.map((item) => ({
-      ...item.meme,
-    }));
+    const memesWithMedia: MemeWithDefaultInclude[] = subsWithMemes.map(
+      (item) => ({
+        ...item.meme,
+      }),
+    );
     return this.addExtras(memesWithMedia);
   }
 
@@ -107,7 +119,9 @@ export class MemeService {
 
   async getRankedMemesByCompetitionId(competitionId: number) {
     const memes = await this.prisma.meme.findMany({
-      where: { submissions: { some: { competitionId }, every: {deletedAt: null} } },
+      where: {
+        submissions: { some: { competitionId }, every: { deletedAt: null } },
+      },
       include: {
         media: true,
         user: true,
