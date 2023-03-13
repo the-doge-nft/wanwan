@@ -26,7 +26,7 @@ async function bootstrap() {
   const corsConfig: CorsOptions = {
     origin: ['http://localhost:3001', 'https://test.wanwan.me'],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    preflightContinue: true,
+    preflightContinue: false,
     credentials: true,
     allowedHeaders: 'Content-Type, Accept',
   };
