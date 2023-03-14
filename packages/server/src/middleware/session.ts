@@ -28,7 +28,7 @@ export function getExpressRedisSession(app: INestApplication): any {
     resave: false,
     saveUninitialized: false,
     cookie: {
-      secure: !configService.get('isDev'),
+      secure: false,
       sameSite: 'lax',
       httpOnly: true,
     },
