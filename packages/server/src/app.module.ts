@@ -1,8 +1,8 @@
-import { CacheModule, Logger, Module } from '@nestjs/common';
+import { CacheModule, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
 import { SentryModule } from '@travelerdev/nestjs-sentry';
-import { redisStore } from 'cache-manager-redis-store';
+import * as redisStore from 'cache-manager-redis-store';
 import { AlchemyService } from './alchemy/alchemy.service';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -46,28 +46,14 @@ import { VoteService } from './vote/vote.service';
     }),
     CacheModule.registerAsync<any>({
       isGlobal: true,
-      imports: [ConfigModule],
-      useFactory: async (configService: ConfigService<Config>) => {
-        const redisConfig = await configService.get('redis');
-        try {
-          Logger.log(
-            `[REDIST STORE]: ${redisConfig.host} - ${redisConfig.port}}`,
-          );
-          const store = await redisStore({
-            ttl: 60,
-            socket: {
-              host: redisConfig.host,
-              port: redisConfig.port,
-            },
-          });
-          Logger.log(`[REDIS STORE]: created`);
-          return { store: () => store };
-        } catch (e) {
-          Logger.error(`[REDIS STORE]: ${e}`);
-          throw e;
-        }
-      },
       inject: [ConfigService],
+      useFactory: (config: ConfigService<Config>) => ({
+        store: redisStore,
+        host: config.get('redis').host,
+        port: config.get('redis').port,
+        ttl: 10,
+        max: 10000,
+      }),
     }),
     AuthModule,
   ],
