@@ -28,11 +28,8 @@ export function getExpressRedisSession(app: INestApplication): any {
     resave: false,
     saveUninitialized: false,
     cookie: {
-      secure: configService.get('isProd') || configService.get('isStaging'),
-      sameSite:
-        configService.get('isProd') || configService.get('isStaging')
-          ? 'strict'
-          : 'lax',
+      secure: !configService.get('isDev'),
+      sameSite: 'lax',
       httpOnly: true,
     },
   });
