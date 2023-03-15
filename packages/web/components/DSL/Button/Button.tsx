@@ -218,7 +218,7 @@ export const ConnectButton: React.FC<
                             <Text type={TextType.NoColor}>Profile</Text>
                           </Link>
                         </DropdownItem>
-                        {/* <DropdownItem>
+                        <DropdownItem>
                           <span
                             onClick={() => {
                               AppStore.modals.isSettingsModalOpen = true;
@@ -231,7 +231,7 @@ export const ConnectButton: React.FC<
                           >
                             <Text type={TextType.NoColor}>Settings</Text>
                           </span>
-                        </DropdownItem> */}
+                        </DropdownItem>
                         {AppStore.auth.isAuthed && (
                           <div className={css("mt-4", "mb-2")}>
                             <DropdownItem className={css("mt-2")}>
