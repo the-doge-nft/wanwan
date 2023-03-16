@@ -3,7 +3,7 @@ import AppStore from "../../store/App.store";
 import AuthModal from "./AuthModal";
 import CreateCompetitionModal from "./CreateCompetitionModal";
 import CreateMemeModal from "./CreateMemeModal";
-import SettingsModal from "./SettingsModal";
+import ProfileSettingsModal from "./ProfileSettingsModal";
 
 const Modals = observer(() => {
   return (
@@ -13,7 +13,7 @@ const Modals = observer(() => {
       {AppStore.modals.isCreateCompetitionModalOpen && (
         <CreateCompetitionModal />
       )}
-      {AppStore.modals.isSettingsModalOpen && <SettingsModal />}
+      {AppStore.modals.isSettingsModalOpen && <ProfileSettingsModal />}
     </>
   );
 });

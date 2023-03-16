@@ -1,8 +1,8 @@
 import { AuthenticationStatus } from "@rainbow-me/rainbowkit";
 import { computed, makeObservable, observable } from "mobx";
 import { Address } from "wagmi";
-import { encodeBase64 } from "../helpers/strings";
 import { Reactionable } from "../services/mixins/reactionable";
+import { abbreviate } from "./../helpers/strings";
 import { Meme, Profile } from "./../interfaces/index";
 import Http from "./../services/http";
 import { EmptyClass } from "./../services/mixins/index";
@@ -88,14 +88,12 @@ export default class AuthStore extends Reactionable(EmptyClass) {
     if (!this.address) {
       throw new Error("Address not available");
     }
-    Http.searchMeme({
+    return Http.searchMeme({
       offset: 0,
       // if the user has more than 100k we break
       count: 100000,
-      config: encodeBase64({
-        filters: [{ key: "address", operation: "equals", value: this.address }],
-        sorts: [{ key: "createdAt", direction: "desc" }],
-      }),
+      filters: [{ key: "address", operation: "equals", value: this.address }],
+      sorts: [{ key: "createdAt", direction: "desc" }],
     }).then(({ data }) => (this.memes = data.data));
   }
 
@@ -136,5 +134,15 @@ export default class AuthStore extends Reactionable(EmptyClass) {
   @computed
   get isAuthed() {
     return this.status === "authenticated";
+  }
+
+  @computed
+  get displayName() {
+    if (!this.profile) {
+      return undefined;
+    }
+    return this.profile?.ens
+      ? this.profile.ens
+      : abbreviate(this.profile.address);
   }
 }

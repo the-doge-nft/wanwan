@@ -1,6 +1,7 @@
 import { ConnectButton as RainbowConnectButton } from "@rainbow-me/rainbowkit";
 import { observer } from "mobx-react-lite";
 import { PropsWithChildren, useState } from "react";
+import { useFormState } from "react-final-form";
 import { AiOutlinePlus } from "react-icons/ai";
 import { BsFillMoonFill, BsFillSunFill } from "react-icons/bs";
 import { useDisconnect } from "wagmi";
@@ -120,8 +121,15 @@ export const Submit: React.FC<PropsWithChildren<ButtonProps>> = ({
   children,
   ...rest
 }) => {
+  const state = useFormState();
+  console.log("debug:: state", state);
   return (
-    <Button {...rest} submit>
+    <Button
+      {...rest}
+      isLoading={state.submitting}
+      disabled={!state.dirty || !state.valid}
+      submit
+    >
       {children ? children : "Submit"}
     </Button>
   );
