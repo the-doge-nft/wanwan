@@ -33,6 +33,12 @@ export interface Config {
   sentry: {
     dns: string;
   };
+  twitter: {
+    consumerKey: string;
+    consumerSecret: string;
+    accessToken: string;
+    accessTokenSecret: string;
+  };
   isDev: boolean;
   isProd: boolean;
   isStaging: boolean;
@@ -66,6 +72,12 @@ const configSchema = Joi.object<Config>({
   sentry: Joi.object({
     dns: Joi.string().required(),
   }).required(),
+  twitter: Joi.object({
+    consumerKey: Joi.string().required(),
+    consumerSecret: Joi.string().required(),
+    accessToken: Joi.string().required(),
+    accessTokenSecret: Joi.string().required(),
+  }),
   isDev: Joi.boolean().required(),
   isProd: Joi.boolean().required(),
   isStaging: Joi.boolean().required(),
@@ -96,6 +108,12 @@ const config: Config = new (function () {
   };
   this.sentry = {
     dns: process.env.SENTRY_DNS,
+  };
+  this.twitter = {
+    consumerKey: process.env.TWITTER_CONSUMER_KEY,
+    consumerSecret: process.env.TWITTER_CONSUMER_SECRET,
+    accessToken: process.env.TWITTER_ACCESS_TOKEN,
+    accessTokenSecret: process.env.TWITTER_ACCESS_TOKEN_SECRET,
   };
   this.isDev = this.appEnv === AppEnv.development;
   this.isProd = this.appEnv === AppEnv.production;
