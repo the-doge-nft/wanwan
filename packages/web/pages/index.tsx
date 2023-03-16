@@ -5,12 +5,12 @@ import Head from "next/head";
 import { PropsWithChildren, useEffect, useMemo } from "react";
 import AspectRatio from "../components/DSL/AspectRatio/AspectRatio";
 import AsyncGrid from "../components/DSL/AsyncGrid/AsyncGrid";
+import Link, { LinkType } from "../components/DSL/Link/Link";
 import Pane, { PaneType } from "../components/DSL/Pane/Pane";
-import Text, { TextSize } from "../components/DSL/Text/Text";
+import Text, { TextSize, TextType } from "../components/DSL/Text/Text";
 import PreviewLink from "../components/PreviewLink/PreviewLink";
 import env from "../environment";
 import { css } from "../helpers/css";
-import { encodeBase64 } from "../helpers/strings";
 import { Competition, Meme, SearchParams, Stats } from "../interfaces";
 import AppLayout from "../layouts/App.layout";
 import Http from "../services/http";
@@ -88,7 +88,16 @@ const Home: React.FC<HomeProps> = observer(
                 ))}
               </AsyncGrid>
             </Pane>
-            <Pane title={"Recent Memes"}>
+            <Pane
+              title={"Recent Memes"}
+              rightOfTitle={
+                <Link type={LinkType.Secondary} href={"/memes"}>
+                  <Text size={TextSize.xs} type={TextType.NoColor}>
+                    All
+                  </Text>
+                </Link>
+              }
+            >
               <AsyncGrid
                 isLoading={store.isMemesLoading}
                 data={store.memes}
@@ -161,9 +170,8 @@ export const getServerSideProps: GetServerSideProps<HomeProps> = async (
   const params: SearchParams = {
     count: 12,
     offset: 0,
-    config: encodeBase64({
-      sorts: [{ key: "createdAt", direction: "desc" }],
-    }),
+    sorts: [{ key: "createdAt", direction: "desc" }],
+    filters: [],
   };
   try {
     const [

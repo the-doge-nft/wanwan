@@ -79,23 +79,25 @@ async function seedMemes() {
   ];
 
   const dbMemes = [];
-  for (const user of users) {
-    const dbMedia = await prisma.media.create({
-      data: {
-        ...media[getRandomIntInclusive(0, media.length - 1)],
-        createdById: user.id as number,
-      },
-    });
-    dbMemes.push(
-      await prisma.meme.create({
+  for (let i = 0; i < 50; i++) {
+    for (const user of users) {
+      const dbMedia = await prisma.media.create({
         data: {
-          name: 'A good meme',
-          description: 'Description of a good meme',
-          mediaId: dbMedia.id,
-          createdById: user.id,
+          ...media[getRandomIntInclusive(0, media.length - 1)],
+          createdById: user.id as number,
         },
-      }),
-    );
+      });
+      dbMemes.push(
+        await prisma.meme.create({
+          data: {
+            name: 'A good meme',
+            description: 'Description of a good meme',
+            mediaId: dbMedia.id,
+            createdById: user.id,
+          },
+        }),
+      );
+    }
   }
 }
 

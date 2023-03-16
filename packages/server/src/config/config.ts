@@ -38,6 +38,8 @@ export interface Config {
     consumerSecret: string;
     accessToken: string;
     accessTokenSecret: string;
+    clientId: string;
+    clientSecret: string;
   };
   isDev: boolean;
   isProd: boolean;
@@ -77,6 +79,8 @@ const configSchema = Joi.object<Config>({
     consumerSecret: Joi.string().required(),
     accessToken: Joi.string().required(),
     accessTokenSecret: Joi.string().required(),
+    clientId: Joi.string().required(),
+    clientSecret: Joi.string().required(),
   }),
   isDev: Joi.boolean().required(),
   isProd: Joi.boolean().required(),
@@ -114,6 +118,8 @@ const config: Config = new (function () {
     consumerSecret: process.env.TWITTER_CONSUMER_SECRET,
     accessToken: process.env.TWITTER_ACCESS_TOKEN,
     accessTokenSecret: process.env.TWITTER_ACCESS_TOKEN_SECRET,
+    clientId: process.env.TWITTER_CLIENT_ID,
+    clientSecret: process.env.TWITTER_CLIENT_SECRET,
   };
   this.isDev = this.appEnv === AppEnv.development;
   this.isProd = this.appEnv === AppEnv.production;

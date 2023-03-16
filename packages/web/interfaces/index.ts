@@ -165,10 +165,12 @@ export interface Stats {
 export interface SearchParams {
   count: number;
   offset: number;
-  config: string;
+  sorts: { key: string; direction: string }[];
+  filters: any[];
 }
-
 export interface SearchResponse<T> {
   data: T[];
   next: string | null;
 }
+
+export type NextString = Nullable<string> | undefined;

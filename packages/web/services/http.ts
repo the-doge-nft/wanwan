@@ -1,6 +1,7 @@
 import axios, { AxiosInstance } from "axios";
 import { SiweMessage } from "siwe";
 import env from "../environment";
+import { encodeBase64 } from "../helpers/strings";
 import {
   Comment,
   Competition,
@@ -8,14 +9,14 @@ import {
   MediaRequirements,
   Meme,
   Reward,
+  SearchParams,
   SearchResponse,
   Stats,
-  Submission
+  Submission,
 } from "../interfaces";
 import AppStore from "../store/App.store";
 import ApiErrorInterceptor from "./interceptors/api-error.interceptor";
 
-interface SearchParams {}
 class _Http {
   http: AxiosInstance;
   constructor() {
@@ -26,14 +27,27 @@ class _Http {
     this.http.interceptors.response.use((res) => res, ApiErrorInterceptor);
   }
 
-  searchCompetition(params: SearchParams = {}) {
+  private getSearchConfig(params: SearchParams) {
+    return {
+      count: params.count,
+      offset: params.offset,
+      config: encodeBase64({
+        sorts: params.sorts,
+        filters: params.filters,
+      }),
+    };
+  }
+
+  searchCompetition(params: SearchParams) {
     return this.http.get<SearchResponse<Competition>>("/competition/search", {
-      params,
+      params: this.getSearchConfig(params),
     });
   }
 
-  searchMeme(params: SearchParams = {}) {
-    return this.http.get<SearchResponse<Meme>>("/meme/search", { params });
+  searchMeme(params: SearchParams) {
+    return this.http.get<SearchResponse<Meme>>("/meme/search", {
+      params: this.getSearchConfig(params),
+    });
   }
 
   stats() {
@@ -144,8 +158,17 @@ class _Http {
     });
   }
 
-  postCurateCompetitionMeme({competitionId, memeId}: {competitionId: number, memeId: number}) {
-    return this.http.post(`/competition/${competitionId}/meme/submissions/curate`, {memeId})
+  postCurateCompetitionMeme({
+    competitionId,
+    memeId,
+  }: {
+    competitionId: number;
+    memeId: number;
+  }) {
+    return this.http.post(
+      `/competition/${competitionId}/meme/submissions/curate`,
+      { memeId }
+    );
   }
 }
 
