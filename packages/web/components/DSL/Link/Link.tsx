@@ -34,6 +34,7 @@ interface LinkProps {
   type?: LinkType;
   onClick?: () => void;
   className?: string;
+  hideExternalIcon?: boolean;
 }
 
 const Link: React.FC<LinkProps> = ({
@@ -43,6 +44,7 @@ const Link: React.FC<LinkProps> = ({
   type = LinkType.Primary,
   onClick,
   className,
+  hideExternalIcon = false,
 }: LinkProps) => {
   const styles = css(
     linkTypeStyles[type],
@@ -62,7 +64,9 @@ const Link: React.FC<LinkProps> = ({
           onClick={onClick}
         >
           {children && children}
-          {isExternal && <BsArrowUpRight size={14} className={css("ml-0.5")} />}
+          {isExternal && !hideExternalIcon && (
+            <BsArrowUpRight size={14} className={css("ml-0.5")} />
+          )}
         </a>
       ) : (
         <NextLink href={href} className={css(styles)} onClick={onClick}>

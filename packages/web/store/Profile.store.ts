@@ -1,8 +1,7 @@
 import { action, computed, makeObservable, observable } from "mobx";
-import { encodeBase64 } from "../helpers/strings";
 import Http from "../services/http";
 import { errorToast } from "./../components/DSL/Toast/Toast";
-import { Competition, Meme, Profile } from "./../interfaces/index";
+import { Competition, Meme, Nullable, Profile } from "./../interfaces/index";
 import AppStore from "./App.store";
 
 export enum ProfileView {
@@ -23,9 +22,17 @@ export default class ProfileStore {
   @observable
   view: ProfileView = ProfileView.Meme;
 
+  @observable
+  description: Nullable<string> = null;
+
+  @observable
+  externalUrl: Nullable<string> = null;
+
   constructor(profile: Profile, view: ProfileView) {
     makeObservable(this);
     this.profile = profile;
+    this.description = this.profile.user.description;
+    this.externalUrl = this.profile.user.externalUrl;
     this.view = view;
   }
 
@@ -42,6 +49,11 @@ export default class ProfileStore {
       this,
       "getCompetitionsIfAuthedUser"
     );
+    AppStore.events.subscribe(
+      AppStore.events.events.PROFILE_UPDATED,
+      this,
+      "getProfileIfAuthed"
+    );
   }
 
   getMemesIfAuthedUser() {
@@ -56,20 +68,24 @@ export default class ProfileStore {
     }
   }
 
+  getProfileIfAuthed(profile: any) {
+    this.profile = profile;
+    this.description = profile.user.description;
+    this.externalUrl = profile.user.externalUrl;
+  }
+
   getUserMemes() {
     return Http.searchMeme({
       offset: 0,
       count: 10,
-      config: encodeBase64({
-        filters: [
-          {
-            key: "address",
-            operation: "equals",
-            value: this.profile.address,
-          },
-        ],
-        sorts: [{ key: "createdAt", direction: "desc" }],
-      }),
+      filters: [
+        {
+          key: "address",
+          operation: "equals",
+          value: this.profile.address,
+        },
+      ],
+      sorts: [{ key: "createdAt", direction: "desc" }],
     })
       .then(({ data }) => {
         this.memes = data.data;
@@ -81,16 +97,14 @@ export default class ProfileStore {
     return Http.searchCompetition({
       offset: 0,
       count: 10,
-      config: encodeBase64({
-        filters: [
-          {
-            key: "address",
-            operation: "equals",
-            value: this.profile.address,
-          },
-        ],
-        sorts: [{ key: "createdAt", direction: "desc" }],
-      }),
+      filters: [
+        {
+          key: "address",
+          operation: "equals",
+          value: this.profile.address,
+        },
+      ],
+      sorts: [{ key: "createdAt", direction: "desc" }],
     })
       .then(({ data }) => (this.competitions = data.data))
       .catch((e) => errorToast("Could not get competitions"));

@@ -1,7 +1,10 @@
 import { observer } from "mobx-react-lite";
+import { objectKeys } from "../../helpers/arrays";
 import { css } from "../../helpers/css";
+import { ProfileDto } from "../../interfaces";
+import Http from "../../services/http";
 import AppStore from "../../store/App.store";
-import Button, { Submit } from "../DSL/Button/Button";
+import { Submit } from "../DSL/Button/Button";
 import Form from "../DSL/Form/Form";
 import TextInput from "../DSL/Form/TextInput";
 import Modal, { ModalProps } from "../DSL/Modal/Modal";
@@ -46,25 +49,44 @@ const ProfileSettingsModal = observer(({}: SettingsModalProps) => {
       <div className={css("grid", "grid-cols-2", "gap-2")}>
         <div>
           <Form
-            onSubmit={async () => {}}
+            onSubmit={async (values) => {
+              const vals: ProfileDto = values as ProfileDto;
+              const valuesToPost = { externalUrl: null, description: null };
+              objectKeys(vals).forEach((key) => {
+                if (values[key]) valuesToPost[key] = values[key];
+              });
+              return Http.postProfile(valuesToPost).then(({ data }) => {
+                AppStore.events.publish(
+                  AppStore.events.events.PROFILE_UPDATED,
+                  data
+                );
+              });
+            }}
             className={css("flex", "flex-col", "gap-2")}
           >
-            <TextInput name={"description"} label={"Bio"} block />
+            <TextInput
+              name={"description"}
+              label={"Bio"}
+              defaultValue={AppStore.auth.profile?.user.description}
+              placeholder={"Tell me something about yourself..."}
+              block
+            />
             <TextInput
               name={"externalUrl"}
               label={"Website"}
-              placeholder={"https://"}
+              placeholder={"https://..."}
+              defaultValue={AppStore.auth.profile?.user.externalUrl}
               block
             />
             <Submit block>Update</Submit>
           </Form>
         </div>
-        <div>
+        {/* <div>
           <div className={css("flex", "flex-col")}>
             <Text>Twitter</Text>
             <Button>Connect</Button>
           </div>
-        </div>
+        </div> */}
       </div>
     </Modal>
   );

@@ -6,7 +6,7 @@ import AspectRatio from "../../../components/DSL/AspectRatio/AspectRatio";
 import AsyncGrid from "../../../components/DSL/AsyncGrid/AsyncGrid";
 import Link, { LinkType } from "../../../components/DSL/Link/Link";
 import Pane from "../../../components/DSL/Pane/Pane";
-import Text, { TextSize } from "../../../components/DSL/Text/Text";
+import Text, { TextSize, TextType } from "../../../components/DSL/Text/Text";
 import PreviewLink from "../../../components/PreviewLink/PreviewLink";
 import { css } from "../../../helpers/css";
 import { abbreviate, getRainobwURL } from "../../../helpers/strings";
@@ -96,6 +96,24 @@ const ProfilePage: React.FC<ProfileProps> = observer(({ profile }) => {
               <Text size={TextSize.sm} bold>
                 {store.profile.wan}
               </Text>
+            </div>
+            <div
+              className={css(
+                "flex",
+                "flex-col",
+                "gap-1",
+                "items-center",
+                "mt-2"
+              )}
+            >
+              {store.externalUrl && (
+                <Link isExternal href={store.externalUrl} hideExternalIcon>
+                  🌐
+                </Link>
+              )}
+              {store.description && (
+                <Text type={TextType.Grey}>{store.description}</Text>
+              )}
             </div>
           </div>
         </div>

@@ -22,9 +22,14 @@ const TextInput = ({
   description,
   type = "text",
   disabled,
+  defaultValue,
   ...rest
 }: TextInputProps) => {
-  const { input, meta, isRequired } = useFormField(name, validate);
+  const { input, meta, isRequired } = useFormField(
+    name,
+    validate,
+    defaultValue as string
+  );
   useControlledFormField(input.onChange, value);
   return (
     <FormControl

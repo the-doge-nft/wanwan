@@ -7,5 +7,6 @@ export default class EventsStore extends Eventable(EmptyClass) {
     COMPETITION_CREATED: "COMPETITION_CREATED",
     LOGIN: "LOGIN",
     LOGOUT: "LOGOUT",
+    PROFILE_UPDATED: "PROFILE_UPDATED",
   };
 }

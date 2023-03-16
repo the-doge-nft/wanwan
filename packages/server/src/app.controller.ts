@@ -120,7 +120,8 @@ export class AppController {
     @Req() { user }: AuthenticatedRequest,
     @Body() profile: ProfileDto,
   ) {
-    return this.users.update({ where: { id: user.id }, data: profile });
+    await this.users.update({ where: { id: user.id }, data: profile });
+    return this.profile.get(user.address);
   }
 
   @Get('stats')

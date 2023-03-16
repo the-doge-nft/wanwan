@@ -34,6 +34,11 @@ export default class AuthStore extends Reactionable(EmptyClass) {
       this,
       "getUserMemes"
     );
+    AppStore.events.subscribe(
+      AppStore.events.events.PROFILE_UPDATED,
+      this,
+      "updateProfile"
+    );
     return (
       this.react(
         () => this.address,
@@ -72,6 +77,10 @@ export default class AuthStore extends Reactionable(EmptyClass) {
         this.status = "unauthenticated";
         onUnauthed && onUnauthed();
       });
+  }
+
+  updateProfile(data: Profile) {
+    this.profile = data;
   }
 
   getProfile() {

@@ -1,5 +1,5 @@
 type DatetimeString = string;
-type Nullable<T> = T | null;
+export type Nullable<T> = T | null;
 
 export interface User {
   id: number;
@@ -171,6 +171,11 @@ export interface SearchParams {
 export interface SearchResponse<T> {
   data: T[];
   next: string | null;
+}
+
+export interface ProfileDto {
+  description: Nullable<string>;
+  externalUrl: Nullable<string>;
 }
 
 export type NextString = Nullable<string> | undefined;

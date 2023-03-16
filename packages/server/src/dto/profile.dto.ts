@@ -1,12 +1,11 @@
-import { IsString } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 
 export default class ProfileDto {
   @IsString()
+  @IsOptional()
   description;
 
   @IsString()
+  @IsOptional()
   externalUrl;
-
-  @IsString()
-  twitterUsername;
 }

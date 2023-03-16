@@ -8,6 +8,7 @@ import {
   CompetitionMeme,
   MediaRequirements,
   Meme,
+  ProfileDto,
   Reward,
   SearchParams,
   SearchResponse,
@@ -110,6 +111,10 @@ class _Http {
 
   getProfile(addressOrEns: string) {
     return this.http.get(`/profile/${addressOrEns}`);
+  }
+
+  postProfile(profile: ProfileDto) {
+    return this.http.post("/profile", profile);
   }
 
   getNonce() {
