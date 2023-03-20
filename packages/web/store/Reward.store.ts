@@ -51,8 +51,8 @@ export default class RewardStore {
       },
       [TokenType.ERC20]: {
         abi: erc20Abi,
-        method: "safeTransferFrom",
-        args: [],
+        method: "transfer",
+        args: [this.toAddress, this.reward.currencyAmountAtoms],
       },
     };
   }

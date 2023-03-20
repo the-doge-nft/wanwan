@@ -41,10 +41,12 @@ const CompetitionRewards = observer(({ store }: CompetitionRewardsProps) => {
               <Text size={TextSize.sm}>
                 {reward.currency.name ? reward.currency.name : "no name found"}{" "}
                 (
-                {ethers.utils.formatUnits(
-                  reward.currencyAmountAtoms,
-                  reward.currency.decimals
-                )}
+                {Number(
+                  ethers.utils.formatUnits(
+                    reward.currencyAmountAtoms,
+                    reward.currency.decimals
+                  )
+                ).toLocaleString()}
                 )
               </Text>
             </div>
