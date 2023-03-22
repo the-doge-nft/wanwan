@@ -24,7 +24,11 @@ async function bootstrap() {
   app.useGlobalPipes(getValidationPipe());
 
   const corsConfig: CorsOptions = {
-    origin: ['http://localhost:3001', 'https://test.wanwan.me'],
+    origin: [
+      'http://localhost:3001',
+      'https://test.wanwan.me',
+      'https://twitter.com/i/oauth2/authorize',
+    ],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     preflightContinue: false,
     credentials: true,

@@ -22,13 +22,16 @@ export default class AuthStore extends Reactionable(EmptyClass) {
   @observable
   memes: Array<Meme> = [];
 
+  @observable
+  hasLoggedIn = false;
+
   constructor() {
     super();
     makeObservable(this);
   }
 
   init() {
-    // this.getStatus();
+    this.getStatus();
     AppStore.events.subscribe(
       AppStore.events.events.MEME_CREATED,
       this,
@@ -116,6 +119,7 @@ export default class AuthStore extends Reactionable(EmptyClass) {
 
   onLoginSuccess(address: string) {
     this.address = address as Address;
+    this.hasLoggedIn = true;
     this.getStatus();
     AppStore.events.publish(AppStore.events.events.LOGIN);
   }

@@ -1,10 +1,11 @@
 import { observer } from "mobx-react-lite";
+import env from "../../environment";
 import { objectKeys } from "../../helpers/arrays";
 import { css } from "../../helpers/css";
 import { ProfileDto } from "../../interfaces";
 import Http from "../../services/http";
 import AppStore from "../../store/App.store";
-import { Submit } from "../DSL/Button/Button";
+import Button, { Submit } from "../DSL/Button/Button";
 import Form from "../DSL/Form/Form";
 import TextInput from "../DSL/Form/TextInput";
 import Modal, { ModalProps } from "../DSL/Modal/Modal";
@@ -81,12 +82,16 @@ const ProfileSettingsModal = observer(({}: SettingsModalProps) => {
             <Submit block>Update</Submit>
           </Form>
         </div>
-        {/* <div>
+        <div>
           <div className={css("flex", "flex-col")}>
             <Text>Twitter</Text>
-            <Button>Connect</Button>
+            <div className={css("mt-1", "w-full")}>
+              <a href={`${env.api.baseUrl}/twitter/login`}>
+                <Button block>Connect</Button>
+              </a>
+            </div>
           </div>
-        </div> */}
+        </div>
       </div>
     </Modal>
   );

@@ -81,7 +81,6 @@ import { VoteService } from './vote/vote.service';
     StatsService,
     CacheService,
     AppService,
-    // Search,
   ],
 })
 export class AppModule {}

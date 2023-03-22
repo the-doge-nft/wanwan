@@ -2,7 +2,7 @@ import {
   BadRequestException,
   Controller,
   Get,
-  Param,
+  Query,
   Redirect,
 } from '@nestjs/common';
 import { TwitterService } from './twitter.service';
@@ -15,8 +15,9 @@ export class TwitterController {
 
   @Get('callback')
   async postCallback(
-    @Param() { code, state }: { code: string; state: string },
+    @Query() { code, state }: { code: string; state: string },
   ) {
+    console.log(code, state);
     if (state !== this.STATE) {
       throw new BadRequestException('Wrong state');
     }

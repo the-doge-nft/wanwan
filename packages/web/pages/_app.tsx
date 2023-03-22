@@ -134,19 +134,15 @@ const WagmiAccountSwitchWatcher = observer(() => {
     }
   }, [address, disconnect]);
 
-  // useEffect(() => {
-  //   console.log("DEBUG:: ADDRESS", address);
-  //   if (address) {
-  //     AppStore.auth.getStatus({
-  //       onUnauthed: () => {
-  //         disconnect();
-  //       },
-  //       onAuthed: () => {
-  //         AppStore.auth.address = address;
-  //       },
-  //     });
-  //   }
-  // }, []);
+  useEffect(() => {
+    if (
+      AppStore.auth.status === "authenticated" &&
+      !AppStore.auth.hasLoggedIn &&
+      address
+    ) {
+      AppStore.auth.onLoginSuccess(address);
+    }
+  }, [address, AppStore.auth.hasLoggedIn, AppStore.auth.status]);
   return <></>;
 });
 

@@ -2,8 +2,8 @@ import { Module } from '@nestjs/common';
 import { TwitterController } from './twitter.controller';
 import { TwitterService } from './twitter.service';
 
-@Module({})
-export class TwitterModule {
-  controllers: [TwitterController];
-  providers: [TwitterService];
-}
+@Module({
+  providers: [TwitterService],
+  controllers: [TwitterController],
+})
+export class TwitterModule {}
