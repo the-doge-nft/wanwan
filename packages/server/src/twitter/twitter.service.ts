@@ -26,4 +26,8 @@ export class TwitterService {
   generateAuthUrl(options: GenerateAuthUrlOptions) {
     return this.authClient.generateAuthURL(options);
   }
+
+  getMyUser() {
+    return this.client.users.findMyUser();
+  }
 }
