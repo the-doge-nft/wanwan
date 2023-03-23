@@ -59,6 +59,10 @@ export default class AuthStore extends Reactionable(EmptyClass) {
     );
   }
 
+  updateProfile(data: Profile) {
+    this.profile = data;
+  }
+
   getStatus({
     onAuthed,
     onUnauthed,

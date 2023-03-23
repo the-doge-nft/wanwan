@@ -3,7 +3,8 @@ import { useRouter } from "next/router";
 import { useEffect } from "react";
 import Spinner from "../components/DSL/Spinner/Spinner";
 import Text, { TextSize, TextType } from "../components/DSL/Text/Text";
-import { errorToast, successToast } from "../components/DSL/Toast/Toast";
+import { debugToast, errorToast } from "../components/DSL/Toast/Toast";
+import Logo from "../components/Logo/Logo";
 import { css } from "../helpers/css";
 import BlankLayout from "../layouts/Blank.layout";
 import Http from "../services/http";
@@ -20,7 +21,7 @@ const Twitter = observer(() => {
       })
         .then(({ data }) => {
           AppStore.auth.profile = data;
-          successToast(
+          debugToast(
             `Twitter user ${AppStore.auth.profile.user.twitterUsername} linked`
           );
         })
@@ -35,14 +36,27 @@ const Twitter = observer(() => {
   }, [router]);
   return (
     <BlankLayout>
-      <div className={css("flex", "items-center", "grow", "justify-center")}>
-        <div className={css("flex", "flex-col", "items-center")}>
+      <div className={css("flex", "grow", "flex-col")}>
+        <div
+          className={css(
+            "flex",
+            "flex-col",
+            "items-center",
+            "grow",
+            "justify-center"
+          )}
+        >
           <Spinner />
           <div className={css("mt-0.5")}>
             <Text size={TextSize.xs} type={TextType.Grey}>
-              [authing with twitter...]
+              [authorizing twitter]
             </Text>
           </div>
+        </div>
+        <div className={css("flex", "justify-center")}>
+          <Text size={TextSize.xs} type={TextType.Grey}>
+            <Logo size={24} />
+          </Text>
         </div>
       </div>
     </BlankLayout>

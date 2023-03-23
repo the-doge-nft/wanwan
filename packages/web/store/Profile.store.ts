@@ -28,11 +28,15 @@ export default class ProfileStore {
   @observable
   externalUrl: Nullable<string> = null;
 
+  @observable
+  twitterUsername: Nullable<string> = null;
+
   constructor(profile: Profile, view: ProfileView) {
     makeObservable(this);
     this.profile = profile;
     this.description = this.profile.user.description;
     this.externalUrl = this.profile.user.externalUrl;
+    this.twitterUsername = this.profile.user.twitterUsername;
     this.view = view;
   }
 
@@ -72,6 +76,7 @@ export default class ProfileStore {
     this.profile = profile;
     this.description = profile.user.description;
     this.externalUrl = profile.user.externalUrl;
+    this.twitterUsername = profile.user.twitterUsername;
   }
 
   getUserMemes() {

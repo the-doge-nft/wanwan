@@ -10,8 +10,10 @@ import AppStore from "../../store/App.store";
 import Button, { Submit } from "../DSL/Button/Button";
 import Form from "../DSL/Form/Form";
 import TextInput from "../DSL/Form/TextInput";
+import { websiteUrl } from "../DSL/Form/validation";
+import Link, { LinkType } from "../DSL/Link/Link";
 import Modal, { ModalProps } from "../DSL/Modal/Modal";
-import Text from "../DSL/Text/Text";
+import Text, { TextSize, TextType } from "../DSL/Text/Text";
 
 interface SettingsModalProps extends ModalProps {}
 
@@ -53,7 +55,7 @@ const ProfileSettingsModal = observer(({}: SettingsModalProps) => {
       <div className={css("grid", "grid-cols-2", "gap-2")}>
         <div>
           <Form
-            onSubmit={async (values) => {
+            onSubmit={(values) => {
               const vals: ProfileDto = values as ProfileDto;
               const valuesToPost = { externalUrl: null, description: null };
               objectKeys(vals).forEach((key) => {
@@ -80,38 +82,57 @@ const ProfileSettingsModal = observer(({}: SettingsModalProps) => {
               label={"Website"}
               placeholder={"https://..."}
               defaultValue={AppStore.auth.profile?.user.externalUrl}
+              validate={websiteUrl}
               block
             />
             <Submit block>Update</Submit>
           </Form>
         </div>
         <div>
-          <div className={css("flex", "flex-col")}>
-            <Text>Twitter</Text>
-            {AppStore.auth.profile?.user?.twitterUsername && (
-              <div className={css("flex", "justify-between")}>
-                <Text>{AppStore.auth.profile?.user?.twitterUsername}</Text>
-                <Button
-                  isLoading={isDeleteTwitterLoading}
-                  onClick={() => {
-                    setIsDeleteTwitterLoading(true);
-                    Http.deleteTwitterUsername()
-                      .then(({ data }) => (AppStore.auth.profile = data))
-                      .finally(() => setIsDeleteTwitterLoading(false));
-                  }}
-                >
-                  <IoCloseOutline />
-                </Button>
-              </div>
-            )}
-            {!AppStore.auth.profile?.user?.twitterUsername && (
-              <div className={css("mt-1", "w-full")}>
-                <a href={`${env.api.baseUrl}/twitter/login`}>
-                  <Button block>Connect</Button>
-                </a>
-              </div>
-            )}
+          <div className={css("mb-0.5")}>
+            <Text size={TextSize.sm}>Twitter</Text>
           </div>
+          {AppStore.auth.profile?.user?.twitterUsername && (
+            <div
+              className={css(
+                "flex",
+                "justify-between",
+                "items-center",
+                "border-[1px]",
+                "border-black",
+                "py-1",
+                "px-2"
+              )}
+            >
+              <Link
+                type={LinkType.Secondary}
+                isExternal
+                href={`https://twitter.com/${AppStore.auth.profile?.user?.twitterUsername}`}
+              >
+                <Text type={TextType.NoColor}>
+                  {AppStore.auth.profile?.user?.twitterUsername}
+                </Text>
+              </Link>
+              <Button
+                isLoading={isDeleteTwitterLoading}
+                onClick={() => {
+                  setIsDeleteTwitterLoading(true);
+                  Http.deleteTwitterUsername()
+                    .then(({ data }) => (AppStore.auth.profile = data))
+                    .finally(() => setIsDeleteTwitterLoading(false));
+                }}
+              >
+                <IoCloseOutline />
+              </Button>
+            </div>
+          )}
+          {!AppStore.auth.profile?.user?.twitterUsername && (
+            <div className={css("w-full")}>
+              <a href={`${env.api.baseUrl}/twitter/login`}>
+                <Button block>Connect</Button>
+              </a>
+            </div>
+          )}
         </div>
       </div>
     </Modal>

@@ -16,7 +16,7 @@ const required = (value: any) => {
   return value && value !== "" ? undefined : "Required";
 };
 
-const websiteUrl = (value: any) =>
+const httpUrl = (value: any) =>
   isValidHttpUrl(value) || value === "" ? undefined : "Must be valid URL";
 
 const mustBeANumber = (value: any) =>
@@ -75,7 +75,7 @@ export {
   exactLength,
   composeValidators,
   maxDecimalPlaces,
-  websiteUrl,
+  httpUrl as websiteUrl,
   minDate,
   maxDate,
 };

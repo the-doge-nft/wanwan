@@ -2,6 +2,7 @@ import { observer } from "mobx-react-lite";
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 import { useEffect, useMemo } from "react";
+import { FaMousePointer, FaTwitter } from "react-icons/fa";
 import AspectRatio from "../../../components/DSL/AspectRatio/AspectRatio";
 import AsyncGrid from "../../../components/DSL/AsyncGrid/AsyncGrid";
 import Link, { LinkType } from "../../../components/DSL/Link/Link";
@@ -51,8 +52,8 @@ const ProfilePage: React.FC<ProfileProps> = observer(({ profile }) => {
               className={css(
                 "h-[85px]",
                 "w-[85px]",
-                "sm:h-[120px]",
-                "sm:w-[120px]",
+                "sm:h-[100px]",
+                "sm:w-[100px]",
                 "bg-center",
                 "bg-no-repeat",
                 "bg-contain",
@@ -92,7 +93,9 @@ const ProfilePage: React.FC<ProfileProps> = observer(({ profile }) => {
               </Link>
             </div>
             <div className={css("flex", "gap-0.5", "items-baseline")}>
-              <Text size={TextSize.sm}>WAN:</Text>
+              <Text size={TextSize.sm} type={TextType.Grey}>
+                wan:
+              </Text>
               <Text size={TextSize.sm} bold>
                 {store.profile.wan}
               </Text>
@@ -103,14 +106,31 @@ const ProfilePage: React.FC<ProfileProps> = observer(({ profile }) => {
                 "flex-col",
                 "gap-1",
                 "items-center",
-                "mt-2"
+                "mt-8"
               )}
             >
-              {store.externalUrl && (
-                <Link isExternal href={store.externalUrl} hideExternalIcon>
-                  🌐
-                </Link>
-              )}
+              <div className={css("flex", "gap-1", "items-center")}>
+                {store.externalUrl && (
+                  <Link
+                    type={LinkType.Secondary}
+                    isExternal
+                    href={store.externalUrl}
+                    hideExternalIcon
+                  >
+                    <FaMousePointer size={14} />
+                  </Link>
+                )}
+                {store.twitterUsername && (
+                  <Link
+                    type={LinkType.Secondary}
+                    isExternal
+                    href={`https://twitter.com/${store.twitterUsername}`}
+                    hideExternalIcon
+                  >
+                    <FaTwitter size={14} />
+                  </Link>
+                )}
+              </div>
               {store.description && (
                 <Text type={TextType.Grey}>{store.description}</Text>
               )}
