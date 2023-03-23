@@ -1,4 +1,6 @@
 import { observer } from "mobx-react-lite";
+import { useState } from "react";
+import { IoCloseOutline } from "react-icons/io5";
 import env from "../../environment";
 import { objectKeys } from "../../helpers/arrays";
 import { css } from "../../helpers/css";
@@ -14,6 +16,7 @@ import Text from "../DSL/Text/Text";
 interface SettingsModalProps extends ModalProps {}
 
 const ProfileSettingsModal = observer(({}: SettingsModalProps) => {
+  const [isDeleteTwitterLoading, setIsDeleteTwitterLoading] = useState(false);
   return (
     <Modal
       title={"Settings"}
@@ -85,11 +88,29 @@ const ProfileSettingsModal = observer(({}: SettingsModalProps) => {
         <div>
           <div className={css("flex", "flex-col")}>
             <Text>Twitter</Text>
-            <div className={css("mt-1", "w-full")}>
-              <a href={`${env.api.baseUrl}/twitter/login`}>
-                <Button block>Connect</Button>
-              </a>
-            </div>
+            {AppStore.auth.profile?.user?.twitterUsername && (
+              <div className={css("flex", "justify-between")}>
+                <Text>{AppStore.auth.profile?.user?.twitterUsername}</Text>
+                <Button
+                  isLoading={isDeleteTwitterLoading}
+                  onClick={() => {
+                    setIsDeleteTwitterLoading(true);
+                    Http.deleteTwitterUsername()
+                      .then(({ data }) => (AppStore.auth.profile = data))
+                      .finally(() => setIsDeleteTwitterLoading(false));
+                  }}
+                >
+                  <IoCloseOutline />
+                </Button>
+              </div>
+            )}
+            {!AppStore.auth.profile?.user?.twitterUsername && (
+              <div className={css("mt-1", "w-full")}>
+                <a href={`${env.api.baseUrl}/twitter/login`}>
+                  <Button block>Connect</Button>
+                </a>
+              </div>
+            )}
           </div>
         </div>
       </div>

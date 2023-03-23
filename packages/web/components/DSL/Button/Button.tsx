@@ -147,8 +147,6 @@ export const ConnectButton: React.FC<
     onConnectClick,
     block,
   }) => {
-    const { disconnect } = useDisconnect();
-    const [isDropDownOpen, setIsDropDownOpen] = useState(false);
     return (
       <>
         <RainbowConnectButton.Custom>
@@ -209,104 +207,12 @@ export const ConnectButton: React.FC<
 
                   return (
                     <div>
-                      <Dropdown
-                        open={isDropDownOpen}
-                        onOpenChange={setIsDropDownOpen}
-                        trigger={
-                          <Button type={type} size={size}>
-                            {AppStore.auth.profile?.ens
-                              ? AppStore.auth.profile.ens
-                              : account.displayName}
-                          </Button>
-                        }
-                      >
-                        <DropdownItem>
-                          <Link href={`/profile/${account.address}/meme`}>
-                            <Text type={TextType.NoColor}>Profile</Text>
-                          </Link>
-                        </DropdownItem>
-                        <DropdownItem>
-                          <span
-                            onClick={() => {
-                              AppStore.modals.isSettingsModalOpen = true;
-                            }}
-                            className={css(
-                              "text-red-800",
-                              "hover:underline",
-                              "cursor-pointer"
-                            )}
-                          >
-                            <Text type={TextType.NoColor}>Settings</Text>
-                          </span>
-                        </DropdownItem>
-                        {AppStore.auth.isAuthed && (
-                          <div className={css("mt-4", "mb-2")}>
-                            <DropdownItem className={css("mt-2")}>
-                              <div
-                                className={css(
-                                  "flex",
-                                  "justify-end",
-                                  "w-full",
-                                  "gap-2"
-                                )}
-                              >
-                                <Button
-                                  disabled={AppStore.settings.isLightMode}
-                                  onClick={() =>
-                                    AppStore.settings.setColorMode("light")
-                                  }
-                                >
-                                  <div className={css("py-0.5")}>
-                                    <BsFillSunFill size={12} />
-                                  </div>
-                                </Button>
-                                <Button
-                                  disabled={!AppStore.settings.isLightMode}
-                                  onClick={() =>
-                                    AppStore.settings.setColorMode("dark")
-                                  }
-                                >
-                                  <div className={css("py-0.5")}>
-                                    <BsFillMoonFill size={12} />
-                                  </div>
-                                </Button>
-                              </div>
-                            </DropdownItem>
-                          </div>
-                        )}
-                        <DropdownItem className={css("mt-2")}>
-                          <div
-                            className={css(
-                              "flex",
-                              "justify-between",
-                              "text-xs",
-                              "w-full"
-                            )}
-                          >
-                            <button
-                              className={css("hover:underline")}
-                              onClick={() => disconnect()}
-                            >
-                              <Text size={TextSize.sm}>Disconnect</Text>
-                            </button>
-                            <div
-                              className={css(
-                                "flex",
-                                "items-center",
-                                "space-x-1",
-                                "justify-between"
-                              )}
-                            >
-                              <Text type={TextType.Grey} size={TextSize.xs}>
-                                net:
-                              </Text>
-                              <Text type={TextType.Grey} size={TextSize.xs}>
-                                {chain.name}
-                              </Text>
-                            </div>
-                          </div>
-                        </DropdownItem>
-                      </Dropdown>
+                      <ConnectDropdown
+                        chain={chain}
+                        account={account}
+                        type={type}
+                        size={size}
+                      />
                     </div>
                   );
                 })()}
@@ -315,6 +221,111 @@ export const ConnectButton: React.FC<
           }}
         </RainbowConnectButton.Custom>
       </>
+    );
+  }
+);
+
+interface ConnectDropdownProps extends Pick<ButtonProps, "size" | "type"> {
+  chain: {
+    hasIcon: boolean;
+    iconUrl?: string;
+    iconBackground?: string;
+    id: number;
+    name?: string;
+    unsupported?: boolean;
+  };
+  account: {
+    address: string;
+    balanceDecimals?: number;
+    balanceFormatted?: string;
+    balanceSymbol?: string;
+    displayBalance?: string;
+    displayName: string;
+    ensAvatar?: string;
+    ensName?: string;
+    hasPendingTransactions: boolean;
+  };
+}
+
+export const ConnectDropdown = observer(
+  ({ account, type, size, chain }: ConnectDropdownProps) => {
+    const { disconnect } = useDisconnect();
+    const [isDropDownOpen, setIsDropDownOpen] = useState(false);
+    return (
+      <Dropdown
+        open={isDropDownOpen}
+        onOpenChange={setIsDropDownOpen}
+        trigger={
+          <Button type={type} size={size}>
+            {AppStore.auth.displayName}
+          </Button>
+        }
+      >
+        <DropdownItem>
+          <Link href={`/profile/${account.address}/meme`}>
+            <Text type={TextType.NoColor}>Profile</Text>
+          </Link>
+        </DropdownItem>
+        <DropdownItem>
+          <span
+            onClick={() => {
+              AppStore.modals.isSettingsModalOpen = true;
+            }}
+            className={css("text-red-800", "hover:underline", "cursor-pointer")}
+          >
+            <Text type={TextType.NoColor}>Settings</Text>
+          </span>
+        </DropdownItem>
+        {AppStore.auth.isAuthed && (
+          <div className={css("mt-4", "mb-2")}>
+            <DropdownItem className={css("mt-2")}>
+              <div className={css("flex", "justify-end", "w-full", "gap-2")}>
+                <Button
+                  disabled={AppStore.settings.isLightMode}
+                  onClick={() => AppStore.settings.setColorMode("light")}
+                >
+                  <div className={css("py-0.5")}>
+                    <BsFillSunFill size={12} />
+                  </div>
+                </Button>
+                <Button
+                  disabled={!AppStore.settings.isLightMode}
+                  onClick={() => AppStore.settings.setColorMode("dark")}
+                >
+                  <div className={css("py-0.5")}>
+                    <BsFillMoonFill size={12} />
+                  </div>
+                </Button>
+              </div>
+            </DropdownItem>
+          </div>
+        )}
+        <DropdownItem className={css("mt-2")}>
+          <div className={css("flex", "justify-between", "text-xs", "w-full")}>
+            <button
+              className={css("hover:underline")}
+              onClick={() => disconnect()}
+            >
+              <Text size={TextSize.sm}>Disconnect</Text>
+            </button>
+            <div
+              className={css(
+                "flex",
+                "items-center",
+                "space-x-1",
+                "justify-between"
+              )}
+            >
+              <Text type={TextType.Grey} size={TextSize.xs}>
+                net:
+              </Text>
+              <Text type={TextType.Grey} size={TextSize.xs}>
+                {chain.name}
+              </Text>
+            </div>
+          </div>
+        </DropdownItem>
+      </Dropdown>
     );
   }
 );

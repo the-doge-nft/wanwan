@@ -13,7 +13,7 @@ export class TwitterService {
     this.authClient = new auth.OAuth2User({
       client_id: this.config.get('twitter').clientId,
       client_secret: this.config.get('twitter').clientSecret,
-      callback: 'http://127.0.0.1:3000/twitter/callback',
+      callback: 'http://localhost:3001/twitter',
       scopes: ['tweet.read', 'users.read', 'offline.access'],
     });
     this.client = new Client(this.authClient);

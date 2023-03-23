@@ -1,4 +1,5 @@
 import {
+  darkTheme,
   lightTheme,
   RainbowKitAuthenticationProvider,
   RainbowKitProvider,
@@ -39,22 +40,34 @@ const logIt = () => {
 
 const App = observer(({ Component, pageProps }: AppProps) => {
   const router = useRouter();
-  const theme = lightTheme({
+  useEffect(() => {
+    // @next -- generalize this behavior
+    if (router.query?.showSettingsModal) {
+      AppStore.modals.isSettingsModalOpen = true;
+    }
+  }, [router.query]);
+  const lightRainbowTheme = lightTheme({
     borderRadius: "none",
     fontStack: "system",
-    accentColor: colors.gray[500],
+    accentColor: colors.red[800],
   });
-  theme.colors.closeButtonBackground = colors.slate[100];
-  theme.colors.modalBackground = colors.slate[100];
-  theme.colors.actionButtonBorder = colors.slate[100];
-  theme.colors.actionButtonBorder = "transparent";
+  const darkRainbowTheme = darkTheme({
+    borderRadius: "none",
+    fontStack: "system",
+    accentColor: colors.red[800],
+  });
+  lightRainbowTheme.colors.closeButtonBackground = colors.slate[100];
+  lightRainbowTheme.colors.modalBackground = colors.slate[100];
+  lightRainbowTheme.colors.actionButtonBorder = colors.slate[100];
+  lightRainbowTheme.colors.actionButtonBorder = "transparent";
+  lightRainbowTheme.fonts.body = "arial, helvetica, clean, sans-serif";
+  useEffect(logIt, []);
   useEffect(() => {
     AppStore.init();
     return () => {
       AppStore.destroy();
     };
   }, []);
-  useEffect(logIt, []);
   useEffect(() => {
     const handleRouteStart = () => NProgress.start();
     const handleRouteDone = () => NProgress.done();
@@ -104,7 +117,11 @@ const App = observer(({ Component, pageProps }: AppProps) => {
               appName: env.app.name,
             }}
             chains={chains}
-            theme={theme}
+            theme={
+              AppStore.settings.colorMode === "dark"
+                ? darkRainbowTheme
+                : lightRainbowTheme
+            }
           >
             <Component {...pageProps} />
             <Modals />
@@ -128,7 +145,8 @@ const WagmiAccountSwitchWatcher = observer(() => {
   useEffect(() => {
     if (
       AppStore.auth.address !== undefined &&
-      AppStore.auth.address !== address
+      AppStore.auth.address !== address &&
+      AppStore.auth.hasLoggedIn
     ) {
       AppStore.auth.onAccountSwitch();
     }

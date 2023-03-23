@@ -25,9 +25,9 @@ async function bootstrap() {
 
   const corsConfig: CorsOptions = {
     origin: [
+      'http://127.0.0.1:3001',
       'http://localhost:3001',
       'https://test.wanwan.me',
-      'https://twitter.com/i/oauth2/authorize',
     ],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     preflightContinue: false,

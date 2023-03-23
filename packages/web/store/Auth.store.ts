@@ -14,10 +14,10 @@ export default class AuthStore extends Reactionable(EmptyClass) {
 
   // must be explicit undefined for mobx react to fire
   @observable
-  address?: Address = undefined;
+  address: Address | null = null;
 
   @observable
-  profile?: Profile = undefined;
+  profile: Profile | null = null;
 
   @observable
   memes: Array<Meme> = [];
@@ -50,7 +50,7 @@ export default class AuthStore extends Reactionable(EmptyClass) {
             this.getProfile();
             this.getUserMemes();
           } else {
-            this.profile = undefined;
+            this.profile = null;
             this.memes = [];
           }
         }
@@ -80,10 +80,6 @@ export default class AuthStore extends Reactionable(EmptyClass) {
         this.status = "unauthenticated";
         onUnauthed && onUnauthed();
       });
-  }
-
-  updateProfile(data: Profile) {
-    this.profile = data;
   }
 
   getProfile() {
@@ -125,7 +121,7 @@ export default class AuthStore extends Reactionable(EmptyClass) {
   }
 
   onLogoutSuccess() {
-    this.address = undefined;
+    this.address = null;
     this.getStatus();
     AppStore.events.publish(AppStore.events.events.LOGOUT);
   }
@@ -151,11 +147,15 @@ export default class AuthStore extends Reactionable(EmptyClass) {
 
   @computed
   get displayName() {
-    if (!this.profile) {
+    if (!this.profile?.address) {
+      if (this.address) {
+        return abbreviate(this.address);
+      }
       return undefined;
     }
-    return this.profile?.ens
-      ? this.profile.ens
-      : abbreviate(this.profile.address);
+    if (this.profile?.ens) {
+      return this.profile.ens;
+    }
+    return abbreviate(this.profile.address);
   }
 }

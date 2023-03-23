@@ -14,6 +14,10 @@ html {
     margin: 0;
     overflow-x: hidden;
     color: magenta;
+    font-family: arial,
+        helvetica,
+        clean,
+        sans-serif;;
 }
 
 body {

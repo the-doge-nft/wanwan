@@ -8,6 +8,7 @@ import {
   CompetitionMeme,
   MediaRequirements,
   Meme,
+  Profile,
   ProfileDto,
   Reward,
   SearchParams,
@@ -127,6 +128,14 @@ class _Http {
 
   getComments(memeId: string) {
     return this.http.get<Comment[]>(`/meme/${memeId}/comment`);
+  }
+
+  deleteTwitterUsername() {
+    return this.http.post<Profile>("/twitter/delete");
+  }
+
+  postTwitterAuth(body: { code: string; state: string }) {
+    return this.http.post<Profile>("/twitter/callback", body);
   }
 
   getTwitterLoginUrl() {
