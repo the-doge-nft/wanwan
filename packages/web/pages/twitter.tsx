@@ -12,7 +12,6 @@ import AppStore from "../store/App.store";
 
 const Twitter = observer(() => {
   const router = useRouter();
-  console.log(router.query);
   useEffect(() => {
     if (AppStore.auth.isAuthed) {
       Http.postTwitterAuth({
