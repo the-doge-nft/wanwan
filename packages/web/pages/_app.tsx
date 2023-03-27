@@ -19,6 +19,13 @@ import { colors } from "../components/DSL/Theme";
 import { toastTransition } from "../components/DSL/Toast/Toast";
 import Modals from "../components/Modals/Modals";
 import env from "../environment";
+import {
+  DESCRIPTION,
+  getBaseUrl,
+  SOCIAL_CARD_URL,
+  TITLE,
+  TWITTER_USERNAME,
+} from "../environment/vars";
 import { chains, client, createRainbowAuthAdapter } from "../services/wagmi";
 import AppStore from "../store/App.store";
 import "../styles/globals.css";
@@ -83,26 +90,21 @@ const App = observer(({ Component, pageProps }: AppProps) => {
       router.events.off("routeChangeError", handleRouteDone);
     };
   }, []);
-  const description = "Run competitions, create memes, win prizes";
-  const title = "wanwan";
-  const url = "https://wanwan.me";
-  const twitterUsername = "@ownthedoge";
-  const socialCardUrl = "https://wanwan.me/images/twitter-card.png";
   return (
     <>
       <Head>
         <title>{env.app.name}</title>
-        <meta name="description" content={description} key="desc" />
-        <meta property="og:site_name" content={title} />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-        <meta property="og:image" content={socialCardUrl} />
-        <meta property="og:url" content={url} />
-        <meta name="twitter:title" content={title} />
-        <meta name="twitter:description" content={description} />
-        <meta name="twitter:image" content={socialCardUrl} />
+        <meta name="description" content={DESCRIPTION} key="desc" />
+        <meta property="og:site_name" content={TITLE} />
+        <meta property="og:title" content={TITLE} />
+        <meta property="og:description" content={DESCRIPTION} />
+        <meta property="og:image" content={SOCIAL_CARD_URL} />
+        <meta property="og:url" content={getBaseUrl()} />
+        <meta name="twitter:title" content={TITLE} />
+        <meta name="twitter:description" content={DESCRIPTION} />
+        <meta name="twitter:image" content={SOCIAL_CARD_URL} />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:site" content={twitterUsername} />
+        <meta name="twitter:site" content={TWITTER_USERNAME} />
       </Head>
       <WagmiConfig client={client}>
         <RainbowKitAuthenticationProvider

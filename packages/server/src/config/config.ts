@@ -44,6 +44,7 @@ export interface Config {
   isDev: boolean;
   isProd: boolean;
   isStaging: boolean;
+  baseUrl: string;
 }
 
 const configSchema = Joi.object<Config>({
@@ -85,6 +86,7 @@ const configSchema = Joi.object<Config>({
   isDev: Joi.boolean().required(),
   isProd: Joi.boolean().required(),
   isStaging: Joi.boolean().required(),
+  baseUrl: Joi.string().required(),
 });
 
 const config: Config = new (function () {
@@ -124,6 +126,12 @@ const config: Config = new (function () {
   this.isDev = this.appEnv === AppEnv.development;
   this.isProd = this.appEnv === AppEnv.production;
   this.isStaging = this.appEnv === AppEnv.staging;
+  this.baseUrl = 'https://wanwan.me';
+  if (this.isDev) {
+    this.baseUrl = 'http://localhost:3000';
+  } else if (this.isStaging) {
+    this.baseUrl = 'https://test.wanwan.me';
+  }
 })();
 
 class MissingEnvVarError extends Error {}

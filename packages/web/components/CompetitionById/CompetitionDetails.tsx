@@ -3,8 +3,9 @@ import { observer } from "mobx-react-lite";
 import { css } from "../../helpers/css";
 import { abbreviate } from "../../helpers/strings";
 import CompetitionByIdStore from "../../store/CompetitionId.store";
+import ActivePill from "../ActivePill/ActivePill";
 import Link, { LinkType } from "../DSL/Link/Link";
-import Text, { TextSize, TextType } from "../DSL/Text/Text";
+import Text, { TextSize } from "../DSL/Text/Text";
 
 const CompetitionDetails: React.FC<{ store: CompetitionByIdStore }> = observer(
   ({ store }) => {
@@ -62,26 +63,7 @@ const CompetitionDetails: React.FC<{ store: CompetitionByIdStore }> = observer(
             </div>
           </div>
           <div className={css("text-right")}>
-            <div
-              className={css(
-                "rounded-full",
-                "border-[1px]",
-                "px-2",
-                "py-1",
-                "inline-flex",
-                "items-center",
-                "border-black",
-                "dark:border-neutral-700",
-                {
-                  "bg-red-800 text-white": !store.competition.isActive,
-                  "text-black dark:text-white": store.competition.isActive,
-                }
-              )}
-            >
-              <Text size={TextSize.xs} type={TextType.NoColor}>
-                {store.competition.isActive ? "active" : "ended"}
-              </Text>
-            </div>
+            <ActivePill />
           </div>
         </div>
       </>
