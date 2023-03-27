@@ -1,3 +1,4 @@
+import { HttpModule } from '@nestjs/axios';
 import { CacheModule, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
@@ -58,6 +59,7 @@ import { VoteService } from './vote/vote.service';
       }),
     }),
     AuthModule,
+    HttpModule,
   ],
   controllers: [
     AppController,
