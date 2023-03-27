@@ -1,6 +1,8 @@
+import { HttpService } from '@nestjs/axios';
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { EthersService } from './ethers/ethers.service';
+import { MemeService } from './meme/meme.service';
 import { PrismaService } from './prisma.service';
 import { TwitterService } from './twitter/twitter.service';
 
@@ -10,7 +12,9 @@ export class AppService {
   constructor(
     private readonly ethers: EthersService,
     private readonly prisma: PrismaService,
+    private readonly meme: MemeService,
     private readonly twitter: TwitterService,
+    private readonly http: HttpService,
   ) {}
 
   onModuleInit() {
@@ -40,18 +44,24 @@ export class AppService {
     const memeSharedIds = await this.prisma.socialMemeShares.findMany({
       select: { memeId: true },
     });
-    const memes = await this.prisma.meme.findMany({
+    const meme = await this.meme.findFirst({
       orderBy: { createdAt: 'desc' },
       where: { id: { notIn: memeSharedIds.map((share) => share.memeId) } },
       include: { user: true },
-      take: 2,
+      take: 1,
     });
-    const client = this.twitter.createClient();
+
     this.logger.log('testing out creating tweet');
     try {
-      await client.tweets.createTweet({
-        text: 'testing this outtt',
-      });
+      const url = meme.media.url;
+      // const image = this.http.axiosRef.get(url)
+      console.log('url', url);
+      // const media = await this.twitter.appClient.v1.uploadMedia();
+
+      // await this.twitter.appClient.v2.tweet({
+      //   text: 'testing this outtt',
+      //   media: {},
+      // });
     } catch (e) {
       console.log(e);
       this.logger.error(e);

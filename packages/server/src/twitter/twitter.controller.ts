@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Get,
@@ -11,7 +10,6 @@ import {
 } from '@nestjs/common';
 import { InjectSentry, SentryService } from '@travelerdev/nestjs-sentry';
 import { AuthGuard } from 'src/auth/auth.guard';
-import { auth } from 'twitter-api-sdk';
 import { AuthenticatedRequest } from './../interface/index';
 import { ProfileService } from './../profile/profile.service';
 import { UserService } from './../user/user.service';
@@ -21,7 +19,7 @@ import { TwitterService } from './twitter.service';
 export class TwitterController {
   private readonly logger = new Logger();
   private readonly STATE = 'test-state';
-  private readonly oauthClients = new Map<string, auth.OAuth2User>();
+  // private readonly oauthClients = new Map<string, auth.OAuth2User>();
 
   constructor(
     private readonly twitter: TwitterService,
@@ -36,39 +34,41 @@ export class TwitterController {
     @Body() { code, state }: { code: string; state: string },
     @Req() { user }: AuthenticatedRequest,
   ) {
-    if (state !== this.STATE) {
-      throw new BadRequestException('Wrong state');
-    }
+    // if (state !== this.STATE) {
+    //   throw new BadRequestException('Wrong state');
+    // }
 
-    try {
-      const authClient = this.oauthClients.get(user.address);
-      await this.twitter.requestAccessToken(authClient, code);
-      const client = this.twitter.createClient(authClient);
-      const twitterUser = await this.twitter.getMyUser(client);
-      await this.user.update({
-        where: { id: user.id },
-        data: { twitterUsername: twitterUser.data.username },
-      });
-      await authClient.revokeAccessToken();
-      this.oauthClients.delete(user.address);
-      return this.profile.get(user.address);
-    } catch (e) {
-      this.logger.error(e);
-      this.sentryClient.instance().captureException(e);
-      throw new BadRequestException('Could not authenticate with Twitter.');
-    }
+    // try {
+    //   const authClient = this.oauthClients.get(user.address);
+    //   await this.twitter.requestAccessToken(authClient, code);
+    //   const client = this.twitter.createClient(authClient);
+    //   const twitterUser = await this.twitter.getMyUser(client);
+    //   await this.user.update({
+    //     where: { id: user.id },
+    //     data: { twitterUsername: twitterUser.screen_name },
+    //   });
+    //   await authClient.revokeAccessToken();
+    //   this.oauthClients.delete(user.address);
+    //   return this.profile.get(user.address);
+    // } catch (e) {
+    //   this.logger.error(e);
+    //   this.sentryClient.instance().captureException(e);
+    //   throw new BadRequestException('Could not authenticate with Twitter.');
+    // }
+    return {};
   }
 
   @UseGuards(AuthGuard)
   @Get('login')
   @Redirect('')
   async getLogin(@Req() { user }: AuthenticatedRequest) {
-    const authClient = this.twitter.createAuthClient();
-    const url = authClient.generateAuthURL({
-      state: this.STATE,
-      code_challenge_method: 's256',
-    });
-    this.oauthClients.set(user.address, authClient);
+    // const authClient = this.twitter.createAuthClient();
+    // const url = authClient.generateAuthURL({
+    //   state: this.STATE,
+    //   code_challenge_method: 's256',
+    // });
+    // this.oauthClients.set(user.address, authClient);
+    const url = '';
     return {
       url,
     };
@@ -83,9 +83,9 @@ export class TwitterController {
         twitterUsername: null,
       },
     });
-    if (this.oauthClients.get(user.address)) {
-      this.oauthClients.delete(user.address);
-    }
+    // if (this.oauthClients.get(user.address)) {
+    //   this.oauthClients.delete(user.address);
+    // }
     return this.profile.get(user.address);
   }
 }

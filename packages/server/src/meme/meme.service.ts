@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma.service';
-import { MemeWithDefaultInclude } from './../interface/index';
+import { MemeWithDefaultInclude, MemeWithExtras } from './../interface/index';
 import { MediaService } from './../media/media.service';
 import { UserService } from './../user/user.service';
 
@@ -20,7 +20,7 @@ export class MemeService {
     };
   }
 
-  async addExtra(item: MemeWithDefaultInclude) {
+  async addExtra(item: MemeWithDefaultInclude): Promise<MemeWithExtras> {
     return {
       ...item,
       media: this.media.addExtra(item.media),

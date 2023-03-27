@@ -5,6 +5,7 @@ import { readFileSync, unlinkSync } from 'fs';
 import sizeOf from 'image-size';
 import { join } from 'path';
 import { Config } from '../config/config';
+import { MediaWithExtras } from '../interface';
 import { PrismaService } from './../prisma.service';
 import { S3Service } from './../s3/s3.service';
 @Injectable()
@@ -23,7 +24,7 @@ export class MediaService {
     return `https://${media.s3BucketName}.s3.${this.awsRegion}.amazonaws.com/${media.filename}`;
   }
 
-  addExtra(item: Media) {
+  addExtra(item: Media): MediaWithExtras {
     return { ...item, url: this.getS3Url(item) };
   }
 
