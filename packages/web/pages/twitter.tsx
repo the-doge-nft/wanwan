@@ -13,7 +13,11 @@ import AppStore from "../store/App.store";
 const Twitter = observer(() => {
   const router = useRouter();
   useEffect(() => {
-    if (AppStore.auth.isAuthed) {
+    if (
+      AppStore.auth.isAuthed &&
+      router.query.oauth_token &&
+      router.query.oauth_verifier
+    ) {
       Http.postTwitterAuth({
         oauth_token: router.query.oauth_token as string,
         oauth_verifier: router.query.oauth_verifier as string,
@@ -31,8 +35,13 @@ const Twitter = observer(() => {
         .finally(() =>
           router.push({ query: { showSettingsModal: true }, pathname: "/" })
         );
+    } else {
+      if (router.query.denied) {
+        errorToast("Could not authenticate with Twitter");
+        router.push({ pathname: "/" });
+      }
     }
-  }, [router, AppStore.auth.isAuthed]);
+  }, [router.query, AppStore.auth.isAuthed]);
   return (
     <BlankLayout>
       <div className={css("flex", "grow", "flex-col")}>

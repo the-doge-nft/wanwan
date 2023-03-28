@@ -41,7 +41,9 @@ export class TwitterController {
     @Session() session: SessionType,
   ) {
     if (!oauth_token || !oauth_verifier || !session.oauth_token_secret) {
-      throw new BadRequestException('Could not auth with twitter');
+      throw new BadRequestException(
+        'Token, secret, or verifier missing for twitter auth',
+      );
     }
 
     try {
