@@ -92,7 +92,6 @@ export const createRainbowAuthAdapter = ({
     },
     signOut: async () => {
       try {
-        console.log("debug:: wagmi logout called");
         await Http.logout();
       } catch (e) {
         console.log(e);

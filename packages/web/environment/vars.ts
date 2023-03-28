@@ -63,3 +63,4 @@ export const getBaseUrl = () => {
 export const TITLE = "wanwan";
 export const DESCRIPTION = "Run competitions, create memes, win prizes";
 export const TWITTER_USERNAME = "@wawandotme";
+export const SOCIAL_CARD_URL = `${getBaseUrl()}/images/twitter-card.png`;
