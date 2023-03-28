@@ -20,7 +20,12 @@ export class TwitterService {
       twitterConfig.accessToken,
       twitterConfig.accessTokenSecret,
     );
-    this.callbackUrl = 'http://localhost:3001/twitter';
+    this.callbackUrl = 'https://wanwan.me/twitter';
+    if (this.config.get('isDev')) {
+      this.callbackUrl = 'http://localhost:3001/twitter';
+    } else if (this.config.get('isStaging')) {
+      this.callbackUrl = 'https://test.wanwan.me/twitter';
+    }
   }
 
   getMyUser(client: TwitterApi) {
