@@ -1,4 +1,5 @@
 import { computed, makeObservable, observable } from "mobx";
+import { Meme, Nullable } from "../interfaces";
 import { EmptyClass } from "../services/mixins";
 import { Navigable } from "../services/mixins/navigable";
 import Http from "./../services/http";
@@ -11,7 +12,10 @@ export enum CreateMemeView {
 
 export default class CreateMemeStore extends Navigable(EmptyClass) {
   @observable
-  private file: File | null = null;
+  private file: Nullable<File> = null;
+
+  @observable
+  meme: Nullable<Meme> = null;
 
   @observable
   isSubmitLoading = false;
@@ -34,8 +38,9 @@ export default class CreateMemeStore extends Navigable(EmptyClass) {
       formData.append("description", values.description);
     }
 
-    await Http.postMeme(formData);
+    const { data } = await Http.postMeme(formData);
     this.isSubmitLoading = false;
+    this.meme = data;
     this.currentView = CreateMemeView.Success;
     AppStore.events.publish(AppStore.events.events.MEME_CREATED);
   }

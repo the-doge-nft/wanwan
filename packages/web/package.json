@@ -39,6 +39,7 @@
     "react-final-form": "^6.5.9",
     "react-icons": "^4.7.1",
     "react-loader-spinner": "^5.3.4",
+    "react-share": "^4.4.1",
     "react-spring-bottom-sheet": "^3.5.0-alpha.0",
     "react-toastify": "^9.1.1",
     "siwe": "^1.1.6",

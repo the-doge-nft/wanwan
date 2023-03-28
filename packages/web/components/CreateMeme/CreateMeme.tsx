@@ -1,7 +1,15 @@
 import { observer } from "mobx-react-lite";
+import {
+  RedditIcon,
+  RedditShareButton,
+  TwitterIcon,
+  TwitterShareButton,
+} from "react-share";
+import { getBaseUrl } from "../../environment/vars";
 import { css } from "../../helpers/css";
 import AppStore from "../../store/App.store";
 import CreateMemeStore, { CreateMemeView } from "../../store/CreateMeme.store";
+import AspectRatio from "../DSL/AspectRatio/AspectRatio";
 import Button, { Submit } from "../DSL/Button/Button";
 import Form from "../DSL/Form/Form";
 import MediaInput from "../DSL/Form/MediaInput";
@@ -16,7 +24,9 @@ const CreateMeme: React.FC<{ store: CreateMemeStore }> = observer(
         {store.currentView === CreateMemeView.Create && (
           <CreateMemeForm store={store} />
         )}
-        {store.currentView === CreateMemeView.Success && <Success />}
+        {store.currentView === CreateMemeView.Success && (
+          <Success store={store} />
+        )}
       </>
     );
   }
@@ -67,7 +77,7 @@ const CreateMemeForm: React.FC<{ store: CreateMemeStore }> = observer(
   }
 );
 
-const Success = () => {
+const Success: React.FC<{ store: CreateMemeStore }> = observer(({ store }) => {
   return (
     <div>
       <div
@@ -83,8 +93,39 @@ const Success = () => {
         <Text size={TextSize.lg}>Meme Created</Text>
         <Text>~~~</Text>
       </div>
+      <div className={css("mt-2")}>
+        <AspectRatio
+          className={css("bg-contain", "bg-no-repeat", "bg-center")}
+          ratio={`${store.meme?.media.width}/${store.meme?.media.height}`}
+          style={{ backgroundImage: `url(${store.meme?.media.url})` }}
+        />
+      </div>
+      <div>
+        <div
+          className={css(
+            "flex",
+            "items-center",
+            "justify-center",
+            "gap-2",
+            "mt-4"
+          )}
+        >
+          <TwitterShareButton
+            title={"I just posted a meme on wanwan"}
+            url={getBaseUrl() + `/meme/` + store.meme!.id}
+          >
+            <TwitterIcon size={20} />
+          </TwitterShareButton>
+          <RedditShareButton
+            title={"I just posted a meme on wanwan"}
+            url={getBaseUrl() + `/meme/` + store.meme!.id}
+          >
+            <RedditIcon size={20} />
+          </RedditShareButton>
+        </div>
+      </div>
     </div>
   );
-};
+});
 
 export default CreateMeme;
