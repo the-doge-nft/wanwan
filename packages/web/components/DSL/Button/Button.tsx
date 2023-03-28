@@ -57,7 +57,7 @@ const buttonTypeStyles = {
 };
 
 const buttonSizeStyles = {
-  [ButtonSize.xs]: css(),
+  [ButtonSize.xs]: css("px-0.5", "rounded-sm"),
   [ButtonSize.sm]: css("py-0.5", "px-1", "rounded-sm", "text-xs"),
   [ButtonSize.lg]: css("px-1", "py-0.5", "rounded-sm"),
 };
@@ -122,7 +122,6 @@ export const Submit: React.FC<PropsWithChildren<ButtonProps>> = ({
   ...rest
 }) => {
   const state = useFormState();
-  console.log(state.dirty, state.valid);
   return (
     <Button
       {...rest}

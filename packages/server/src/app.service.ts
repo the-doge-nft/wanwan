@@ -2,7 +2,6 @@ import { HttpService } from '@nestjs/axios';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { SocialPlatform } from '@prisma/client';
 import { lookup } from 'mime-types';
 import { EthersService } from './ethers/ethers.service';
 import { MemeService } from './meme/meme.service';
@@ -64,34 +63,28 @@ export class AppService {
         responseType: 'arraybuffer',
       });
 
-      const mediaId = await this.twitter.appClient.v1.uploadMedia(
-        response.data,
-        {
-          mimeType,
-        },
-      );
-      console.log('media::', mediaId);
+      // const mediaId = await this.twitter.uploadMedia(response.data, {
+      //   mimeType,
+      // });
+      // console.log('media::', mediaId);
 
-      const tweet = await this.twitter.appClient.v2.tweet({
-        text: 'wow this is another cool meme',
-        media: {
-          media_ids: [mediaId],
-        },
-      });
-      console.log('tweet::', tweet);
+      // const tweet = await this.twitter.tweet({
+      //   text: 'wow this is another cool meme',
+      //   media: {
+      //     media_ids: [mediaId],
+      //   },
+      // });
+      // console.log('tweet::', tweet);
 
-      const replyText = `created by ${
-        meme.user.ens ? meme.user.ens : meme.user.address
-      } on ${this.config.get('baseUrl')}/meme/${meme.id}`;
-      const reply = await this.twitter.appClient.v2.reply(
-        replyText,
-        tweet.data.id,
-      );
-      console.log('reply::', reply);
+      // const replyText = `created by ${
+      //   meme.user.ens ? meme.user.ens : meme.user.address
+      // } on ${this.config.get('baseUrl')}/meme/${meme.id}`;
+      // const reply = await this.twitter.reply(replyText, tweet.data.id);
+      // console.log('reply::', reply);
 
-      await this.prisma.socialMemeShares.create({
-        data: { memeId: meme.id, platform: SocialPlatform.Twitter },
-      });
+      // await this.prisma.socialMemeShares.create({
+      //   data: { memeId: meme.id, platform: SocialPlatform.Twitter },
+      // });
     } catch (e) {
       console.log(e);
       this.logger.error(e);

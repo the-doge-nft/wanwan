@@ -134,7 +134,7 @@ class _Http {
     return this.http.post<Profile>("/twitter/delete");
   }
 
-  postTwitterAuth(body: { code: string; state: string }) {
+  postTwitterAuth(body: { oauth_token: string; oauth_verifier: string }) {
     return this.http.post<Profile>("/twitter/callback", body);
   }
 

@@ -12,7 +12,7 @@ import { useRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
 import { BsDot } from "react-icons/bs";
 import AspectRatio from "../../components/DSL/AspectRatio/AspectRatio";
-import Button, { Submit } from "../../components/DSL/Button/Button";
+import Button, { ButtonSize, Submit } from "../../components/DSL/Button/Button";
 import Form from "../../components/DSL/Form/Form";
 import TextInput from "../../components/DSL/Form/TextInput";
 import Link, { LinkType } from "../../components/DSL/Link/Link";
@@ -109,7 +109,8 @@ const MemeById = observer(({ meme }: MemeByIdProps) => {
                 "md:col-span-2",
                 "flex",
                 "justify-end",
-                "items-end"
+                "items-end",
+                "flex-col"
               )}
             >
               <Link href={`/profile/${meme.user.address}/meme`}>
@@ -119,6 +120,22 @@ const MemeById = observer(({ meme }: MemeByIdProps) => {
                     : abbreviate(meme.user.address)}
                 </Text>
               </Link>
+              <Button
+                size={ButtonSize.xs}
+                onClick={() => {
+                  const message = "Check out this sick meme!";
+                  const screenshotUrl = `${getBaseUrl()}/meme/${meme.id}`;
+                  const text = encodeURIComponent(
+                    `${message}\n${screenshotUrl}`
+                  );
+                  window.open(
+                    `https://twitter.com/intent/tweet?text=${text}`,
+                    "_blank"
+                  );
+                }}
+              >
+                tweet it
+              </Button>
             </div>
           </div>
           <Text size={TextSize.xs} type={TextType.Grey}>

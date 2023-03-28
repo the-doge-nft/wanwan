@@ -15,8 +15,8 @@ const Twitter = observer(() => {
   useEffect(() => {
     if (AppStore.auth.isAuthed) {
       Http.postTwitterAuth({
-        code: router.query.code as string,
-        state: router.query.state as string,
+        oauth_token: router.query.oauth_token as string,
+        oauth_verifier: router.query.oauth_verifier as string,
       })
         .then(({ data }) => {
           AppStore.auth.profile = data;

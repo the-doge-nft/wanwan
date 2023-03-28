@@ -14,7 +14,11 @@ import { SiweDto } from '../dto/siwe.dto';
 import { InvalidNonceError } from '../error/InvalidNonce.error';
 import { AuthGuard } from './auth.guard';
 
-type SessionType = Session & { nonce: string; siwe: any };
+export type SessionType = Session & {
+  nonce: string;
+  siwe: any;
+  oauth_token_secret?: string;
+};
 
 @Controller('auth')
 export class AuthController {

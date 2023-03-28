@@ -1,52 +1,74 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { TwitterApi } from 'twitter-api-v2';
+import {
+  SendTweetV2Params,
+  TUploadableMedia,
+  TwitterApi,
+  UploadMediaV1Params,
+} from 'twitter-api-v2';
 import { Config } from '../config/config';
 
 @Injectable()
 export class TwitterService {
   private readonly logger = new Logger(TwitterService.name);
-  public readonly appClient: TwitterApi;
+  private readonly appClient: TwitterApi;
+  private readonly callbackUrl: string;
 
   constructor(private readonly config: ConfigService<Config>) {
-    const twitterConfig = this.config.get('twitter');
-    this.appClient = new TwitterApi({
-      appKey: twitterConfig.consumerKey,
-      appSecret: twitterConfig.consumerSecret,
-      accessToken: twitterConfig.accessToken,
-      accessSecret: twitterConfig.accessTokenSecret,
-    });
+    const twitterConfig = this.config.get<Config['twitter']>('twitter');
+    this.appClient = this.createClient(
+      twitterConfig.accessToken,
+      twitterConfig.accessTokenSecret,
+    );
+    this.callbackUrl = 'http://localhost:3001/twitter';
   }
-
-  // requestAccessToken(authClient: auth.OAuth2User, code: string): Promise<any> {
-  //   return authClient.requestAccessToken(code);
-  // }
 
   getMyUser(client: TwitterApi) {
     return client.currentUser();
   }
 
-  createAuthClient() {
-    // return new auth.OAuth2User({
-    //   client_id: this.config.get('twitter').clientId,
-    //   client_secret: this.config.get('twitter').clientSecret,
-    //   callback: 'http://localhost:3001/twitter',
-    //   scopes: ['tweet.read', 'users.read', 'offline.access'],
-    // });
+  getAuthLink() {
+    return this.appClient.generateAuthLink(this.callbackUrl, {
+      linkMode: 'authorize',
+    });
   }
 
-  // createClient(authClient: auth.OAuth2User = this.createAuthClient()) {
-  //   console.log(
-  //     `debug:: access token: ${this.config.get('twitter').accessToken}`,
-  //   );
-  //   const _authClient = new auth.OAuth2User({
-  //     token: this.config.get('twitter').accessTokenSecret,
-  //     client_id: this.config.get('twitter').clientId,
-  //     client_secret: this.config.get('twitter').clientSecret,
-  //     scopes: ['tweet.write', 'offline.access'],
-  //     callback: 'http://localhost:3001/twitter',
-  //   });
+  uploadMedia(file: TUploadableMedia, options?: Partial<UploadMediaV1Params>) {
+    return this.appClient.v1.uploadMedia(file, options);
+  }
 
-  //   return new Client(_authClient);
-  // }
+  tweet(payload: SendTweetV2Params) {
+    return this.appClient.v2.tweet(payload);
+  }
+
+  reply(
+    status: string,
+    toTweetId: string,
+    payload?: Partial<SendTweetV2Params>,
+  ) {
+    return this.appClient.v2.reply(status, toTweetId, payload);
+  }
+
+  loginUser({
+    oauthVerifier,
+    accessToken,
+    accessSecret,
+  }: {
+    oauthVerifier: string;
+    accessToken: string;
+    accessSecret: string;
+  }) {
+    const client = this.createClient(accessToken, accessSecret);
+    return client.login(oauthVerifier);
+  }
+
+  private createClient(accessToken: string, accessSecret: string) {
+    const twitterConfig = this.config.get('twitter');
+    return new TwitterApi({
+      appKey: twitterConfig.consumerKey,
+      appSecret: twitterConfig.consumerSecret,
+      accessToken,
+      accessSecret,
+    });
+  }
 }

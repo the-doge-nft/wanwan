@@ -73,7 +73,7 @@ const ProfileSettingsModal = observer(({}: SettingsModalProps) => {
             <TextInput
               name={"description"}
               label={"Bio"}
-              defaultValue={AppStore.auth.profile?.user.description || ""}
+              defaultValue={AppStore.auth.profile?.user?.description || ""}
               placeholder={"Tell me something about yourself..."}
               block
             />
@@ -81,7 +81,7 @@ const ProfileSettingsModal = observer(({}: SettingsModalProps) => {
               name={"externalUrl"}
               label={"Website"}
               placeholder={"https://..."}
-              defaultValue={AppStore.auth.profile?.user.externalUrl || ""}
+              defaultValue={AppStore.auth.profile?.user?.externalUrl || ""}
               validate={websiteUrl}
               block
             />
