@@ -32,7 +32,7 @@ const Twitter = observer(() => {
           router.push({ query: { showSettingsModal: true }, pathname: "/" })
         );
     }
-  }, [router]);
+  }, [router, AppStore.auth.isAuthed]);
   return (
     <BlankLayout>
       <div className={css("flex", "grow", "flex-col")}>
