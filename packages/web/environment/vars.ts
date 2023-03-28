@@ -49,3 +49,18 @@ export const isStaging = () =>
   vars.NodeEnv === "production" && vars.AppEnv === AppEnv.Staging;
 
 export const isDev = () => vars.NodeEnv === "development";
+
+export const getBaseUrl = () => {
+  let url = `https://wanwan.me`;
+  if (isDev()) {
+    url = `http://localhost:3001`;
+  } else if (isStaging()) {
+    url = `https://test.wanwan.me`;
+  }
+  return url;
+};
+
+export const TITLE = "wanwan";
+export const DESCRIPTION = "Run competitions, create memes, win prizes";
+export const TWITTER_USERNAME = "@wawandotme";
+export const SOCIAL_CARD_URL = `${getBaseUrl()}/images/twitter-card.png`;

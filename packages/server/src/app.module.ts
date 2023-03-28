@@ -1,3 +1,4 @@
+import { HttpModule } from '@nestjs/axios';
 import { CacheModule, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
@@ -26,7 +27,8 @@ import { RewardService } from './reward/reward.service';
 import { S3Service } from './s3/s3.service';
 import { StatsService } from './stats/stats.service';
 import { SubmissionService } from './submission/submission.service';
-import { TwitterModule } from './twitter/twitter.module';
+import { TwitterController } from './twitter/twitter.controller';
+import { TwitterService } from './twitter/twitter.service';
 import { UserService } from './user/user.service';
 import { VoteService } from './vote/vote.service';
 
@@ -57,9 +59,14 @@ import { VoteService } from './vote/vote.service';
       }),
     }),
     AuthModule,
-    TwitterModule,
+    HttpModule,
   ],
-  controllers: [AppController, MemeController, CompetitionController],
+  controllers: [
+    AppController,
+    MemeController,
+    CompetitionController,
+    TwitterController,
+  ],
   providers: [
     PrismaService,
     UserService,
@@ -81,7 +88,7 @@ import { VoteService } from './vote/vote.service';
     StatsService,
     CacheService,
     AppService,
-    // Search,
+    TwitterService,
   ],
 })
 export class AppModule {}

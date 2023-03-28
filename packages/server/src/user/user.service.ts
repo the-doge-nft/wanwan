@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma, User } from '@prisma/client';
-import { UserWithEns } from '../interface';
+import { UserWithExtras } from '../interface';
 import { EthersService } from './../ethers/ethers.service';
 import { PrismaService } from './../prisma.service';
 
@@ -11,12 +11,12 @@ export class UserService {
     private readonly ethers: EthersService,
   ) {}
 
-  async addExtra(user: User): Promise<UserWithEns> {
+  async addExtra(user: User): Promise<UserWithExtras> {
     const ens = await this.ethers.getCachedEnsName(user.address);
     return { ...user, ens };
   }
 
-  async addExtras(users: User[]): Promise<UserWithEns[]> {
+  async addExtras(users: User[]): Promise<UserWithExtras[]> {
     const ret = [];
     for (const user of users) {
       users.push(await this.addExtra(user));

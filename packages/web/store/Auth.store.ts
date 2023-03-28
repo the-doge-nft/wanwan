@@ -14,13 +14,16 @@ export default class AuthStore extends Reactionable(EmptyClass) {
 
   // must be explicit undefined for mobx react to fire
   @observable
-  address?: Address = undefined;
+  address: Address | null = null;
 
   @observable
-  profile?: Profile = undefined;
+  profile: Profile | null = null;
 
   @observable
   memes: Array<Meme> = [];
+
+  @observable
+  hasLoggedIn = false;
 
   constructor() {
     super();
@@ -28,7 +31,7 @@ export default class AuthStore extends Reactionable(EmptyClass) {
   }
 
   init() {
-    // this.getStatus();
+    this.getStatus();
     AppStore.events.subscribe(
       AppStore.events.events.MEME_CREATED,
       this,
@@ -47,13 +50,17 @@ export default class AuthStore extends Reactionable(EmptyClass) {
             this.getProfile();
             this.getUserMemes();
           } else {
-            this.profile = undefined;
+            this.profile = null;
             this.memes = [];
           }
         }
       ),
       { fireImmediately: true }
     );
+  }
+
+  updateProfile(data: Profile) {
+    this.profile = data;
   }
 
   getStatus({
@@ -77,10 +84,6 @@ export default class AuthStore extends Reactionable(EmptyClass) {
         this.status = "unauthenticated";
         onUnauthed && onUnauthed();
       });
-  }
-
-  updateProfile(data: Profile) {
-    this.profile = data;
   }
 
   getProfile() {
@@ -116,12 +119,13 @@ export default class AuthStore extends Reactionable(EmptyClass) {
 
   onLoginSuccess(address: string) {
     this.address = address as Address;
+    this.hasLoggedIn = true;
     this.getStatus();
     AppStore.events.publish(AppStore.events.events.LOGIN);
   }
 
   onLogoutSuccess() {
-    this.address = undefined;
+    this.address = null;
     this.getStatus();
     AppStore.events.publish(AppStore.events.events.LOGOUT);
   }
@@ -147,11 +151,15 @@ export default class AuthStore extends Reactionable(EmptyClass) {
 
   @computed
   get displayName() {
-    if (!this.profile) {
+    if (!this.profile?.address) {
+      if (this.address) {
+        return abbreviate(this.address);
+      }
       return undefined;
     }
-    return this.profile?.ens
-      ? this.profile.ens
-      : abbreviate(this.profile.address);
+    if (this.profile?.ens) {
+      return this.profile.ens;
+    }
+    return abbreviate(this.profile.address);
   }
 }

@@ -1,4 +1,5 @@
 import {
+  darkTheme,
   lightTheme,
   RainbowKitAuthenticationProvider,
   RainbowKitProvider,
@@ -18,6 +19,13 @@ import { colors } from "../components/DSL/Theme";
 import { toastTransition } from "../components/DSL/Toast/Toast";
 import Modals from "../components/Modals/Modals";
 import env from "../environment";
+import {
+  DESCRIPTION,
+  getBaseUrl,
+  SOCIAL_CARD_URL,
+  TITLE,
+  TWITTER_USERNAME,
+} from "../environment/vars";
 import { chains, client, createRainbowAuthAdapter } from "../services/wagmi";
 import AppStore from "../store/App.store";
 import "../styles/globals.css";
@@ -39,22 +47,34 @@ const logIt = () => {
 
 const App = observer(({ Component, pageProps }: AppProps) => {
   const router = useRouter();
-  const theme = lightTheme({
+  useEffect(() => {
+    // @next -- generalize this behavior
+    if (router.query?.showSettingsModal) {
+      AppStore.modals.isSettingsModalOpen = true;
+    }
+  }, [router.query]);
+  const lightRainbowTheme = lightTheme({
     borderRadius: "none",
     fontStack: "system",
-    accentColor: colors.gray[500],
+    accentColor: colors.red[800],
   });
-  theme.colors.closeButtonBackground = colors.slate[100];
-  theme.colors.modalBackground = colors.slate[100];
-  theme.colors.actionButtonBorder = colors.slate[100];
-  theme.colors.actionButtonBorder = "transparent";
+  const darkRainbowTheme = darkTheme({
+    borderRadius: "none",
+    fontStack: "system",
+    accentColor: colors.red[800],
+  });
+  lightRainbowTheme.colors.closeButtonBackground = colors.slate[100];
+  lightRainbowTheme.colors.modalBackground = colors.slate[100];
+  lightRainbowTheme.colors.actionButtonBorder = colors.slate[100];
+  lightRainbowTheme.colors.actionButtonBorder = "transparent";
+  lightRainbowTheme.fonts.body = "arial, helvetica, clean, sans-serif";
+  useEffect(logIt, []);
   useEffect(() => {
     AppStore.init();
     return () => {
       AppStore.destroy();
     };
   }, []);
-  useEffect(logIt, []);
   useEffect(() => {
     const handleRouteStart = () => NProgress.start();
     const handleRouteDone = () => NProgress.done();
@@ -70,26 +90,21 @@ const App = observer(({ Component, pageProps }: AppProps) => {
       router.events.off("routeChangeError", handleRouteDone);
     };
   }, []);
-  const description = "Run competitions, create memes, win prizes";
-  const title = "wanwan";
-  const url = "https://wanwan.me";
-  const twitterUsername = "@ownthedoge";
-  const socialCardUrl = "https://wanwan.me/images/twitter-card.png";
   return (
     <>
       <Head>
         <title>{env.app.name}</title>
-        <meta name="description" content={description} key="desc" />
-        <meta property="og:site_name" content={title} />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-        <meta property="og:image" content={socialCardUrl} />
-        <meta property="og:url" content={url} />
-        <meta name="twitter:title" content={title} />
-        <meta name="twitter:description" content={description} />
-        <meta name="twitter:image" content={socialCardUrl} />
+        <meta name="description" content={DESCRIPTION} key="desc" />
+        <meta property="og:site_name" content={TITLE} />
+        <meta property="og:title" content={TITLE} />
+        <meta property="og:description" content={DESCRIPTION} />
+        <meta property="og:image" content={SOCIAL_CARD_URL} />
+        <meta property="og:url" content={getBaseUrl()} />
+        <meta name="twitter:title" content={TITLE} />
+        <meta name="twitter:description" content={DESCRIPTION} />
+        <meta name="twitter:image" content={SOCIAL_CARD_URL} />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:site" content={twitterUsername} />
+        <meta name="twitter:site" content={TWITTER_USERNAME} />
       </Head>
       <WagmiConfig client={client}>
         <RainbowKitAuthenticationProvider
@@ -104,7 +119,11 @@ const App = observer(({ Component, pageProps }: AppProps) => {
               appName: env.app.name,
             }}
             chains={chains}
-            theme={theme}
+            theme={
+              AppStore.settings.colorMode === "dark"
+                ? darkRainbowTheme
+                : lightRainbowTheme
+            }
           >
             <Component {...pageProps} />
             <Modals />
@@ -128,25 +147,22 @@ const WagmiAccountSwitchWatcher = observer(() => {
   useEffect(() => {
     if (
       AppStore.auth.address !== undefined &&
-      AppStore.auth.address !== address
+      AppStore.auth.address !== address &&
+      AppStore.auth.hasLoggedIn
     ) {
       AppStore.auth.onAccountSwitch();
     }
   }, [address, disconnect]);
 
-  // useEffect(() => {
-  //   console.log("DEBUG:: ADDRESS", address);
-  //   if (address) {
-  //     AppStore.auth.getStatus({
-  //       onUnauthed: () => {
-  //         disconnect();
-  //       },
-  //       onAuthed: () => {
-  //         AppStore.auth.address = address;
-  //       },
-  //     });
-  //   }
-  // }, []);
+  useEffect(() => {
+    if (
+      AppStore.auth.status === "authenticated" &&
+      !AppStore.auth.hasLoggedIn &&
+      address
+    ) {
+      AppStore.auth.onLoginSuccess(address);
+    }
+  }, [address, AppStore.auth.hasLoggedIn, AppStore.auth.status]);
   return <></>;
 });
 

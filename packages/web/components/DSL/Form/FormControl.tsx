@@ -75,15 +75,17 @@ export const FormLabel: React.FC<PropsWithChildren<FormLabelProps>> = ({
 }) => {
   return (
     <div
-      className={css("text-xs", "text-black", "dark:text-white", {
+      className={css("text-black", "dark:text-white", {
         [css("text-neutral-500")]: isDisabled,
         [errorTextCss]: isInvalid,
         flex: isRequired,
         "mb-0.5": mb,
       })}
     >
-      {isRequired && "*"}
-      <Text size={TextSize.sm}>{children}</Text>
+      <Text size={TextSize.sm}>
+        {isRequired && "*"}
+        {children}
+      </Text>
     </div>
   );
 };

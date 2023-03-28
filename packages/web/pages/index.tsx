@@ -3,6 +3,7 @@ import { observer } from "mobx-react-lite";
 import { GetServerSideProps } from "next";
 import Head from "next/head";
 import { PropsWithChildren, useEffect, useMemo } from "react";
+import ActivePill from "../components/ActivePill/ActivePill";
 import AspectRatio from "../components/DSL/AspectRatio/AspectRatio";
 import AsyncGrid from "../components/DSL/AsyncGrid/AsyncGrid";
 import Link, { LinkType } from "../components/DSL/Link/Link";
@@ -60,7 +61,10 @@ const Home: React.FC<HomeProps> = observer(
                 noDataLabel={"No competitions found"}
               >
                 {store.competitions.map((comp) => (
-                  <div key={`competition-preview-${comp.id}`}>
+                  <div
+                    key={`competition-preview-${comp.id}`}
+                    className={css("relative")}
+                  >
                     <PreviewLink
                       name={comp.name}
                       link={`/competition/${comp.id}`}
@@ -82,7 +86,20 @@ const Home: React.FC<HomeProps> = observer(
                             ? { backgroundImage: `url(${comp.media.url})` }
                             : {}
                         }
-                      />
+                      >
+                        {comp.isActive && (
+                          <div
+                            className={css(
+                              "flex",
+                              "items-end",
+                              "justify-end",
+                              "p-1"
+                            )}
+                          >
+                            <ActivePill />
+                          </div>
+                        )}
+                      </AspectRatio>
                     </PreviewLink>
                   </div>
                 ))}
@@ -105,7 +122,7 @@ const Home: React.FC<HomeProps> = observer(
               >
                 {store.memes.map((meme) => (
                   <div key={`meme-preview-${meme.id}`}>
-                    <PreviewLink name={meme.name} link={`/meme/${meme.id}`}>
+                    <PreviewLink link={`/meme/${meme.id}`}>
                       <AspectRatio
                         className={css(
                           "bg-cover",

@@ -1,4 +1,4 @@
-import { Prisma, User } from '@prisma/client';
+import { Media, Meme, Prisma, User } from '@prisma/client';
 
 export interface AuthenticatedRequest extends Request {
   user: User;
@@ -20,10 +20,20 @@ export type CompetitionWithDefaultInclude = Prisma.CompetitionGetPayload<{
 export type MemeWithDefaultInclude = Prisma.MemeGetPayload<{
   include: { media: true; user: true };
 }>;
-export interface UserWithEns extends User {
-  ens: string;
-}
 
 export type CommentWithDefaultInclude = Prisma.CommentGetPayload<{
   include: { user: true };
 }>;
+
+export interface MediaWithExtras extends Media {
+  url: string;
+}
+
+export interface UserWithExtras extends User {
+  ens: string | null;
+}
+
+export interface MemeWithExtras extends Meme {
+  media: MediaWithExtras;
+  user: UserWithExtras;
+}

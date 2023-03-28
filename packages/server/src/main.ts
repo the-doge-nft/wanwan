@@ -24,7 +24,11 @@ async function bootstrap() {
   app.useGlobalPipes(getValidationPipe());
 
   const corsConfig: CorsOptions = {
-    origin: ['http://localhost:3001', 'https://test.wanwan.me'],
+    origin: [
+      'http://127.0.0.1:3001',
+      'http://localhost:3001',
+      'https://test.wanwan.me',
+    ],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     preflightContinue: false,
     credentials: true,

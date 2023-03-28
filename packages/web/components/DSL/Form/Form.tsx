@@ -26,6 +26,7 @@ const Form: React.FC<PropsWithChildren<FormProps>> = ({
 
   return (
     <FinalForm
+      resetOnSubmitSucceed
       destroyOnUnregister
       onSubmit={(data, form) => apiErrorMiddleware(data, form)}
       render={({ handleSubmit, values, errors, submitError, submitErrors }) => {

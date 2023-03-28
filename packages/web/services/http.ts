@@ -8,6 +8,7 @@ import {
   CompetitionMeme,
   MediaRequirements,
   Meme,
+  Profile,
   ProfileDto,
   Reward,
   SearchParams,
@@ -20,9 +21,9 @@ import ApiErrorInterceptor from "./interceptors/api-error.interceptor";
 
 class _Http {
   http: AxiosInstance;
-  constructor() {
+  constructor(private readonly baseURL: string) {
     this.http = axios.create({
-      baseURL: env.api.baseUrl,
+      baseURL,
       withCredentials: true,
     });
     this.http.interceptors.response.use((res) => res, ApiErrorInterceptor);
@@ -129,6 +130,18 @@ class _Http {
     return this.http.get<Comment[]>(`/meme/${memeId}/comment`);
   }
 
+  deleteTwitterUsername() {
+    return this.http.post<Profile>("/twitter/delete");
+  }
+
+  postTwitterAuth(body: { oauth_token: string; oauth_verifier: string }) {
+    return this.http.post<Profile>("/twitter/callback", body);
+  }
+
+  getTwitterLoginUrl() {
+    return this.baseURL + "/twitter/login";
+  }
+
   postComment({
     memeId,
     body,
@@ -175,7 +188,11 @@ class _Http {
       { memeId }
     );
   }
+
+  static create() {
+    return new this(env.api.baseUrl);
+  }
 }
 
-const Http = new _Http();
+const Http = _Http.create();
 export default Http;

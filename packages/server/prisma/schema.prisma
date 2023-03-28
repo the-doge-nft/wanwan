@@ -33,19 +33,20 @@ model User {
 }
 
 model Meme {
-  id          Int          @id @default(autoincrement())
-  name        String?
-  description String?
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @default(now())
-  deletedAt   DateTime?
-  createdById Int
-  user        User         @relation(fields: [createdById], references: [id])
-  mediaId     Int          @unique
-  media       Media        @relation(fields: [mediaId], references: [id])
-  submissions Submission[]
-  votes       Vote[]
-  comments    Comment[]
+  id               Int                @id @default(autoincrement())
+  name             String?
+  description      String?
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @default(now())
+  deletedAt        DateTime?
+  createdById      Int
+  user             User               @relation(fields: [createdById], references: [id])
+  mediaId          Int                @unique
+  media            Media              @relation(fields: [mediaId], references: [id])
+  submissions      Submission[]
+  votes            Vote[]
+  comments         Comment[]
+  SocialMemeShares SocialMemeShares[]
 }
 
 model Competition {
@@ -163,4 +164,17 @@ model Currency {
   symbol          String?
   name            String?
   Reward          Reward[]
+}
+
+enum SocialPlatform {
+  Twitter
+  Reddit
+}
+
+model SocialMemeShares {
+  id        Int            @id @default(autoincrement())
+  platform  SocialPlatform
+  memeId    Int
+  meme      Meme           @relation(fields: [memeId], references: [id])
+  createdAt DateTime       @default(now())
 }
