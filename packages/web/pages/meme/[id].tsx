@@ -105,7 +105,7 @@ const MemeById = observer(({ meme }: MemeByIdProps) => {
               "w-full"
             )}
           >
-            <div className={css("md:col-span-10", "flex", "flex-col")}>
+            <div className={css("md:col-span-8", "flex", "flex-col")}>
               {meme.name && <Text bold>{meme.name}</Text>}
               {meme.description && (
                 <Text size={TextSize.sm}>{meme.description}</Text>
@@ -113,7 +113,7 @@ const MemeById = observer(({ meme }: MemeByIdProps) => {
             </div>
             <div
               className={css(
-                "md:col-span-2",
+                "md:col-span-4",
                 "flex",
                 "justify-end",
                 "items-end",
