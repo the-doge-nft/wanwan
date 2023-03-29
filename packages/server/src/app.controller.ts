@@ -10,6 +10,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AppService } from './app.service';
+import { AdminGuard, ADMIN_ADDRESSES } from './auth/admin.guard';
 import { AuthGuard } from './auth/auth.guard';
 import { CompetitionService } from './competition/competition.service';
 import ProfileDto from './dto/profile.dto';
@@ -127,5 +128,17 @@ export class AppController {
   @Get('stats')
   getStats() {
     return this.stats.get();
+  }
+
+  @UseGuards(AdminGuard)
+  @Get('/admin/tweet')
+  async adminTweet() {
+    return this.app.tweetMeme();
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('/admin/isAdmin')
+  getIsAdmin(@Req() { user }: AuthenticatedRequest) {
+    return ADMIN_ADDRESSES.includes(user.address);
   }
 }

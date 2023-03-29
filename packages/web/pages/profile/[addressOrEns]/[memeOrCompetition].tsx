@@ -159,7 +159,7 @@ const ProfilePage: React.FC<ProfileProps> = observer(({ profile }) => {
             {store.view === ProfileView.Meme &&
               store.memes.map((meme) => (
                 <div key={`meme-preview-${meme.id}`}>
-                  <PreviewLink name={meme.name} link={`/meme/${meme.id}`}>
+                  <PreviewLink name={meme.name} href={`/meme/${meme.id}`}>
                     <AspectRatio
                       className={css(
                         "bg-cover",
@@ -178,7 +178,7 @@ const ProfilePage: React.FC<ProfileProps> = observer(({ profile }) => {
                 <div key={`comp-preview-${comp.id}`}>
                   <PreviewLink
                     name={comp.name}
-                    link={`/competition/${comp.id}`}
+                    href={`/competition/${comp.id}`}
                   >
                     <AspectRatio
                       className={css(

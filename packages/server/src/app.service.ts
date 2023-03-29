@@ -2,8 +2,11 @@ import { HttpService } from '@nestjs/axios';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import { SocialPlatform } from '@prisma/client';
+import { InjectSentry, SentryService } from '@travelerdev/nestjs-sentry';
 import { lookup } from 'mime-types';
 import { EthersService } from './ethers/ethers.service';
+import { abbreviate } from './helpers/strings';
 import { MemeService } from './meme/meme.service';
 import { PrismaService } from './prisma.service';
 import { TwitterService } from './twitter/twitter.service';
@@ -18,12 +21,12 @@ export class AppService {
     private readonly twitter: TwitterService,
     private readonly http: HttpService,
     private readonly config: ConfigService,
+    @InjectSentry() private readonly sentryClient: SentryService,
   ) {}
 
   onModuleInit() {
     this.logger.log('app service init');
     this.cacheEnsNames();
-    this.tweetMeme();
   }
 
   getIndex(): string {
@@ -42,7 +45,7 @@ export class AppService {
     return addresses;
   }
 
-  @Cron(CronExpression.EVERY_HOUR)
+  @Cron(CronExpression.EVERY_3_HOURS)
   async tweetMeme() {
     const memeSharedIds = await this.prisma.socialMemeShares.findMany({
       select: { memeId: true },
@@ -54,7 +57,11 @@ export class AppService {
       take: 1,
     });
 
-    this.logger.log('testing out creating tweet');
+    if (!meme) {
+      this.logger.log('No memes found to tweet');
+      return;
+    }
+
     try {
       const url = meme.media.url;
       const extension = url.split('.').pop();
@@ -63,31 +70,36 @@ export class AppService {
         responseType: 'arraybuffer',
       });
 
-      // const mediaId = await this.twitter.uploadMedia(response.data, {
-      //   mimeType,
-      // });
-      // console.log('media::', mediaId);
+      const mediaId = await this.twitter.uploadMedia(response.data, {
+        mimeType,
+      });
 
-      // const tweet = await this.twitter.tweet({
-      //   text: 'wow this is another cool meme',
-      //   media: {
-      //     media_ids: [mediaId],
-      //   },
-      // });
-      // console.log('tweet::', tweet);
+      const tweet = await this.twitter.tweet({
+        media: {
+          media_ids: [mediaId],
+        },
+      });
 
-      // const replyText = `created by ${
-      //   meme.user.ens ? meme.user.ens : meme.user.address
-      // } on ${this.config.get('baseUrl')}/meme/${meme.id}`;
-      // const reply = await this.twitter.reply(replyText, tweet.data.id);
-      // console.log('reply::', reply);
+      let displayName = abbreviate(meme.user.address);
+      if (meme.user.twitterUsername) {
+        displayName = `@${meme.user.twitterUsername}`;
+      } else if (meme.user.ens) {
+        displayName = meme.user.ens;
+      }
 
-      // await this.prisma.socialMemeShares.create({
-      //   data: { memeId: meme.id, platform: SocialPlatform.Twitter },
-      // });
+      const replyText = `created by ${displayName} | @wanwan link: ${this.config.get(
+        'baseUrl',
+      )}/meme/${meme.id}`;
+      const reply = await this.twitter.reply(replyText, tweet.data.id);
+      await this.prisma.socialMemeShares.create({
+        data: { memeId: meme.id, platform: SocialPlatform.Twitter },
+      });
+
+      this.logger.log(`tweetd meme: ${meme.id}`);
+      return { meme, tweet, reply };
     } catch (e) {
-      console.log(e);
       this.logger.error(e);
+      this.sentryClient.instance().captureException(e);
     }
   }
 

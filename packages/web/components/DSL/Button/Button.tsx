@@ -276,6 +276,22 @@ export const ConnectDropdown = observer(
             <Text type={TextType.NoColor}>Settings</Text>
           </span>
         </DropdownItem>
+        {AppStore.auth.isAdmin && (
+          <DropdownItem>
+            <span
+              onClick={() => {
+                AppStore.modals.isAdminModalOpen = true;
+              }}
+              className={css(
+                "text-red-800",
+                "hover:underline",
+                "cursor-pointer"
+              )}
+            >
+              <Text type={TextType.NoColor}>Admin</Text>
+            </span>
+          </DropdownItem>
+        )}
         {AppStore.auth.isAuthed && (
           <div className={css("mt-4", "mb-2")}>
             <DropdownItem className={css("mt-2")}>

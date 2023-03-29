@@ -26,7 +26,7 @@ const CompetitionUserSubmissions: React.FC<{ store: CompetitionIdStore }> = ({
               key={`meme-preview-${meme.id}`}
               className={css("relative", "group")}
             >
-              <PreviewLink link={`/meme/${meme.id}`}>
+              <PreviewLink href={`/meme/${meme.id}`}>
                 <AspectRatio
                   className={css(
                     "bg-cover",

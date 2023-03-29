@@ -5,20 +5,22 @@ import Text, { TextSize, TextType } from "../DSL/Text/Text";
 import { borderColorCss } from "../DSL/Theme";
 
 interface PreviewLinkProps {
-  link: string;
+  href: string;
   name?: string | null;
   description?: string | null;
+  isExternal?: boolean;
 }
 
 const PreviewLink: React.FC<PropsWithChildren<PreviewLinkProps>> = ({
-  link,
+  href: link,
   name,
   description,
   children,
+  isExternal,
 }) => {
   return (
     <div className={css("group")}>
-      <Link href={link} className={css("w-full")}>
+      <Link isExternal={isExternal} href={link} className={css("w-full")}>
         <div
           className={css(
             "max-w-full",
@@ -27,7 +29,8 @@ const PreviewLink: React.FC<PropsWithChildren<PreviewLinkProps>> = ({
             "h-[115px]",
             "overflow-y-hidden",
             borderColorCss,
-            "group-hover:border-red-800"
+            "group-hover:border-red-800",
+            "grow"
           )}
         >
           {children}

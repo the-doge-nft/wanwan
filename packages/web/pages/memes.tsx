@@ -36,7 +36,7 @@ const Memes = observer(({ memes, params, next }: MemesPageProps) => {
           <AsyncGrid isLoading={false} data={store.data}>
             {store.data.map((meme) => (
               <div key={`meme-preview-${meme.id}`}>
-                <PreviewLink link={`/meme/${meme.id}`}>
+                <PreviewLink href={`/meme/${meme.id}`}>
                   <AspectRatio
                     className={css(
                       "bg-cover",

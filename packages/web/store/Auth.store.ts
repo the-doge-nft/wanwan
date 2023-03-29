@@ -25,6 +25,9 @@ export default class AuthStore extends Reactionable(EmptyClass) {
   @observable
   hasLoggedIn = false;
 
+  @observable
+  isAdmin = false;
+
   constructor() {
     super();
     makeObservable(this);
@@ -49,6 +52,7 @@ export default class AuthStore extends Reactionable(EmptyClass) {
           if (this.address) {
             this.getProfile();
             this.getUserMemes();
+            this.getIsAdmin();
           } else {
             this.profile = null;
             this.memes = [];
@@ -75,6 +79,7 @@ export default class AuthStore extends Reactionable(EmptyClass) {
         this.status = isLoggedIn ? "authenticated" : "unauthenticated";
         if (this.status === "authenticated") {
           onAuthed && onAuthed();
+          this.getIsAdmin();
         } else if (this.status === "unauthenticated") {
           onUnauthed && onUnauthed();
         }
@@ -94,6 +99,15 @@ export default class AuthStore extends Reactionable(EmptyClass) {
       this.profile = data;
       return data;
     });
+  }
+
+  getIsAdmin() {
+    return Http.getIsAdmin()
+      .then(({ data }) => {
+        this.isAdmin = data;
+        return data;
+      })
+      .catch(() => console.error);
   }
 
   getUserMemes() {
@@ -127,6 +141,7 @@ export default class AuthStore extends Reactionable(EmptyClass) {
   onLogoutSuccess() {
     this.address = null;
     this.getStatus();
+    this.getIsAdmin();
     AppStore.events.publish(AppStore.events.events.LOGOUT);
   }
 

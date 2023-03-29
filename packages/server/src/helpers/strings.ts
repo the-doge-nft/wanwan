@@ -11,3 +11,10 @@ export const isValidEthereumAddress = (address: string) => {
 
 export const formatEthereumAddress = (address: string) =>
   ethers.utils.getAddress(address);
+
+export const abbreviate = (input: string, spaces = 4) => {
+  return `${input.substring(0, spaces)}...${input.substring(
+    input.length - spaces,
+    input.length,
+  )}`;
+};

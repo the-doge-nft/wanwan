@@ -15,6 +15,8 @@ import {
   SearchResponse,
   Stats,
   Submission,
+  Tweet,
+  TweetReply,
 } from "../interfaces";
 import AppStore from "../store/App.store";
 import ApiErrorInterceptor from "./interceptors/api-error.interceptor";
@@ -186,6 +188,16 @@ class _Http {
     return this.http.post(
       `/competition/${competitionId}/meme/submissions/curate`,
       { memeId }
+    );
+  }
+
+  getIsAdmin() {
+    return this.http.get("/admin/isAdmin");
+  }
+
+  getAdminTweet() {
+    return this.http.get<{ meme: Meme; tweet: Tweet; reply: TweetReply }>(
+      "/admin/tweet"
     );
   }
 

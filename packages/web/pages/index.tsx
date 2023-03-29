@@ -67,7 +67,7 @@ const Home: React.FC<HomeProps> = observer(
                   >
                     <PreviewLink
                       name={comp.name}
-                      link={`/competition/${comp.id}`}
+                      href={`/competition/${comp.id}`}
                     >
                       <AspectRatio
                         className={css(
@@ -122,7 +122,7 @@ const Home: React.FC<HomeProps> = observer(
               >
                 {store.memes.map((meme) => (
                   <div key={`meme-preview-${meme.id}`}>
-                    <PreviewLink link={`/meme/${meme.id}`}>
+                    <PreviewLink href={`/meme/${meme.id}`}>
                       <AspectRatio
                         className={css(
                           "bg-cover",

@@ -1,5 +1,6 @@
 import { observer } from "mobx-react-lite";
 import AppStore from "../../store/App.store";
+import AdminModal from "./AdminModal";
 import AuthModal from "./AuthModal";
 import CreateCompetitionModal from "./CreateCompetitionModal";
 import CreateMemeModal from "./CreateMemeModal";
@@ -14,6 +15,9 @@ const Modals = observer(() => {
         <CreateCompetitionModal />
       )}
       {AppStore.modals.isSettingsModalOpen && <ProfileSettingsModal />}
+      {AppStore.modals.isAdminModalOpen && AppStore.auth.isAdmin && (
+        <AdminModal />
+      )}
     </>
   );
 });

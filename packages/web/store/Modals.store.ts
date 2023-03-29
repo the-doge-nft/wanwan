@@ -12,6 +12,9 @@ export default class ModalsStore {
   @observable
   isSettingsModalOpen = false;
 
+  @observable
+  isAdminModalOpen = false;
+
   constructor() {
     makeObservable(this);
   }

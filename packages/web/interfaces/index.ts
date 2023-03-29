@@ -162,6 +162,21 @@ export interface Stats {
   totalActiveCompetitions: number;
 }
 
+export interface Tweet {
+  data: {
+    edit_history_tweet_ids: string[];
+    id: string;
+    text: string;
+  };
+}
+export interface TweetReply {
+  data: {
+    edit_history_tweet_ids: string[];
+    id: string;
+    text: string;
+  };
+}
+
 export interface SearchParams {
   count: number;
   offset: number;
