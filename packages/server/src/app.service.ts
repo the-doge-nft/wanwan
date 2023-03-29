@@ -51,7 +51,7 @@ export class AppService {
       select: { memeId: true },
     });
     const meme = await this.meme.findFirst({
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: 'asc' },
       where: { id: { notIn: memeSharedIds.map((share) => share.memeId) } },
       include: { user: true },
       take: 1,
