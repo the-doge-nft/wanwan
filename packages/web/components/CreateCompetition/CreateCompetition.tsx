@@ -1,5 +1,6 @@
 import { observer } from "mobx-react-lite";
 import { css } from "../../helpers/css";
+import { TokenType } from "../../interfaces";
 import AppStore from "../../store/App.store";
 import CreateCompetitionStore, {
   CreateCompetitionView,
@@ -232,7 +233,14 @@ const Rewards: React.FC<CompetitionStoreProp> = observer(({ store }) => {
                       store.onAmountInputChange(amountKey, value)
                     }
                     name={amountKey}
-                    validate={[required, minValue(1)]}
+                    validate={[
+                      required,
+                      minValue(
+                        store.rewardInputTypes[typeKey] === TokenType.ERC20
+                          ? 1e-18
+                          : 1
+                      ),
+                    ]}
                     disabled={store.getIsAmountDisabled(typeKey)}
                   />
                 </div>
