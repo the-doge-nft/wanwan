@@ -139,6 +139,7 @@ export class CompetitionService {
           },
         });
       }
+      // next -- need support for decimals here
       const currencyAmountAtoms =
         type === 'ERC20'
           ? BigNumber.from(reward.currency.amount)

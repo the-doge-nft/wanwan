@@ -42,8 +42,26 @@ const CreateCompetition: React.FC<CompetitionStoreProp> = observer(
 );
 
 const CreateView: React.FC<CompetitionStoreProp> = observer(({ store }) => {
+  // const editor = useEditor({
+  //   // element: document.getElementsByName("test")[0],
+  //   extensions: [Document, Paragraph, TiptapText, Dropcursor, Image],
+  //   content: "<p>Enter a description for your competition</p>",
+  //   editorProps: {
+  //     attributes: {
+  //       class: css(textFieldBaseStyles),
+  //     },
+  //   },
+  // });
+  // const addImage = () => {
+  //   const url = window.prompt("URL");
+  //   if (url) {
+  //     editor?.chain().focus().setImage({ src: url }).run();
+  //   }
+  // };
   return (
     <Form onSubmit={async (values) => store.onCompetitionSubmit(values)}>
+      {/* <EditorContent editor={editor} /> */}
+      {/* <Button onClick={() => addImage()}>add image</Button> */}
       <div className={css("flex", "flex-col", "gap-2")}>
         <TextInput
           block
