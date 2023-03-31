@@ -1,6 +1,6 @@
 import { observer } from "mobx-react-lite";
 import { GetServerSideProps } from "next";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { TfiLayoutGrid2Alt } from "react-icons/tfi";
 import AspectRatio from "../components/DSL/AspectRatio/AspectRatio";
 import AsyncGrid from "../components/DSL/AsyncGrid/AsyncGrid";
@@ -15,17 +15,12 @@ import { Meme, NextString, SearchParams } from "../interfaces";
 import AppLayout from "../layouts/App.layout";
 import Http from "../services/http";
 import redirectTo404 from "../services/redirect/404";
-import MemePageStore from "../store/MemePage.store";
+import MemePageStore, { View } from "../store/MemePage.store";
 
 interface MemesPageProps {
   memes: Meme[];
   params: SearchParams;
   next?: NextString;
-}
-
-enum ViewType {
-  Column = "column",
-  Grid = "grid",
 }
 
 const Memes = observer(({ memes, params, next }: MemesPageProps) => {
@@ -34,7 +29,6 @@ const Memes = observer(({ memes, params, next }: MemesPageProps) => {
     [memes, params, next]
   );
 
-  const [view, setView] = useState<ViewType>(ViewType.Grid);
   const renderColumnView = () => {
     return (
       <div className={css("flex", "flex-col", "gap-2")}>
@@ -120,22 +114,23 @@ const Memes = observer(({ memes, params, next }: MemesPageProps) => {
           <div className={css("flex", "items-center", "gap-2")}>
             <div
               className={css("cursor-pointer")}
-              onClick={() => setView(ViewType.Column)}
+              onClick={() => (store.view = View.Column)}
             >
               <AspectRatio
                 ratio={"1/1.5"}
                 className={css("w-[12px]", {
-                  "bg-slate-700 dark:bg-slate-400": view === ViewType.Column,
-                  "bg-slate-400 dark:bg-slate-700": view === ViewType.Grid,
+                  "bg-slate-700 dark:bg-slate-400": store.view === View.Column,
+                  "bg-slate-400 dark:bg-slate-700": store.view === View.Grid,
                 })}
               />
             </div>
             <div
               className={css("cursor-pointer", {
-                "text-slate-700 dark:text-slate-400": view === ViewType.Grid,
-                "text-slate-400 dark:text-slate-700": view === ViewType.Column,
+                "text-slate-700 dark:text-slate-400": store.view === View.Grid,
+                "text-slate-400 dark:text-slate-700":
+                  store.view === View.Column,
               })}
-              onClick={() => setView(ViewType.Grid)}
+              onClick={() => (store.view = View.Grid)}
             >
               <TfiLayoutGrid2Alt size={18} />
             </div>
@@ -148,8 +143,8 @@ const Memes = observer(({ memes, params, next }: MemesPageProps) => {
           hasMore={store.hasMore}
           endDataMessage={`All memes shown (${store.dataLength})`}
         >
-          {view === ViewType.Column && renderColumnView()}
-          {view === ViewType.Grid && renderGridView()}
+          {store.view === View.Column && renderColumnView()}
+          {store.view === View.Grid && renderGridView()}
         </InfiniteScroll>
       </Pane>
     </AppLayout>
