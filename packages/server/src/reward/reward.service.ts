@@ -28,6 +28,7 @@ export class RewardService {
     return (await Promise.all(promises)).every((isValid) => !!isValid);
   }
 
+  // next -- need support for decimals here
   private async getIsERC20RewardValid(
     address: string,
     reward: RewardsDto,
