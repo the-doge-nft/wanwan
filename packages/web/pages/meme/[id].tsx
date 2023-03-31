@@ -10,13 +10,8 @@ import { GetServerSideProps } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
-import { BsDot } from "react-icons/bs";
-import {
-  RedditIcon,
-  RedditShareButton,
-  TwitterIcon,
-  TwitterShareButton,
-} from "react-share";
+import { BsDot, BsReddit, BsTwitter } from "react-icons/bs";
+import { RedditShareButton, TwitterShareButton } from "react-share";
 import AspectRatio from "../../components/DSL/AspectRatio/AspectRatio";
 import Button, { Submit } from "../../components/DSL/Button/Button";
 import Form from "../../components/DSL/Form/Form";
@@ -26,9 +21,9 @@ import Text, { TextSize, TextType } from "../../components/DSL/Text/Text";
 import env from "../../environment";
 import {
   DESCRIPTION,
-  getBaseUrl,
   TITLE,
   TWITTER_USERNAME,
+  getBaseUrl,
 } from "../../environment/vars";
 import { css } from "../../helpers/css";
 import { abbreviate } from "../../helpers/strings";
@@ -127,20 +122,24 @@ const MemeById = observer(({ meme }: MemeByIdProps) => {
                     : abbreviate(meme.user.address)}
                 </Text>
               </Link>
-              <div className={css("flex", "items-center", "gap-0.5")}>
+              <div className={css("flex", "items-center", "gap-1", "mt-0.5")}>
                 <TwitterShareButton
                   url={url}
                   title={title}
                   className={css("mt-0.5")}
                 >
-                  <TwitterIcon round size={18} />
+                  <Text type={TextType.Grey}>
+                    <BsTwitter size={16} />
+                  </Text>
                 </TwitterShareButton>
                 <RedditShareButton
                   url={url}
                   title={title}
                   className={css("mt-0.5")}
                 >
-                  <RedditIcon round size={18} />
+                  <Text type={TextType.Grey}>
+                    <BsReddit size={16} />
+                  </Text>
                 </RedditShareButton>
               </div>
             </div>
