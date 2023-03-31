@@ -1,12 +1,8 @@
 import { add } from "date-fns";
-import { zonedTimeToUtc } from "date-fns-tz";
 import { action, computed, makeObservable, observable } from "mobx";
 import { dateToDateTimeLocalInput } from "../components/DSL/Form/DateInput";
 import { SelectItem } from "../components/DSL/Select/Select";
-import { getTimezone } from "../helpers/dates";
-import { formatEthereumAddress } from "../helpers/strings";
 import { RewardBody, TokenType } from "../interfaces";
-import Http from "../services/http";
 import { Navigable } from "../services/mixins/navigable";
 import { EmptyClass } from "./../services/mixins/index";
 
@@ -49,38 +45,39 @@ export default class CreateCompetitionStore extends Navigable(EmptyClass) {
   }
 
   onCompetitionSubmit(values: any) {
-    this.isLoading = true;
-    const formValues = { ...values };
-    const curators: string[] = [];
-    const body: { [key: string]: any } = {};
-    for (const [key, value] of Object.entries(formValues)) {
-      if (key.startsWith(this.CREATOR_INPUT_PREFIX)) {
-        const formattedAddress = formatEthereumAddress(value as string);
-        if (!curators.includes(formattedAddress)) {
-          curators.push(formatEthereumAddress(value as string));
-        }
-      }
-    }
-    body.name = values.name.trim();
-    body.description =
-      values.description !== "" ? values.description.trim() : null;
+    console.log("debug:: values", values);
+    // this.isLoading = true;
+    // const formValues = { ...values };
+    // const curators: string[] = [];
+    // const body: { [key: string]: any } = {};
+    // for (const [key, value] of Object.entries(formValues)) {
+    //   if (key.startsWith(this.CREATOR_INPUT_PREFIX)) {
+    //     const formattedAddress = formatEthereumAddress(value as string);
+    //     if (!curators.includes(formattedAddress)) {
+    //       curators.push(formatEthereumAddress(value as string));
+    //     }
+    //   }
+    // }
+    // body.name = values.name.trim();
+    // body.description =
+    //   values.description !== "" ? values.description.trim() : null;
 
-    body.endsAt = zonedTimeToUtc(values.endsAt, getTimezone());
+    // body.endsAt = zonedTimeToUtc(values.endsAt, getTimezone());
 
-    body.maxUserSubmissions = parseInt(values.maxUserSubmissions);
-    body.curators = curators;
+    // body.maxUserSubmissions = parseInt(values.maxUserSubmissions);
+    // body.curators = curators;
 
-    const rewards = this.getRewardItems(values);
-    body.rewards = rewards;
-    return Http.postCompetition(body)
-      .then(() => {
-        this.isLoading = false;
-        this.currentView = CreateCompetitionView.Success;
-      })
-      .catch((e) => {
-        this.isLoading = false;
-        throw e;
-      });
+    // const rewards = this.getRewardItems(values);
+    // body.rewards = rewards;
+    // return Http.postCompetition(body)
+    //   .then(() => {
+    //     this.isLoading = false;
+    //     this.currentView = CreateCompetitionView.Success;
+    //   })
+    //   .catch((e) => {
+    //     this.isLoading = false;
+    //     throw e;
+    //   });
   }
 
   @computed
