@@ -1,9 +1,3 @@
-import Document from "@tiptap/extension-document";
-import Dropcursor from "@tiptap/extension-dropcursor";
-import Image from "@tiptap/extension-image";
-import Paragraph from "@tiptap/extension-paragraph";
-import TiptapText from "@tiptap/extension-text";
-import { EditorContent, useEditor } from "@tiptap/react";
 import { observer } from "mobx-react-lite";
 import { css } from "../../helpers/css";
 import { TokenType } from "../../interfaces";
@@ -28,7 +22,6 @@ import {
   minValue,
   required,
 } from "../DSL/Form/validation";
-import { textFieldBaseStyles } from "../DSL/Input/Input";
 import Text, { TextSize } from "../DSL/Text/Text";
 
 interface CompetitionStoreProp {
@@ -49,28 +42,26 @@ const CreateCompetition: React.FC<CompetitionStoreProp> = observer(
 );
 
 const CreateView: React.FC<CompetitionStoreProp> = observer(({ store }) => {
-  const editor = useEditor({
-    // element: document.getElementsByName("test")[0],
-    extensions: [Document, Paragraph, TiptapText, Dropcursor, Image],
-    content: "<p>Enter a description for your competition</p>",
-    editorProps: {
-      attributes: {
-        class: css(textFieldBaseStyles),
-      },
-    },
-  });
-  const addImage = () => {
-    const url = window.prompt("URL");
-    if (url) {
-      editor?.chain().focus().setImage({ src: url }).run();
-    }
-  };
+  // const editor = useEditor({
+  //   // element: document.getElementsByName("test")[0],
+  //   extensions: [Document, Paragraph, TiptapText, Dropcursor, Image],
+  //   content: "<p>Enter a description for your competition</p>",
+  //   editorProps: {
+  //     attributes: {
+  //       class: css(textFieldBaseStyles),
+  //     },
+  //   },
+  // });
+  // const addImage = () => {
+  //   const url = window.prompt("URL");
+  //   if (url) {
+  //     editor?.chain().focus().setImage({ src: url }).run();
+  //   }
+  // };
   return (
     <Form onSubmit={async (values) => store.onCompetitionSubmit(values)}>
-      {/* <TextInput type={"textarea"} name={"test"} /> */}
-      {/* <input name={"test"} id={"test"} /> */}
-      <EditorContent editor={editor} />
-      <Button onClick={() => addImage()}>add image</Button>
+      {/* <EditorContent editor={editor} /> */}
+      {/* <Button onClick={() => addImage()}>add image</Button> */}
       <div className={css("flex", "flex-col", "gap-2")}>
         <TextInput
           block
