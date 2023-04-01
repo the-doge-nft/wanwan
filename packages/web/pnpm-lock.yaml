@@ -13,6 +13,7 @@ specifiers:
   '@tiptap/extension-image': ^2.0.1
   '@tiptap/extension-italic': ^2.0.1
   '@tiptap/extension-paragraph': ^2.0.1
+  '@tiptap/extension-placeholder': ^2.0.1
   '@tiptap/extension-text': ^2.0.1
   '@tiptap/pm': ^2.0.1
   '@tiptap/react': ^2.0.1
@@ -67,6 +68,7 @@ dependencies:
   '@tiptap/extension-image': 2.0.1
   '@tiptap/extension-italic': 2.0.1
   '@tiptap/extension-paragraph': 2.0.1
+  '@tiptap/extension-placeholder': 2.0.1_@tiptap+pm@2.0.1
   '@tiptap/extension-text': 2.0.1
   '@tiptap/pm': 2.0.1
   '@tiptap/react': 2.0.1_w5c62p5hv7o7l6danvacw76wwa
@@ -2175,6 +2177,15 @@ packages:
       '@tiptap/core': ^2.0.0
     dependencies:
       '@tiptap/core': 2.0.1_@tiptap+pm@2.0.1
+    dev: false
+
+  /@tiptap/extension-placeholder/2.0.1_@tiptap+pm@2.0.1:
+    resolution: {integrity: sha512-Jc0SrZw6HQ6Ddxr58SAAw5QPYh2pgjc1OSfrKn7+zBzcZDMFLWWgx9lTRwlR5L5VqTEuWqatJCfDrgjbnE4hLw==}
+    peerDependencies:
+      '@tiptap/core': ^2.0.0
+      '@tiptap/pm': ^2.0.0
+    dependencies:
+      '@tiptap/pm': 2.0.1
     dev: false
 
   /@tiptap/extension-strike/2.0.1_@tiptap+core@2.0.1:

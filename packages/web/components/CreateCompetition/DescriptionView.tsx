@@ -5,6 +5,7 @@ import Document from "@tiptap/extension-document";
 import Dropcursor from "@tiptap/extension-dropcursor";
 import Image from "@tiptap/extension-image";
 import Paragraph from "@tiptap/extension-paragraph";
+import Placeholder from "@tiptap/extension-placeholder";
 import TiptapText from "@tiptap/extension-text";
 import { Editor, EditorContent, useEditor } from "@tiptap/react";
 import { observer } from "mobx-react-lite";
@@ -27,6 +28,9 @@ const DescriptionView = observer(({ store }: CompetitionStoreProp) => {
       TiptapText,
       Dropcursor,
       Image,
+      Placeholder.configure({
+        placeholder: "Describe your competition",
+      }),
       Italic.configure({
         HTMLAttributes: {
           class: "italic",
@@ -38,7 +42,7 @@ const DescriptionView = observer(({ store }: CompetitionStoreProp) => {
         },
       }),
     ],
-    content: "<p>Enter a description for your competition</p>",
+    // content: "<p>Enter a description for your competition</p>",
     editorProps: {
       attributes: {
         class: css(textFieldBaseStyles),
@@ -151,7 +155,7 @@ const ToolbarItem = ({
 }) => {
   return (
     <span
-      className={css("cursor-pointer", "p-0.5", "rounded-sm", {
+      className={css("cursor-pointer", "p-0.5", "rounded-xs", {
         "bg-neutral-400": editor?.isActive(isActiveName),
       })}
       onClick={() => onClick()}
