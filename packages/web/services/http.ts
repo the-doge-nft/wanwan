@@ -6,6 +6,7 @@ import {
   Comment,
   Competition,
   CompetitionMeme,
+  Media,
   MediaRequirements,
   Meme,
   Profile,
@@ -63,6 +64,10 @@ class _Http {
       AppStore.events.publish(AppStore.events.events.COMPETITION_CREATED);
       return res;
     });
+  }
+
+  postMedia(formData: FormData) {
+    return this.http.post<Media>("/media", formData);
   }
 
   postSubmission({

@@ -29,6 +29,7 @@ const FormDemo = () => {
                   label={"<text>"}
                 />
                 <NumberInput
+                  description="test this out!"
                   validate={required}
                   name={"number"}
                   label={"<number>"}

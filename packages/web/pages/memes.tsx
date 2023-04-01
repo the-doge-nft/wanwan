@@ -117,8 +117,8 @@ const Memes = observer(({ memes, params, next }: MemesPageProps) => {
               onClick={() => (store.view = View.Column)}
             >
               <AspectRatio
-                ratio={"1/1.5"}
-                className={css("w-[12px]", {
+                ratio={"1/1.1"}
+                className={css("w-[16px]", {
                   "bg-slate-700 dark:bg-slate-400": store.view === View.Column,
                   "bg-slate-400 dark:bg-slate-700": store.view === View.Grid,
                 })}

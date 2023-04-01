@@ -7,9 +7,11 @@ specifiers:
   '@radix-ui/react-select': ^1.1.2
   '@rainbow-me/rainbowkit': ^0.11.0
   '@rainbow-me/rainbowkit-siwe-next-auth': ^0.1.8
+  '@tiptap/extension-bold': ^2.0.1
   '@tiptap/extension-document': ^2.0.1
   '@tiptap/extension-dropcursor': ^2.0.1
   '@tiptap/extension-image': ^2.0.1
+  '@tiptap/extension-italic': ^2.0.1
   '@tiptap/extension-paragraph': ^2.0.1
   '@tiptap/extension-text': ^2.0.1
   '@tiptap/pm': ^2.0.1
@@ -59,9 +61,11 @@ dependencies:
   '@radix-ui/react-select': 1.1.2_2zx2umvpluuhvlq44va5bta2da
   '@rainbow-me/rainbowkit': 0.11.1_nmd6q5n4mqwihct5375q5coe3e
   '@rainbow-me/rainbowkit-siwe-next-auth': 0.1.8_t64sqjnpjohiiwewbwfu546pxe
+  '@tiptap/extension-bold': 2.0.1
   '@tiptap/extension-document': 2.0.1
   '@tiptap/extension-dropcursor': 2.0.1_@tiptap+pm@2.0.1
   '@tiptap/extension-image': 2.0.1
+  '@tiptap/extension-italic': 2.0.1
   '@tiptap/extension-paragraph': 2.0.1
   '@tiptap/extension-text': 2.0.1
   '@tiptap/pm': 2.0.1
@@ -1984,6 +1988,12 @@ packages:
       '@tiptap/core': 2.0.1_@tiptap+pm@2.0.1
     dev: false
 
+  /@tiptap/extension-bold/2.0.1:
+    resolution: {integrity: sha512-SYzs0e3FcAmJbYQkQ+LLRnoBNrFvG0i2zc+lFbrSYVCiEpqb5QPz5mgmQvnrH/Sl89WewnoeMu7pLqVEpfAWuw==}
+    peerDependencies:
+      '@tiptap/core': ^2.0.0
+    dev: false
+
   /@tiptap/extension-bold/2.0.1_@tiptap+core@2.0.1:
     resolution: {integrity: sha512-SYzs0e3FcAmJbYQkQ+LLRnoBNrFvG0i2zc+lFbrSYVCiEpqb5QPz5mgmQvnrH/Sl89WewnoeMu7pLqVEpfAWuw==}
     peerDependencies:
@@ -2119,6 +2129,12 @@ packages:
 
   /@tiptap/extension-image/2.0.1:
     resolution: {integrity: sha512-FMXY0Y3nsDtAb1gNGidNhXnyJTZw6bOwYXg6jEV/K05HIz/svMQVkXLR04vSKczr7DWnlOmaJiqzge9Hc9WJ9Q==}
+    peerDependencies:
+      '@tiptap/core': ^2.0.0
+    dev: false
+
+  /@tiptap/extension-italic/2.0.1:
+    resolution: {integrity: sha512-lVIyKa3qjqD4rUKSzVghkS5xonJ8k+msvy5Sr5xd6duwEBOk7e0oKtXmdn7B1VBH64i/U3Cx0QRgDlEyukvV2Q==}
     peerDependencies:
       '@tiptap/core': ^2.0.0
     dev: false

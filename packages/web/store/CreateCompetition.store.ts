@@ -1,12 +1,24 @@
 import { add } from "date-fns";
+import { zonedTimeToUtc } from "date-fns-tz";
 import { action, computed, makeObservable, observable } from "mobx";
 import { dateToDateTimeLocalInput } from "../components/DSL/Form/DateInput";
 import { SelectItem } from "../components/DSL/Select/Select";
+import { getTimezone } from "../helpers/dates";
+import { formatEthereumAddress } from "../helpers/strings";
 import { RewardBody, TokenType } from "../interfaces";
+import Http from "../services/http";
 import { Navigable } from "../services/mixins/navigable";
+import { Nullable } from "./../interfaces/index";
 import { EmptyClass } from "./../services/mixins/index";
 
 export enum CreateCompetitionView {
+  Name = "Name",
+  Description = "Description",
+  Details = "Details",
+  Curators = "Curators",
+  Rewards = "Rewards",
+  Review = "Review",
+
   Create = "Create",
   Success = "Success",
 }
@@ -30,6 +42,12 @@ export default class CreateCompetitionStore extends Navigable(EmptyClass) {
   private _rewardsCount = 0;
 
   @observable
+  name = "";
+
+  @observable
+  description = "";
+
+  @observable
   isLoading = false;
 
   @observable
@@ -38,51 +56,60 @@ export default class CreateCompetitionStore extends Navigable(EmptyClass) {
   @observable
   rewardInputAmounts: { [key: string]: string } = {};
 
+  @observable
+  file: Nullable<File> = null;
+
+  @observable
+  showMediaInput = false;
+
   constructor() {
     super();
     makeObservable(this);
-    this.currentView = CreateCompetitionView.Create;
+    this.currentView = CreateCompetitionView.Name;
   }
 
   onCompetitionSubmit(values: any) {
-    console.log("debug:: values", values);
-    // this.isLoading = true;
-    // const formValues = { ...values };
-    // const curators: string[] = [];
-    // const body: { [key: string]: any } = {};
-    // for (const [key, value] of Object.entries(formValues)) {
-    //   if (key.startsWith(this.CREATOR_INPUT_PREFIX)) {
-    //     const formattedAddress = formatEthereumAddress(value as string);
-    //     if (!curators.includes(formattedAddress)) {
-    //       curators.push(formatEthereumAddress(value as string));
-    //     }
-    //   }
-    // }
-    // body.name = values.name.trim();
-    // body.description =
-    //   values.description !== "" ? values.description.trim() : null;
+    this.isLoading = true;
+    const formValues = { ...values };
+    const curators: string[] = [];
+    const body: { [key: string]: any } = {};
+    for (const [key, value] of Object.entries(formValues)) {
+      if (key.startsWith(this.CREATOR_INPUT_PREFIX)) {
+        const formattedAddress = formatEthereumAddress(value as string);
+        if (!curators.includes(formattedAddress)) {
+          curators.push(formatEthereumAddress(value as string));
+        }
+      }
+    }
+    body.name = values.name.trim();
+    body.description =
+      values.description !== "" ? values.description.trim() : null;
 
-    // body.endsAt = zonedTimeToUtc(values.endsAt, getTimezone());
+    body.endsAt = zonedTimeToUtc(values.endsAt, getTimezone());
 
-    // body.maxUserSubmissions = parseInt(values.maxUserSubmissions);
-    // body.curators = curators;
+    body.maxUserSubmissions = parseInt(values.maxUserSubmissions);
+    body.curators = curators;
 
-    // const rewards = this.getRewardItems(values);
-    // body.rewards = rewards;
-    // return Http.postCompetition(body)
-    //   .then(() => {
-    //     this.isLoading = false;
-    //     this.currentView = CreateCompetitionView.Success;
-    //   })
-    //   .catch((e) => {
-    //     this.isLoading = false;
-    //     throw e;
-    //   });
+    const rewards = this.getRewardItems(values);
+    body.rewards = rewards;
+    return Http.postCompetition(body)
+      .then(() => {
+        this.isLoading = false;
+        this.currentView = CreateCompetitionView.Success;
+      })
+      .catch((e) => {
+        this.isLoading = false;
+        throw e;
+      });
   }
 
   @computed
   get title() {
     switch (this.currentView) {
+      case CreateCompetitionView.Name:
+        return "Name your competition";
+      case CreateCompetitionView.Description:
+        return "Describe your competition";
       case CreateCompetitionView.Create:
         return "New competition";
       case CreateCompetitionView.Success:
@@ -223,5 +250,22 @@ export default class CreateCompetitionStore extends Navigable(EmptyClass) {
       });
     }
     return rewards;
+  }
+
+  onNameSubmit({ name }: { name: string }) {
+    this.name = name;
+    this.currentView = CreateCompetitionView.Description;
+  }
+
+  onDescriptionSubmit({ description }: { description: string }) {
+    this.description = description;
+    this.currentView = CreateCompetitionView.Details;
+  }
+
+  postNewImage(file: File) {
+    const formData = new FormData();
+    formData.set("file", file);
+    this.isLoading = true;
+    return Http.postMedia(formData).finally(() => (this.isLoading = false));
   }
 }

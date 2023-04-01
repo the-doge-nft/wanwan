@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Media } from '@prisma/client';
+import { Media, Prisma } from '@prisma/client';
 import { readFileSync, unlinkSync } from 'fs';
 import sizeOf from 'image-size';
 import { join } from 'path';
@@ -11,7 +11,12 @@ import { S3Service } from './../s3/s3.service';
 @Injectable()
 export class MediaService {
   private readonly logger = new Logger(MediaService.name);
+  static MAX_SIZE_MEDIA_BYTES = 5242880;
+  static FILE_UPLOAD_PATH = 'uploads/';
+  static FILE_NAME = 'file';
+
   private awsRegion: string;
+
   private getFileName(file: Express.Multer.File, createdById: number) {
     return `${createdById}-${file.filename}-${
       new Date().toISOString().split('T')[0]
@@ -24,7 +29,10 @@ export class MediaService {
     return `https://${media.s3BucketName}.s3.${this.awsRegion}.amazonaws.com/${media.filename}`;
   }
 
-  addExtra(item: Media): MediaWithExtras {
+  addExtra(item: Media | null): MediaWithExtras | null {
+    if (!item) {
+      return null;
+    }
     return { ...item, url: this.getS3Url(item) };
   }
 
@@ -46,7 +54,9 @@ export class MediaService {
     { extension: '.svg', mimeType: 'image/svg+xml' },
   ];
 
-  static MAX_SIZE_MEDIA_BYTES = 5242880;
+  async findFirst(params: Prisma.MediaFindFirstArgs) {
+    return this.addExtra(await this.prisma.media.findFirst(params));
+  }
 
   async create(file: Express.Multer.File, createdById: number) {
     const bucket = this.config.get('aws').mediaBucketName;

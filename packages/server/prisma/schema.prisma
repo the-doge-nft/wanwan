@@ -58,6 +58,8 @@ model Competition {
   createdAt          DateTime            @default(now())
   updatedAt          DateTime            @default(now())
   createdById        Int
+  coverMediaId       Int?
+  coverMedia         Media?              @relation(fields: [coverMediaId], references: [id])
   user               User                @relation(fields: [createdById], references: [id])
   submissions        Submission[]
   rewards            Reward[]
@@ -77,16 +79,17 @@ model CompeitionCurator {
 }
 
 model Media {
-  id           Int      @id @default(autoincrement())
+  id           Int           @id @default(autoincrement())
   width        Int
   height       Int
   filename     String
   filesize     Int
   s3BucketName String
   createdById  Int
-  createdAt    DateTime @default(now())
-  user         User     @relation(fields: [createdById], references: [id])
+  createdAt    DateTime      @default(now())
+  user         User          @relation(fields: [createdById], references: [id])
   meme         Meme?
+  Competition  Competition[]
 }
 
 model Submission {

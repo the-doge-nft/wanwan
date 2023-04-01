@@ -95,7 +95,7 @@ export const FormDescription: React.FC<
 > = ({ children, isInvalid }) => {
   return (
     <div
-      className={css("mb-0.5", "italic", {
+      className={css("mb-0.5", "italic", "flex", {
         "text-red-900": isInvalid,
         "text-neutral-800": !isInvalid,
       })}

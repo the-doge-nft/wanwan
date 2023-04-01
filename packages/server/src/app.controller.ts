@@ -4,11 +4,16 @@ import {
   Controller,
   Get,
   Logger,
+  MaxFileSizeValidator,
   Param,
+  ParseFilePipe,
   Post,
   Req,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { AppService } from './app.service';
 import { AdminGuard, ADMIN_ADDRESSES } from './auth/admin.guard';
 import { AuthGuard } from './auth/auth.guard';
@@ -22,6 +27,7 @@ import { ProfileService } from './profile/profile.service';
 import { StatsService } from './stats/stats.service';
 import { SubmissionService } from './submission/submission.service';
 import { UserService } from './user/user.service';
+import MemeMediaFileValidator from './validator/meme-media-file.validator';
 
 @Controller()
 export class AppController {
@@ -34,6 +40,7 @@ export class AppController {
     private readonly profile: ProfileService,
     private readonly stats: StatsService,
     private readonly users: UserService,
+    private readonly media: MediaService,
   ) {}
 
   @Get()
@@ -45,6 +52,31 @@ export class AppController {
   @Get('user')
   getUser(@Req() { user }: AuthenticatedRequest) {
     return user;
+  }
+
+  @Post('media')
+  @UseGuards(AuthGuard)
+  @UseInterceptors(
+    FileInterceptor(MediaService.FILE_NAME, {
+      dest: MediaService.FILE_UPLOAD_PATH,
+    }),
+  )
+  async uploadFile(
+    @Req() { user }: AuthenticatedRequest,
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MemeMediaFileValidator(),
+          new MaxFileSizeValidator({
+            maxSize: MediaService.MAX_SIZE_MEDIA_BYTES,
+          }),
+        ],
+      }),
+    )
+    file: Express.Multer.File,
+  ) {
+    const media = await this.media.create(file, user.id);
+    return this.media.findFirst({ where: { id: media.id } });
   }
 
   @Get('media/requirements')

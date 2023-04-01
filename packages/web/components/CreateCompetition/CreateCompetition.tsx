@@ -23,45 +23,51 @@ import {
   required,
 } from "../DSL/Form/validation";
 import Text, { TextSize } from "../DSL/Text/Text";
+import DescriptionView from "./DescriptionView";
 
-interface CompetitionStoreProp {
+export interface CompetitionStoreProp {
   store: CreateCompetitionStore;
 }
 
-const CreateCompetition: React.FC<CompetitionStoreProp> = observer(
-  ({ store }) => {
-    return (
-      <>
-        {store.currentView === CreateCompetitionView.Create && (
-          <CreateView store={store} />
-        )}
-        {store.currentView === CreateCompetitionView.Success && <SuccessView />}
-      </>
-    );
-  }
-);
-
-const CreateView: React.FC<CompetitionStoreProp> = observer(({ store }) => {
-  // const editor = useEditor({
-  //   // element: document.getElementsByName("test")[0],
-  //   extensions: [Document, Paragraph, TiptapText, Dropcursor, Image],
-  //   content: "<p>Enter a description for your competition</p>",
-  //   editorProps: {
-  //     attributes: {
-  //       class: css(textFieldBaseStyles),
-  //     },
-  //   },
-  // });
-  // const addImage = () => {
-  //   const url = window.prompt("URL");
-  //   if (url) {
-  //     editor?.chain().focus().setImage({ src: url }).run();
-  //   }
-  // };
+const CreateCompetition = observer(({ store }: CompetitionStoreProp) => {
   return (
-    <Form onSubmit={async (values) => store.onCompetitionSubmit(values)}>
-      {/* <EditorContent editor={editor} /> */}
-      {/* <Button onClick={() => addImage()}>add image</Button> */}
+    <>
+      {store.currentView === CreateCompetitionView.Name && (
+        <NameView store={store} />
+      )}
+      {store.currentView === CreateCompetitionView.Description && (
+        <DescriptionView store={store} />
+      )}
+      {store.currentView === CreateCompetitionView.Create && (
+        <CreateView store={store} />
+      )}
+      {store.currentView === CreateCompetitionView.Success && <SuccessView />}
+    </>
+  );
+});
+
+const NameView = observer(({ store }: CompetitionStoreProp) => {
+  return (
+    <Form onSubmit={async (values: any) => store.onNameSubmit(values)}>
+      <div className={css("flex", "flex-col", "gap-2")}>
+        <TextInput
+          block
+          label={"Name"}
+          name={"name"}
+          description={"This is the name of your competition"}
+          value={store.name}
+          validate={required}
+          onChange={(val) => (store.name = val)}
+        />
+        <Submit block>Next</Submit>
+      </div>
+    </Form>
+  );
+});
+
+const CreateView = observer(({ store }: CompetitionStoreProp) => {
+  return (
+    <Form onSubmit={async (values: any) => store.onCompetitionSubmit(values)}>
       <div className={css("flex", "flex-col", "gap-2")}>
         <TextInput
           block
@@ -147,7 +153,7 @@ const SuccessView = () => {
   );
 };
 
-const Curators: React.FC<CompetitionStoreProp> = observer(({ store }) => {
+const Curators = observer(({ store }: CompetitionStoreProp) => {
   return (
     <>
       <FormDescription>
@@ -188,7 +194,7 @@ const Curators: React.FC<CompetitionStoreProp> = observer(({ store }) => {
   );
 });
 
-const Rewards: React.FC<CompetitionStoreProp> = observer(({ store }) => {
+const Rewards = observer(({ store }: CompetitionStoreProp) => {
   return (
     <>
       <FormDescription>
