@@ -21,7 +21,6 @@ import { CompetitionStoreProp } from "./CreateCompetition";
 
 const DescriptionView = observer(({ store }: CompetitionStoreProp) => {
   const editor = useEditor({
-    // element: document.getElementsByName("test")[0],
     extensions: [
       Document,
       Paragraph,
@@ -42,15 +41,19 @@ const DescriptionView = observer(({ store }: CompetitionStoreProp) => {
         },
       }),
     ],
-    // content: "<p>Enter a description for your competition</p>",
     editorProps: {
       attributes: {
         class: css(textFieldBaseStyles),
       },
     },
+    content: store.description ? store.description : "",
   });
   return (
-    <Form onSubmit={async (values: any) => store.onDescriptionSubmit(values)}>
+    <Form
+      onSubmit={async (values: any) =>
+        store.onDescriptionSubmit(editor!.getJSON())
+      }
+    >
       <div className={css("flex", "flex-col", "gap-2")}>
         <div>
           <EditorContent editor={editor} />

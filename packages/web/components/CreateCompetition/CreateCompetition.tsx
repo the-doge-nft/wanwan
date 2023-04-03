@@ -38,6 +38,9 @@ const CreateCompetition = observer(({ store }: CompetitionStoreProp) => {
       {store.currentView === CreateCompetitionView.Description && (
         <DescriptionView store={store} />
       )}
+      {store.currentView === CreateCompetitionView.Details && (
+        <DetailsView store={store} />
+      )}
       {store.currentView === CreateCompetitionView.Create && (
         <CreateView store={store} />
       )}
@@ -45,6 +48,19 @@ const CreateCompetition = observer(({ store }: CompetitionStoreProp) => {
     </>
   );
 });
+
+const DetailsView = ({ store }: CompetitionStoreProp) => {
+  return (
+    <Form onSubmit={async () => {}}>
+      <div className={css("w-full", "flex", "gap-2", "mt-4")}>
+        <Button block onClick={() => store.goBack()}>
+          Back
+        </Button>
+        <Submit block>Next</Submit>
+      </div>
+    </Form>
+  );
+};
 
 const NameView = observer(({ store }: CompetitionStoreProp) => {
   return (

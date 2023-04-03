@@ -1,3 +1,4 @@
+import { JSONContent } from "@tiptap/react";
 import { add } from "date-fns";
 import { zonedTimeToUtc } from "date-fns-tz";
 import { action, computed, makeObservable, observable } from "mobx";
@@ -45,7 +46,7 @@ export default class CreateCompetitionStore extends Navigable(EmptyClass) {
   name = "";
 
   @observable
-  description = "";
+  description: Nullable<JSONContent> = null;
 
   @observable
   isLoading = false;
@@ -107,9 +108,11 @@ export default class CreateCompetitionStore extends Navigable(EmptyClass) {
   get title() {
     switch (this.currentView) {
       case CreateCompetitionView.Name:
-        return "Name your competition";
+        return "Name it";
       case CreateCompetitionView.Description:
-        return "Describe your competition";
+        return "Describe it";
+      case CreateCompetitionView.Details:
+        return "Detail it";
       case CreateCompetitionView.Create:
         return "New competition";
       case CreateCompetitionView.Success:
@@ -257,8 +260,9 @@ export default class CreateCompetitionStore extends Navigable(EmptyClass) {
     this.currentView = CreateCompetitionView.Description;
   }
 
-  onDescriptionSubmit({ description }: { description: string }) {
-    this.description = description;
+  onDescriptionSubmit(json: JSONContent) {
+    console.log(json);
+    this.description = json;
     this.currentView = CreateCompetitionView.Details;
   }
 
