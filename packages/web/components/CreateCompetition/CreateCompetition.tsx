@@ -9,7 +9,7 @@ import Button, { Submit } from "../DSL/Button/Button";
 import { Divider } from "../DSL/Divider/Divider";
 import DateInput from "../DSL/Form/DateInput";
 import Form from "../DSL/Form/Form";
-import { FormDescription } from "../DSL/Form/FormControl";
+import { FormDescription, FormDisplay } from "../DSL/Form/FormControl";
 import FormError from "../DSL/Form/FormError";
 import NumberInput from "../DSL/Form/NumberInput";
 import SelectInput from "../DSL/Form/SelectInput";
@@ -41,6 +41,9 @@ const CreateCompetition = observer(({ store }: CompetitionStoreProp) => {
       {store.currentView === CreateCompetitionView.Details && (
         <DetailsView store={store} />
       )}
+      {store.currentView === CreateCompetitionView.Curators && (
+        <CuratorsView store={store} />
+      )}
       {store.currentView === CreateCompetitionView.Create && (
         <CreateView store={store} />
       )}
@@ -49,18 +52,59 @@ const CreateCompetition = observer(({ store }: CompetitionStoreProp) => {
   );
 });
 
-const DetailsView = ({ store }: CompetitionStoreProp) => {
+export const Buttons = observer(({ store }: CompetitionStoreProp) => {
+  return (
+    <div className={css("w-full", "flex", "gap-2", "mt-4")}>
+      <Button block onClick={() => store.goBack()}>
+        Back
+      </Button>
+      <Submit block>Next</Submit>
+    </div>
+  );
+});
+
+const CuratorsView = observer(({ store }: CompetitionStoreProp) => {
   return (
     <Form onSubmit={async () => {}}>
-      <div className={css("w-full", "flex", "gap-2", "mt-4")}>
-        <Button block onClick={() => store.goBack()}>
-          Back
+      <FormDisplay
+        label={"Curators"}
+        description={"Users who can remove memes from your competition"}
+      />
+      {store.isCuratorsVisible && (
+        <>
+          {Array.from(Array(store.curatorCount)).map((_, index) => {
+            const key = `${store.CREATOR_INPUT_PREFIX}-${index}`;
+            return (
+              <TextInput
+                block
+                key={key}
+                name={key}
+                label={`Curator ${index + 1}`}
+                validate={[required, isEthereumAddress]}
+                placeholder={"0x..."}
+              />
+            );
+          })}
+        </>
+      )}
+      <div className={css("flex", "items-center", "gap-2", "mt-2")}>
+        <Button
+          block
+          onClick={() => store.addCurator()}
+          disabled={!store.canAddCurator}
+        >
+          + Curator
         </Button>
-        <Submit block>Next</Submit>
+        {store.showRemoveCurator && (
+          <Button block onClick={() => store.removeCurator()}>
+            - Curator
+          </Button>
+        )}
       </div>
+      <Buttons store={store} />
     </Form>
   );
-};
+});
 
 const NameView = observer(({ store }: CompetitionStoreProp) => {
   return (
@@ -71,11 +115,48 @@ const NameView = observer(({ store }: CompetitionStoreProp) => {
           label={"Name"}
           name={"name"}
           description={"This is the name of your competition"}
-          value={store.name}
           validate={required}
+          value={store.name}
           onChange={(val) => (store.name = val)}
         />
         <Submit block>Next</Submit>
+      </div>
+    </Form>
+  );
+});
+
+const DetailsView = observer(({ store }: CompetitionStoreProp) => {
+  return (
+    <Form onSubmit={async () => store.onDetailsSubmit()}>
+      <div className={css("flex", "flex-col", "gap-2")}>
+        <NumberInput
+          block
+          label={"Max submissions per user"}
+          description={"How many submissions can a user make?"}
+          name={"maxUserSubmissions"}
+          validate={[required, minValue(1), maxValue(5)]}
+          placeholder={"1"}
+          disabled={store.isLoading}
+          value={store.maxUserSubmissions}
+          onChange={(val) => (store.maxUserSubmissions = val)}
+        />
+        <DateInput
+          block
+          description={"When does your competition end?"}
+          type={"datetime-local"}
+          label={"Ends at"}
+          name={"endsAt"}
+          validate={[
+            required,
+            minDate(store.minEndsAtDate),
+            maxDate(store.maxEndsAtDate),
+          ]}
+          defaultValue={store.defaultEndsAtDate}
+          disabled={store.isLoading}
+          value={store.endsAt}
+          onChange={(val) => (store.endsAt = val)}
+        />
+        <Buttons store={store} />
       </div>
     </Form>
   );
@@ -186,13 +267,13 @@ const Curators = observer(({ store }: CompetitionStoreProp) => {
                 name={key}
                 label={`Curator ${index + 1}`}
                 validate={[required, isEthereumAddress]}
-                placeholder={"ethereum address"}
+                placeholder={"0x..."}
               />
             );
           })}
         </>
       )}
-      <div className={css("flex", "items-center", "gap-2")}>
+      <div className={css("flex", "items-center", "gap-2", "mt-2")}>
         <Button
           block
           onClick={() => store.addCurator()}

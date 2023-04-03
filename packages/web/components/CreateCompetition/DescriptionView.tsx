@@ -15,6 +15,7 @@ import { css } from "../../helpers/css";
 import AppStore from "../../store/App.store";
 import Button, { Submit } from "../DSL/Button/Button";
 import Form from "../DSL/Form/Form";
+import { FormDisplay } from "../DSL/Form/FormControl";
 import MediaInput from "../DSL/Form/MediaInput";
 import { textFieldBaseStyles } from "../DSL/Input/Input";
 import { CompetitionStoreProp } from "./CreateCompetition";
@@ -54,6 +55,10 @@ const DescriptionView = observer(({ store }: CompetitionStoreProp) => {
         store.onDescriptionSubmit(editor!.getJSON())
       }
     >
+      <FormDisplay
+        label={"Description"}
+        description={"What do you want creators and voters to know?"}
+      />
       <div className={css("flex", "flex-col", "gap-2")}>
         <div>
           <EditorContent editor={editor} />

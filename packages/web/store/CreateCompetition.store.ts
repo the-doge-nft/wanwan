@@ -63,6 +63,12 @@ export default class CreateCompetitionStore extends Navigable(EmptyClass) {
   @observable
   showMediaInput = false;
 
+  @observable
+  endsAt: string = this.defaultEndsAtDate;
+
+  @observable
+  maxUserSubmissions = "";
+
   constructor() {
     super();
     makeObservable(this);
@@ -113,6 +119,8 @@ export default class CreateCompetitionStore extends Navigable(EmptyClass) {
         return "Describe it";
       case CreateCompetitionView.Details:
         return "Detail it";
+      case CreateCompetitionView.Curators:
+        return "Curate it";
       case CreateCompetitionView.Create:
         return "New competition";
       case CreateCompetitionView.Success:
@@ -256,14 +264,16 @@ export default class CreateCompetitionStore extends Navigable(EmptyClass) {
   }
 
   onNameSubmit({ name }: { name: string }) {
-    this.name = name;
     this.currentView = CreateCompetitionView.Description;
   }
 
   onDescriptionSubmit(json: JSONContent) {
-    console.log(json);
     this.description = json;
     this.currentView = CreateCompetitionView.Details;
+  }
+
+  onDetailsSubmit() {
+    this.currentView = CreateCompetitionView.Curators;
   }
 
   postNewImage(file: File) {
