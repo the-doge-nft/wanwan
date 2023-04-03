@@ -3,7 +3,7 @@ import { css } from "../../helpers/css";
 import AppStore from "../../store/App.store";
 import CreateCompetitionStore, {
   CreateCompetitionView,
-} from "../../store/CreateCompetition.store";
+} from "../../store/CreateCompetition/CreateCompetition.store";
 import Button, { Submit } from "../DSL/Button/Button";
 import { Divider } from "../DSL/Divider/Divider";
 import DateInput from "../DSL/Form/DateInput";

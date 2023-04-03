@@ -1,7 +1,7 @@
 import { observer } from "mobx-react-lite";
 import { useMemo } from "react";
 import AppStore from "../../store/App.store";
-import CreateCompetitionStore from "../../store/CreateCompetition.store";
+import CreateCompetitionStore from "../../store/CreateCompetition/CreateCompetition.store";
 import CreateCompetition from "../CreateCompetition/CreateCompetition";
 import Modal from "../DSL/Modal/Modal";
 

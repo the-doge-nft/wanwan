@@ -2,15 +2,16 @@ import { JSONContent } from "@tiptap/react";
 import { add } from "date-fns";
 import { zonedTimeToUtc } from "date-fns-tz";
 import { action, computed, makeObservable, observable } from "mobx";
-import { dateToDateTimeLocalInput } from "../components/DSL/Form/DateInput";
-import { SelectItem } from "../components/DSL/Select/Select";
-import { getTimezone } from "../helpers/dates";
-import { formatEthereumAddress } from "../helpers/strings";
-import { RewardBody, TokenType } from "../interfaces";
-import Http from "../services/http";
-import { Navigable } from "../services/mixins/navigable";
-import { Nullable } from "./../interfaces/index";
-import { EmptyClass } from "./../services/mixins/index";
+import { dateToDateTimeLocalInput } from "../../components/DSL/Form/DateInput";
+import { SelectItem } from "../../components/DSL/Select/Select";
+import { getTimezone } from "../../helpers/dates";
+import { formatEthereumAddress } from "../../helpers/strings";
+import { RewardBody, TokenType } from "../../interfaces";
+import { Nullable } from "../../interfaces/index";
+import Http from "../../services/http";
+import { EmptyClass } from "../../services/mixins/index";
+import { Navigable } from "../../services/mixins/navigable";
+import CreateCompetitionCuratorsStore from "./CreateCompetitionCurators.store";
 
 export enum CreateCompetitionView {
   Name = "Name",
@@ -25,7 +26,6 @@ export enum CreateCompetitionView {
 }
 
 export default class CreateCompetitionStore extends Navigable(EmptyClass) {
-  CREATOR_INPUT_PREFIX = "creator-input";
   REWARDS_INPUT_PREFIX = "rewards-input";
   REWARDS_INPUT_TYPE_PREFIX = "rewards-type-input";
   REWARDS_INPUT_ADDRESS_PREFIX = "rewards-address-input";
@@ -35,9 +35,6 @@ export default class CreateCompetitionStore extends Navigable(EmptyClass) {
   minEndsAtDate = dateToDateTimeLocalInput(add(new Date(), { minutes: 1 }));
   maxEndsAtDate = dateToDateTimeLocalInput(add(new Date(), { years: 1 }));
   defaultEndsAtDate = dateToDateTimeLocalInput(add(new Date(), { days: 1 }));
-
-  @observable
-  private _curatorsCount = 0;
 
   @observable
   private _rewardsCount = 0;
@@ -69,6 +66,9 @@ export default class CreateCompetitionStore extends Navigable(EmptyClass) {
   @observable
   maxUserSubmissions = "";
 
+  @observable
+  curators = new CreateCompetitionCuratorsStore();
+
   constructor() {
     super();
     makeObservable(this);
@@ -81,7 +81,7 @@ export default class CreateCompetitionStore extends Navigable(EmptyClass) {
     const curators: string[] = [];
     const body: { [key: string]: any } = {};
     for (const [key, value] of Object.entries(formValues)) {
-      if (key.startsWith(this.CREATOR_INPUT_PREFIX)) {
+      if (key.startsWith(this.curators.CREATOR_INPUT_PREFIX)) {
         const formattedAddress = formatEthereumAddress(value as string);
         if (!curators.includes(formattedAddress)) {
           curators.push(formatEthereumAddress(value as string));
@@ -133,16 +133,6 @@ export default class CreateCompetitionStore extends Navigable(EmptyClass) {
   }
 
   @action
-  addCurator() {
-    this._curatorsCount += 1;
-  }
-
-  @action
-  removeCurator() {
-    this._curatorsCount -= 1;
-  }
-
-  @action
   addReward() {
     this._rewardsCount += 1;
   }
@@ -150,20 +140,6 @@ export default class CreateCompetitionStore extends Navigable(EmptyClass) {
   @action
   removeReward() {
     this._rewardsCount -= 1;
-  }
-
-  get isCuratorsVisible() {
-    return this._curatorsCount > 0;
-  }
-
-  @computed
-  get curatorCount() {
-    return this._curatorsCount;
-  }
-
-  @computed
-  get showRemoveCurator() {
-    return this._curatorsCount >= 1;
   }
 
   get isRewardsVisible() {
@@ -183,11 +159,6 @@ export default class CreateCompetitionStore extends Navigable(EmptyClass) {
   @computed
   get canAddReward() {
     return this._rewardsCount < 3;
-  }
-
-  @computed
-  get canAddCurator() {
-    return this._curatorsCount < 3;
   }
 
   getShowTokenIdInput(key: string) {

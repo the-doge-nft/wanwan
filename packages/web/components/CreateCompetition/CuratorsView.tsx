@@ -15,10 +15,10 @@ const CuratorsView = observer(({ store }: CompetitionStoreProp) => {
         description={"Users who can remove memes from your competition"}
       />
       <div className={css()}>
-        {store.isCuratorsVisible && (
+        {store.curators.isCuratorsVisible && (
           <Form onSubmit={async () => store.onCuratorsSubmit()}>
-            {Array.from(Array(store.curatorCount)).map((_, index) => {
-              const key = `${store.CREATOR_INPUT_PREFIX}-${index}`;
+            {Array.from(Array(store.curators.curatorCount)).map((_, index) => {
+              const key = `${store.curators.CREATOR_INPUT_PREFIX}-${index}`;
               return (
                 <TextInput
                   block
@@ -35,7 +35,7 @@ const CuratorsView = observer(({ store }: CompetitionStoreProp) => {
           </Form>
         )}
       </div>
-      {!store.isCuratorsVisible && (
+      {!store.curators.isCuratorsVisible && (
         <Form onSubmit={async () => store.onCuratorsSubmit()}>
           <CuratorButtons store={store} />
           <Buttons store={store} />
@@ -50,13 +50,13 @@ const CuratorButtons = observer(({ store }: CompetitionStoreProp) => {
     <div className={css("flex", "items-center", "gap-2", "mt-2")}>
       <Button
         block
-        onClick={() => store.addCurator()}
-        disabled={!store.canAddCurator}
+        onClick={() => store.curators.addCurator()}
+        disabled={!store.curators.canAddCurator}
       >
         + Curator
       </Button>
-      {store.showRemoveCurator && (
-        <Button block onClick={() => store.removeCurator()}>
+      {store.curators.showRemoveCurator && (
+        <Button block onClick={() => store.curators.removeCurator()}>
           - Curator
         </Button>
       )}
