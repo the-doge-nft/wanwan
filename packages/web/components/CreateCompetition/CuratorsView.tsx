@@ -17,8 +17,8 @@ const CuratorsView = observer(({ store }: CompetitionStoreProp) => {
       <div className={css()}>
         {store.curators.isCuratorsVisible && (
           <Form onSubmit={async () => store.onCuratorsSubmit()}>
-            {Array.from(Array(store.curators.curatorCount)).map((_, index) => {
-              const key = `${store.curators.CREATOR_INPUT_PREFIX}-${index}`;
+            {Array.from(Array(store.curators.count)).map((_, index) => {
+              const key = store.curators.getKey(index);
               return (
                 <TextInput
                   block
@@ -26,7 +26,7 @@ const CuratorsView = observer(({ store }: CompetitionStoreProp) => {
                   name={key}
                   label={`Curator ${index + 1}`}
                   validate={[required, isEthereumAddress]}
-                  placeholder={"0x..."}
+                  placeholder={"address or ens"}
                 />
               );
             })}
@@ -50,13 +50,13 @@ const CuratorButtons = observer(({ store }: CompetitionStoreProp) => {
     <div className={css("flex", "items-center", "gap-2", "mt-2")}>
       <Button
         block
-        onClick={() => store.curators.addCurator()}
-        disabled={!store.curators.canAddCurator}
+        onClick={() => store.curators.add()}
+        disabled={!store.curators.canAdd}
       >
         + Curator
       </Button>
-      {store.curators.showRemoveCurator && (
-        <Button block onClick={() => store.curators.removeCurator()}>
+      {store.curators.canRemove && (
+        <Button block onClick={() => store.curators.remove()}>
           - Curator
         </Button>
       )}

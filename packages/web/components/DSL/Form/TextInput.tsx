@@ -30,21 +30,7 @@ const TextInput = ({
     validate,
     defaultValue as string
   );
-  // const form = useForm();
-  console.log(input, meta.error, isRequired);
   useControlledFormField(input.onChange, value);
-
-  // useEffect(() => {
-  //   return () => {
-  //     console.log("form", form);
-  //     console.log("resetting field state:", name);
-
-  //     if (form) {
-  //       form.pauseValidation();
-  //       console.log("form");
-  //     }
-  //   };
-  // }, [form, name]);
 
   return (
     <FormControl

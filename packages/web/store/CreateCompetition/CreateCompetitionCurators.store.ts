@@ -1,40 +1,48 @@
 import { action, computed, makeObservable, observable } from "mobx";
 export default class CreateCompetitionCuratorsStore {
   CREATOR_INPUT_PREFIX = "creator-input";
+  private maxCount = 3;
 
   @observable
-  private _curatorsCount = 0;
+  private _count = 0;
+
+  @observable
+  curators: string[] = [];
 
   constructor() {
     makeObservable(this);
   }
 
   @action
-  addCurator() {
-    this._curatorsCount += 1;
+  add() {
+    this._count += 1;
   }
 
   @action
-  removeCurator() {
-    this._curatorsCount -= 1;
+  remove() {
+    this._count -= 1;
   }
 
   get isCuratorsVisible() {
-    return this._curatorsCount > 0;
+    return this._count > 0;
   }
 
   @computed
-  get curatorCount() {
-    return this._curatorsCount;
+  get count() {
+    return this._count;
   }
 
   @computed
-  get showRemoveCurator() {
-    return this._curatorsCount >= 1;
+  get canRemove() {
+    return this._count >= 1;
   }
 
   @computed
-  get canAddCurator() {
-    return this._curatorsCount < 3;
+  get canAdd() {
+    return this._count < this.maxCount;
+  }
+
+  getKey(index: number) {
+    return `${this.CREATOR_INPUT_PREFIX}-${index}`;
   }
 }
