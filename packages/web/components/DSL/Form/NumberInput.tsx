@@ -10,7 +10,7 @@ interface NumberInputProps
   extends BaseFormInputProps,
     Pick<
       BaseInputProps,
-      "max" | "min" | "placeholder" | "block" | "disabled"
+      "max" | "min" | "placeholder" | "block" | "disabled" | "defaultValue"
     > {}
 
 const NumberInput = ({
@@ -21,17 +21,22 @@ const NumberInput = ({
   validate,
   description,
   disabled,
+  defaultValue,
   ...rest
 }: NumberInputProps) => {
-  const { input, meta, isRequired } = useFormField(name, validate);
+  const { input, meta, isRequired } = useFormField(
+    name,
+    validate,
+    defaultValue as string
+  );
   useControlledFormField(input.onChange, value);
   return (
     <FormControl
+      disabled={disabled}
       description={description}
       isRequired={isRequired}
       name={name}
       label={label}
-      disabled={disabled}
     >
       <Input
         {...input}

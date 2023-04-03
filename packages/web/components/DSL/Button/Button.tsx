@@ -122,7 +122,6 @@ export const Submit: React.FC<PropsWithChildren<ButtonProps>> = ({
   ...rest
 }) => {
   const state = useFormState();
-  console.log(state);
   return (
     <Button
       {...rest}

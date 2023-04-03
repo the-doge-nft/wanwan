@@ -121,6 +121,8 @@ export default class CreateCompetitionStore extends Navigable(EmptyClass) {
         return "Detail it";
       case CreateCompetitionView.Curators:
         return "Curate it";
+      case CreateCompetitionView.Rewards:
+        return "Reward it";
       case CreateCompetitionView.Create:
         return "New competition";
       case CreateCompetitionView.Success:
@@ -274,6 +276,14 @@ export default class CreateCompetitionStore extends Navigable(EmptyClass) {
 
   onDetailsSubmit() {
     this.currentView = CreateCompetitionView.Curators;
+  }
+
+  onCuratorsSubmit() {
+    this.currentView = CreateCompetitionView.Rewards;
+  }
+
+  onRewardsSubmit() {
+    this.currentView = CreateCompetitionView.Review;
   }
 
   postNewImage(file: File) {
