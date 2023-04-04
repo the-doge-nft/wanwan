@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Alchemy, GetNftsForOwnerOptions, Network } from 'alchemy-sdk';
+import { CacheService } from '../cache/cache.service';
 import { Config } from '../config/config';
 import { AppEnv } from './../config/config';
 
@@ -14,7 +15,16 @@ export class AlchemyService {
   private MAINNET_PIXEL_CONTRACT_ADDRESS =
     '0x07887Ee0Bd24E774903963d50cF4Ec6a0a16977D';
 
-  constructor(private readonly config: ConfigService<Config>) {
+  private secondsToCacheEns = 60;
+
+  private getEnsCacheKey(address: string) {
+    return `ens-address:${address.toLowerCase()}`;
+  }
+
+  constructor(
+    private readonly config: ConfigService<Config>,
+    private readonly cache: CacheService,
+  ) {
     const network =
       this.config.get('appEnv') === AppEnv.production
         ? Network.ETH_MAINNET
@@ -87,5 +97,18 @@ export class AlchemyService {
 
   resolveEnsName(name: string) {
     return this.alchemy.core.resolveName(name);
+  }
+
+  resolveCachedEnsName(name: string) {
+    return this.cache.get(this.getEnsCacheKey(name));
+  }
+
+  async refreshResolveCachedEnsName(name: string) {
+    const address = await this.resolveEnsName(name);
+    return this.cache.set(
+      this.getEnsCacheKey(name),
+      address,
+      this.secondsToCacheEns,
+    );
   }
 }

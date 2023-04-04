@@ -16,7 +16,7 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AlchemyService } from './alchemy/alchemy.service';
 import { AppService } from './app.service';
-import { AdminGuard, ADMIN_ADDRESSES } from './auth/admin.guard';
+import { ADMIN_ADDRESSES, AdminGuard } from './auth/admin.guard';
 import { AuthGuard } from './auth/auth.guard';
 import { CompetitionService } from './competition/competition.service';
 import ProfileDto from './dto/profile.dto';
@@ -168,7 +168,11 @@ export class AppController {
 
   @Post('/ens/resolveEns')
   async getEnsName(@Body() { ens }: { ens: string }) {
-    return this.alchemy.resolveEnsName(ens);
+    const cache = await this.alchemy.resolveCachedEnsName(ens);
+    if (cache) {
+      return cache;
+    }
+    return this.alchemy.refreshResolveCachedEnsName(ens);
   }
 
   @Post('/ens/resolveName')
