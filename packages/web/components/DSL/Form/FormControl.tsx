@@ -105,9 +105,11 @@ export const FormLabel: React.FC<PropsWithChildren<FormLabelProps>> = ({
         "mb-0.5": mb,
       })}
     >
-      <Text size={TextSize.sm}>
-        {isRequired && "*"}
-        {children}
+      <Text size={TextSize.sm} block>
+        <div className={css("inline-flex", "w-full")}>
+          {isRequired && "*"}
+          {children}
+        </div>
       </Text>
     </div>
   );

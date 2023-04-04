@@ -3,6 +3,7 @@ import {
   isValidEthereumAddress,
   isValidHttpUrl,
 } from "../../../helpers/strings";
+import Http from "../../../services/http";
 
 export type Validator = ValidatorFunction[] | ValidatorFunction;
 
@@ -58,6 +59,44 @@ export const isEthereumAddress = (value: any) => {
     return "Must be a valid Ethereum address";
   }
 };
+
+export const isEnsName = (value: any) => {};
+
+const simpleMemoize = (fn: any) => {
+  let lastArg: any;
+  let lastResult: any;
+  return (arg: any) => {
+    if (arg !== lastArg) {
+      lastArg = arg;
+      lastResult = fn(arg);
+    }
+    return lastResult;
+  };
+};
+
+export const getIsEnsFormat = (value: string) => {
+  return value.split(".")?.[1] === "eth";
+};
+
+export const isEthereumAddressOrEns = simpleMemoize(async (value: string) => {
+  if (isValidEthereumAddress(value)) {
+    return undefined;
+  }
+
+  console.log(value.split("."));
+
+  if (getIsEnsFormat(value)) {
+    const { data: address } = await Http.postEnsForAddress(value);
+    console.log(address);
+    if (address) {
+      return undefined;
+    } else {
+      return "Must be a valid Ethereum address or ENS name";
+    }
+  }
+
+  return "Must be a valid Ethereum address or ENS name";
+});
 
 const composeValidators =
   (...validators: any[]) =>

@@ -14,12 +14,14 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { AlchemyService } from './alchemy/alchemy.service';
 import { AppService } from './app.service';
 import { AdminGuard, ADMIN_ADDRESSES } from './auth/admin.guard';
 import { AuthGuard } from './auth/auth.guard';
 import { CompetitionService } from './competition/competition.service';
 import ProfileDto from './dto/profile.dto';
 import SubmissionDto from './dto/submission.dto';
+import { EthersService } from './ethers/ethers.service';
 import { AuthenticatedRequest } from './interface';
 import { MediaService } from './media/media.service';
 import { MemeService } from './meme/meme.service';
@@ -41,6 +43,8 @@ export class AppController {
     private readonly stats: StatsService,
     private readonly users: UserService,
     private readonly media: MediaService,
+    private readonly alchemy: AlchemyService,
+    private readonly ethers: EthersService,
   ) {}
 
   @Get()
@@ -160,6 +164,20 @@ export class AppController {
   @Get('stats')
   getStats() {
     return this.stats.get();
+  }
+
+  @Post('/ens/resolveEns')
+  async getEnsName(@Body() { ens }: { ens: string }) {
+    return this.alchemy.resolveEnsName(ens);
+  }
+
+  @Post('/ens/resolveName')
+  async resolveName(@Body() { address }: { address: string }) {
+    const cache = await this.ethers.getCachedEnsName(address);
+    if (cache) {
+      return cache;
+    }
+    return this.ethers.refreshEnsCache(address);
   }
 
   @UseGuards(AdminGuard)

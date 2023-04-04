@@ -206,6 +206,14 @@ class _Http {
     );
   }
 
+  postEnsForAddress(ens: string) {
+    return this.http.post("/ens/resolveEns", { ens });
+  }
+
+  postAddressForEns(address: string) {
+    return this.http.post("/ens/resolveName", { address });
+  }
+
   static create() {
     return new this(env.api.baseUrl);
   }

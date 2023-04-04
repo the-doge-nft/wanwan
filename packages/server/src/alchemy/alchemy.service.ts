@@ -85,5 +85,7 @@ export class AlchemyService {
     return this.alchemy.nft.getContractMetadata(address);
   }
 
-  // getEnsFromAddress(address: string) {}
+  resolveEnsName(name: string) {
+    return this.alchemy.core.resolveName(name);
+  }
 }

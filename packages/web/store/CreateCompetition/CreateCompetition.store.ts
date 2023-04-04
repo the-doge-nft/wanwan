@@ -72,7 +72,7 @@ export default class CreateCompetitionStore extends Navigable(EmptyClass) {
   constructor() {
     super();
     makeObservable(this);
-    this.currentView = CreateCompetitionView.Name;
+    this.currentView = CreateCompetitionView.Curators;
   }
 
   onCompetitionSubmit(values: any) {
@@ -81,7 +81,7 @@ export default class CreateCompetitionStore extends Navigable(EmptyClass) {
     const curators: string[] = [];
     const body: { [key: string]: any } = {};
     for (const [key, value] of Object.entries(formValues)) {
-      if (key.startsWith(this.curators.CREATOR_INPUT_PREFIX)) {
+      if (key.startsWith(this.curators.CURATOR_INPUT_PREFIX)) {
         const formattedAddress = formatEthereumAddress(value as string);
         if (!curators.includes(formattedAddress)) {
           curators.push(formatEthereumAddress(value as string));

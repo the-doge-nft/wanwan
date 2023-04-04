@@ -26,6 +26,7 @@ export const useFormField = (
   const { input, meta } = useField(name, {
     //@ts-ignore
     validate: validators,
+    validateFields: [],
     initialValue: defaultValue,
     defaultValue: defaultValue,
     type: isCheckbox ? "checkbox" : "input",

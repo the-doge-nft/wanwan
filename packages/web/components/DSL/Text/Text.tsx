@@ -21,6 +21,7 @@ interface TextProps {
   type?: TextType;
   bold?: boolean;
   italic?: boolean;
+  block?: boolean;
 }
 
 const textSizeStyles = {
@@ -44,6 +45,7 @@ const Text: React.FC<PropsWithChildren<TextProps>> = ({
   bold = false,
   italic = false,
   children,
+  block = false,
 }) => {
   return (
     <span
@@ -54,6 +56,7 @@ const Text: React.FC<PropsWithChildren<TextProps>> = ({
         {
           "font-bold": bold,
           italic: italic,
+          "w-full": block,
         }
       )}
     >
