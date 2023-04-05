@@ -82,7 +82,7 @@ export default class ProfileStore {
   getUserMemes() {
     return Http.searchMeme({
       offset: 0,
-      count: 10,
+      count: 1000,
       filters: [
         {
           key: "address",
@@ -101,7 +101,7 @@ export default class ProfileStore {
   getUserCompetitions() {
     return Http.searchCompetition({
       offset: 0,
-      count: 10,
+      count: 1000,
       filters: [
         {
           key: "address",
