@@ -7,7 +7,12 @@ import Modal from "../DSL/Modal/Modal";
 
 const CreateCompetitionModal = observer(() => {
   const store = useMemo(() => new CreateCompetitionStore(), []);
-  useEffect(() => store.init(), []);
+  useEffect(() => {
+    store.init();
+    return () => {
+      store.destroy();
+    };
+  }, []);
   return (
     <Modal
       title={store.title}

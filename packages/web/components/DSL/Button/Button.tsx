@@ -127,7 +127,7 @@ export const Submit: React.FC<PropsWithChildren<ButtonProps>> = ({
   return (
     <Button
       {...rest}
-      isLoading={state.submitting}
+      isLoading={state.submitting || rest.isLoading}
       disabled={(!state.pristine && !state.dirty) || !state.valid}
       submit
     >
