@@ -23,6 +23,8 @@ const TextInput = ({
   type = "text",
   disabled,
   defaultValue,
+  rightOfInput,
+  leftOfInput,
   ...rest
 }: TextInputProps) => {
   const { input, meta, isRequired } = useFormField(
@@ -39,6 +41,8 @@ const TextInput = ({
       isRequired={isRequired}
       name={name}
       label={label}
+      rightOfInput={rightOfInput}
+      leftOfInput={leftOfInput}
     >
       <Input
         {...input}

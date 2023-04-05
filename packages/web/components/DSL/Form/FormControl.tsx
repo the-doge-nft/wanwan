@@ -11,6 +11,8 @@ export interface BaseFormInputProps {
   label?: React.ReactNode;
   validate?: ValidatorFunction[] | ValidatorFunction;
   description?: string;
+  rightOfInput?: React.ReactNode;
+  leftOfInput?: React.ReactNode;
 }
 
 export const BaseInvalidInputStyle = css("border-[1px]", "!border-red-800");
@@ -20,6 +22,8 @@ export interface FormControlProps
   children: any;
   isRequired?: boolean;
   disabled?: boolean;
+  rightOfInput?: React.ReactNode;
+  leftOfInput?: React.ReactNode;
 }
 
 const FormControl = ({
@@ -29,6 +33,8 @@ const FormControl = ({
   isRequired,
   description,
   disabled = false,
+  rightOfInput,
+  leftOfInput,
 }: FormControlProps) => {
   const { meta } = useField(name, {
     subscription: { touched: true, error: true, pristine: true, visited: true },
@@ -43,7 +49,15 @@ const FormControl = ({
         isRequired={isRequired}
         disabled={disabled}
       />
-      {children}
+      <div
+        className={css({
+          "flex items-stretch gap-2": !!rightOfInput || !!leftOfInput,
+        })}
+      >
+        {leftOfInput && leftOfInput}
+        {children}
+        {rightOfInput && rightOfInput}
+      </div>
       {isInvalid && (
         <div className={css(errorTextCss, "text-xs", "mt-0.5")}>
           {meta.error}

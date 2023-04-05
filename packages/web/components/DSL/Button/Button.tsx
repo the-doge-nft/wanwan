@@ -31,6 +31,7 @@ interface ButtonProps {
   disabled?: boolean;
   isLoading?: boolean;
   block?: boolean;
+  round?: boolean;
 }
 
 const buttonTypeStyles = {
@@ -57,9 +58,9 @@ const buttonTypeStyles = {
 };
 
 const buttonSizeStyles = {
-  [ButtonSize.xs]: css("px-0.5", "rounded-sm"),
-  [ButtonSize.sm]: css("py-0.5", "px-1", "rounded-sm", "text-xs"),
-  [ButtonSize.lg]: css("px-1", "py-0.5", "rounded-sm"),
+  [ButtonSize.xs]: css("px-0.5"),
+  [ButtonSize.sm]: css("py-0.5", "px-1", "text-xs"),
+  [ButtonSize.lg]: css("px-1", "py-0.5"),
 };
 
 const buttonSizeToTypeSize = {
@@ -77,6 +78,7 @@ const Button: React.FC<PropsWithChildren<ButtonProps>> = ({
   disabled = false,
   isLoading = false,
   block,
+  round,
 }) => {
   return (
     <button
@@ -88,7 +90,7 @@ const Button: React.FC<PropsWithChildren<ButtonProps>> = ({
         buttonSizeStyles[size],
         "relative",
         "outline-0",
-        { "w-full": block }
+        { "w-full": block, "rounded-full": round, "rounded-sm": !round }
       )}
     >
       <Text type={TextType.NoColor} size={buttonSizeToTypeSize[size]}>

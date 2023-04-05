@@ -1,4 +1,7 @@
 import { observer } from "mobx-react-lite";
+import { useFormState } from "react-final-form";
+import { IoCloseOutline } from "react-icons/io5";
+import { objectKeys } from "../../helpers/arrays";
 import { css } from "../../helpers/css";
 import { abbreviate, getEtherscanURL } from "../../helpers/strings";
 import Button from "../DSL/Button/Button";
@@ -18,17 +21,16 @@ const CuratorsView = observer(({ store }: CompetitionStoreProp) => {
         label={"Curators"}
         description={"Users who can remove memes from your competition"}
       />
-      <div className={css()}>
+      <div className={css("mt-2")}>
         {store.curators.isCuratorsVisible && (
           <Form onSubmit={async () => store.onCuratorsSubmit()}>
             <div className={css("flex", "flex-col", "gap-3", "mt-1")}>
-              {Array.from(Array(store.curators.count)).map((_, index) => {
-                const key = store.curators.getKey(index);
+              {store.curators.curators.map((curatorStore, index) => {
                 return (
                   <TextInput
                     block
-                    key={key}
-                    name={key}
+                    key={`curator-input-${index}`}
+                    name={`curator-input-${index}`}
                     label={
                       <div
                         className={css(
@@ -39,60 +41,58 @@ const CuratorsView = observer(({ store }: CompetitionStoreProp) => {
                           "items-baseline"
                         )}
                       >
-                        <Text>Curator {index + 1}</Text>
-                        {store.curators.curators[key].isLoading && (
+                        <Text>{index + 1}</Text>
+                        {curatorStore.isLoading && (
                           <Spinner size={SpinnerSize.xs} />
                         )}
-                        {store.curators.curators[key].address && (
+                        {curatorStore.address && (
                           <Link
                             isExternal
                             href={getEtherscanURL(
-                              store.curators.curators[key].address as string,
+                              curatorStore.address,
                               "address"
                             )}
                           >
                             <Text type={TextType.NoColor} size={TextSize.xs}>
-                              (
-                              {abbreviate(
-                                store.curators.curators[key].address as string
-                              )}
-                              )
+                              ({abbreviate(curatorStore.address)})
                             </Text>
                           </Link>
                         )}
-                        {store.curators.curators[key].ens && (
+                        {curatorStore.ens && (
                           <Link
                             isExternal
-                            href={getEtherscanURL(
-                              store.curators.curators[key].ens as string,
-                              "address"
-                            )}
+                            href={getEtherscanURL(curatorStore.ens, "address")}
                           >
                             <Text type={TextType.NoColor} size={TextSize.xs}>
-                              {store.curators.curators[key].ens as string}
+                              {curatorStore.ens}
                             </Text>
                           </Link>
                         )}
                       </div>
                     }
                     validate={[required, isEthereumAddressOrEns]}
-                    value={store.curators.curators[key].search}
-                    onChange={(value) =>
-                      (store.curators.curators[key].search = value)
-                    }
+                    value={curatorStore.search}
+                    onChange={(value) => (curatorStore.search = value)}
                     placeholder={"address or ens"}
+                    leftOfInput={
+                      <Button
+                        onClick={() => store.curators.removeCurator(index)}
+                      >
+                        <IoCloseOutline size={12} />
+                      </Button>
+                    }
                   />
                 );
               })}
             </div>
-            <CuratorButtons store={store} />
+            <AddCuratorButton store={store} />
             <Buttons store={store} />
           </Form>
         )}
       </div>
       {!store.curators.isCuratorsVisible && (
         <Form onSubmit={async () => store.onCuratorsSubmit()}>
-          <CuratorButtons store={store} />
+          <AddCuratorButton store={store} />
           <Buttons store={store} />
         </Form>
       )}
@@ -100,19 +100,19 @@ const CuratorsView = observer(({ store }: CompetitionStoreProp) => {
   );
 });
 
-const CuratorButtons = observer(({ store }: CompetitionStoreProp) => {
+const AddCuratorButton = observer(({ store }: CompetitionStoreProp) => {
+  const state = useFormState();
   return (
     <div className={css("flex", "items-center", "gap-2", "mt-2")}>
-      <Button
-        block
-        onClick={() => store.curators.add()}
-        disabled={!store.curators.canAdd}
-      >
-        + Curator
-      </Button>
-      {store.curators.canRemove && (
-        <Button block onClick={() => store.curators.remove()}>
-          - Curator
+      {store.curators.canAdd && (
+        <Button
+          block
+          onClick={() => store.curators.addCurator()}
+          disabled={
+            !store.curators.canAdd || objectKeys(state.errors).length > 0
+          }
+        >
+          + Curator
         </Button>
       )}
     </div>
