@@ -4,12 +4,14 @@ import Italic from "@tiptap/extension-italic";
 import Document from "@tiptap/extension-document";
 import Dropcursor from "@tiptap/extension-dropcursor";
 import Image from "@tiptap/extension-image";
+import Link from "@tiptap/extension-link";
 import Paragraph from "@tiptap/extension-paragraph";
 import Placeholder from "@tiptap/extension-placeholder";
 import TiptapText from "@tiptap/extension-text";
 import { Editor, EditorContent, useEditor } from "@tiptap/react";
 import { observer } from "mobx-react-lite";
 import { ReactNode } from "react";
+import { AiOutlineLink } from "react-icons/ai";
 import { TbBold, TbItalic } from "react-icons/tb";
 import { css } from "../../helpers/css";
 import AppStore from "../../store/App.store";
@@ -18,6 +20,8 @@ import Form from "../DSL/Form/Form";
 import { FormDisplay } from "../DSL/Form/FormControl";
 import MediaInput from "../DSL/Form/MediaInput";
 import { textFieldBaseStyles } from "../DSL/Input/Input";
+import { LinkType, linkTypeStyles } from "../DSL/Link/Link";
+import Text from "../DSL/Text/Text";
 import { CompetitionStoreProp } from "./CreateCompetition";
 
 const DescriptionView = observer(({ store }: CompetitionStoreProp) => {
@@ -40,6 +44,11 @@ const DescriptionView = observer(({ store }: CompetitionStoreProp) => {
         HTMLAttributes: {
           class: "font-bold",
         },
+      }),
+      Link.configure({
+        autolink: false,
+        openOnClick: true,
+        class: css(linkTypeStyles[LinkType.Primary]),
       }),
     ],
     editorProps: {
@@ -146,6 +155,13 @@ const Toolbar = ({ editor }: { editor: Editor }) => {
       >
         <TbItalic />
       </ToolbarItem>
+      <ToolbarItem
+        editor={editor}
+        isActiveName={"link"}
+        onClick={() => editor?.chain().focus().toggleLink().run()}
+      >
+        <AiOutlineLink />
+      </ToolbarItem>
     </div>
   );
 };
@@ -164,11 +180,11 @@ const ToolbarItem = ({
   return (
     <span
       className={css("cursor-pointer", "p-0.5", "rounded-xs", {
-        "bg-neutral-400": editor?.isActive(isActiveName),
+        "bg-neutral-400 dark:bg-neutral-700": editor?.isActive(isActiveName),
       })}
       onClick={() => onClick()}
     >
-      {children}
+      <Text>{children}</Text>
     </span>
   );
 };

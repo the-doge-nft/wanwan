@@ -15,7 +15,7 @@ const baseLinkStyles = css(
   "max-w-full"
 );
 
-const linkTypeStyles = {
+export const linkTypeStyles = {
   [LinkType.Primary]: css("text-red-800", "hover:underline"),
   [LinkType.Secondary]: css(
     "text-black",

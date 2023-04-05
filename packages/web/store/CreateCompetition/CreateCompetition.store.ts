@@ -72,7 +72,7 @@ export default class CreateCompetitionStore extends Navigable(EmptyClass) {
   constructor() {
     super();
     makeObservable(this);
-    this.currentView = CreateCompetitionView.Curators;
+    this.currentView = CreateCompetitionView.Description;
   }
 
   onCompetitionSubmit(values: any) {
