@@ -189,7 +189,9 @@ export class AppController {
   @UseGuards(AuthGuard)
   @Get('/wallet')
   async getWallet(@Req() { user }: AuthenticatedRequest) {
-    return this.alchemy.getNftsForOwner(user.address);
+    const nft = await this.alchemy.getNftsForOwner(user.address);
+    const erc20 = await this.alchemy.getTokenBalances(user.address);
+    return { nft, erc20 };
   }
 
   @UseGuards(AdminGuard)

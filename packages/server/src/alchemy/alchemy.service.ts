@@ -74,6 +74,10 @@ export class AlchemyService {
     return this.alchemy.nft.getNftsForOwner(address, options);
   }
 
+  getTokenBalances(address: string) {
+    return this.alchemy.core.getTokenBalances(address);
+  }
+
   getIsSpamContract(address: string) {
     return this.alchemy.nft.isSpamContract(address);
   }
