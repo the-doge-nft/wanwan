@@ -46,9 +46,11 @@ const DescriptionView = observer(({ store }: CompetitionStoreProp) => {
         },
       }),
       Link.configure({
-        autolink: false,
+        autolink: true,
         openOnClick: true,
-        class: css(linkTypeStyles[LinkType.Primary]),
+        HTMLAttributes: {
+          class: css(linkTypeStyles[LinkType.Primary], "cursor-pointer"),
+        },
       }),
     ],
     editorProps: {
