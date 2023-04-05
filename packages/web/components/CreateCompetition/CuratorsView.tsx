@@ -22,10 +22,10 @@ const CuratorsView = observer(({ store }: CompetitionStoreProp) => {
         description={"Users who can remove memes from your competition"}
       />
       <div className={css("mt-2")}>
-        {store.curators.isCuratorsVisible && (
+        {store.curatorStore.isCuratorsVisible && (
           <Form onSubmit={async () => store.onCuratorsSubmit()}>
             <div className={css("flex", "flex-col", "gap-3", "mt-1")}>
-              {store.curators.curators.map((curatorStore, index) => {
+              {store.curatorStore.curators.map((curatorStore, index) => {
                 return (
                   <TextInput
                     block
@@ -76,7 +76,7 @@ const CuratorsView = observer(({ store }: CompetitionStoreProp) => {
                     placeholder={"address or ens"}
                     leftOfInput={
                       <Button
-                        onClick={() => store.curators.removeCurator(index)}
+                        onClick={() => store.curatorStore.removeCurator(index)}
                       >
                         <IoCloseOutline size={12} />
                       </Button>
@@ -90,7 +90,7 @@ const CuratorsView = observer(({ store }: CompetitionStoreProp) => {
           </Form>
         )}
       </div>
-      {!store.curators.isCuratorsVisible && (
+      {!store.curatorStore.isCuratorsVisible && (
         <Form onSubmit={async () => store.onCuratorsSubmit()}>
           <AddCuratorButton store={store} />
           <Buttons store={store} />
@@ -104,12 +104,12 @@ const AddCuratorButton = observer(({ store }: CompetitionStoreProp) => {
   const state = useFormState();
   return (
     <div className={css("flex", "items-center", "gap-2", "mt-2")}>
-      {store.curators.canAdd && (
+      {store.curatorStore.canAdd && (
         <Button
           block
-          onClick={() => store.curators.addCurator()}
+          onClick={() => store.curatorStore.addCurator()}
           disabled={
-            !store.curators.canAdd || objectKeys(state.errors).length > 0
+            !store.curatorStore.canAdd || objectKeys(state.errors).length > 0
           }
         >
           + Curator

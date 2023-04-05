@@ -92,7 +92,6 @@ const RewardsView = observer(({ store }: CompetitionStoreProp) => {
                     name={addressKey}
                     validate={[required, isEthereumAddress]}
                   />
-                  <TextInput name={"duh"} validate={required} />
                 </div>
               </div>
             );

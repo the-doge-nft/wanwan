@@ -214,6 +214,10 @@ class _Http {
     return this.http.post("/ens/resolveName", { address });
   }
 
+  getWallet() {
+    return this.http.get("/wallet");
+  }
+
   static create() {
     return new this(env.api.baseUrl);
   }

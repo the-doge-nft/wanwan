@@ -166,6 +166,7 @@ export class AppController {
     return this.stats.get();
   }
 
+  @UseGuards(AuthGuard)
   @Post('/ens/resolveEns')
   async getEnsName(@Body() { ens }: { ens: string }) {
     const cache = await this.alchemy.resolveCachedEnsName(ens);
@@ -175,6 +176,7 @@ export class AppController {
     return this.alchemy.refreshResolveCachedEnsName(ens);
   }
 
+  @UseGuards(AuthGuard)
   @Post('/ens/resolveName')
   async resolveName(@Body() { address }: { address: string }) {
     const cache = await this.ethers.getCachedEnsName(address);
@@ -182,6 +184,12 @@ export class AppController {
       return cache;
     }
     return this.ethers.refreshEnsCache(address);
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('/wallet')
+  async getWallet(@Req() { user }: AuthenticatedRequest) {
+    return this.alchemy.getNftsForOwner(user.address);
   }
 
   @UseGuards(AdminGuard)

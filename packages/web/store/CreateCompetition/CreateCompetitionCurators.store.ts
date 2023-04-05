@@ -1,17 +1,12 @@
 import { action, computed, makeObservable, observable } from "mobx";
-import { EmptyClass } from "../../services/mixins";
-import { Reactionable } from "../../services/mixins/reactionable";
 import CuratorInputStore from "./CuratorInput.store";
-export default class CreateCompetitionCuratorsStore extends Reactionable(
-  EmptyClass
-) {
+export default class CreateCompetitionCuratorsStore {
   private maxCount = 3;
 
   @observable
   curators: CuratorInputStore[] = [];
 
   constructor() {
-    super();
     makeObservable(this);
   }
 
@@ -37,5 +32,9 @@ export default class CreateCompetitionCuratorsStore extends Reactionable(
   @action
   removeCurator(index: number) {
     this.curators.splice(index, 1);
+  }
+
+  destroy() {
+    this.curators.forEach((curator) => curator.destroy());
   }
 }

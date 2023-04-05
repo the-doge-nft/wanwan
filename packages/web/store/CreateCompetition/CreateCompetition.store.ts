@@ -9,6 +9,7 @@ import Http from "../../services/http";
 import { EmptyClass } from "../../services/mixins/index";
 import { Navigable } from "../../services/mixins/navigable";
 import CreateCompetitionCuratorsStore from "./CreateCompetitionCurators.store";
+import CreateCompetitionRewardsStore from "./CreateCompetitionRewards.store";
 
 export enum CreateCompetitionView {
   Name = "Name",
@@ -64,12 +65,19 @@ export default class CreateCompetitionStore extends Navigable(EmptyClass) {
   maxUserSubmissions = "";
 
   @observable
-  curators = new CreateCompetitionCuratorsStore();
+  curatorStore = new CreateCompetitionCuratorsStore();
+
+  @observable
+  rewardStore = new CreateCompetitionRewardsStore();
 
   constructor() {
     super();
     makeObservable(this);
     this.currentView = CreateCompetitionView.Curators;
+  }
+
+  init() {
+    this.rewardStore.init();
   }
 
   onCompetitionSubmit(values: any) {

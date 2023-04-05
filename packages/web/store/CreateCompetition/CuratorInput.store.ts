@@ -56,4 +56,8 @@ export default class CuratorInputStore extends Reactionable(EmptyClass) {
       }
     );
   }
+
+  destroy() {
+    return this.disposeReactions();
+  }
 }

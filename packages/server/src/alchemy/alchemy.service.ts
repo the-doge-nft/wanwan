@@ -70,6 +70,10 @@ export class AlchemyService {
     return this.alchemy.nft.getOwnersForNft(contractAddress, tokenId);
   }
 
+  getNftsForOwner(address: string, options?: GetNftsForOwnerOptions) {
+    return this.alchemy.nft.getNftsForOwner(address, options);
+  }
+
   getIsSpamContract(address: string) {
     return this.alchemy.nft.isSpamContract(address);
   }
