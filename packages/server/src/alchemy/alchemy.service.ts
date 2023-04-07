@@ -1,11 +1,17 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Alchemy, GetNftsForOwnerOptions, Network } from 'alchemy-sdk';
+import {
+  Alchemy,
+  GetNftsForOwnerOptions,
+  Network,
+  OwnedNft,
+} from 'alchemy-sdk';
 import { Config } from '../config/config';
 import { AppEnv } from './../config/config';
 
 @Injectable()
 export class AlchemyService {
+  private readonly logger = new Logger(AlchemyService.name);
   private alchemy: Alchemy;
   private pixelContractAddress: string;
 
@@ -42,13 +48,35 @@ export class AlchemyService {
     contractAddress: string,
     tokenId: string,
   ) {
-    // @next check pagination
+    let nfts: OwnedNft[] = [];
+    let pageKey: string | undefined | null = null;
+    const pageSize = 1;
+
     const balance = await this.alchemy.nft.getNftsForOwner(ownerAddress, {
       contractAddresses: [contractAddress],
+      pageSize,
     });
-    const tokenIdBalance = balance.ownedNfts.filter(
-      (item) => item.tokenId === tokenId,
-    )?.[0]?.balance;
+    this.logger.log('got inital nfts', balance.ownedNfts.length);
+    pageKey = balance.pageKey;
+    nfts = nfts.concat(balance.ownedNfts);
+
+    // to optimize -- check if balance is in here before concating
+    while (pageKey) {
+      this.logger.log('querying for next page nfts');
+      const nextBalance = await this.alchemy.nft.getNftsForOwner(ownerAddress, {
+        contractAddresses: [contractAddress],
+        pageKey,
+        pageSize,
+      });
+      nfts = [...nfts, ...nextBalance.ownedNfts];
+      this.logger.log('got nfts', nfts.length);
+      pageKey = nextBalance.pageKey;
+    }
+    console.log(nfts.map((item) => item.tokenId));
+    const tokenIdBalance = nfts.filter((item) => {
+      console.log(item.tokenId, tokenId);
+      return item.tokenId === tokenId;
+    })?.[0]?.balance;
     return tokenIdBalance || 0;
   }
 
