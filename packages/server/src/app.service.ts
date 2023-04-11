@@ -14,6 +14,8 @@ import { TwitterService } from './twitter/twitter.service';
 @Injectable()
 export class AppService {
   private readonly logger = new Logger(AppService.name);
+  private readonly WAN_WAN_TWITTER_NAME = 'wanwandotme';
+
   constructor(
     private readonly ethers: EthersService,
     private readonly prisma: PrismaService,
@@ -87,9 +89,9 @@ export class AppService {
         displayName = meme.user.ens;
       }
 
-      const replyText = `created by ${displayName} | @wanwan link: ${this.config.get(
-        'baseUrl',
-      )}/meme/${meme.id}`;
+      const replyText = `created by ${displayName} | @${
+        this.WAN_WAN_TWITTER_NAME
+      } link: ${this.config.get('baseUrl')}/meme/${meme.id}`;
       const reply = await this.twitter.reply(replyText, tweet.data.id);
       await this.prisma.socialMemeShares.create({
         data: { memeId: meme.id, platform: SocialPlatform.Twitter },
