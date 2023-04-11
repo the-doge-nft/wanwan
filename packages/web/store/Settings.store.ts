@@ -54,4 +54,8 @@ export default class SettingsStore {
   get isLightMode() {
     return this.colorMode === "light";
   }
+
+  toggleColorMode() {
+    return this.setColorMode(this.isLightMode ? "dark" : "light");
+  }
 }

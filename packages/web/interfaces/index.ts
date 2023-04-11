@@ -1,3 +1,5 @@
+import { OwnedNft, TokenBalance } from "alchemy-sdk";
+
 type DatetimeString = string;
 export type Nullable<T> = T | null;
 
@@ -180,7 +182,7 @@ export interface TweetReply {
 export interface SearchParams {
   count: number;
   offset: number;
-  sorts: { key: string; direction: string }[];
+  sorts: Array<{ key: string; direction: string }>;
   filters: any[];
 }
 export interface SearchResponse<T> {
@@ -191,6 +193,11 @@ export interface SearchResponse<T> {
 export interface ProfileDto {
   description: Nullable<string>;
   externalUrl: Nullable<string>;
+}
+
+export interface Wallet {
+  nft: Array<OwnedNft>;
+  erc20: Array<TokenBalance>;
 }
 
 export type NextString = Nullable<string> | undefined;

@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 3001",
+    "dev": "export NEXT_PUBLIC_SHA=$(git rev-parse HEAD) && next dev -p 3001",
     "build": "next build",
     "start": "next start -p 3001",
     "lint": "next lint"
@@ -30,6 +30,7 @@
     "@types/node": "18.11.9",
     "@types/react": "18.0.25",
     "@types/react-dom": "18.0.9",
+    "alchemy-sdk": "^2.7.0",
     "axios": "^1.2.2",
     "classnames": "^2.3.2",
     "date-fns": "^2.29.3",

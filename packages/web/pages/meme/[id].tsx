@@ -90,17 +90,9 @@ const MemeById = observer(({ meme }: MemeByIdProps) => {
             />
           </div>
           <div
-            className={css(
-              "grid",
-              "grid-cols-1",
-              "md:grid-cols-12",
-              "md:grid-rows-1",
-              "text-sm",
-              "mt-8",
-              "w-full"
-            )}
+            className={css("grid", "grid-cols-12", "text-sm", "mt-8", "w-full")}
           >
-            <div className={css("md:col-span-8", "flex", "flex-col")}>
+            <div className={css("col-span-8", "flex", "flex-col")}>
               {meme.name && <Text bold>{meme.name}</Text>}
               {meme.description && (
                 <Text size={TextSize.sm}>{meme.description}</Text>
@@ -108,7 +100,7 @@ const MemeById = observer(({ meme }: MemeByIdProps) => {
             </div>
             <div
               className={css(
-                "md:col-span-4",
+                "col-span-4",
                 "flex",
                 "justify-end",
                 "items-end",

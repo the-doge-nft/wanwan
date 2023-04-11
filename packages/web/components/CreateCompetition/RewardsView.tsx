@@ -1,5 +1,6 @@
 import { observer } from "mobx-react-lite";
 import { css } from "../../helpers/css";
+import { jsonify } from "../../helpers/strings";
 import Button from "../DSL/Button/Button";
 import Form from "../DSL/Form/Form";
 import { FormDisplay } from "../DSL/Form/FormControl";
@@ -12,6 +13,11 @@ const RewardsView = observer(({ store }: CompetitionStoreProp) => {
         label={"Rewards"}
         description={"Incentivise your competition by rewarding the top memes"}
       />
+      <div className={css("break-words")}>
+        {store.rewardStore.wallet?.nft.map((nft, index) => (
+          <div key={`${nft.contract}-${index}`}>{jsonify(nft)}</div>
+        ))}
+      </div>
       {store.rewardStore.isRewardsVisible && (
         <div className={css("flex", "flex-col", "gap-6")}>
           {store.rewardStore.rewards.map((rewardStore, index) => {

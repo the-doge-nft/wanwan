@@ -24,7 +24,12 @@ export const linkTypeStyles = {
     "hover:text-red-800",
     "dark:hover:text-red-800"
   ),
-  [LinkType.Tertiary]: css("text-neutral-800", "hover:text-neutral-400"),
+  [LinkType.Tertiary]: css(
+    "text-neutral-500",
+    "hover:text-neutral-800",
+    "dark:text-neutral-500",
+    "dark:hover:text-white"
+  ),
 };
 
 interface LinkProps {

@@ -2,7 +2,9 @@ import { observer } from "mobx-react-lite";
 import { isDev } from "../../environment/vars";
 import { css } from "../../helpers/css";
 import AppStore from "../../store/App.store";
-import { ButtonSize, ConnectButton, CreateButton } from "../DSL/Button/Button";
+import CreateButton from "../Button/CreateButton";
+import EllipsesButton from "../Button/EllipsesButton";
+import { ButtonSize, ConnectButton } from "../DSL/Button/Button";
 import Link, { LinkType } from "../DSL/Link/Link";
 import Text, { TextType } from "../DSL/Text/Text";
 import Logo from "../Logo/Logo";
@@ -32,9 +34,10 @@ const Header = observer(() => {
           </Link>
         ))}
       </div>
-      <div className={css("z-10", "flex", "items-center", "gap-2")}>
+      <div className={css("z-10", "flex", "gap-2", "items-stretch")}>
         {AppStore.auth.isAuthed && <CreateButton />}
         <ConnectButton size={ButtonSize.lg} />
+        <EllipsesButton />
       </div>
     </div>
   );
