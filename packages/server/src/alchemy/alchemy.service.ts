@@ -1,6 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Alchemy, GetNftsForOwnerOptions, Network } from 'alchemy-sdk';
+import {
+  Alchemy,
+  GetNftsForOwnerOptions,
+  Network,
+  TokenBalanceType,
+  TokenBalancesOptionsErc20,
+} from 'alchemy-sdk';
 import { CacheService } from '../cache/cache.service';
 import { Config } from '../config/config';
 import { AppEnv } from './../config/config';
@@ -70,12 +76,26 @@ export class AlchemyService {
     return this.alchemy.nft.getOwnersForNft(contractAddress, tokenId);
   }
 
-  getNftsForOwner(address: string, options?: GetNftsForOwnerOptions) {
-    return this.alchemy.nft.getNftsForOwner(address, options);
+  async getNftsForOwner(address: string, options?: GetNftsForOwnerOptions) {
+    const res = await this.paginate(
+      (params) =>
+        this.alchemy.nft.getNftsForOwner(address, { ...options, ...params }),
+      'ownedNfts',
+    );
+    return res;
   }
 
-  getTokenBalances(address: string) {
-    return this.alchemy.core.getTokenBalances(address);
+  async getTokenBalances(address: string, options?: TokenBalancesOptionsErc20) {
+    const res = await this.paginate(
+      (params) =>
+        this.alchemy.core.getTokenBalances(address, {
+          ...options,
+          ...params,
+          type: TokenBalanceType.ERC20,
+        }),
+      'tokenBalances',
+    );
+    return res;
   }
 
   getIsSpamContract(address: string) {
@@ -118,5 +138,28 @@ export class AlchemyService {
       address,
       this.secondsToCacheEns,
     );
+  }
+
+  async paginate<T>(
+    getData: (params?: { pageKey?: string }) => Promise<
+      {
+        pageKey?: string;
+      } & T
+    >,
+    dataKey: keyof T,
+  ): Promise<Array<T[keyof T]>> {
+    const res = await getData();
+    let pageKey = res.pageKey;
+    const data = res[dataKey] as Array<typeof res[keyof T]>;
+    while (pageKey) {
+      const { [dataKey]: newData, pageKey: newPageKey } = await getData({
+        pageKey,
+      });
+      //@next -- need type safety here for getData(), res[dataKey] MUST be an array
+      //@ts-ignore
+      data.push(...newData);
+      pageKey = newPageKey;
+    }
+    return data;
   }
 }
