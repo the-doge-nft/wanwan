@@ -72,7 +72,7 @@ const Home: React.FC<HomeProps> = observer(
                       <AspectRatio
                         className={css(
                           "bg-cover",
-                          "bg-center",
+                          "bg-top",
                           "bg-no-repeat",
                           "h-full"
                         )}
