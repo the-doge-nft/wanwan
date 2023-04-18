@@ -23,7 +23,7 @@
     "prisma:push": "npx prisma db push",
     "prisma:seed": "npx prisma db seed",
     "prisma:migrate": "npx prisma migrate dev",
-    "start:migrate:prod": "npx prisma migrate deploy && yarn start:prod",
+    "start:migrate:prod": "npx prisma migrate deploy && npm run start:prod",
     "start:prod": "node /app/dist/src/main.js"
   },
   "dependencies": {
