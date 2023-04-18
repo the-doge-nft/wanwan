@@ -1,1 +1,1 @@
-web: yarn run start:migrate:prod
+web: npm run start:migrate:prod
