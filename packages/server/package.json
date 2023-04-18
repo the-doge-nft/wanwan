@@ -1,10 +1,13 @@
 {
   "name": "server",
   "version": "0.0.1",
-  "description": "",
-  "author": "",
+  "description": "wanwan server",
+  "author": "@gainormather",
   "private": true,
   "license": "UNLICENSED",
+  "engines": {
+    "node": "16.x"
+  },
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
@@ -23,8 +26,8 @@
     "prisma:push": "npx prisma db push",
     "prisma:seed": "npx prisma db seed",
     "prisma:migrate": "npx prisma migrate dev",
-    "start:migrate:prod": "npx prisma migrate deploy && pnpm start:prod",
-    "start:prod": "node dist/src/main.js"
+    "start:migrate:prod": "npx prisma migrate deploy && yarn start:prod",
+    "start:prod": "node /app/dist/src/main.js"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.229.0",

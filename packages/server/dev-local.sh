@@ -80,29 +80,29 @@ down() {
 
 dbPush() {
     __spacedEcho "pushing db"
-    __runInApiContainer pnpm prisma:push
+    __runInApiContainer yarn prisma:push
 }
 
 dbSeed() {
     __spacedEcho "seeding db"
-    __runInApiContainer pnpm prisma:seed
+    __runInApiContainer yarn prisma:seed
 }
 
 dbGenerate() {
     __spacedEcho "generating prisma client"
-    __runInApiContainer pnpm prisma:generate
+    __runInApiContainer yarn prisma:generate
 }
 
 repl() {
-    __runInApiContainer pnpm start:repl
+    __runInApiContainer yarn start:repl
 }
 
 test() {
-    __runInApiContainer pnpm test
+    __runInApiContainer yarn test
 }
 
 e2e() {
-    __runInApiContainer pnpm test:e2e
+    __runInApiContainer yarn test:e2e
 }
 
 exec() {
