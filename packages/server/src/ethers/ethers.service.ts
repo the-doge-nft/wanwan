@@ -49,7 +49,7 @@ export class EthersService implements OnModuleInit {
     const logMessage = `Creating WS provider on network: ${
       this.network
     }:${this.config.get('appEnv')}`;
-    this.logger.log(logMessage);
+    console.log(logMessage);
     this.sentryClient.instance().captureMessage(logMessage);
 
     if (this.config.get('appEnv') === AppEnv.test) {
@@ -98,7 +98,7 @@ export class EthersService implements OnModuleInit {
 
     provider._websocket.on('close', (err) => {
       const logMessage = 'Ethers provider ws connection closed';
-      this.logger.error(logMessage);
+      console.log(logMessage);
       this.sentryClient.instance().captureMessage(logMessage);
 
       if (keepAliveInterval) {

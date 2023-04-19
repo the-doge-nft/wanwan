@@ -58,7 +58,7 @@ export class TwitterController {
         data: { twitterUsername: twitterUser.data.username },
       });
     } catch (e) {
-      this.logger.error(e);
+      console.log(e);
       this.sentryClient.instance().captureException(e);
       throw new BadRequestException('Could not auth with twitter');
     }

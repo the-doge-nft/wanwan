@@ -34,7 +34,6 @@ async function bootstrap() {
     credentials: true,
     allowedHeaders: 'Content-Type, Accept',
   };
-  console.log('CONFIG', config);
   if (isProd) {
     corsConfig.origin = /\.wanwan\.me$/;
   }

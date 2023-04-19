@@ -1,6 +1,6 @@
 import { HttpModule } from '@nestjs/axios';
 import { CacheModule } from '@nestjs/cache-manager';
-import { Module } from '@nestjs/common';
+import { Logger, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
 import { SentryModule } from '@travelerdev/nestjs-sentry';
@@ -44,6 +44,7 @@ import { VoteService } from './vote/vote.service';
     SentryModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (config: ConfigService<Config>) => {
+        Logger.log(`Sentry DSN: ${config.get('sentry').dns}`);
         return {
           dsn: config.get('sentry').dns,
           debug: true,
