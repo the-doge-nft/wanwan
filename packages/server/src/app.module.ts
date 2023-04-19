@@ -48,6 +48,7 @@ import { VoteService } from './vote/vote.service';
         return {
           dsn: config.get('sentry').dns,
           debug: true,
+          logLevels: ['log', 'error', 'warn', 'debug', 'verbose'],
         };
       },
       inject: [ConfigService],

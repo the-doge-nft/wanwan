@@ -43,7 +43,7 @@ export class AppService {
       try {
         await this.ethers.refreshEnsCache(address);
       } catch (e) {
-        console.log(e);
+        this.logger.error(e);
         this.sentryClient.instance().captureException(e);
       }
     }
@@ -103,7 +103,7 @@ export class AppService {
       this.logger.log(`tweetd meme: ${meme.id}`);
       return { meme, tweet, reply };
     } catch (e) {
-      console.log(e);
+      this.logger.error(e);
       this.sentryClient.instance().captureException(e);
     }
   }
