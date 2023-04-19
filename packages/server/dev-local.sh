@@ -19,19 +19,8 @@ __spacedEcho() {
 __removePreviousBuildMaybe() {
     if [ -d "$SCRIPTPATH/dist" ]; then
         __spacedEcho "removing old dist"
-        rm -r dist/
+        rm -r -f dist/
     fi
-}
-
-__spinDownApiMaybe() {
-    if [ $(__getApiContainerId) ]; then
-        __spacedEcho "api is up, spinning down first"
-        docker-compose stop api
-    fi
-}
-
-__getApiContainerId() {
-    echo "$(docker ps -aqf "name=meme-api")"
 }
 
 __depsUp() {
@@ -42,35 +31,18 @@ __depsUp() {
     docker-compose up -d redis
 }
 
-__runInApiContainer() {
-    local API_ID=$(__getApiContainerId)
-    if [[ $API_ID ]]; then
-        docker exec -it $API_ID "$@"
-    else
-        echo "api container is not running, please run ./dev-local.sh up"
-        return 1
-    fi
-}
-
 up() {
     __removePreviousBuildMaybe
-    __spinDownApiMaybe
     __depsUp
 
-    __spacedEcho "spinning up api"
-    if [[ "${1-'no'}" == "--build" ]]; then
-        __spacedEcho "building api image"
-        docker-compose up --build -d api
-    else
-        docker-compose up -d api
-    fi
+    __spacedEcho "migrating db"
+    dbMigrateDev
 
-    __spacedEcho "listening to logs"
-
-    dbPush
+    __spacedEcho "seeding db"
     dbSeed
 
-    docker-compose logs -f
+    __spacedEcho "spinning up api"
+    npm run start:dev
 }
 
 down() {
@@ -80,44 +52,43 @@ down() {
 
 dbPush() {
     __spacedEcho "pushing db"
-    __runInApiContainer yarn prisma:push
+    npm run prisma:push
 }
 
 dbSeed() {
     __spacedEcho "seeding db"
-    __runInApiContainer yarn prisma:seed
+    npm run prisma:seed
+}
+
+dbMigrateDev() {
+    __spacedEcho "migrating db"
+    npm run prisma:migrate:dev
 }
 
 dbGenerate() {
     __spacedEcho "generating prisma client"
-    __runInApiContainer yarn prisma:generate
+    npm run prisma:generate
 }
 
 repl() {
-    __runInApiContainer yarn start:repl
+    npm run start:repl
 }
 
 test() {
-    __runInApiContainer yarn test
+    npm run test
 }
 
 e2e() {
-    __runInApiContainer yarn test:e2e
-}
-
-exec() {
-    echo "$@"
-    __runInApiContainer "$@"
+    npm run test:e2e
 }
 
 usage() {
     cat <<HELP_USAGE
 Usage:
+
     dev-local.sh up:
         spins up containers for local development
         
-        --build: rebuilds the containers (this will be necessary if any new dependencies are added)
-
     dev-local.sh down:
         pulls down local development containers
 
@@ -127,6 +98,9 @@ Usage:
     dev-local.sh dbseed:
         seed data located in prisma/seed.ts to local database
 
+    dev-local.sh dbmigratedev:
+        create a prisma migration and apply it to the local database
+
     dev-local.sh repl:
         start a REPL for super dev powers. read more here: https://docs.nestjs.com/recipes/repl
 
@@ -135,9 +109,6 @@ Usage:
 
     dev-local.sh e2e:
         run integration tests
-
-    dev-local.sh exec:
-        run a comand in the api docker container
 HELP_USAGE
     exit 0
 }
@@ -165,6 +136,10 @@ case $1 in
 
 "dbgenerate")
     dbGenerate
+    ;;
+
+"dbmigratedev")
+    dbMigrateDev
     ;;
 
 "repl")

@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
+import { Request } from 'express';
 import { ObjectSchema } from 'joi';
 import SearchDto from 'src/dto/search.dto';
 import QueryBuilder from './query-builder';

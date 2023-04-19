@@ -297,6 +297,11 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
     return this.memes.filter((meme) => meme.id === this._memeIdToCurate)[0];
   }
 
+  @computed
+  get isActive() {
+    return this.competition.isActive;
+  }
+
   @action
   setMemeToCurate(id: number) {
     this.isCurateModalOpen = true;

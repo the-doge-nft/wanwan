@@ -7,13 +7,11 @@ import { Config } from './../config/config';
 
 export function getExpressRedisSession(app: INestApplication): any {
   const configService = app.get<ConfigService>(ConfigService<Config>);
-  const redisConfig = configService.get<Config['redis']>('redis');
+  const url = configService.get('redisUrl');
   const sessionConfig = configService.get<Config['session']>('session');
-  Logger.log(
-    `[REDIS SESSION] connecting -- host: ${redisConfig.host}, port: ${redisConfig.port}}`,
-  );
+  Logger.log(`[REDIS SESSION] connecting -- url string: ${url}`);
   const redisClient = createClient({
-    url: `redis://:@${redisConfig.host}:${redisConfig.port}`,
+    url,
     legacyMode: true,
   });
   redisClient

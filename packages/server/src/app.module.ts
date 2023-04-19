@@ -1,9 +1,11 @@
 import { HttpModule } from '@nestjs/axios';
-import { CacheModule, Module } from '@nestjs/common';
+import { CacheModule } from '@nestjs/cache-manager';
+import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
 import { SentryModule } from '@travelerdev/nestjs-sentry';
 import * as redisStore from 'cache-manager-redis-store';
+import { URL } from 'url';
 import { AlchemyService } from './alchemy/alchemy.service';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -34,29 +36,35 @@ import { VoteService } from './vote/vote.service';
 
 @Module({
   imports: [
-    ScheduleModule.forRoot(),
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [() => config],
+      load: [config],
     }),
+    ScheduleModule.forRoot(),
     SentryModule.forRootAsync({
       imports: [ConfigModule],
-      useFactory: async (config: ConfigService<Config>) => ({
-        dsn: config.get('sentry').dns,
-        debug: true,
-      }),
+      useFactory: async (config: ConfigService<Config>) => {
+        return {
+          dsn: config.get('sentry').dns,
+          debug: true,
+        };
+      },
       inject: [ConfigService],
     }),
     CacheModule.registerAsync<any>({
       isGlobal: true,
       inject: [ConfigService],
-      useFactory: (config: ConfigService<Config>) => ({
-        store: redisStore,
-        host: config.get('redis').host,
-        port: config.get('redis').port,
-        ttl: 10,
-        max: 10000,
-      }),
+      useFactory: (config: ConfigService<Config>) => {
+        const urlObj = new URL(config.get('redisUrl'));
+        return {
+          store: redisStore,
+          host: urlObj.hostname,
+          port: urlObj.port,
+          password: urlObj.password,
+          ttl: 10,
+          max: 10000,
+        };
+      },
     }),
     AuthModule,
     HttpModule,

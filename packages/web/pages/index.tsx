@@ -3,13 +3,12 @@ import { observer } from "mobx-react-lite";
 import { GetServerSideProps } from "next";
 import Head from "next/head";
 import { PropsWithChildren, useEffect, useMemo } from "react";
-import ActivePill from "../components/ActivePill/ActivePill";
-import AspectRatio from "../components/DSL/AspectRatio/AspectRatio";
 import AsyncGrid from "../components/DSL/AsyncGrid/AsyncGrid";
 import Link, { LinkType } from "../components/DSL/Link/Link";
 import Pane, { PaneType } from "../components/DSL/Pane/Pane";
 import Text, { TextSize, TextType } from "../components/DSL/Text/Text";
-import PreviewLink from "../components/PreviewLink/PreviewLink";
+import CompetitionPreviewLink from "../components/PreviewLink/CompetitionPreviewLink";
+import MemePreviewLink from "../components/PreviewLink/MemePreviewLink";
 import env from "../environment";
 import { css } from "../helpers/css";
 import { Competition, Meme, SearchParams, Stats } from "../interfaces";
@@ -61,47 +60,10 @@ const Home: React.FC<HomeProps> = observer(
                 noDataLabel={"No competitions found"}
               >
                 {store.competitions.map((comp) => (
-                  <div
+                  <CompetitionPreviewLink
                     key={`competition-preview-${comp.id}`}
-                    className={css("relative")}
-                  >
-                    <PreviewLink
-                      name={comp.name}
-                      href={`/competition/${comp.id}`}
-                    >
-                      <AspectRatio
-                        className={css(
-                          "bg-cover",
-                          "bg-center",
-                          "bg-no-repeat",
-                          "h-full"
-                        )}
-                        ratio={
-                          comp?.media
-                            ? `${comp.media.width}/${comp.media.height}`
-                            : "1/1"
-                        }
-                        style={
-                          comp.media
-                            ? { backgroundImage: `url(${comp.media.url})` }
-                            : {}
-                        }
-                      >
-                        {comp.isActive && (
-                          <div
-                            className={css(
-                              "flex",
-                              "items-end",
-                              "justify-end",
-                              "p-1"
-                            )}
-                          >
-                            <ActivePill />
-                          </div>
-                        )}
-                      </AspectRatio>
-                    </PreviewLink>
-                  </div>
+                    competition={comp}
+                  />
                 ))}
               </AsyncGrid>
             </Pane>
@@ -121,20 +83,10 @@ const Home: React.FC<HomeProps> = observer(
                 noDataLabel={"No memes found"}
               >
                 {store.memes.map((meme) => (
-                  <div key={`meme-preview-${meme.id}`}>
-                    <PreviewLink href={`/meme/${meme.id}`}>
-                      <AspectRatio
-                        className={css(
-                          "bg-cover",
-                          "bg-center",
-                          "bg-no-repeat",
-                          "h-full"
-                        )}
-                        ratio={`${meme.media.width}/${meme.media.height}`}
-                        style={{ backgroundImage: `url(${meme.media.url})` }}
-                      />
-                    </PreviewLink>
-                  </div>
+                  <MemePreviewLink
+                    key={`meme-preview-${meme.id}`}
+                    meme={meme}
+                  />
                 ))}
               </AsyncGrid>
             </Pane>

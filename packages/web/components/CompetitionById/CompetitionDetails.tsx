@@ -18,40 +18,26 @@ const CompetitionDetails: React.FC<{ store: CompetitionByIdStore }> = observer(
             </div>
           )}
           <div
-            className={css("flex", "justify-between", "items-end", "flex-wrap")}
+            className={css(
+              "grid",
+              "md:grid-cols-2",
+              "lg:grid-cols-3",
+              "gap-y-1"
+            )}
           >
-            <div className={css("flex", "gap-1", "items-center")}>
-              <Text size={TextSize.sm} bold>
-                Votes:
-              </Text>
-              <Text size={TextSize.sm}>{store.totalVotes}</Text>
-            </div>
-            <div className={css("flex", "gap-1", "items-center")}>
-              <Text size={TextSize.sm} bold>
-                Submissions:
-              </Text>
-              <Text size={TextSize.sm}>{store.memes.length}</Text>
-            </div>
-            <div className={css("flex", "gap-1", "items-center")}>
-              <Text size={TextSize.sm} bold>
-                Max Entries:
-              </Text>
-              <Text size={TextSize.sm}>
-                {store.competition.maxUserSubmissions}
-              </Text>
-            </div>
-            <div className={css("flex", "gap-1", "items-center")}>
-              <Text size={TextSize.sm} bold>
-                Ends at:
-              </Text>
-              <Text size={TextSize.sm}>
-                {format(new Date(store.competition.endsAt), "Pp")}
-              </Text>
-            </div>
-            <div className={css("flex", "gap-1", "items-center")}>
-              <Text size={TextSize.sm} bold>
-                Created by:
-              </Text>
+            <Detail label={"Votes:"}>{store.totalVotes}</Detail>
+            <Detail label={"Submissions:"}>{store.memes.length}</Detail>
+            <Detail label={"Entries:"}>
+              {store.competition.maxUserSubmissions}
+            </Detail>
+            <Detail label={"Created:"}>
+              {format(new Date(store.competition.createdAt), "Pp")}
+            </Detail>
+            <Detail label={"Ends:"}>
+              {format(new Date(store.competition.endsAt), "Pp")}
+            </Detail>
+
+            <Detail label={"By:"}>
               <Link
                 type={LinkType.Secondary}
                 href={`/profile/${store.competition.user.address}/competition`}
@@ -60,15 +46,33 @@ const CompetitionDetails: React.FC<{ store: CompetitionByIdStore }> = observer(
                   ? store.competition.user.ens
                   : abbreviate(store.competition.user.address)}
               </Link>
+            </Detail>
+          </div>
+          {store.isActive && (
+            <div className={css("text-right")}>
+              <ActivePill />
             </div>
-          </div>
-          <div className={css("text-right")}>
-            <ActivePill />
-          </div>
+          )}
         </div>
       </>
     );
   }
 );
+
+interface DetailProps {
+  label: string;
+  children: React.ReactNode;
+}
+
+const Detail = ({ label, children }: DetailProps) => {
+  return (
+    <div className={css("flex", "gap-1", "items-center")}>
+      <Text size={TextSize.sm} bold>
+        {label}
+      </Text>
+      <Text size={TextSize.sm}>{children}</Text>
+    </div>
+  );
+};
 
 export default CompetitionDetails;
