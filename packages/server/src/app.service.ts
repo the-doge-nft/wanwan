@@ -47,6 +47,7 @@ export class AppService {
         this.sentryClient.instance().captureException(e);
       }
     }
+    this.logger.log(`Done caching ${addresses.length} ens names`);
     return addresses;
   }
 
