@@ -53,8 +53,7 @@ async function bootstrap() {
 }
 
 bootstrap();
-process.on('uncaughtException', (err) => {
-  console.log('GOT UNCAUGHT EXCEPTION');
-  console.log(err);
+process.on('uncaughtException', (e) => {
+  console.error('GOT UNCAUGHT EXCEPTION', e);
   process.exit(1);
 });

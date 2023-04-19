@@ -4,8 +4,7 @@ import { Logger, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
 import { SentryModule } from '@travelerdev/nestjs-sentry';
-import * as redisStore from 'cache-manager-redis-store';
-import { URL } from 'url';
+import { redisStore } from 'cache-manager-redis-yet';
 import { AlchemyService } from './alchemy/alchemy.service';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -56,15 +55,13 @@ import { VoteService } from './vote/vote.service';
     CacheModule.registerAsync<any>({
       isGlobal: true,
       inject: [ConfigService],
-      useFactory: (config: ConfigService<Config>) => {
-        const urlObj = new URL(config.get('redisUrl'));
+      useFactory: async (config: ConfigService<Config>) => {
+        const store = await redisStore({
+          url: config.get('redisUrl'),
+          ttl: 0,
+        });
         return {
-          store: redisStore,
-          host: urlObj.hostname,
-          port: urlObj.port,
-          password: urlObj.password,
-          ttl: 10,
-          max: 10000,
+          store: () => store,
         };
       },
     }),
