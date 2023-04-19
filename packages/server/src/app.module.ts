@@ -58,7 +58,8 @@ import { VoteService } from './vote/vote.service';
       useFactory: async (config: ConfigService<Config>) => {
         const store = await redisStore({
           url: config.get('redisUrl'),
-          ttl: 0,
+          ttl: 1000 * 60 * 60 * 24 * 7,
+          pingInterval: 1000 * 60 * 60 * 2,
         });
         return {
           store: () => store,
