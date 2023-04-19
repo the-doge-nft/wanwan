@@ -59,7 +59,7 @@ import { VoteService } from './vote/vote.service';
         const store = await redisStore({
           url: config.get('redisUrl'),
           ttl: 1000 * 60 * 60 * 24 * 7,
-          pingInterval: 1000 * 60 * 60 * 2,
+          pingInterval: 1000 * 60 * 60,
         });
         return {
           store: () => store,
