@@ -8,11 +8,11 @@ import {
 import { observer } from "mobx-react-lite";
 import { GetServerSideProps } from "next";
 import Head from "next/head";
+import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
 import { BsDot, BsReddit, BsTwitter } from "react-icons/bs";
 import { RedditShareButton, TwitterShareButton } from "react-share";
-import AspectRatio from "../../components/DSL/AspectRatio/AspectRatio";
 import Button, { Submit } from "../../components/DSL/Button/Button";
 import Form from "../../components/DSL/Form/Form";
 import TextInput from "../../components/DSL/Form/TextInput";
@@ -74,19 +74,13 @@ const MemeById = observer(({ meme }: MemeByIdProps) => {
       </Head>
       <AppLayout>
         <div className={css("mt-4")}>
-          <div className={css("", "sm:px-24")}>
-            <AspectRatio
-              className={css(
-                "bg-contain",
-                "bg-center",
-                "bg-no-repeat",
-                "border-[1px]",
-                "border-black"
-              )}
-              ratio={`${meme.media.width}/${meme.media.height}`}
-              style={{
-                backgroundImage: `url(${meme.media.url})`,
-              }}
+          <div className={css("relative")}>
+            <Image
+              width={meme.media.width}
+              height={meme.media.height}
+              src={meme.media.url}
+              alt={meme.media.url}
+              className={css("m-auto", "w-full")}
             />
           </div>
           <div

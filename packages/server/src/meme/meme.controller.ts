@@ -14,6 +14,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { Request } from 'express';
 import SearchDto from 'src/dto/search.dto';
 import { AuthGuard } from '../auth/auth.guard';
 import { CommentService } from '../comment/comment.service';

@@ -32,7 +32,7 @@ export class AppService {
   }
 
   getIndex(): string {
-    return `🗣️ wan,wan 🗣️`;
+    return `🗣️ wan:wan 🗣️`;
   }
 
   @Cron(CronExpression.EVERY_HOUR)

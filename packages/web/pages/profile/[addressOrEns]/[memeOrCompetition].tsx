@@ -3,12 +3,12 @@ import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 import { useEffect, useMemo } from "react";
 import { FaMousePointer, FaTwitter } from "react-icons/fa";
-import AspectRatio from "../../../components/DSL/AspectRatio/AspectRatio";
 import AsyncGrid from "../../../components/DSL/AsyncGrid/AsyncGrid";
 import Link, { LinkType } from "../../../components/DSL/Link/Link";
 import Pane from "../../../components/DSL/Pane/Pane";
 import Text, { TextSize, TextType } from "../../../components/DSL/Text/Text";
-import PreviewLink from "../../../components/PreviewLink/PreviewLink";
+import CompetitionPreviewLink from "../../../components/PreviewLink/CompetitionPreviewLink";
+import MemePreviewLink from "../../../components/PreviewLink/MemePreviewLink";
 import { css } from "../../../helpers/css";
 import { abbreviate, getRainobwURL } from "../../../helpers/strings";
 import { Profile } from "../../../interfaces";
@@ -16,7 +16,6 @@ import AppLayout from "../../../layouts/App.layout";
 import Http from "../../../services/http";
 import redirectTo404 from "../../../services/redirect/404";
 import ProfileStore, { ProfileView } from "../../../store/Profile.store";
-
 interface ProfileProps {
   profile: Profile;
 }
@@ -158,48 +157,14 @@ const ProfilePage: React.FC<ProfileProps> = observer(({ profile }) => {
           <AsyncGrid isLoading={store.isLoading} data={store.data}>
             {store.view === ProfileView.Meme &&
               store.memes.map((meme) => (
-                <div key={`meme-preview-${meme.id}`}>
-                  <PreviewLink name={meme.name} href={`/meme/${meme.id}`}>
-                    <AspectRatio
-                      className={css(
-                        "bg-cover",
-                        "bg-center",
-                        "bg-no-repeat",
-                        "h-full"
-                      )}
-                      ratio={`${meme.media.width}/${meme.media.height}`}
-                      style={{ backgroundImage: `url(${meme.media.url})` }}
-                    />
-                  </PreviewLink>
-                </div>
+                <MemePreviewLink key={`meme-preview-${meme.id}`} meme={meme} />
               ))}
             {store.view === ProfileView.Competition &&
               store.competitions.map((comp) => (
-                <div key={`comp-preview-${comp.id}`}>
-                  <PreviewLink
-                    name={comp.name}
-                    href={`/competition/${comp.id}`}
-                  >
-                    <AspectRatio
-                      className={css(
-                        "bg-cover",
-                        "bg-center",
-                        "bg-no-repeat",
-                        "h-full"
-                      )}
-                      ratio={
-                        comp?.media
-                          ? `${comp.media.width}/${comp.media.height}`
-                          : "1/1"
-                      }
-                      style={
-                        comp.media
-                          ? { backgroundImage: `url(${comp.media.url})` }
-                          : {}
-                      }
-                    />
-                  </PreviewLink>
-                </div>
+                <CompetitionPreviewLink
+                  key={`comp-preview-${comp.id}`}
+                  competition={comp}
+                />
               ))}
           </AsyncGrid>
         </Pane>

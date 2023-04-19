@@ -1,5 +1,6 @@
 import { observer } from "mobx-react-lite";
 import { GetServerSideProps } from "next";
+import Image from "next/image";
 import { useMemo } from "react";
 import { TfiLayoutGrid2Alt } from "react-icons/tfi";
 import AspectRatio from "../components/DSL/AspectRatio/AspectRatio";
@@ -8,7 +9,7 @@ import InfiniteScroll from "../components/DSL/InfiniteScroll/InfiniteScroll";
 import Link, { LinkType } from "../components/DSL/Link/Link";
 import Pane, { PaneType } from "../components/DSL/Pane/Pane";
 import Text from "../components/DSL/Text/Text";
-import PreviewLink from "../components/PreviewLink/PreviewLink";
+import MemePreviewLink from "../components/PreviewLink/MemePreviewLink";
 import { css } from "../helpers/css";
 import { abbreviate } from "../helpers/strings";
 import { Meme, NextString, SearchParams } from "../interfaces";
@@ -58,24 +59,22 @@ const Memes = observer(({ memes, params, next }: MemesPageProps) => {
               </div>
             }
           >
-            <Link href={`/meme/${meme.id}`} className={css("w-full")}>
-              <AspectRatio
+            <Link
+              href={`/meme/${meme.id}`}
+              className={css("w-full", "relative")}
+            >
+              <Image
+                src={meme.media.url}
+                alt={meme.media.url}
+                width={meme.media.width}
+                height={meme.media.height}
                 className={css(
-                  "bg-contain",
-                  "bg-center",
-                  "bg-no-repeat",
-                  "h-full",
+                  "group-hover:border-red-800",
+                  "hover:border-red-800",
                   "border-[1px]",
                   "border-black",
-                  "mt-3",
-                  "mb-2",
-                  "group-hover:border-red-800",
-                  "hover:border-red-800"
+                  "w-full"
                 )}
-                ratio={`${meme.media.width}/${meme.media.height}`}
-                style={{
-                  backgroundImage: `url(${meme.media.url})`,
-                }}
               />
             </Link>
           </Pane>
@@ -88,20 +87,7 @@ const Memes = observer(({ memes, params, next }: MemesPageProps) => {
     return (
       <AsyncGrid isLoading={false} data={store.data}>
         {store.data.map((meme) => (
-          <div key={`meme-preview-${meme.id}`}>
-            <PreviewLink href={`/meme/${meme.id}`}>
-              <AspectRatio
-                className={css(
-                  "bg-cover",
-                  "bg-center",
-                  "bg-no-repeat",
-                  "h-full"
-                )}
-                ratio={`${meme.media.width}/${meme.media.height}`}
-                style={{ backgroundImage: `url(${meme.media.url})` }}
-              />
-            </PreviewLink>
-          </div>
+          <MemePreviewLink key={`meme-preview-${meme.id}`} meme={meme} />
         ))}
       </AsyncGrid>
     );

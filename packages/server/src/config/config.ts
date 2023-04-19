@@ -21,10 +21,7 @@ export interface Config {
     secret: string;
     name: string;
   };
-  redis: {
-    host: string;
-    port: number;
-  };
+  redisUrl: string;
   alchemy: {
     apiKey: string;
     wsEndpoint: string;
@@ -47,7 +44,7 @@ export interface Config {
   baseUrl: string;
 }
 
-const configSchema = Joi.object<Config>({
+export const configSchema = Joi.object<Config>({
   port: Joi.number().integer().required(),
   appEnv: Joi.string()
     .valid(AppEnv.development, AppEnv.staging, AppEnv.test, AppEnv.production)
@@ -63,10 +60,7 @@ const configSchema = Joi.object<Config>({
     secret: Joi.string().required(),
     name: Joi.string().required(),
   }).required(),
-  redis: Joi.object({
-    host: Joi.string().required(),
-    port: Joi.number().required(),
-  }).required(),
+  redisUrl: Joi.string().required(),
   alchemy: Joi.object({
     apiKey: Joi.string().required(),
     wsEndpoint: Joi.string().required(),
@@ -89,56 +83,45 @@ const configSchema = Joi.object<Config>({
   baseUrl: Joi.string().required(),
 });
 
-const config: Config = new (function () {
-  this.port = parseInt(process.env.PORT) || 3000;
-  this.appEnv = (process.env.APP_ENV as AppEnv) || AppEnv.development;
-  this.databaseUrl = process.env.DATABASE_URL;
-  this.aws = {
+// must return a getter here so process.env is not read at import time
+export default (): Config => ({
+  port: parseInt(process.env.PORT),
+  appEnv: process.env.APP_ENV as AppEnv,
+  databaseUrl: process.env.DATABASE_URL,
+  aws: {
     region: process.env.AWS_REGION,
     accessKey: process.env.AWS_ACCESS_KEY,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
     mediaBucketName: process.env.AWS_MEDIA_BUCKET_NAME,
-  };
-  this.session = {
+  },
+  session: {
     secret: process.env.SESSION_SECRET,
     name: process.env.SESSION_NAME,
-  };
-  this.redis = {
-    host: process.env.REDIS_HOST,
-    port: parseInt(process.env.REDIS_PORT),
-  };
-  this.alchemy = {
+  },
+  redisUrl: process.env.REDIS_URL,
+  alchemy: {
     apiKey: process.env.ALCHEMY_API_KEY,
     wsEndpoint: process.env.ALCHEMY_WS_ENDPOINT,
     httpEndpoint: process.env.ALCHEMY_HTTP_ENDPOINT,
-  };
-  this.sentry = {
+  },
+  sentry: {
     dns: process.env.SENTRY_DNS,
-  };
-  this.twitter = {
+  },
+  twitter: {
     consumerKey: process.env.TWITTER_CONSUMER_KEY,
     consumerSecret: process.env.TWITTER_CONSUMER_SECRET,
     accessToken: process.env.TWITTER_ACCESS_TOKEN,
     accessTokenSecret: process.env.TWITTER_ACCESS_TOKEN_SECRET,
     clientId: process.env.TWITTER_CLIENT_ID,
     clientSecret: process.env.TWITTER_CLIENT_SECRET,
-  };
-  this.isDev = this.appEnv === AppEnv.development;
-  this.isProd = this.appEnv === AppEnv.production;
-  this.isStaging = this.appEnv === AppEnv.staging;
-  this.baseUrl = 'https://wanwan.me';
-  if (this.isDev) {
-    this.baseUrl = 'http://localhost:3000';
-  } else if (this.isStaging) {
-    this.baseUrl = 'https://test.wanwan.me';
-  }
-})();
-
-class MissingEnvVarError extends Error {}
-
-const { error } = configSchema.validate(config);
-if (error) {
-  throw new MissingEnvVarError(error.message);
-}
-
-export default config;
+  },
+  isDev: process.env.APP_ENV === AppEnv.development,
+  isProd: process.env.APP_ENV === AppEnv.production,
+  isStaging: process.env.APP_ENV === AppEnv.staging,
+  baseUrl:
+    process.env.APP_ENV === AppEnv.development
+      ? 'http://localhost:3000'
+      : process.env.APP_ENV === AppEnv.staging
+      ? 'https://test.wanwan.me'
+      : 'https://wanwan.me',
+});
