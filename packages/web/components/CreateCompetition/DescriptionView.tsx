@@ -15,6 +15,7 @@ import Placeholder from "@tiptap/extension-placeholder";
 import TiptapText from "@tiptap/extension-text";
 import TextAlign from "@tiptap/extension-text-align";
 import TextStyle from "@tiptap/extension-text-style";
+import Underline from "@tiptap/extension-underline";
 import { Editor, EditorContent, useEditor } from "@tiptap/react";
 import { observer } from "mobx-react-lite";
 import { ReactNode } from "react";
@@ -23,6 +24,7 @@ import {
   AiOutlineAlignLeft,
   AiOutlineAlignRight,
   AiOutlineLink,
+  AiOutlineUnderline,
   AiOutlineUndo,
   AiOutlineUnorderedList,
 } from "react-icons/ai";
@@ -61,10 +63,15 @@ const DescriptionView = observer(({ store }: CompetitionStoreProp) => {
       History.configure({
         depth: 10,
       }),
+      Underline.configure({
+        HTMLAttributes: {
+          class: "underline",
+        },
+      }),
       Image.configure({
         inline: true,
         HTMLAttributes: {
-          class: "max-w-[200px] w-full",
+          class: "max-w-[200px] w-full mx-auto",
         },
       }),
       Placeholder.configure({
@@ -195,6 +202,9 @@ const Toolbar = ({ editor }: { editor: Editor }) => {
           editor.chain().focus().setColor(e.target.value).run();
         }}
       />
+      <ToolbarItem onClick={() => editor.commands.toggleUnderline()}>
+        <AiOutlineUnderline />
+      </ToolbarItem>
 
       <ToolbarItem
         editor={editor}
