@@ -15,7 +15,7 @@ import { useEffect } from "react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useAccount, useDisconnect, WagmiConfig } from "wagmi";
-import Text from "../components/DSL/Text";
+import Text from "../components/DSL/Text/Text";
 import { colors } from "../components/DSL/Theme";
 import { toastTransition } from "../components/DSL/Toast/Toast";
 import Modals from "../components/Modals/Modals";
