@@ -1,5 +1,5 @@
 import { HttpService } from '@nestjs/axios';
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { SocialPlatform } from '@prisma/client';
@@ -12,7 +12,7 @@ import { PrismaService } from './prisma.service';
 import { TwitterService } from './twitter/twitter.service';
 
 @Injectable()
-export class AppService {
+export class AppService implements OnModuleInit {
   private readonly logger = new Logger(AppService.name);
   private readonly WAN_WAN_TWITTER_NAME = 'wanwandotme';
 
@@ -29,6 +29,17 @@ export class AppService {
   onModuleInit() {
     this.logger.log('app service init');
     this.cacheEnsNames();
+    this.fillSocialShares();
+  }
+
+  async fillSocialShares() {
+    const memes = await this.meme.findMany({ orderBy: { createdAt: 'asc' } });
+    memes.pop();
+    for (const meme of memes) {
+      await this.prisma.socialMemeShares.create({
+        data: { memeId: meme.id, platform: SocialPlatform.Twitter },
+      });
+    }
   }
 
   getIndex(): string {
@@ -51,7 +62,7 @@ export class AppService {
     return addresses;
   }
 
-  @Cron(CronExpression.EVERY_3_HOURS)
+  // @Cron(CronExpression.EVERY_3_HOURS)
   async tweetMeme() {
     const memeSharedIds = await this.prisma.socialMemeShares.findMany({
       select: { memeId: true },

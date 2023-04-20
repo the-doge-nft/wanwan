@@ -22,7 +22,6 @@ export function getExpressRedisSession(app: INestApplication): any {
 
   const store = new RedisStore({
     client: redisClient,
-    // logErrors: true,
   });
   return session({
     store,
