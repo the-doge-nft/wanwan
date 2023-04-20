@@ -75,6 +75,9 @@ const Memes = observer(({ memes, params, next }: MemesPageProps) => {
                   "border-black",
                   "w-full"
                 )}
+                unoptimized={
+                  meme.media.url.split(".").pop()?.toLowerCase() === "gif"
+                }
               />
             </Link>
           </Pane>
