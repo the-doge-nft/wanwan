@@ -29,6 +29,7 @@ export class AppService implements OnModuleInit {
   onModuleInit() {
     this.logger.log('app service init');
     this.cacheEnsNames();
+    this.dropMostRecentShare();
   }
 
   async dropMostRecentShare() {
