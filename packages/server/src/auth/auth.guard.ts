@@ -20,6 +20,11 @@ export class AuthGuard implements CanActivate {
     }
 
     const formattedAddress = formatEthereumAddress(address);
+    console.log(formattedAddress);
+    const _user = await this.user.findMany({
+      where: { address: formattedAddress },
+    });
+    console.log(_user);
     const user = await this.user.upsert({
       where: { address: formattedAddress },
       create: { address: formattedAddress, lastAuthedAt: new Date() },
