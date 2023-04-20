@@ -1,6 +1,6 @@
 import { INestApplication, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import * as createRedisStore from 'connect-redis';
+import RedisStore from 'connect-redis';
 import * as session from 'express-session';
 import { createClient } from 'redis';
 import { Config } from './../config/config';
@@ -12,15 +12,20 @@ export function getExpressRedisSession(app: INestApplication): any {
   Logger.log(`[REDIS SESSION] connecting -- url string: ${url}`);
   const redisClient = createClient({
     url,
-    legacyMode: true,
+    legacyMode: false,
   });
+
   redisClient
     .connect()
     .then(() => Logger.log('[REDIS SESSION] connected'))
     .catch((e) => Logger.error(`[REDIS SESSION] ${e}`));
-  const RedisStore = createRedisStore(session);
+
+  const store = new RedisStore({
+    client: redisClient,
+    // logErrors: true,
+  });
   return session({
-    store: new RedisStore({ client: redisClient }),
+    store,
     name: sessionConfig.name,
     secret: sessionConfig.secret,
     resave: false,
