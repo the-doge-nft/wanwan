@@ -23,7 +23,7 @@ import {
   DESCRIPTION,
   TITLE,
   TWITTER_USERNAME,
-  getBaseUrl
+  getBaseUrl,
 } from "../../environment/vars";
 import { css } from "../../helpers/css";
 import { abbreviate } from "../../helpers/strings";
@@ -74,95 +74,82 @@ const MemeById = observer(({ meme }: MemeByIdProps) => {
         <meta name="twitter:site" content={TWITTER_USERNAME} />
       </Head>
       <AppLayout>
-        <div className={css("mt-4")}>
-          <div className={css("relative")}>
-            <Image
-              width={meme.media.width}
-              height={meme.media.height}
-              src={meme.media.url}
-              alt={meme.media.url}
-              className={css("m-auto", "w-full")}
-              unoptimized={extension?.toLocaleLowerCase() === "gif"}
-            />
+        <div className={css("relative")}>
+          <Image
+            width={meme.media.width}
+            height={meme.media.height}
+            src={meme.media.url}
+            alt={meme.media.url}
+            className={css("m-auto", "w-full")}
+            unoptimized={extension?.toLocaleLowerCase() === "gif"}
+          />
+        </div>
+        <div className={css("mt-8", "w-full", "flex", "justify-between")}>
+          <div className={css("col-span-8", "flex", "flex-col")}>
+            {meme.name && <Text bold>{meme.name}</Text>}
+            {meme.description && (
+              <Text size={TextSize.sm}>{meme.description}</Text>
+            )}
           </div>
           <div
-            className={css("grid", "grid-cols-12", "text-sm", "mt-8", "w-full")}
+            className={css(
+              "col-span-4",
+              "flex",
+              "justify-start",
+              "items-end",
+              "flex-col"
+            )}
           >
-            <div className={css("col-span-8", "flex", "flex-col")}>
-              {meme.name && <Text bold>{meme.name}</Text>}
-              {meme.description && (
-                <Text size={TextSize.sm}>{meme.description}</Text>
-              )}
-            </div>
-            <div
-              className={css(
-                "col-span-4",
-                "flex",
-                "justify-end",
-                "items-end",
-                "flex-col"
-              )}
-            >
-              <Link href={`/profile/${meme.user.address}/meme`}>
-                <Text type={TextType.NoColor} size={TextSize.sm}>
-                  {meme.user.ens
-                    ? meme.user.ens
-                    : abbreviate(meme.user.address)}
+            <Link href={`/profile/${meme.user.address}/meme`}>
+              <Text type={TextType.NoColor} size={TextSize.sm}>
+                {meme.user.ens ? meme.user.ens : abbreviate(meme.user.address)}
+              </Text>
+            </Link>
+            <div className={css("flex", "items-center", "gap-1", "mt-0.5")}>
+              <TwitterShareButton
+                url={url}
+                title={title}
+                className={css("mt-0.5")}
+              >
+                <Text type={TextType.Grey}>
+                  <BsTwitter size={16} />
                 </Text>
-              </Link>
-              <div className={css("flex", "items-center", "gap-1", "mt-0.5")}>
-              <div className={css("flex", "items-center", "gap-1", "mt-0.5")}>
-                <TwitterShareButton
-                  url={url}
-                  title={title}
-                  className={css("mt-0.5")}
-                >
-                  <Text type={TextType.Grey}>
-                    <BsTwitter size={16} />
-                  </Text>
-                  <Text type={TextType.Grey}>
-                    <BsTwitter size={16} />
-                  </Text>
-                </TwitterShareButton>
-                <RedditShareButton
-                  url={url}
-                  title={title}
-                  className={css("mt-0.5")}
-                >
-                  <Text type={TextType.Grey}>
-                    <BsReddit size={16} />
-                  </Text>
-                  <Text type={TextType.Grey}>
-                    <BsReddit size={16} />
-                  </Text>
-                </RedditShareButton>
-              </div>
+              </TwitterShareButton>
+              <RedditShareButton
+                url={url}
+                title={title}
+                className={css("mt-0.5")}
+              >
+                <Text type={TextType.Grey}>
+                  <BsReddit size={16} />
+                </Text>
+              </RedditShareButton>
             </div>
           </div>
-          <Text size={TextSize.xs} type={TextType.Grey}>
-            {format(new Date(meme.createdAt), "Pp")}
-          </Text>
-          <div className={css("mt-8")}>
-            <CommentForm
-              onSubmit={({ body }: { body: string }) =>
-                store.onCommentSubmit(body)
-              }
-            />
-            <div className={css("flex", "flex-col", "gap-3", "mt-8")}>
-              {store.comments
-                .filter((comment) => !comment.parentCommentId)
-                .map((comment) => (
-                  <MemeComment
-                    isRootNode={true}
-                    store={store}
-                    key={`meme-comment-${comment.id}`}
-                    comment={comment}
-                    onCommentSubmit={(body) =>
-                      store.onParentCommentSubmit(body, comment.id)
-                    }
-                  />
-                ))}
-            </div>
+        </div>
+        <Text size={TextSize.xs} type={TextType.Grey}>
+          {format(new Date(meme.createdAt), "Pp")}
+        </Text>
+        <div className={css("mt-8")}>
+          <CommentForm
+            onSubmit={({ body }: { body: string }) =>
+              store.onCommentSubmit(body)
+            }
+          />
+          <div className={css("flex", "flex-col", "gap-3", "mt-8")}>
+            {store.comments
+              .filter((comment) => !comment.parentCommentId)
+              .map((comment) => (
+                <MemeComment
+                  isRootNode={true}
+                  store={store}
+                  key={`meme-comment-${comment.id}`}
+                  comment={comment}
+                  onCommentSubmit={(body) =>
+                    store.onParentCommentSubmit(body, comment.id)
+                  }
+                />
+              ))}
           </div>
         </div>
       </AppLayout>
