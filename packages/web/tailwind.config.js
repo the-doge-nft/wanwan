@@ -10,7 +10,7 @@ module.exports = {
     extend: {
       colors: {},
       fontSize: {
-        xxs: "0.65rem",
+        xxs: ["0.65rem", "1rem"],
       },
     },
   },

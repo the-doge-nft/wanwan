@@ -14,8 +14,7 @@ const NameView = observer(({ store }: CompetitionStoreProp) => {
           block
           label={"Name"}
           name={"name"}
-          description={"This is the name of your competition"}
-          placeholder={"Something something doge..."}
+          description={"What should it be named?"}
           validate={required}
           value={store.name}
           onChange={(val) => (store.name = val)}

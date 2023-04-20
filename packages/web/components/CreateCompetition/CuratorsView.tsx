@@ -19,7 +19,7 @@ const CuratorsView = observer(({ store }: CompetitionStoreProp) => {
     <>
       <FormDisplay
         label={"Curators"}
-        description={"Users who can remove memes from your competition"}
+        description={"Who can remove memes from your competition?"}
       />
       <div className={css("mt-2")}>
         {store.curatorStore.isCuratorsVisible && (
@@ -75,11 +75,15 @@ const CuratorsView = observer(({ store }: CompetitionStoreProp) => {
                     onChange={(value) => (curatorStore.search = value)}
                     placeholder={"address or ens"}
                     leftOfInput={
-                      <Button
-                        onClick={() => store.curatorStore.removeCurator(index)}
-                      >
-                        <IoCloseOutline size={12} />
-                      </Button>
+                      <div className={css("flex", "items-center")}>
+                        <Button
+                          onClick={() =>
+                            store.curatorStore.removeCurator(index)
+                          }
+                        >
+                          <IoCloseOutline size={12} />
+                        </Button>
+                      </div>
                     }
                   />
                 );

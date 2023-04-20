@@ -121,12 +121,11 @@ body {
     }
 }
 
-.ProseMirror p.is-editor-empty:first-child::before {
-    color: #adb5bd;
-    content: attr(data-placeholder);
-    float: left;
-    height: 0;
-    pointer-events: none;
+.ProseMirror {
+    min-height: 8em;
+    max-height: 45em;
+    overflow-y: auto;
+    resize: vertical;
 }
 
 /* needed for tiptap bulleted lists */

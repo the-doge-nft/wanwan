@@ -11,14 +11,13 @@ import Image from "@tiptap/extension-image";
 import Link from "@tiptap/extension-link";
 import ListItem from "@tiptap/extension-list-item";
 import Paragraph from "@tiptap/extension-paragraph";
-import Placeholder from "@tiptap/extension-placeholder";
 import TiptapText from "@tiptap/extension-text";
 import TextAlign from "@tiptap/extension-text-align";
 import TextStyle from "@tiptap/extension-text-style";
 import Underline from "@tiptap/extension-underline";
 import { Editor, EditorContent, useEditor } from "@tiptap/react";
 import { observer } from "mobx-react-lite";
-import { ReactNode } from "react";
+import { ReactNode, useRef } from "react";
 import {
   AiOutlineAlignCenter,
   AiOutlineAlignLeft,
@@ -31,11 +30,11 @@ import {
 import { BiImage } from "react-icons/bi";
 import { TbBold, TbItalic } from "react-icons/tb";
 import { css } from "../../helpers/css";
-import AppStore from "../../store/App.store";
+import { Nullable } from "../../interfaces";
+import CreateCompetitionStore from "../../store/CreateCompetition/CreateCompetition.store";
 import Button, { Submit } from "../DSL/Button/Button";
 import Form from "../DSL/Form/Form";
 import { FormDisplay } from "../DSL/Form/FormControl";
-import MediaInput from "../DSL/Form/MediaInput";
 import { textFieldBaseStyles } from "../DSL/Input/Input";
 import { LinkType, linkTypeStyles } from "../DSL/Link/Link";
 import Text, { TextSize } from "../DSL/Text/Text";
@@ -73,9 +72,6 @@ const DescriptionView = observer(({ store }: CompetitionStoreProp) => {
         HTMLAttributes: {
           class: "max-w-[200px] w-full mx-auto",
         },
-      }),
-      Placeholder.configure({
-        placeholder: "Describe your competition",
       }),
       Italic.configure({
         HTMLAttributes: {
@@ -123,20 +119,20 @@ const DescriptionView = observer(({ store }: CompetitionStoreProp) => {
           <EditorContent editor={editor} />
           <div className={css("mt-1")}>
             <div
-              className={css("flex", "items-center", {
-                "justify-between": !store.showMediaInput,
-                "justify-end": store.showMediaInput,
-              })}
+            // className={css("flex", "items-center", {
+            //   "justify-between": !store.showMediaInput,
+            //   "justify-end": store.showMediaInput,
+            // })}
             >
-              {!store.showMediaInput && (
+              {/* {!store.showMediaInput && (
                 <Button onClick={() => (store.showMediaInput = true)}>
                   <BiImage />
                 </Button>
-              )}
-              {editor && <Toolbar editor={editor} />}
+              )} */}
+              {editor && <Toolbar store={store} editor={editor} />}
             </div>
 
-            {AppStore.settings.mimeTypeToExtension && store.showMediaInput && (
+            {/* {AppStore.settings.mimeTypeToExtension && store.showMediaInput && (
               <div className={css("mt-1")}>
                 <MediaInput
                   name={"file"}
@@ -174,7 +170,7 @@ const DescriptionView = observer(({ store }: CompetitionStoreProp) => {
                   )}
                 </div>
               </div>
-            )}
+            )} */}
           </div>
         </div>
         <div className={css("w-full", "flex", "gap-2", "mt-4")}>
@@ -188,117 +184,165 @@ const DescriptionView = observer(({ store }: CompetitionStoreProp) => {
   );
 });
 
-const Toolbar = ({ editor }: { editor: Editor }) => {
+const Toolbar = ({
+  editor,
+  store,
+}: {
+  editor: Editor;
+  store: CreateCompetitionStore;
+}) => {
+  const inputRef = useRef<Nullable<HTMLInputElement>>(null);
   return (
-    <div
-      className={css("flex", "justify-end", "items-center", "mt-1", "gap-1")}
-    >
-      <input
-        type="color"
-        className={css("w-[20px]", "h-[20px]", "bg-transparent")}
-        value={editor.getAttributes("textStyle").color}
-        onChange={(e) => {
-          console.log("color", e.target.value);
-          editor.chain().focus().setColor(e.target.value).run();
-        }}
-      />
-      <ToolbarItem onClick={() => editor.commands.toggleUnderline()}>
-        <AiOutlineUnderline />
+    <div className={css("flex", "justify-end")}>
+      <ToolbarItem onClick={() => editor.commands.undo()}>
+        <Text>
+          <AiOutlineUndo />
+        </Text>
       </ToolbarItem>
+      <div className={css("grid", "grid-rows-2", "grid-cols-6", "gap-[1px]")}>
+        <ToolbarItem onClick={() => inputRef?.current?.click()}>
+          <Text>
+            <BiImage />
+          </Text>
+          <input
+            ref={inputRef}
+            className={css("hidden")}
+            name="file"
+            type="file"
+            onChange={(e) => {
+              console.log(e.target.value);
+              store
+                .postNewImage(e.target.value as unknown as File)
+                .then(({ data }) => {
+                  editor?.chain().focus().setImage({ src: data.url }).run();
+                });
+            }}
+          />
+        </ToolbarItem>
+        <input
+          type="color"
+          className={css("w-[20px]", "h-[20px]", "bg-transparent")}
+          value={editor.getAttributes("textStyle").color}
+          onChange={(e) => {
+            console.log("color", e.target.value);
+            editor.chain().focus().setColor(e.target.value).run();
+          }}
+        />
 
-      <ToolbarItem
-        editor={editor}
-        onClick={() => editor.commands.setTextAlign("left")}
-      >
-        <AiOutlineAlignLeft />
-      </ToolbarItem>
-      <ToolbarItem
-        editor={editor}
-        onClick={() => editor.commands.setTextAlign("center")}
-      >
-        <AiOutlineAlignCenter />
-      </ToolbarItem>
-      <ToolbarItem
-        editor={editor}
-        onClick={() => editor.commands.setTextAlign("right")}
-      >
-        <AiOutlineAlignRight />
-      </ToolbarItem>
-
-      <ToolbarItem
-        editor={editor}
-        onClick={() => editor.commands.toggleHeading({ level: 1 })}
-      >
-        <Text size={TextSize.xs}>H1</Text>
-      </ToolbarItem>
-      <ToolbarItem
-        editor={editor}
-        onClick={() => editor.commands.toggleHeading({ level: 2 })}
-      >
-        <Text size={TextSize.xs}>H2</Text>
-      </ToolbarItem>
-      <ToolbarItem editor={editor} onClick={() => editor.commands.undo()}>
-        <AiOutlineUndo />
-      </ToolbarItem>
-      <ToolbarItem
-        editor={editor}
-        isActiveName={"bold"}
-        onClick={() => editor?.chain().focus().toggleBold().run()}
-      >
-        <TbBold />
-      </ToolbarItem>
-      <ToolbarItem
-        editor={editor}
-        isActiveName={"italic"}
-        onClick={() => editor?.chain().focus().toggleItalic().run()}
-      >
-        <TbItalic />
-      </ToolbarItem>
-      <ToolbarItem
-        editor={editor}
-        isActiveName={"link"}
-        onClick={() => editor?.chain().focus().toggleLink().run()}
-      >
-        <AiOutlineLink />
-      </ToolbarItem>
-      <ToolbarItem
-        editor={editor}
-        isActiveName={"bulletList"}
-        onClick={() => editor?.chain().focus().toggleBulletList().run()}
-      >
-        <AiOutlineUnorderedList />
-      </ToolbarItem>
+        <ToolbarItem
+          isActive={editor?.isActive({ textAlign: "left" })}
+          onClick={() => editor.chain().focus().setTextAlign("left").run()}
+        >
+          <Text>
+            <AiOutlineAlignLeft />
+          </Text>
+        </ToolbarItem>
+        <ToolbarItem
+          isActive={editor?.isActive({ textAlign: "center" })}
+          onClick={() => editor.chain().focus().setTextAlign("center").run()}
+        >
+          <Text>
+            <AiOutlineAlignCenter />
+          </Text>
+        </ToolbarItem>
+        <ToolbarItem
+          isActive={editor?.isActive({ textAlign: "right" })}
+          onClick={() => editor.chain().focus().setTextAlign("right").run()}
+        >
+          <Text>
+            <AiOutlineAlignRight />
+          </Text>
+        </ToolbarItem>
+        <ToolbarItem
+          isActive={editor?.isActive("bulletList")}
+          onClick={() => editor?.chain().focus().toggleBulletList().run()}
+        >
+          <Text>
+            <AiOutlineUnorderedList />
+          </Text>
+        </ToolbarItem>
+        <ToolbarItem
+          isActive={editor?.isActive("link")}
+          onClick={() => editor?.chain().focus().toggleLink().run()}
+        >
+          <Text>
+            <AiOutlineLink />
+          </Text>
+        </ToolbarItem>
+        <ToolbarItem
+          isActive={editor?.isActive("heading", { level: 1 })}
+          onClick={() => editor.commands.toggleHeading({ level: 1 })}
+        >
+          <Text size={TextSize.xs}>H1</Text>
+        </ToolbarItem>
+        <ToolbarItem
+          isActive={editor?.isActive("heading", { level: 2 })}
+          onClick={() => editor.commands.toggleHeading({ level: 2 })}
+        >
+          <Text size={TextSize.xs}>H2</Text>
+        </ToolbarItem>
+        <ToolbarItem
+          isActive={editor?.isActive("underline")}
+          onClick={() => editor.commands.toggleUnderline()}
+        >
+          <Text>
+            <AiOutlineUnderline />
+          </Text>
+        </ToolbarItem>
+        <ToolbarItem
+          isActive={editor?.isActive("bold")}
+          onClick={() => editor?.chain().focus().toggleBold().run()}
+        >
+          <Text>
+            <TbBold />
+          </Text>
+        </ToolbarItem>
+        <ToolbarItem
+          isActive={editor?.isActive("italic")}
+          onClick={() => editor?.chain().focus().toggleItalic().run()}
+        >
+          <Text>
+            <TbItalic />
+          </Text>
+        </ToolbarItem>
+      </div>
     </div>
   );
 };
 
 const ToolbarItem = ({
-  editor,
   onClick,
   children,
-  isActiveName,
+  isActive,
 }: {
-  editor: Editor;
   onClick: () => void;
   children: ReactNode;
-  isActiveName?: string;
+  isActive?: boolean;
 }) => {
   return (
     <span
       className={css(
         "cursor-pointer",
         "p-0.5",
-        "rounded-xs",
+        "rounded-sm",
         "flex",
         "items-center",
+        "justify-center",
+        "hover:bg-gray-100",
+        "border-[1px]",
+        "hover:border-black",
+        "dark:hover:border-neutral-700",
+        "dark:hover:bg-neutral-900",
+
         {
-          "bg-neutral-400 dark:bg-neutral-700":
-            isActiveName && editor?.isActive(isActiveName),
+          "bg-gray-100 dark:bg-neutral-900 border-black dark:border-neutral-700":
+            isActive,
+          "border-transparent": !isActive,
         }
       )}
       onClick={() => onClick()}
     >
-      <Text>{children}</Text>
+      {children}
     </span>
   );
 };

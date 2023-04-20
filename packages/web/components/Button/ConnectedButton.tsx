@@ -1,11 +1,11 @@
 import { observer } from "mobx-react-lite";
+import Link from "next/link";
 import { useState } from "react";
 import { useDisconnect } from "wagmi";
 import { css } from "../../helpers/css";
 import AppStore from "../../store/App.store";
 import Button, { ButtonProps } from "../DSL/Button/Button";
 import Dropdown, { DropdownItem } from "../DSL/Dropdown/Dropdown";
-import Link from "../DSL/Link/Link";
 import Text, { TextSize, TextType } from "../DSL/Text/Text";
 
 interface ConnectedButtonProps extends Pick<ButtonProps, "size" | "type"> {
@@ -44,7 +44,7 @@ export const ConnectedButton = observer(
           </Button>
         }
       >
-        <div className={css("flex", "flex-col", "gap-2")}>
+        <div className={css("flex", "flex-col", "gap-2", "mt-1.5")}>
           <DropdownItem>
             <Link
               href={`/profile/${account.address}/meme`}

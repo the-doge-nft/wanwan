@@ -11,7 +11,7 @@ const RewardsView = observer(({ store }: CompetitionStoreProp) => {
     <Form onSubmit={async () => store.onRewardsSubmit()}>
       <FormDisplay
         label={"Rewards"}
-        description={"Incentivise your competition by rewarding the top memes"}
+        description={"What are you offering for the best memes?"}
       />
       <div className={css("break-words")}>
         {store.rewardStore.wallet?.nft.map((nft, index) => (

@@ -2,6 +2,7 @@ import { PropsWithChildren } from "react";
 import { css } from "../../../helpers/css";
 
 export enum TextSize {
+  xxs = "xxs",
   xs = "xs",
   sm = "sm",
   lg = "lg",
@@ -25,6 +26,7 @@ interface TextProps {
 }
 
 const textSizeStyles = {
+  [TextSize.xxs]: css("text-xxs"),
   [TextSize.xs]: css("text-xs"),
   [TextSize.sm]: css("text-sm"),
   [TextSize.lg]: css("text-base"),

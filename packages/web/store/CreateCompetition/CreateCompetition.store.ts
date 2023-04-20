@@ -36,16 +36,10 @@ export default class CreateCompetitionStore extends Navigable(EmptyClass) {
   isLoading = false;
 
   @observable
-  file: Nullable<File> = null;
-
-  @observable
-  showMediaInput = false;
-
-  @observable
   endsAt: string = this.defaultEndsAtDate;
 
   @observable
-  maxUserSubmissions = "";
+  maxUserSubmissions = "1";
 
   @observable
   curatorStore = new CreateCompetitionCuratorsStore();
@@ -142,6 +136,8 @@ export default class CreateCompetitionStore extends Navigable(EmptyClass) {
   onRewardsSubmit() {
     this.currentView = CreateCompetitionView.Review;
   }
+
+  onFileAccepted(file: File) {}
 
   postNewImage(file: File) {
     const formData = new FormData();

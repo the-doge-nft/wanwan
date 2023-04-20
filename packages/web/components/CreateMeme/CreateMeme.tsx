@@ -1,4 +1,5 @@
 import { observer } from "mobx-react-lite";
+import { ReactNode } from "react";
 import {
   RedditIcon,
   RedditShareButton,
@@ -17,50 +18,55 @@ import TextInput from "../DSL/Form/TextInput";
 import { required } from "../DSL/Form/validation";
 import Text, { TextSize } from "../DSL/Text/Text";
 
-const CreateMeme: React.FC<{ store: CreateMemeStore }> = observer(
-  ({ store }) => {
-    return (
-      <>
-        {store.currentView === CreateMemeView.Create && (
-          <CreateMemeForm store={store} />
-        )}
-        {store.currentView === CreateMemeView.Success && (
-          <Success store={store} />
-        )}
-      </>
-    );
-  }
-);
+const CreateMeme: React.FC<{
+  store: CreateMemeStore;
+  formButtons?: ReactNode;
+}> = observer(({ store, formButtons }) => {
+  return (
+    <>
+      {store.currentView === CreateMemeView.Create && (
+        <CreateMemeForm store={store} formButtons={formButtons} />
+      )}
+      {store.currentView === CreateMemeView.Success && (
+        <Success store={store} />
+      )}
+    </>
+  );
+});
 
-const CreateMemeForm: React.FC<{ store: CreateMemeStore }> = observer(
-  ({ store }) => {
-    return (
-      <Form onSubmit={(values) => store.onMemeSubmit(values)}>
-        <div className={css("flex", "flex-col", "gap-2")}>
-          <TextInput
-            block
-            name={"name"}
-            label={"Name"}
+const CreateMemeForm: React.FC<{
+  store: CreateMemeStore;
+  formButtons?: ReactNode;
+}> = observer(({ store, formButtons }) => {
+  return (
+    <Form onSubmit={(values) => store.onMemeSubmit(values)}>
+      <div className={css("flex", "flex-col", "gap-2")}>
+        <TextInput
+          block
+          name={"name"}
+          label={"Name"}
+          disabled={store.isSubmitLoading}
+        />
+        <TextInput
+          block
+          name={"description"}
+          label={"Description"}
+          disabled={store.isSubmitLoading}
+        />
+        {AppStore.settings.mimeTypeToExtension && (
+          <MediaInput
+            label={"Media"}
+            name={"file"}
+            validate={required}
+            onDropAccepted={(file) => store.onFileDrop(file)}
+            onClear={() => store.onFileClear()}
+            maxSizeBytes={AppStore.settings.maxSizeBytes}
+            acceptedMimeToExtension={AppStore.settings.mimeTypeToExtension}
             disabled={store.isSubmitLoading}
           />
-          <TextInput
-            block
-            name={"description"}
-            label={"Description"}
-            disabled={store.isSubmitLoading}
-          />
-          {AppStore.settings.mimeTypeToExtension && (
-            <MediaInput
-              label={"Media"}
-              name={"file"}
-              validate={required}
-              onDropAccepted={(file) => store.onFileDrop(file)}
-              onClear={() => store.onFileClear()}
-              maxSizeBytes={AppStore.settings.maxSizeBytes}
-              acceptedMimeToExtension={AppStore.settings.mimeTypeToExtension}
-              disabled={store.isSubmitLoading}
-            />
-          )}
+        )}
+        {formButtons && formButtons}
+        {!formButtons && (
           <div className={css("mt-4", "flex", "gap-2")}>
             <Submit block isLoading={store.isSubmitLoading} />
             <Button
@@ -71,11 +77,11 @@ const CreateMemeForm: React.FC<{ store: CreateMemeStore }> = observer(
               Cancel
             </Button>
           </div>
-        </div>
-      </Form>
-    );
-  }
-);
+        )}
+      </div>
+    </Form>
+  );
+});
 
 const Success: React.FC<{ store: CreateMemeStore }> = observer(({ store }) => {
   return (
