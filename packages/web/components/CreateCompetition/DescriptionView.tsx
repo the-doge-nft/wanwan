@@ -17,7 +17,7 @@ import TextStyle from "@tiptap/extension-text-style";
 import Underline from "@tiptap/extension-underline";
 import { Editor, EditorContent, useEditor } from "@tiptap/react";
 import { observer } from "mobx-react-lite";
-import { ReactNode, useRef } from "react";
+import { ChangeEvent, ReactNode, useRef } from "react";
 import {
   AiOutlineAlignCenter,
   AiOutlineAlignLeft,
@@ -31,6 +31,7 @@ import { BiImage } from "react-icons/bi";
 import { TbBold, TbItalic } from "react-icons/tb";
 import { css } from "../../helpers/css";
 import { Nullable } from "../../interfaces";
+import AppStore from "../../store/App.store";
 import CreateCompetitionStore from "../../store/CreateCompetition/CreateCompetition.store";
 import Button, { Submit } from "../DSL/Button/Button";
 import Form from "../DSL/Form/Form";
@@ -205,18 +206,19 @@ const Toolbar = ({
             <BiImage />
           </Text>
           <input
+            accept={AppStore.settings.acceptedMimeTypes.join(", ")}
             ref={inputRef}
             className={css("hidden")}
             name="file"
             type="file"
-            onChange={(e) => {
-              console.log(e.target.value);
-              store
-                .postNewImage(e.target.value as unknown as File)
-                .then(({ data }) => {
-                  editor?.chain().focus().setImage({ src: data.url }).run();
-                });
-            }}
+            multiple
+            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+              store.onFileChange(e.target.files, (responses) => {
+                responses.forEach(({ data }) =>
+                  editor?.chain().focus().setImage({ src: data.url }).run()
+                );
+              })
+            }
           />
         </ToolbarItem>
         <input

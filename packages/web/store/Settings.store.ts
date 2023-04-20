@@ -90,4 +90,9 @@ export default class SettingsStore {
   toggleZoom() {
     this.setZoom(this.isZoomed ? Zoom.normal : Zoom.zoomed);
   }
+
+  @computed
+  get acceptedMimeTypes() {
+    return this.mediaRequirements ? Object.keys(this.mediaRequirements) : [];
+  }
 }

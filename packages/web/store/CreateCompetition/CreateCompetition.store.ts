@@ -1,8 +1,9 @@
 import { JSONContent } from "@tiptap/react";
+import { AxiosResponse } from "axios";
 import { add } from "date-fns";
 import { computed, makeObservable, observable } from "mobx";
 import { dateToDateTimeLocalInput } from "../../components/DSL/Form/DateInput";
-import { Nullable } from "../../interfaces/index";
+import { Media, Nullable } from "../../interfaces/index";
 import Http from "../../services/http";
 import { EmptyClass } from "../../services/mixins/index";
 import { Navigable } from "../../services/mixins/navigable";
@@ -144,5 +145,23 @@ export default class CreateCompetitionStore extends Navigable(EmptyClass) {
     formData.set("file", file);
     this.isLoading = true;
     return Http.postMedia(formData).finally(() => (this.isLoading = false));
+  }
+
+  onFileChange(
+    targetFiles: Nullable<FileList>,
+    onSuccess: (responses: AxiosResponse<Media, any>[]) => void
+  ) {
+    if (targetFiles) {
+      this.isLoading = true;
+      Promise.all(
+        Object.values(targetFiles).map((file) => {
+          return this.postNewImage(file);
+        })
+      )
+        .then((responses) => {
+          onSuccess(responses);
+        })
+        .finally(() => (this.isLoading = false));
+    }
   }
 }
