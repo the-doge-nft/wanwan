@@ -12,13 +12,13 @@ const nextConfig = {
       {
         protocol: "https",
         hostname: "dev-meme-media.s3.us-east-2.amazonaws.com",
-        pathname: "/**",
+        pathname: "/*",
         port: "",
       },
       {
         protocol: "https",
         hostname: "prod-meme-media.s3.us-east-2.amazonaws.com",
-        pathname: "/**",
+        pathname: "/*",
         port: "",
       },
     ],
