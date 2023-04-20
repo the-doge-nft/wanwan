@@ -8,6 +8,7 @@ interface MemePreviewLinkProps {
 }
 
 const MemePreviewLink = ({ meme }: MemePreviewLinkProps) => {
+  const extension = meme.media.url.split(".").pop();
   return (
     <PreviewLink href={`/meme/${meme.id}`}>
       <Image
@@ -15,6 +16,7 @@ const MemePreviewLink = ({ meme }: MemePreviewLinkProps) => {
         alt={meme.media.url}
         src={meme.media.url}
         className={css("object-top", "object-cover")}
+        unoptimized={extension?.toLocaleLowerCase() === "gif"}
       />
     </PreviewLink>
   );
