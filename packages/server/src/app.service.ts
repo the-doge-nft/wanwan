@@ -29,16 +29,6 @@ export class AppService implements OnModuleInit {
   onModuleInit() {
     this.logger.log('app service init');
     this.cacheEnsNames();
-    this.dropMostRecentShare();
-  }
-
-  async dropMostRecentShare() {
-    const socialShare = await this.prisma.socialMemeShares.findMany({
-      orderBy: { createdAt: 'desc' },
-    });
-    await this.prisma.socialMemeShares.delete({
-      where: { id: socialShare[0].id },
-    });
   }
 
   getIndex(): string {
