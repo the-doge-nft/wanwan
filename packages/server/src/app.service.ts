@@ -29,17 +29,6 @@ export class AppService implements OnModuleInit {
   onModuleInit() {
     this.logger.log('app service init');
     this.cacheEnsNames();
-    this.fillSocialShares();
-  }
-
-  async fillSocialShares() {
-    const memes = await this.meme.findMany({ orderBy: { createdAt: 'asc' } });
-    memes.pop();
-    for (const meme of memes) {
-      await this.prisma.socialMemeShares.create({
-        data: { memeId: meme.id, platform: SocialPlatform.Twitter },
-      });
-    }
   }
 
   getIndex(): string {
@@ -62,7 +51,7 @@ export class AppService implements OnModuleInit {
     return addresses;
   }
 
-  // @Cron(CronExpression.EVERY_3_HOURS)
+  @Cron(CronExpression.EVERY_3_HOURS)
   async tweetMeme() {
     const memeSharedIds = await this.prisma.socialMemeShares.findMany({
       select: { memeId: true },
@@ -104,9 +93,9 @@ export class AppService implements OnModuleInit {
         displayName = meme.user.ens;
       }
 
-      const replyText = `created by ${displayName} | @${
-        this.WAN_WAN_TWITTER_NAME
-      } link: ${this.config.get('baseUrl')}/meme/${meme.id}`;
+      const replyText = `created by ${displayName} | link: ${this.config.get(
+        'baseUrl',
+      )}/meme/${meme.id}`;
       const reply = await this.twitter.reply(replyText, tweet.data.id);
       await this.prisma.socialMemeShares.create({
         data: { memeId: meme.id, platform: SocialPlatform.Twitter },
