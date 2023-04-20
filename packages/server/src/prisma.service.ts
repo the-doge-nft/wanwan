@@ -24,10 +24,22 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
     try {
       await this.$connect();
       this.logger.log('Connected to database');
+      this.logger.log('resetting sequences');
+      await this.ONLY_DO_THIS_ONCE();
+      this.logger.log('sequences reset');
     } catch (e) {
       this.logger.error('Could not connect to database');
       this.logger.error(e);
     }
+  }
+
+  async ONLY_DO_THIS_ONCE() {
+    await this
+      .$executeRaw`SELECT setval(pg_get_serial_sequence('"User"', 'id'), coalesce(max(id)+1, 1), false) FROM "User";`;
+    await this
+      .$executeRaw`SELECT setval(pg_get_serial_sequence('"Media"', 'id'), coalesce(max(id)+1, 1), false) FROM "Media";`;
+    await this
+      .$executeRaw`SELECT setval(pg_get_serial_sequence('"Meme"', 'id'), coalesce(max(id)+1, 1), false) FROM "Meme";`;
   }
 
   async enableShutdownHooks(app: INestApplication) {
