@@ -35,8 +35,10 @@ up() {
     __removePreviousBuildMaybe
     __depsUp
 
+    sleep 2
+
     dbMigrateDev
-    # dbSeed
+    dbSeed
 
     __spacedEcho "spinning up api"
     npm run start:dev

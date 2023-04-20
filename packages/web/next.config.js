@@ -8,20 +8,6 @@ const nextConfig = {
       "dev-meme-media.s3.us-east-2.amazonaws.com",
       "prod-meme-media.s3.us-east-2.amazonaws.com",
     ],
-    remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "dev-meme-media.s3.us-east-2.amazonaws.com",
-        pathname: "/*",
-        port: "",
-      },
-      {
-        protocol: "https",
-        hostname: "prod-meme-media.s3.us-east-2.amazonaws.com",
-        pathname: "/*",
-        port: "",
-      },
-    ],
   },
 };
 

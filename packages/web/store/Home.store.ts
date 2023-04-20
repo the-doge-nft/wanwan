@@ -16,17 +16,20 @@ export default class HomeStore {
   @observable
   isCompetitionsLoading = false;
 
-  constructor(
-    memes: Meme[],
-    competitions: Competition[],
-    private readonly params: SearchParams
-  ) {
+  private params: SearchParams = {
+    count: 12,
+    offset: 0,
+    sorts: [{ key: "createdAt", direction: "desc" }],
+    filters: [],
+  };
+
+  constructor() {
     makeObservable(this);
-    this.memes = memes;
-    this.competitions = competitions;
   }
 
   init() {
+    this.getMemes();
+    this.getCompetitions();
     AppStore.events.subscribe(
       AppStore.events.events.MEME_CREATED,
       this,
