@@ -35,11 +35,8 @@ up() {
     __removePreviousBuildMaybe
     __depsUp
 
-    __spacedEcho "migrating db"
     dbMigrateDev
-
-    __spacedEcho "seeding db"
-    dbSeed
+    # dbSeed
 
     __spacedEcho "spinning up api"
     npm run start:dev

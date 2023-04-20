@@ -10,7 +10,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AppService } from './app.service';
-import { AdminGuard, ADMIN_ADDRESSES } from './auth/admin.guard';
+import { ADMIN_ADDRESSES, AdminGuard } from './auth/admin.guard';
 import { AuthGuard } from './auth/auth.guard';
 import { CompetitionService } from './competition/competition.service';
 import ProfileDto from './dto/profile.dto';

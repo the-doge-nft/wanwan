@@ -4,7 +4,10 @@ const nextConfig = {
   reactStrictMode: false,
   swcMinify: true,
   images: {
-    domains: ["dev-meme-media.s3.us-east-2.amazonaws.com"],
+    domains: [
+      "dev-meme-media.s3.us-east-2.amazonaws.com",
+      "prod-meme-media.s3.us-east-2.amazonaws.com",
+    ],
   },
 };
 
