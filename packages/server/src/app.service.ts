@@ -32,11 +32,11 @@ export class AppService implements OnModuleInit {
   }
 
   async dropMostRecentShare() {
-    const socialShare = await this.prisma.socialMemeShares.findFirst({
+    const socialShare = await this.prisma.socialMemeShares.findMany({
       orderBy: { createdAt: 'desc' },
     });
     await this.prisma.socialMemeShares.delete({
-      where: { id: socialShare.id },
+      where: { id: socialShare[0].id },
     });
   }
 
@@ -68,7 +68,6 @@ export class AppService implements OnModuleInit {
     const meme = await this.meme.findFirst({
       orderBy: { createdAt: 'asc' },
       where: { id: { notIn: memeSharedIds.map((share) => share.memeId) } },
-      include: { user: true },
       take: 1,
     });
 
