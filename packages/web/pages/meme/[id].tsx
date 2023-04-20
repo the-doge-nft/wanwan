@@ -51,6 +51,7 @@ const MemeById = observer(({ meme }: MemeByIdProps) => {
   const description = meme.description ? meme.description : DESCRIPTION;
   const socialCardUrl = meme.media.url;
   let url = getBaseUrl() + `/meme/` + meme.id;
+  const extension = meme.media.url.split(".").pop();
 
   return (
     <>
@@ -81,6 +82,7 @@ const MemeById = observer(({ meme }: MemeByIdProps) => {
               src={meme.media.url}
               alt={meme.media.url}
               className={css("m-auto", "w-full")}
+              unoptimized={extension?.toLocaleLowerCase() === "gif"}
             />
           </div>
           <div
