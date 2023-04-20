@@ -3,7 +3,13 @@ import { THEME_KEY } from "../components/DSL/Theme";
 import { MediaRequirements } from "../interfaces";
 import Http from "./../services/http";
 
+const ZOOM_KEY = "zoom";
+
 type ColorMode = "light" | "dark";
+enum Zoom {
+  normal = "100%",
+  zoomed = "150%",
+}
 export default class SettingsStore {
   @observable
   private mediaRequirements: MediaRequirements | null = null;
@@ -11,12 +17,16 @@ export default class SettingsStore {
   @observable
   colorMode = "light";
 
+  @observable
+  zoom = Zoom.normal;
+
   constructor() {
     makeObservable(this);
   }
 
   init() {
     this.setColorMode(localStorage.getItem(THEME_KEY) as ColorMode & null);
+    this.setZoom(localStorage.getItem(ZOOM_KEY) as Zoom & null);
     Http.getMediaRequirements().then(({ data }) => {
       this.mediaRequirements = data;
     });
@@ -38,6 +48,19 @@ export default class SettingsStore {
     document.documentElement.style.colorScheme = this.colorMode;
   }
 
+  setZoom(zoom: Zoom | null) {
+    if (zoom === Zoom.normal || zoom === null) {
+      //@ts-ignore
+      document.body.style.zoom = Zoom.normal;
+      this.zoom = Zoom.normal;
+    } else {
+      //@ts-ignore
+      document.body.style.zoom = Zoom.zoomed;
+      this.zoom = Zoom.zoomed;
+    }
+    localStorage.setItem(ZOOM_KEY, this.zoom);
+  }
+
   @computed
   get maxSizeBytes() {
     return this.mediaRequirements ? this.mediaRequirements.maxSizeBytes : 0;
@@ -55,7 +78,16 @@ export default class SettingsStore {
     return this.colorMode === "light";
   }
 
+  @computed
+  get isZoomed() {
+    return this.zoom === Zoom.zoomed;
+  }
+
   toggleColorMode() {
     return this.setColorMode(this.isLightMode ? "dark" : "light");
+  }
+
+  toggleZoom() {
+    this.setZoom(this.isZoomed ? Zoom.normal : Zoom.zoomed);
   }
 }

@@ -1,5 +1,9 @@
 import { observer } from "mobx-react-lite";
-import { AiOutlineEllipsis } from "react-icons/ai";
+import {
+  AiOutlineEllipsis,
+  AiOutlineExpandAlt,
+  AiOutlineShrink,
+} from "react-icons/ai";
 import {
   BsDiscord,
   BsFillMoonFill,
@@ -25,12 +29,19 @@ const EllipsesButton = observer(() => {
       }
     >
       <DropdownItem className={css("mt-0.5")}>
-        <div className={css()}>
+        <div className={css("flex", "gap-1")}>
           <Button onClick={() => AppStore.settings.toggleColorMode()}>
             {AppStore.settings.isLightMode ? (
               <BsFillMoonFill size={12} />
             ) : (
               <BsFillSunFill size={12} />
+            )}
+          </Button>
+          <Button onClick={() => AppStore.settings.toggleZoom()}>
+            {AppStore.settings.isZoomed ? (
+              <AiOutlineShrink size={12} />
+            ) : (
+              <AiOutlineExpandAlt size={12} />
             )}
           </Button>
         </div>
