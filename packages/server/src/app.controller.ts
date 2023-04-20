@@ -200,8 +200,8 @@ export class AppController {
     return this.app.tweetMeme();
   }
 
-  @UseGuards(AuthGuard)
   @Get('/admin/isAdmin')
+  @UseGuards(AuthGuard)
   getIsAdmin(@Req() { user }: AuthenticatedRequest) {
     return ADMIN_ADDRESSES.includes(user.address);
   }

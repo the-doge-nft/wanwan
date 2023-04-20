@@ -15,6 +15,7 @@ import { useEffect } from "react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useAccount, useDisconnect, WagmiConfig } from "wagmi";
+import Text from "../components/DSL/Text/Text";
 import { colors } from "../components/DSL/Theme";
 import { toastTransition } from "../components/DSL/Toast/Toast";
 import Modals from "../components/Modals/Modals";
@@ -26,6 +27,7 @@ import {
   TITLE,
   TWITTER_USERNAME,
 } from "../environment/vars";
+import { css } from "../helpers/css";
 import { chains, client, createRainbowAuthAdapter } from "../services/wagmi";
 import AppStore from "../store/App.store";
 import "../styles/globals.css";
@@ -140,6 +142,22 @@ const App = observer(({ Component, pageProps }: AppProps) => {
     </>
   );
 });
+
+const Maintenance = () => {
+  return (
+    <div
+      className={css(
+        "w-full",
+        "h-full",
+        "flex",
+        "justify-center",
+        "items-center"
+      )}
+    >
+      <Text>down for now</Text>
+    </div>
+  );
+};
 
 const WagmiAccountSwitchWatcher = observer(() => {
   const { address } = useAccount();

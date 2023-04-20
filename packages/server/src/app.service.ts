@@ -1,5 +1,5 @@
 import { HttpService } from '@nestjs/axios';
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { SocialPlatform } from '@prisma/client';
@@ -12,8 +12,10 @@ import { PrismaService } from './prisma.service';
 import { TwitterService } from './twitter/twitter.service';
 
 @Injectable()
-export class AppService {
+export class AppService implements OnModuleInit {
   private readonly logger = new Logger(AppService.name);
+  private readonly WAN_WAN_TWITTER_NAME = 'wanwandotme';
+
   constructor(
     private readonly ethers: EthersService,
     private readonly prisma: PrismaService,
@@ -30,7 +32,7 @@ export class AppService {
   }
 
   getIndex(): string {
-    return `🗣️ wan,wan 🗣️`;
+    return `🗣️ wan:wan 🗣️`;
   }
 
   @Cron(CronExpression.EVERY_HOUR)
@@ -40,8 +42,12 @@ export class AppService {
     for (const address of addresses) {
       try {
         await this.ethers.refreshEnsCache(address);
-      } catch (e) {}
+      } catch (e) {
+        this.logger.error(e);
+        this.sentryClient.instance().captureException(e);
+      }
     }
+    this.logger.log(`Done caching ${addresses.length} ens names`);
     return addresses;
   }
 
@@ -53,7 +59,6 @@ export class AppService {
     const meme = await this.meme.findFirst({
       orderBy: { createdAt: 'asc' },
       where: { id: { notIn: memeSharedIds.map((share) => share.memeId) } },
-      include: { user: true },
       take: 1,
     });
 
@@ -87,7 +92,7 @@ export class AppService {
         displayName = meme.user.ens;
       }
 
-      const replyText = `created by ${displayName} | @wanwan link: ${this.config.get(
+      const replyText = `created by ${displayName} | link: ${this.config.get(
         'baseUrl',
       )}/meme/${meme.id}`;
       const reply = await this.twitter.reply(replyText, tweet.data.id);

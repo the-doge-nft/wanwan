@@ -21,6 +21,7 @@ export class MemeService {
   }
 
   async addExtra(item: MemeWithDefaultInclude): Promise<MemeWithExtras> {
+    if (item === null) return null;
     return {
       ...item,
       media: this.media.addExtra(item.media),

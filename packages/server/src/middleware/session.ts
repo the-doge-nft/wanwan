@@ -1,28 +1,30 @@
 import { INestApplication, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import * as createRedisStore from 'connect-redis';
+import RedisStore from 'connect-redis';
 import * as session from 'express-session';
 import { createClient } from 'redis';
 import { Config } from './../config/config';
 
 export function getExpressRedisSession(app: INestApplication): any {
   const configService = app.get<ConfigService>(ConfigService<Config>);
-  const redisConfig = configService.get<Config['redis']>('redis');
+  const url = configService.get('redisUrl');
   const sessionConfig = configService.get<Config['session']>('session');
-  Logger.log(
-    `[REDIS SESSION] connecting -- host: ${redisConfig.host}, port: ${redisConfig.port}}`,
-  );
+  Logger.log(`[REDIS SESSION] connecting -- url string: ${url}`);
   const redisClient = createClient({
-    url: `redis://:@${redisConfig.host}:${redisConfig.port}`,
-    legacyMode: true,
+    url,
+    legacyMode: false,
   });
+
   redisClient
     .connect()
     .then(() => Logger.log('[REDIS SESSION] connected'))
     .catch((e) => Logger.error(`[REDIS SESSION] ${e}`));
-  const RedisStore = createRedisStore(session);
+
+  const store = new RedisStore({
+    client: redisClient,
+  });
   return session({
-    store: new RedisStore({ client: redisClient }),
+    store,
     name: sessionConfig.name,
     secret: sessionConfig.secret,
     resave: false,

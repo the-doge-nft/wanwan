@@ -4,7 +4,7 @@ import Link from "../DSL/Link/Link";
 import Text, { TextSize, TextType } from "../DSL/Text/Text";
 import { borderColorCss } from "../DSL/Theme";
 
-interface PreviewLinkProps {
+export interface PreviewLinkProps {
   href: string;
   name?: string | null;
   description?: string | null;
@@ -24,13 +24,13 @@ const PreviewLink: React.FC<PropsWithChildren<PreviewLinkProps>> = ({
         <div
           className={css(
             "max-w-full",
-            "h-full",
             "border-[1px]",
-            "h-[115px]",
+            "h-[150px]",
             "overflow-y-hidden",
             borderColorCss,
             "group-hover:border-red-800",
-            "grow"
+            "grow",
+            "relative"
           )}
         >
           {children}

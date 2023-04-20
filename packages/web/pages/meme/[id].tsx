@@ -8,11 +8,11 @@ import {
 import { observer } from "mobx-react-lite";
 import { GetServerSideProps } from "next";
 import Head from "next/head";
+import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
 import { BsDot, BsReddit, BsTwitter } from "react-icons/bs";
 import { RedditShareButton, TwitterShareButton } from "react-share";
-import AspectRatio from "../../components/DSL/AspectRatio/AspectRatio";
 import Button, { Submit } from "../../components/DSL/Button/Button";
 import Form from "../../components/DSL/Form/Form";
 import TextInput from "../../components/DSL/Form/TextInput";
@@ -23,7 +23,7 @@ import {
   DESCRIPTION,
   TITLE,
   TWITTER_USERNAME,
-  getBaseUrl,
+  getBaseUrl
 } from "../../environment/vars";
 import { css } from "../../helpers/css";
 import { abbreviate } from "../../helpers/strings";
@@ -51,6 +51,7 @@ const MemeById = observer(({ meme }: MemeByIdProps) => {
   const description = meme.description ? meme.description : DESCRIPTION;
   const socialCardUrl = meme.media.url;
   let url = getBaseUrl() + `/meme/` + meme.id;
+  const extension = meme.media.url.split(".").pop();
 
   return (
     <>
@@ -74,19 +75,14 @@ const MemeById = observer(({ meme }: MemeByIdProps) => {
       </Head>
       <AppLayout>
         <div className={css("mt-4")}>
-          <div className={css("", "sm:px-24")}>
-            <AspectRatio
-              className={css(
-                "bg-contain",
-                "bg-center",
-                "bg-no-repeat",
-                "border-[1px]",
-                "border-black"
-              )}
-              ratio={`${meme.media.width}/${meme.media.height}`}
-              style={{
-                backgroundImage: `url(${meme.media.url})`,
-              }}
+          <div className={css("relative")}>
+            <Image
+              width={meme.media.width}
+              height={meme.media.height}
+              src={meme.media.url}
+              alt={meme.media.url}
+              className={css("m-auto", "w-full")}
+              unoptimized={extension?.toLocaleLowerCase() === "gif"}
             />
           </div>
           <div
@@ -115,11 +111,15 @@ const MemeById = observer(({ meme }: MemeByIdProps) => {
                 </Text>
               </Link>
               <div className={css("flex", "items-center", "gap-1", "mt-0.5")}>
+              <div className={css("flex", "items-center", "gap-1", "mt-0.5")}>
                 <TwitterShareButton
                   url={url}
                   title={title}
                   className={css("mt-0.5")}
                 >
+                  <Text type={TextType.Grey}>
+                    <BsTwitter size={16} />
+                  </Text>
                   <Text type={TextType.Grey}>
                     <BsTwitter size={16} />
                   </Text>
@@ -129,6 +129,9 @@ const MemeById = observer(({ meme }: MemeByIdProps) => {
                   title={title}
                   className={css("mt-0.5")}
                 >
+                  <Text type={TextType.Grey}>
+                    <BsReddit size={16} />
+                  </Text>
                   <Text type={TextType.Grey}>
                     <BsReddit size={16} />
                   </Text>

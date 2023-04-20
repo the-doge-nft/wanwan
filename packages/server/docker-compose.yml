@@ -17,6 +17,8 @@ services:
     image: redis:7.0.8-alpine
     ports:
       - '${REDIS_PORT}:6379'
+    command: >
+      --requirepass ${REDIS_PASSWORD}
     volumes:
       - redis:/data
 

@@ -1,9 +1,10 @@
 import { HttpModule } from '@nestjs/axios';
-import { CacheModule, Module } from '@nestjs/common';
+import { CacheModule } from '@nestjs/cache-manager';
+import { Logger, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
 import { SentryModule } from '@travelerdev/nestjs-sentry';
-import * as redisStore from 'cache-manager-redis-store';
+import { redisStore } from 'cache-manager-redis-yet';
 import { AlchemyService } from './alchemy/alchemy.service';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -34,29 +35,36 @@ import { VoteService } from './vote/vote.service';
 
 @Module({
   imports: [
-    ScheduleModule.forRoot(),
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [() => config],
+      load: [config],
     }),
+    ScheduleModule.forRoot(),
     SentryModule.forRootAsync({
       imports: [ConfigModule],
-      useFactory: async (config: ConfigService<Config>) => ({
-        dsn: config.get('sentry').dns,
-        debug: true,
-      }),
+      useFactory: async (config: ConfigService<Config>) => {
+        Logger.log(`Sentry DSN: ${config.get('sentry').dns}`);
+        return {
+          dsn: config.get('sentry').dns,
+          debug: true,
+          logLevels: ['log', 'error', 'warn', 'debug', 'verbose'],
+        };
+      },
       inject: [ConfigService],
     }),
     CacheModule.registerAsync<any>({
       isGlobal: true,
       inject: [ConfigService],
-      useFactory: (config: ConfigService<Config>) => ({
-        store: redisStore,
-        host: config.get('redis').host,
-        port: config.get('redis').port,
-        ttl: 10,
-        max: 10000,
-      }),
+      useFactory: async (config: ConfigService<Config>) => {
+        const store = await redisStore({
+          url: config.get('redisUrl'),
+          ttl: 1000 * 60 * 60 * 24 * 7,
+          pingInterval: 1000 * 60 * 60,
+        });
+        return {
+          store: () => store,
+        };
+      },
     }),
     AuthModule,
     HttpModule,
