@@ -31,6 +31,15 @@ export class AppService implements OnModuleInit {
     this.cacheEnsNames();
   }
 
+  async dropMostRecentShare() {
+    const socialShare = await this.prisma.socialMemeShares.findFirst({
+      orderBy: { createdAt: 'desc' },
+    });
+    await this.prisma.socialMemeShares.delete({
+      where: { id: socialShare.id },
+    });
+  }
+
   getIndex(): string {
     return `🗣️ wan:wan 🗣️`;
   }
