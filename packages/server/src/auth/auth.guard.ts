@@ -14,7 +14,6 @@ export class AuthGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const address = request.session?.siwe?.address;
-    console.log(request.session);
 
     if (!address) {
       throw new UnauthorizedException();
@@ -26,7 +25,6 @@ export class AuthGuard implements CanActivate {
       create: { address: formattedAddress, lastAuthedAt: new Date() },
       update: { lastAuthedAt: new Date() },
     });
-    console.log('debug:: UPDATED USER', user);
     request.user = user;
     return true;
   }
