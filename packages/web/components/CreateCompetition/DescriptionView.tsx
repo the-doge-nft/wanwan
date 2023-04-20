@@ -47,7 +47,7 @@ const DescriptionView = observer(({ store }: CompetitionStoreProp) => {
       Document,
       Paragraph,
       TiptapText,
-      Dropcursor,
+      Dropcursor.configure({ class: "text-black dark:text-white" }),
       ListItem,
       TextStyle,
       TextAlign.configure({
@@ -119,59 +119,7 @@ const DescriptionView = observer(({ store }: CompetitionStoreProp) => {
         <div>
           <EditorContent editor={editor} />
           <div className={css("mt-1")}>
-            <div
-            // className={css("flex", "items-center", {
-            //   "justify-between": !store.showMediaInput,
-            //   "justify-end": store.showMediaInput,
-            // })}
-            >
-              {/* {!store.showMediaInput && (
-                <Button onClick={() => (store.showMediaInput = true)}>
-                  <BiImage />
-                </Button>
-              )} */}
-              {editor && <Toolbar store={store} editor={editor} />}
-            </div>
-
-            {/* {AppStore.settings.mimeTypeToExtension && store.showMediaInput && (
-              <div className={css("mt-1")}>
-                <MediaInput
-                  name={"file"}
-                  onDropAccepted={(file) => (store.file = file)}
-                  onClear={() => (store.file = null)}
-                  maxSizeBytes={AppStore.settings.maxSizeBytes}
-                  acceptedMimeToExtension={
-                    AppStore.settings.mimeTypeToExtension
-                  }
-                  // disabled={store.isSubmitLoading}
-                />
-                <div className={css("flex", "justify-center", "mt-2")}>
-                  {!store.file && (
-                    <Button onClick={() => (store.showMediaInput = false)}>
-                      Nevermind
-                    </Button>
-                  )}
-                  {store.file && (
-                    <Button
-                      isLoading={store.isLoading}
-                      onClick={() =>
-                        store.postNewImage(store.file!).then(({ data }) => {
-                          editor
-                            ?.chain()
-                            .focus()
-                            .setImage({ src: data.url })
-                            .run();
-                          store.file = null;
-                          store.showMediaInput = false;
-                        })
-                      }
-                    >
-                      Upload Image
-                    </Button>
-                  )}
-                </div>
-              </div>
-            )} */}
+            <div>{editor && <Toolbar store={store} editor={editor} />}</div>
           </div>
         </div>
         <div className={css("w-full", "flex", "gap-2", "mt-4")}>
