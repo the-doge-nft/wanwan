@@ -3,7 +3,7 @@ import { AxiosResponse } from "axios";
 import { add } from "date-fns";
 import { computed, makeObservable, observable } from "mobx";
 import { dateToDateTimeLocalInput } from "../../components/DSL/Form/DateInput";
-import { Media, Nullable } from "../../interfaces/index";
+import { Media, Nullable, Wallet } from "../../interfaces/index";
 import Http from "../../services/http";
 import { Constructor, EmptyClass } from "../../services/mixins/index";
 import { Navigable } from "../../services/mixins/navigable";
@@ -36,6 +36,9 @@ export default class CreateCompetitionStore extends Navigable<
   name = "";
 
   @observable
+  wallet: Nullable<Wallet> = null;
+
+  @observable
   description: Nullable<JSONContent> = null;
 
   @observable
@@ -66,7 +69,7 @@ export default class CreateCompetitionStore extends Navigable<
   }
 
   init() {
-    this.rewardStore.init();
+    return Http.getWallet().then(({ data }) => (this.wallet = data));
   }
 
   destroy() {
