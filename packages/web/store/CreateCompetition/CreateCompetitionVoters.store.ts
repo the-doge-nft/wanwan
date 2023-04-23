@@ -1,8 +1,9 @@
-import { computed, makeObservable, observable } from "mobx";
+import { action, computed, makeObservable, observable } from "mobx";
+import VoteInputStore from "./VoteInput.store";
 
 export default class CreateCompetitionVoteStore {
   @observable
-  votingRule = [];
+  votingRule: VoteInputStore[] = [];
 
   constructor() {
     makeObservable(this);
@@ -11,5 +12,15 @@ export default class CreateCompetitionVoteStore {
   @computed
   get hasVoters() {
     return this.votingRule.length > 0;
+  }
+
+  @action
+  addVoter() {
+    this.votingRule.push(new VoteInputStore());
+  }
+
+  @action
+  removeVote(index: number) {
+    this.votingRule.splice(index, 1);
   }
 }

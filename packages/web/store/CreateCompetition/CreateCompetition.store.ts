@@ -56,10 +56,13 @@ export default class CreateCompetitionStore extends Navigable<
   @observable
   rewardStore = new CreateCompetitionRewardsStore();
 
+  @observable
+  coverImageFile?: File = undefined;
+
   constructor() {
     super();
     makeObservable(this);
-    this.currentView = CreateCompetitionView.Name;
+    this.currentView = CreateCompetitionView.Voters;
   }
 
   init() {
@@ -177,5 +180,13 @@ export default class CreateCompetitionStore extends Navigable<
         })
         .finally(() => (this.isLoading = false));
     }
+  }
+
+  onCoverFileAccepted(file: File) {
+    this.coverImageFile = file;
+  }
+
+  onCoverFileClear() {
+    this.coverImageFile = undefined;
   }
 }
