@@ -12,7 +12,7 @@ export function Navigable<T extends Constructor, K>(Base1: T) {
     }
 
     @computed
-    get currentView() {
+    get currentView(): K {
       return this.navigationStack[this.navigationStack.length - 1];
     }
 

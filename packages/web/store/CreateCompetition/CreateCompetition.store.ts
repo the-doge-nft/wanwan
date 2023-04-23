@@ -5,15 +5,17 @@ import { computed, makeObservable, observable } from "mobx";
 import { dateToDateTimeLocalInput } from "../../components/DSL/Form/DateInput";
 import { Media, Nullable } from "../../interfaces/index";
 import Http from "../../services/http";
-import { EmptyClass } from "../../services/mixins/index";
+import { Constructor, EmptyClass } from "../../services/mixins/index";
 import { Navigable } from "../../services/mixins/navigable";
 import CreateCompetitionCuratorsStore from "./CreateCompetitionCurators.store";
 import CreateCompetitionRewardsStore from "./CreateCompetitionRewards.store";
+import CreateCompetitionVoteStore from "./CreateCompetitionVoters.store";
 
 export enum CreateCompetitionView {
   Name = "Name",
   Description = "Description",
   Details = "Details",
+  Voters = "Voters",
   Curators = "Curators",
   Rewards = "Rewards",
   Review = "Review",
@@ -22,7 +24,10 @@ export enum CreateCompetitionView {
   Success = "Success",
 }
 
-export default class CreateCompetitionStore extends Navigable(EmptyClass) {
+export default class CreateCompetitionStore extends Navigable<
+  Constructor,
+  CreateCompetitionView
+>(EmptyClass) {
   minEndsAtDate = dateToDateTimeLocalInput(add(new Date(), { minutes: 1 }));
   maxEndsAtDate = dateToDateTimeLocalInput(add(new Date(), { years: 1 }));
   defaultEndsAtDate = dateToDateTimeLocalInput(add(new Date(), { days: 1 }));
@@ -41,6 +46,9 @@ export default class CreateCompetitionStore extends Navigable(EmptyClass) {
 
   @observable
   maxUserSubmissions = "1";
+
+  @observable
+  votersStore = new CreateCompetitionVoteStore();
 
   @observable
   curatorStore = new CreateCompetitionCuratorsStore();
@@ -104,6 +112,8 @@ export default class CreateCompetitionStore extends Navigable(EmptyClass) {
         return "Describe it";
       case CreateCompetitionView.Details:
         return "Detail it";
+      case CreateCompetitionView.Voters:
+        return "Vote it";
       case CreateCompetitionView.Curators:
         return "Curate it";
       case CreateCompetitionView.Rewards:
@@ -127,11 +137,15 @@ export default class CreateCompetitionStore extends Navigable(EmptyClass) {
   }
 
   onDetailsSubmit() {
-    this.currentView = CreateCompetitionView.Curators;
+    this.currentView = CreateCompetitionView.Voters;
   }
 
   onCuratorsSubmit() {
     this.currentView = CreateCompetitionView.Rewards;
+  }
+
+  onVotersSubmit() {
+    this.currentView = CreateCompetitionView.Curators;
   }
 
   onRewardsSubmit() {

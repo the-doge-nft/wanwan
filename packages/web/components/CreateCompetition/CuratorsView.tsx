@@ -4,6 +4,7 @@ import { IoCloseOutline } from "react-icons/io5";
 import { objectKeys } from "../../helpers/arrays";
 import { css } from "../../helpers/css";
 import { abbreviate, getEtherscanURL } from "../../helpers/strings";
+import AppStore from "../../store/App.store";
 import Button from "../DSL/Button/Button";
 import Form from "../DSL/Form/Form";
 import { FormDisplay } from "../DSL/Form/FormControl";
@@ -13,6 +14,7 @@ import Link from "../DSL/Link/Link";
 import Spinner, { SpinnerSize } from "../DSL/Spinner/Spinner";
 import Text, { TextSize, TextType } from "../DSL/Text/Text";
 import { Buttons, CompetitionStoreProp } from "./CreateCompetition";
+import Detail from "./Detail";
 
 const CuratorsView = observer(({ store }: CompetitionStoreProp) => {
   return (
@@ -22,6 +24,12 @@ const CuratorsView = observer(({ store }: CompetitionStoreProp) => {
         description={"Who can remove memes from your competition?"}
       />
       <div className={css("mt-2")}>
+        {!store.curatorStore.isCuratorsVisible && (
+          <Detail>
+            Only you: <Text bold>{AppStore.auth.displayName}</Text> will be able
+            to remove submissions
+          </Detail>
+        )}
         {store.curatorStore.isCuratorsVisible && (
           <Form onSubmit={async () => store.onCuratorsSubmit()}>
             <div className={css("flex", "flex-col", "gap-3", "mt-1")}>
