@@ -31,6 +31,22 @@ export const getOpenSeaURL = (address: string, tokenId: string | number) => {
   return link;
 };
 
+export const getOpenSeaCollectionURL = (address: string) => {
+  let link = `https://opensea.io/collection/${address}`;
+  if (isDev() || isStaging()) {
+    link = `https://testnets.opensea.io/collection/${address}`;
+  }
+  return link;
+};
+
+export const getLooksRareCollectionURL = (address: string) => {
+  let link = `https://looksrare.org/collections/${address}`;
+  if (isDev() || isStaging()) {
+    link = `https://goerli.looksrare.org/collections/${address}`;
+  }
+  return link;
+};
+
 export const jsonify = (toString: any) => JSON.stringify(toString);
 
 export const isValidHttpUrl = (value: string) => {

@@ -23,4 +23,11 @@ export default class CreateCompetitionVoteStore {
   removeVote(index: number) {
     this.votingRule.splice(index, 1);
   }
+
+  @computed
+  get canAddVote() {
+    return this.votingRule.every(
+      (voteInputStore) => voteInputStore.isConfirmed
+    );
+  }
 }

@@ -1,6 +1,6 @@
 import { OwnedNft } from "alchemy-sdk";
 import { observer } from "mobx-react-lite";
-import { useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { objectKeys } from "../../helpers/arrays";
 import { css } from "../../helpers/css";
 import { abbreviate } from "../../helpers/strings";
@@ -13,7 +13,10 @@ import Logo from "../Logo/Logo";
 interface WalletProps {
   wallet: Wallet;
   showAll?: boolean;
-  onERC721AddressClick?: (address: string | number) => void;
+  onERC721AddressSelected?: (params: {
+    address: string;
+    nfts: OwnedNft[];
+  }) => void;
   renderSelection?: (params: {
     address: string;
     nfts: OwnedNft[];
@@ -23,7 +26,7 @@ interface WalletProps {
 const WalletView = observer(
   ({
     wallet,
-    onERC721AddressClick,
+    onERC721AddressSelected,
     showAll = true,
     renderSelection,
   }: WalletProps) => {
@@ -32,6 +35,13 @@ const WalletView = observer(
       [wallet, showAll]
     );
     const selectorRef = useRef<HTMLDivElement>(null);
+    useEffect(() => {
+      onERC721AddressSelected &&
+        onERC721AddressSelected({
+          address: store.selectedAddress! as string,
+          nfts: store.selectedNfts,
+        });
+    }, []);
     return (
       <div>
         <div className={css("mt-4")}>
@@ -48,9 +58,12 @@ const WalletView = observer(
                       key={"all"}
                       store={store}
                       address={"all"}
-                      onClick={(address) => {
-                        if (onERC721AddressClick) {
-                          onERC721AddressClick(address);
+                      onClick={() => {
+                        if (onERC721AddressSelected) {
+                          onERC721AddressSelected({
+                            address: store.selectedAddress! as string,
+                            nfts: store.selectedNfts,
+                          });
                         }
                       }}
                     />
@@ -61,9 +74,12 @@ const WalletView = observer(
                         key={`contract-selector-${address}`}
                         store={store}
                         address={address}
-                        onClick={(address) => {
-                          if (onERC721AddressClick) {
-                            onERC721AddressClick(address);
+                        onClick={() => {
+                          if (onERC721AddressSelected) {
+                            onERC721AddressSelected({
+                              address: store.selectedAddress! as string,
+                              nfts: store.selectedNfts,
+                            });
                           }
                         }}
                       />
