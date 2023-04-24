@@ -4,13 +4,14 @@ import { BsPencil, BsWallet2 } from "react-icons/bs";
 import { IoCloseOutline } from "react-icons/io5";
 import { css } from "../../helpers/css";
 import { abbreviate, getEtherscanURL } from "../../helpers/strings";
+import { TokenType } from "../../interfaces";
 import CreateCompetitionStore from "../../store/CreateCompetition/CreateCompetition.store";
 import VoteInputStore from "../../store/CreateCompetition/VoteInput.store";
 import Button from "../DSL/Button/Button";
 import Form from "../DSL/Form/Form";
 import { FormDisplay } from "../DSL/Form/FormControl";
 import Link from "../DSL/Link/Link";
-import Text, { TextSize } from "../DSL/Text/Text";
+import Text, { TextSize, TextType } from "../DSL/Text/Text";
 import { Buttons, CompetitionStoreProp } from "./CreateCompetition";
 import Detail from "./Detail";
 import Wallet from "./Wallet";
@@ -75,9 +76,23 @@ const VotingItem = ({
           </div>
         )}
         {view === "wallet" && (
-          <div className={css("flex", "justify-between", "w-full")}>
-            <Text>Select voting rule based on your wallet holdings below</Text>
+          <div
+            className={css("flex", "justify-between", "w-full", "items-center")}
+          >
+            <Text size={TextSize.xs} type={TextType.Grey}>
+              Select voting rule based on your wallet holdings below
+            </Text>
             <AddManuallyButton setView={setView} />
+          </div>
+        )}
+        {view === "manual" && (
+          <div
+            className={css("flex", "justify-between", "w-full", "items-center")}
+          >
+            <Text size={TextSize.xs} type={TextType.Grey}>
+              Add a contract address below
+            </Text>
+            <AddFromWalletButton setView={setView} />
           </div>
         )}
       </div>
@@ -85,6 +100,10 @@ const VotingItem = ({
         <Wallet
           wallet={store.wallet!}
           showAll={false}
+          onERC721AddressClick={(address) => {
+            voteInput.setAddress(address as string);
+            voteInput.setTokenType(TokenType.ERC721);
+          }}
           renderSelection={(address) => {
             return (
               <div className={css("flex", "flex-col")}>

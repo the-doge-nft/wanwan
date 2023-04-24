@@ -11,8 +11,8 @@ const Detail = ({ children }: { children: ReactNode }) => {
         "text-center",
         "border-dashed",
         "border-[1px]",
-        "border-black",
-        "dark:border-white",
+        "border-neutral-400",
+        "dark:border-neutral-700",
         "my-2"
       )}
     >
