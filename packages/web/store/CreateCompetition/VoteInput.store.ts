@@ -1,5 +1,6 @@
 import { action, makeObservable, observable } from "mobx";
 import { TokenType } from "../../interfaces";
+import Http from "../../services/http";
 
 export default class VoteInputStore {
   @observable
@@ -8,17 +9,27 @@ export default class VoteInputStore {
   @observable
   contractAddress?: string = undefined;
 
+  @observable
+  holdersLength?: number = undefined;
+
+  @observable
+  isLoading = false;
+
   constructor() {
     makeObservable(this);
   }
 
   @action
-  setAddress(address: string) {
+  setInput(address: string, tokenType: TokenType) {
     this.contractAddress = address;
+    this.tokenType = tokenType;
+    this.getHolders();
   }
 
-  @action
-  setTokenType(tokenType: TokenType) {
-    this.tokenType = tokenType;
+  getHolders() {
+    this.isLoading = true;
+    return Http.getNftContractHolders(this.contractAddress!)
+      .then(({ data }) => (this.holdersLength = data.owners.length))
+      .finally(() => (this.isLoading = false));
   }
 }

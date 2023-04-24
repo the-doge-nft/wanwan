@@ -218,6 +218,12 @@ class _Http {
     return this.http.get("/wallet");
   }
 
+  getNftContractHolders(contractAddress: string) {
+    return this.http.get<{ owners: Array<string> }>(
+      `/nft/${contractAddress}/holders`
+    );
+  }
+
   static create() {
     return new this(env.api.baseUrl);
   }

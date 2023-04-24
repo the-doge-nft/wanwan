@@ -1,3 +1,4 @@
+import { OwnedNft } from "alchemy-sdk";
 import { observer } from "mobx-react-lite";
 import { useMemo, useRef } from "react";
 import { objectKeys } from "../../helpers/arrays";
@@ -13,7 +14,10 @@ interface WalletProps {
   wallet: Wallet;
   showAll?: boolean;
   onERC721AddressClick?: (address: string | number) => void;
-  renderSelection?: (address: string | number) => JSX.Element;
+  renderSelection?: (params: {
+    address: string;
+    nfts: OwnedNft[];
+  }) => JSX.Element;
 }
 
 const WalletView = observer(
@@ -57,6 +61,11 @@ const WalletView = observer(
                         key={`contract-selector-${address}`}
                         store={store}
                         address={address}
+                        onClick={(address) => {
+                          if (onERC721AddressClick) {
+                            onERC721AddressClick(address);
+                          }
+                        }}
                       />
                     );
                   })}
@@ -64,7 +73,11 @@ const WalletView = observer(
               )}
             </div>
             <div className={css("col-span-4", "flex", "flex-col")}>
-              {renderSelection && renderSelection(store.selectedAddress!)}
+              {renderSelection &&
+                renderSelection({
+                  address: store.selectedAddress! as string,
+                  nfts: store.selectedNfts,
+                })}
               {!renderSelection && (
                 <div
                   className={css(
