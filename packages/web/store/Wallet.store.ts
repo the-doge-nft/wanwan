@@ -7,14 +7,23 @@ export enum WalletView {}
 
 export default class WalletStore {
   @observable
-  selectedAddress: string | null | number = "all";
+  selectedAddress: string | null | number = null;
 
   @observable
   wallet: Wallet;
 
-  constructor(wallet: Wallet) {
+  @observable
+  showAll: boolean = false;
+
+  constructor(wallet: Wallet, showAll: boolean) {
     makeObservable(this);
     this.wallet = wallet;
+    this.showAll = showAll;
+    if (showAll) {
+      this.selectedAddress = "all";
+    } else {
+      this.selectedAddress = wallet.nft[0].contract.address;
+    }
   }
 
   @computed

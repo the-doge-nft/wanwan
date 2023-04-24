@@ -194,6 +194,12 @@ export class AppController {
     return { nft, erc20 };
   }
 
+  @UseGuards(AuthGuard)
+  @Get('/nft/:address/holders')
+  getNftHolders(@Param() { address }: { address: string }) {
+    return this.alchemy.getOwnersForConract(address);
+  }
+
   @UseGuards(AdminGuard)
   @Get('/admin/tweet')
   async adminTweet() {

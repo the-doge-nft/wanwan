@@ -3,11 +3,13 @@ import { Dispatch, SetStateAction, useState } from "react";
 import { BsPencil, BsWallet2 } from "react-icons/bs";
 import { IoCloseOutline } from "react-icons/io5";
 import { css } from "../../helpers/css";
+import { abbreviate, getEtherscanURL } from "../../helpers/strings";
 import CreateCompetitionStore from "../../store/CreateCompetition/CreateCompetition.store";
 import VoteInputStore from "../../store/CreateCompetition/VoteInput.store";
 import Button from "../DSL/Button/Button";
 import Form from "../DSL/Form/Form";
 import { FormDisplay } from "../DSL/Form/FormControl";
+import Link from "../DSL/Link/Link";
 import Text, { TextSize } from "../DSL/Text/Text";
 import { Buttons, CompetitionStoreProp } from "./CreateCompetition";
 import Detail from "./Detail";
@@ -65,7 +67,9 @@ const VotingItem = ({
           <IoCloseOutline size={12} />
         </Button>
         {view === null && (
-          <div className={css("flex", "gap-2", "justify-around", "ml-4")}>
+          <div
+            className={css("flex", "gap-2", "justify-around", "w-full", "h-8")}
+          >
             <AddFromWalletButton setView={setView} />
             <AddManuallyButton setView={setView} />
           </div>
@@ -77,7 +81,25 @@ const VotingItem = ({
           </div>
         )}
       </div>
-      {view === "wallet" && <Wallet wallet={store.wallet!} />}
+      {view === "wallet" && (
+        <Wallet
+          wallet={store.wallet!}
+          showAll={false}
+          renderSelection={(address) => {
+            return (
+              <div className={css("flex", "flex-col")}>
+                <Text>Contract address:</Text>
+                <Link
+                  isExternal
+                  href={getEtherscanURL(address as string, "token")}
+                >
+                  {abbreviate(address as string)}
+                </Link>
+              </div>
+            );
+          }}
+        />
+      )}
     </div>
   );
 };

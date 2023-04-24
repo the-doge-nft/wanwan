@@ -96,6 +96,10 @@ export class AlchemyService {
     return this.alchemy.core.getTokenBalances(address, contractAddresses);
   }
 
+  getOwnersForConract(contractAddress: string) {
+    return this.alchemy.nft.getOwnersForContract(contractAddress);
+  }
+
   getOwnersForNFT(contractAddress: string, tokenId: string) {
     return this.alchemy.nft.getOwnersForNft(contractAddress, tokenId);
   }
