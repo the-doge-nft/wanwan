@@ -13,7 +13,7 @@ const CreateCompetitionPage = observer(() => {
   return (
     <AppLayout>
       <div className={css("h-full", "flex", "justify-center", "items-center")}>
-        <div className={css("max-w-lg", "w-full")}>
+        <div className={css("max-w-2xl", "w-full")}>
           <CreateCompetition store={store} />
         </div>
       </div>

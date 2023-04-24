@@ -1,6 +1,6 @@
-import { OwnedNft } from "alchemy-sdk";
+import { Nft, OwnedNft } from "alchemy-sdk";
 import { observer } from "mobx-react-lite";
-import { useEffect, useMemo, useRef } from "react";
+import { useMemo, useRef } from "react";
 import { objectKeys } from "../../helpers/arrays";
 import { css } from "../../helpers/css";
 import { abbreviate } from "../../helpers/strings";
@@ -13,6 +13,8 @@ import Logo from "../Logo/Logo";
 interface WalletProps {
   wallet: Wallet;
   showAll?: boolean;
+  selectedAddress?: string;
+  filterContractAddresses?: string[];
   onERC721AddressSelected?: (params: {
     address: string;
     nfts: OwnedNft[];
@@ -29,19 +31,20 @@ const WalletView = observer(
     onERC721AddressSelected,
     showAll = true,
     renderSelection,
+    filterContractAddresses,
+    selectedAddress,
   }: WalletProps) => {
     const store = useMemo(
-      () => new WalletStore(wallet, showAll),
-      [wallet, showAll]
+      () =>
+        new WalletStore(
+          wallet,
+          showAll,
+          filterContractAddresses,
+          selectedAddress
+        ),
+      [wallet, showAll, filterContractAddresses]
     );
     const selectorRef = useRef<HTMLDivElement>(null);
-    useEffect(() => {
-      onERC721AddressSelected &&
-        onERC721AddressSelected({
-          address: store.selectedAddress! as string,
-          nfts: store.selectedNfts,
-        });
-    }, []);
     return (
       <div>
         <div className={css("mt-4")}>
@@ -50,7 +53,13 @@ const WalletView = observer(
             <div className={css("col-span-2")}>
               {objectKeys(store.nftsByAddress).length > 0 && (
                 <div
-                  className={css("flex", "flex-col", "gap-1", "min-h-[400px]")}
+                  className={css(
+                    "flex",
+                    "flex-col",
+                    "gap-1",
+                    "min-h-[400px]",
+                    "overflow-y-auto"
+                  )}
                   ref={selectorRef}
                 >
                   {store.showAll && (
@@ -124,46 +133,63 @@ const WalletView = observer(
   }
 );
 
-const NftPreview = observer(({ nft }: { nft: any }) => {
-  const thumbnail = nft.media?.[0]?.thumbnail;
-  return (
-    <div className={css("break-words", "inline-block")}>
-      <AspectRatio
-        ratio={"1/1"}
-        className={css(
-          "bg-no-repeat",
-          "bg-contain",
-          "w-[100px]",
-          "border-[1px]",
-          "border-transparent",
-          "hover:border-black",
-          "hover:dark:border-white",
-          "cursor-pointer",
-          "rounded-sm",
-          { "bg-gray-100 dark:bg-neutral-800": !thumbnail }
-        )}
-        style={
-          thumbnail
-            ? {
-                backgroundImage: `url(${thumbnail})`,
+interface NftPreviewProps {
+  nft: OwnedNft | Nft;
+  size?: number;
+  showName?: boolean;
+  onClick?: (nft: OwnedNft | Nft) => void;
+}
+
+export const NftPreview = observer(
+  ({ nft, size = 100, showName = true, onClick }: NftPreviewProps) => {
+    const thumbnail = nft.media?.[0]?.thumbnail;
+    return (
+      <div className={css("break-words", "inline-block")}>
+        <span onClick={() => onClick && onClick(nft)}>
+          <AspectRatio
+            ratio={"1/1"}
+            className={css(
+              "bg-no-repeat",
+              "bg-cover",
+              `w-[${size}px]`,
+              "border-[1px]",
+              "border-transparent",
+              "rounded-sm",
+              {
+                "bg-gray-100 dark:bg-neutral-800": !thumbnail,
+                "hover:border-black hover:dark:border-white cursor-pointer":
+                  !!onClick,
               }
-            : {}
-        }
-      >
-        {!thumbnail && (
-          <div className={css("flex", "justify-center", "items-center")}>
-            <Text>
-              <Logo size={24} />
+            )}
+          >
+            {thumbnail && (
+              <img
+                src={thumbnail}
+                alt={thumbnail}
+                className={css("rounded-sm")}
+              />
+            )}
+            {!thumbnail && (
+              <div className={css("flex", "justify-center", "items-center")}>
+                <Text>
+                  <Logo size={24} />
+                </Text>
+              </div>
+            )}
+          </AspectRatio>
+        </span>
+
+        {showName && (
+          <div className={css("flex", "gap-1", "mt-0.5")}>
+            <Text size={TextSize.xxs}>
+              {nft.title ? nft.title : "<no name>"}
             </Text>
           </div>
         )}
-      </AspectRatio>
-      <div className={css("flex", "gap-1", "mt-0.5")}>
-        <Text size={TextSize.xxs}>{nft.title ? nft.title : "<no name>"}</Text>
       </div>
-    </div>
-  );
-});
+    );
+  }
+);
 
 interface ContractSelectorProps {
   store: WalletStore;

@@ -4,6 +4,7 @@ import AppStore from "../../../store/App.store";
 import { colors } from "../Theme";
 
 export enum SpinnerSize {
+  xxs = "xxs",
   xs = "xs",
   sm = "sm",
   lg = "lg",
@@ -14,6 +15,7 @@ interface SpinnerProps {
 }
 
 const spinnerSizes = {
+  [SpinnerSize.xxs]: 9,
   [SpinnerSize.xs]: 12,
   [SpinnerSize.sm]: 14,
   [SpinnerSize.lg]: 20,

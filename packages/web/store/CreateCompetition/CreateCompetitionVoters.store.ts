@@ -30,4 +30,19 @@ export default class CreateCompetitionVoteStore {
       (voteInputStore) => voteInputStore.isConfirmed
     );
   }
+
+  @computed
+  get selectedAddresses() {
+    const addresses: string[] = [];
+    this.votingRule.forEach((store) => {
+      if (store.contractAddress) {
+        addresses.push(store.contractAddress);
+      }
+    });
+    return addresses;
+  }
+
+  getAddressesToHide(index: number) {
+    return this.selectedAddresses.filter((_, i) => i !== index);
+  }
 }

@@ -168,21 +168,19 @@ export default class CreateCompetitionStore extends Navigable<
   }
 
   onFileChange(
-    targetFiles: Nullable<FileList>,
+    targetFiles: FileList,
     onSuccess: (responses: AxiosResponse<Media, any>[]) => void
   ) {
-    if (targetFiles) {
-      this.isLoading = true;
-      Promise.all(
-        Object.values(targetFiles).map((file) => {
-          return this.postNewImage(file);
-        })
-      )
-        .then((responses) => {
-          onSuccess(responses);
-        })
-        .finally(() => (this.isLoading = false));
-    }
+    this.isLoading = true;
+    return Promise.all(
+      Object.values(targetFiles).map((file) => {
+        return this.postNewImage(file);
+      })
+    )
+      .then((responses) => {
+        return onSuccess(responses);
+      })
+      .finally(() => (this.isLoading = false));
   }
 
   onCoverFileAccepted(file: File) {

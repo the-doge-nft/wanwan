@@ -1,3 +1,4 @@
+import { Nft } from "alchemy-sdk";
 import { action, computed, makeObservable, observable } from "mobx";
 import { formatWithThousandsSeparators } from "../../helpers/numberFormatter";
 import { TokenType } from "../../interfaces";
@@ -8,16 +9,25 @@ export default class VoteInputStore {
   tokenType = TokenType.ERC721;
 
   @observable
+  view: "wallet" | "manual" | null = null;
+
+  @observable
   contractAddress?: string = undefined;
 
   @observable
   holdersLength?: number = undefined;
 
   @observable
+  nfts: Nft[] = [];
+
+  @observable
   name?: string = undefined;
 
   @observable
-  isLoading = false;
+  isLoadingHolders = false;
+
+  @observable
+  isLoadingNfts = false;
 
   @observable
   isConfirmed = false;
@@ -32,13 +42,25 @@ export default class VoteInputStore {
     this.tokenType = tokenType;
     this.name = name;
     this.getHolders();
+    this.getNfts();
   }
 
+  @action
   getHolders() {
-    this.isLoading = true;
+    this.isLoadingHolders = true;
     return Http.getNftContractHolders(this.contractAddress!)
       .then(({ data }) => (this.holdersLength = data.owners.length))
-      .finally(() => (this.isLoading = false));
+      .finally(() => (this.isLoadingHolders = false));
+  }
+
+  @action
+  getNfts() {
+    this.isLoadingNfts = true;
+    return Http.getNftsForContract(this.contractAddress!)
+      .then(({ data }) => {
+        this.nfts = data.nfts.filter((nft) => !!nft?.media[0]?.thumbnail);
+      })
+      .finally(() => (this.isLoadingNfts = false));
   }
 
   @computed

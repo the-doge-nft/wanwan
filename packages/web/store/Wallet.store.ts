@@ -15,14 +15,28 @@ export default class WalletStore {
   @observable
   showAll: boolean = false;
 
-  constructor(wallet: Wallet, showAll: boolean) {
+  constructor(
+    wallet: Wallet,
+    showAll: boolean,
+    filterContractAddresses?: Array<string>,
+    selectedAddress?: string
+  ) {
     makeObservable(this);
     this.wallet = wallet;
     this.showAll = showAll;
-    if (showAll) {
-      this.selectedAddress = "all";
-    } else {
-      this.selectedAddress = wallet.nft[0].contract.address;
+
+    if (selectedAddress) {
+      this.selectedAddress = selectedAddress;
+    }
+    if (filterContractAddresses) {
+      this.wallet = {
+        nft: wallet.nft.filter(
+          (nft) => !filterContractAddresses.includes(nft.contract.address)
+        ),
+        erc20: wallet.erc20.filter((erc20) => {
+          return !filterContractAddresses.includes(erc20.contractAddress);
+        }),
+      };
     }
   }
 

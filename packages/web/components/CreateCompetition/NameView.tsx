@@ -25,6 +25,7 @@ const NameView = observer(({ store }: CompetitionStoreProp) => {
           <MediaInput
             label={"Cover Image"}
             name={"file"}
+            value={store.coverImageFile}
             onDropAccepted={(file) => store.onCoverFileAccepted(file)}
             onClear={() => store.onCoverFileClear()}
             maxSizeBytes={AppStore.settings.maxSizeBytes}

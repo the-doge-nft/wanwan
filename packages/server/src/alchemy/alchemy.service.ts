@@ -104,6 +104,12 @@ export class AlchemyService {
     return this.alchemy.nft.getOwnersForNft(contractAddress, tokenId);
   }
 
+  getNftsForContract(contractAddress: string) {
+    return this.alchemy.nft.getNftsForContract(contractAddress, {
+      pageSize: 10,
+    });
+  }
+
   async getNftsForOwner(address: string, options?: GetNftsForOwnerOptions) {
     const res = await this.paginate(
       (params) =>

@@ -55,6 +55,12 @@ const MediaInput: React.FC<MediaInputProps> = ({
     input.onChange(acceptedFiles);
   }, []);
 
+  useEffect(() => {
+    if (value) {
+      setPreview(URL.createObjectURL(value));
+    }
+  }, [value]);
+
   const onDropRejected = useCallback((fileRejections: FileRejection[]) => {
     fileRejections.forEach((file) => {
       file.errors.forEach((error) => {

@@ -1,3 +1,4 @@
+import { Nft } from "alchemy-sdk";
 import axios, { AxiosInstance } from "axios";
 import { SiweMessage } from "siwe";
 import env from "../environment";
@@ -222,6 +223,10 @@ class _Http {
     return this.http.get<{ owners: Array<string> }>(
       `/nft/${contractAddress}/holders`
     );
+  }
+
+  getNftsForContract(contractAddress: string) {
+    return this.http.get<{ nfts: Nft[] }>(`/nft/${contractAddress}`);
   }
 
   static create() {

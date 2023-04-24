@@ -200,6 +200,12 @@ export class AppController {
     return this.alchemy.getOwnersForConract(address);
   }
 
+  @UseGuards(AuthGuard)
+  @Get('/nft/:address')
+  getNftForContract(@Param() { address }: { address: string }) {
+    return this.alchemy.getNftsForContract(address);
+  }
+
   @UseGuards(AdminGuard)
   @Get('/admin/tweet')
   async adminTweet() {
