@@ -107,9 +107,16 @@ const VotingItem = observer(
                   : voteInputStore.contractAddress &&
                     abbreviate(voteInputStore.contractAddress)}
               </Text>
-              <Button onClick={() => (voteInputStore.isConfirmed = true)}>
-                <BsCheckLg size={14} />
-              </Button>
+              {!voteInputStore.isConfirmed && (
+                <Button onClick={() => (voteInputStore.isConfirmed = true)}>
+                  <BsCheckLg size={14} />
+                </Button>
+              )}
+              {voteInputStore.isConfirmed && (
+                <Button onClick={() => (voteInputStore.isConfirmed = false)}>
+                  <BsPencil size={14} />
+                </Button>
+              )}
             </div>
           )}
           {view === "manual" && (
@@ -125,7 +132,7 @@ const VotingItem = observer(
             </div>
           )}
         </div>
-        {view === "wallet" && (
+        {view === "wallet" && !voteInputStore.isConfirmed && (
           <Wallet
             wallet={store.wallet!}
             showAll={false}
