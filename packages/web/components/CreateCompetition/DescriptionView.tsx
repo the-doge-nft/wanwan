@@ -283,7 +283,6 @@ const ToolbarItem = ({
         "hover:border-black",
         "dark:hover:border-neutral-700",
         "dark:hover:bg-neutral-900",
-
         {
           "bg-gray-100 dark:bg-neutral-900 border-black dark:border-neutral-700":
             isActive,

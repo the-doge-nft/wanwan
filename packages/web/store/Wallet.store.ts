@@ -47,4 +47,12 @@ export default class WalletStore {
   get selectedNftsCount() {
     return this.selectedNfts.length;
   }
+
+  getSelectedNftsCount(address: string | number) {
+    if (address === "all") {
+      return this.wallet.nft.length;
+    } else {
+      return this.nftsByAddress[address].length;
+    }
+  }
 }
