@@ -159,6 +159,7 @@ const ContractSelector = observer(
   ({ store, address, onClick }: ContractSelectorProps) => {
     const title =
       address === "all" ? "All" : store.nftsByAddress[address][0].contract.name;
+    const isSelected = store.selectedAddress === address;
     return (
       <div
         onClick={() => {
@@ -182,12 +183,14 @@ const ContractSelector = observer(
           "dark:hover:bg-neutral-900",
           {
             "border-black dark:border-white bg-gray-100 dark:bg-neutral-900":
-              store.selectedAddress === address,
-            "border-transparent": store.selectedAddress !== address,
+              isSelected,
+            "border-transparent": !isSelected,
           }
         )}
       >
-        <Text ellipses>{title ? title : abbreviate(address as string)}</Text>
+        <Text ellipses type={isSelected ? TextType.Primary : TextType.Grey}>
+          {title ? title : abbreviate(address as string)}
+        </Text>
         <Text size={TextSize.xs} type={TextType.Grey}>
           ({store.getSelectedNftsCount(address)})
         </Text>

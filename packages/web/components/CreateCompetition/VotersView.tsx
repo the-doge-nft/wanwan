@@ -86,31 +86,15 @@ const VotingItem = observer(
           )}
           {view === "wallet" && (
             <div
-              className={css(
-                "flex",
-                "justify-between",
-                "w-full",
-                "items-center"
-              )}
+              className={css("flex", "justify-end", "w-full", "items-center")}
             >
-              <Text size={TextSize.xs} type={TextType.Grey}>
-                Select voting rule based on your wallet holdings below
-              </Text>
               <AddManuallyButton setView={setView} />
             </div>
           )}
           {view === "manual" && (
             <div
-              className={css(
-                "flex",
-                "justify-between",
-                "w-full",
-                "items-center"
-              )}
+              className={css("flex", "justify-end", "w-full", "items-center")}
             >
-              <Text size={TextSize.xs} type={TextType.Grey}>
-                Add a contract address below
-              </Text>
               <AddFromWalletButton setView={setView} />
             </div>
           )}
@@ -127,8 +111,20 @@ const VotingItem = observer(
               const contract = nfts[0].contract;
               return (
                 <div className={css("flex", "flex-col", "items-center")}>
-                  <div className={css("grid", "grid-cols-2", "w-full")}>
-                    <Text>Contract address:</Text>
+                  <Text size={TextSize.xl}>Holder will</Text>
+                  <div
+                    className={css(
+                      "grid",
+                      "grid-cols-2",
+                      "w-full",
+                      "border-[1px]",
+                      "dark:border-neutral-600",
+                      "border-neutral-400",
+                      "border-dashed",
+                      "p-2"
+                    )}
+                  >
+                    <Text type={TextType.Grey}>Contract address:</Text>
                     <Link
                       isExternal
                       href={getEtherscanURL(
@@ -140,37 +136,34 @@ const VotingItem = observer(
                         {abbreviate(address as string)}
                       </Text>
                     </Link>
-                    <Text>Name:</Text>
-                    <Text>{contract.name}</Text>
-                    <Text>Symbol:</Text>
-                    <Text>{contract.symbol}</Text>
-                    <Text>Token Type:</Text>
+                    <Text type={TextType.Grey}>Name:</Text>
+                    <RenderIfDefined value={contract.name} />
+                    <Text type={TextType.Grey}>Symbol:</Text>
+                    <RenderIfDefined value={contract.symbol} />
+                    <Text type={TextType.Grey}>Type:</Text>
                     <Text>{contract.tokenType}</Text>
-                    <Text>Total Supply:</Text>
-                    <Text>{contract.totalSupply}</Text>
+                    <Text type={TextType.Grey}>Supply:</Text>
+                    <RenderIfDefined
+                      value={
+                        contract.totalSupply
+                          ? formatWithThousandsSeparators(contract.totalSupply)
+                          : contract.totalSupply
+                      }
+                    />
+                    <Text type={TextType.Grey}>Holders:</Text>
+                    <Text>
+                      {voteInputStore.isLoading && <Spinner />}
+                      {!voteInputStore.isLoading && (
+                        <>
+                          {voteInputStore.holdersLength === 50000
+                            ? `50,000+`
+                            : formatWithThousandsSeparators(
+                                voteInputStore.holdersLength as number
+                              )}
+                        </>
+                      )}
+                    </Text>
                   </div>
-
-                  {voteInputStore.isLoading && (
-                    <div className={css("flex", "items-center", "gap-1")}>
-                      <Spinner />
-                      <Text size={TextSize.xs} type={TextType.Grey}>
-                        loading holders
-                      </Text>
-                    </div>
-                  )}
-                  {!voteInputStore.isLoading &&
-                    voteInputStore.holdersLength !== undefined && (
-                      <Text size={TextSize.xs} type={TextType.Grey}>
-                        {formatWithThousandsSeparators(
-                          voteInputStore.holdersLength
-                        )}
-                        {voteInputStore.holdersLength === 50000 && "+"}{" "}
-                        {voteInputStore.holdersLength > 1
-                          ? "holders"
-                          : "holder"}
-                      </Text>
-                    )}
-                  {/* {jsonify(contract)} */}
                 </div>
               );
             }}
@@ -180,6 +173,13 @@ const VotingItem = observer(
     );
   }
 );
+
+const RenderIfDefined = ({ value }: { value?: string | number }) => {
+  if (value) {
+    return <Text>{value}</Text>;
+  }
+  return <Text type={TextType.Grey}>-</Text>;
+};
 
 const AddFromWalletButton = ({
   setView,
