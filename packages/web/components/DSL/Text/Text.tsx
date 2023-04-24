@@ -23,6 +23,7 @@ interface TextProps {
   bold?: boolean;
   italic?: boolean;
   block?: boolean;
+  ellipses?: boolean;
 }
 
 const textSizeStyles = {
@@ -48,6 +49,7 @@ const Text: React.FC<PropsWithChildren<TextProps>> = ({
   italic = false,
   children,
   block = false,
+  ellipses = false,
 }) => {
   return (
     <span
@@ -59,6 +61,7 @@ const Text: React.FC<PropsWithChildren<TextProps>> = ({
           "font-bold": bold,
           italic: italic,
           "w-full": block,
+          "whitespace-nowrap overflow-hidden text-ellipsis": ellipses,
         }
       )}
     >

@@ -1,14 +1,14 @@
 import { observer } from "mobx-react-lite";
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
+import { BsPencil, BsWallet2 } from "react-icons/bs";
 import { IoCloseOutline } from "react-icons/io5";
 import { css } from "../../helpers/css";
-import { jsonify } from "../../helpers/strings";
 import CreateCompetitionStore from "../../store/CreateCompetition/CreateCompetition.store";
 import VoteInputStore from "../../store/CreateCompetition/VoteInput.store";
 import Button from "../DSL/Button/Button";
 import Form from "../DSL/Form/Form";
 import { FormDisplay } from "../DSL/Form/FormControl";
-import Text from "../DSL/Text/Text";
+import Text, { TextSize } from "../DSL/Text/Text";
 import { Buttons, CompetitionStoreProp } from "./CreateCompetition";
 import Detail from "./Detail";
 import Wallet from "./Wallet";
@@ -65,15 +65,50 @@ const VotingItem = ({
           <IoCloseOutline size={12} />
         </Button>
         {view === null && (
-          <div className={css("flex", "gap-2")}>
-            <Button onClick={() => setView("wallet")}>wallet</Button>
-            <Button onClick={() => setView("manual")}>manual</Button>
+          <div className={css("flex", "gap-2", "justify-around", "ml-4")}>
+            <AddFromWalletButton setView={setView} />
+            <AddManuallyButton setView={setView} />
           </div>
         )}
-        {view === "wallet" && <Wallet wallet={store.wallet!} />}
+        {view === "wallet" && (
+          <div className={css("flex", "justify-between", "w-full")}>
+            <Text>Select voting rule based on your wallet holdings below</Text>
+            <AddManuallyButton setView={setView} />
+          </div>
+        )}
       </div>
-      {jsonify(voteInput)}
+      {view === "wallet" && <Wallet wallet={store.wallet!} />}
     </div>
+  );
+};
+
+const AddFromWalletButton = ({
+  setView,
+}: {
+  setView: Dispatch<SetStateAction<"wallet" | "manual" | null>>;
+}) => {
+  return (
+    <Button onClick={() => setView("wallet")}>
+      <div className={css("flex", "items-center", "gap-1.5")}>
+        <BsWallet2 size={14} />
+        <Text size={TextSize.xs}>from your wallet</Text>
+      </div>
+    </Button>
+  );
+};
+
+const AddManuallyButton = ({
+  setView,
+}: {
+  setView: Dispatch<SetStateAction<"wallet" | "manual" | null>>;
+}) => {
+  return (
+    <Button onClick={() => setView("manual")}>
+      <div className={css("flex", "items-center", "gap-1.5")}>
+        <BsPencil size={14} />
+        <Text size={TextSize.xs}>add manually</Text>
+      </div>
+    </Button>
   );
 };
 
