@@ -130,7 +130,9 @@ export const Submit: React.FC<PropsWithChildren<ButtonProps>> = ({
     <Button
       {...rest}
       isLoading={state.submitting || rest.isLoading}
-      disabled={(!state.pristine && !state.dirty) || !state.valid}
+      disabled={
+        (!state.pristine && !state.dirty) || !state.valid || rest.disabled
+      }
       submit
     >
       {children ? children : "Submit"}

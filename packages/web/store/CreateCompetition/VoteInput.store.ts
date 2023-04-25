@@ -4,12 +4,18 @@ import { formatWithThousandsSeparators } from "../../helpers/numberFormatter";
 import { TokenType } from "../../interfaces";
 import Http from "../../services/http";
 
+export enum VoteInputView {
+  Choose = "choose",
+  Wallet = "wallet",
+  Manual = "manual",
+}
+
 export default class VoteInputStore {
   @observable
   tokenType = TokenType.ERC721;
 
   @observable
-  view: "wallet" | "manual" | null = null;
+  view: VoteInputView = VoteInputView.Choose;
 
   @observable
   contractAddress?: string = undefined;

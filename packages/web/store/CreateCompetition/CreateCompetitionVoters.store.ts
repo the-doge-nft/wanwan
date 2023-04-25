@@ -45,4 +45,11 @@ export default class CreateCompetitionVoteStore {
   getAddressesToHide(index: number) {
     return this.selectedAddresses.filter((_, i) => i !== index);
   }
+
+  @computed
+  get allVotersConfirmed() {
+    return this.votingRule.every(
+      (voteInputStore) => voteInputStore.isConfirmed
+    );
+  }
 }

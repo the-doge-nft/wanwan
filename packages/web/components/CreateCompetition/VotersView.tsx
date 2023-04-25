@@ -11,10 +11,13 @@ import {
 } from "../../helpers/strings";
 import { TokenType } from "../../interfaces";
 import CreateCompetitionStore from "../../store/CreateCompetition/CreateCompetition.store";
-import VoteInputStore from "../../store/CreateCompetition/VoteInput.store";
+import VoteInputStore, {
+  VoteInputView,
+} from "../../store/CreateCompetition/VoteInput.store";
 import Button from "../DSL/Button/Button";
 import Form from "../DSL/Form/Form";
 import { FormDisplay } from "../DSL/Form/FormControl";
+import TextInput from "../DSL/Form/TextInput";
 import Link, { LinkType } from "../DSL/Link/Link";
 import Spinner, { SpinnerSize } from "../DSL/Spinner/Spinner";
 import Text, { TextSize, TextType } from "../DSL/Text/Text";
@@ -53,7 +56,7 @@ const VotersView = observer(({ store }: CompetitionStoreProp) => {
           + Voting Rule
         </Button>
       </div>
-      <Buttons store={store} canGoNext={store.votersStore.hasVoters} />
+      <Buttons store={store} canGoNext={store.votersStore.allVotersConfirmed} />
     </Form>
   );
 });
@@ -78,7 +81,7 @@ const VotingItem = observer(
           <Button onClick={() => store.votersStore.removeVote(index)}>
             <IoCloseOutline size={12} />
           </Button>
-          {voteInputStore.view === null && (
+          {voteInputStore.view === VoteInputView.Choose && (
             <div
               className={css(
                 "flex",
@@ -92,7 +95,7 @@ const VotingItem = observer(
               <AddManuallyButton store={voteInputStore} />
             </div>
           )}
-          {voteInputStore.view === "wallet" && (
+          {voteInputStore.view === VoteInputView.Wallet && (
             <div
               className={css(
                 "flex",
@@ -120,7 +123,7 @@ const VotingItem = observer(
               )}
             </div>
           )}
-          {voteInputStore.view === "manual" && (
+          {voteInputStore.view === VoteInputView.Manual && (
             <div
               className={css(
                 "flex",
@@ -133,139 +136,150 @@ const VotingItem = observer(
             </div>
           )}
         </div>
-        {voteInputStore.view === "wallet" && !voteInputStore.isConfirmed && (
-          <Wallet
-            wallet={store.wallet!}
-            showAll={false}
-            selectedAddress={voteInputStore.contractAddress}
-            filterContractAddresses={store.votersStore.getAddressesToHide(
-              index
-            )}
-            onERC721AddressSelected={({ address, nfts }) => {
-              voteInputStore.setInput(
-                address,
-                TokenType.ERC721,
-                nfts?.[0].contract.name
-              );
-            }}
-            renderSelection={({ address, nfts }) => {
-              const contract = nfts?.[0].contract;
-              return (
-                <div
-                  className={css("flex", "flex-col", "items-center", "grow")}
-                >
-                  {!contract && (
-                    <div className={css("text-center")}>
-                      <Text>
-                        Select an address to token-gate voting to said
-                        collection
-                      </Text>
-                    </div>
-                  )}
-                  {contract && (
-                    <>
+        {voteInputStore.view === VoteInputView.Wallet &&
+          !voteInputStore.isConfirmed && (
+            <Wallet
+              wallet={store.wallet!}
+              showAll={false}
+              selectedAddress={voteInputStore.contractAddress}
+              filterContractAddresses={store.votersStore.getAddressesToHide(
+                index
+              )}
+              onERC721AddressSelected={({ address, nfts }) => {
+                voteInputStore.setInput(
+                  address,
+                  TokenType.ERC721,
+                  nfts?.[0].contract.name
+                );
+              }}
+              renderSelection={({ address, nfts }) => {
+                const contract = nfts?.[0].contract;
+                return (
+                  <div
+                    className={css("flex", "flex-col", "items-center", "grow")}
+                  >
+                    {!contract && (
                       <div className={css("text-center")}>
                         <Text>
-                          Holders of{" "}
-                          <Link
-                            isExternal
-                            href={getLooksRareCollectionURL(contract.address)}
-                          >
-                            {contract.name
-                              ? contract.name
-                              : abbreviate(contract.address)}
-                          </Link>{" "}
-                          will be able to vote
+                          Select an address to token-gate voting to said
+                          collection
                         </Text>
                       </div>
-                      <div className={css("mt-4", "flex", "gap-1")}>
-                        {!voteInputStore.isLoadingNfts &&
-                          voteInputStore.nfts
-                            .slice(0, 5)
-                            .map((nft) => (
-                              <NftPreview
-                                key={`nft-preview-${nft.contract.address}-${nft.tokenId}`}
-                                size={50}
-                                nft={nft}
-                                showName={false}
-                              />
-                            ))}
-                        {voteInputStore.isLoadingNfts && <Spinner />}
-                      </div>
-
-                      {showInfo && (
-                        <div
-                          className={css(
-                            "grow",
-                            "w-full",
-                            "flex",
-                            "justify-center",
-                            "flex-col",
-                            "gap-3"
-                          )}
-                        >
-                          <div
-                            className={css(
-                              "grid",
-                              "grid-cols-2",
-                              "w-full",
-                              "border-[1px]",
-                              "dark:border-neutral-600",
-                              "border-neutral-400",
-                              "border-dashed",
-                              "p-2"
-                            )}
-                          >
-                            <Text type={TextType.Grey} size={TextSize.xs}>
-                              Contract address:
-                            </Text>
+                    )}
+                    {contract && (
+                      <>
+                        <div className={css("text-center")}>
+                          <Text>
+                            Holders of{" "}
                             <Link
                               isExternal
-                              type={LinkType.Secondary}
-                              href={getEtherscanURL(
-                                contract.address as string,
-                                "token"
+                              href={getLooksRareCollectionURL(contract.address)}
+                            >
+                              {contract.name
+                                ? contract.name
+                                : abbreviate(contract.address)}
+                            </Link>{" "}
+                            will be able to vote
+                          </Text>
+                        </div>
+                        <div className={css("mt-4", "flex", "gap-1")}>
+                          {!voteInputStore.isLoadingNfts &&
+                            voteInputStore.nfts
+                              .slice(0, 5)
+                              .map((nft) => (
+                                <NftPreview
+                                  key={`nft-preview-${nft.contract.address}-${nft.tokenId}`}
+                                  size={50}
+                                  nft={nft}
+                                  showName={false}
+                                />
+                              ))}
+                          {voteInputStore.isLoadingNfts && <Spinner />}
+                        </div>
+
+                        {showInfo && (
+                          <div
+                            className={css(
+                              "grow",
+                              "w-full",
+                              "flex",
+                              "justify-center",
+                              "flex-col",
+                              "gap-3"
+                            )}
+                          >
+                            <div
+                              className={css(
+                                "grid",
+                                "grid-cols-2",
+                                "w-full",
+                                "border-[1px]",
+                                "dark:border-neutral-600",
+                                "border-neutral-400",
+                                "border-dashed",
+                                "p-2"
                               )}
                             >
-                              <Text type={TextType.NoColor} size={TextSize.xs}>
-                                {abbreviate(address as string)}
+                              <Text type={TextType.Grey} size={TextSize.xs}>
+                                Contract address:
                               </Text>
-                            </Link>
-                            <Text type={TextType.Grey} size={TextSize.xs}>
-                              Type:
-                            </Text>
-                            <Text size={TextSize.xs}>{contract.tokenType}</Text>
-                            <Text type={TextType.Grey} size={TextSize.xs}>
-                              Supply:
-                            </Text>
-                            <RenderIfDefined
-                              value={
-                                contract.totalSupply
-                                  ? formatWithThousandsSeparators(
-                                      contract.totalSupply
-                                    )
-                                  : contract.totalSupply
-                              }
-                            />
-                            <Text type={TextType.Grey} size={TextSize.xs}>
-                              Holders:
-                            </Text>
-                            <Text size={TextSize.xs}>
-                              {voteInputStore.isLoadingHolders && (
-                                <Spinner size={SpinnerSize.xs} />
-                              )}
-                              {!voteInputStore.isLoadingHolders &&
-                                voteInputStore.holderLengthTitle}
-                            </Text>
+                              <Link
+                                isExternal
+                                type={LinkType.Secondary}
+                                href={getEtherscanURL(
+                                  contract.address as string,
+                                  "token"
+                                )}
+                              >
+                                <Text
+                                  type={TextType.NoColor}
+                                  size={TextSize.xs}
+                                >
+                                  {abbreviate(address as string)}
+                                </Text>
+                              </Link>
+                              <Text type={TextType.Grey} size={TextSize.xs}>
+                                Type:
+                              </Text>
+                              <Text size={TextSize.xs}>
+                                {contract.tokenType}
+                              </Text>
+                              <Text type={TextType.Grey} size={TextSize.xs}>
+                                Supply:
+                              </Text>
+                              <RenderIfDefined
+                                value={
+                                  contract.totalSupply
+                                    ? formatWithThousandsSeparators(
+                                        contract.totalSupply
+                                      )
+                                    : contract.totalSupply
+                                }
+                              />
+                              <Text type={TextType.Grey} size={TextSize.xs}>
+                                Holders:
+                              </Text>
+                              <Text size={TextSize.xs}>
+                                {voteInputStore.isLoadingHolders && (
+                                  <Spinner size={SpinnerSize.xs} />
+                                )}
+                                {!voteInputStore.isLoadingHolders &&
+                                  voteInputStore.holderLengthTitle}
+                              </Text>
+                            </div>
                           </div>
-                        </div>
-                      )}
-                    </>
-                  )}
-                </div>
-              );
-            }}
-          />
+                        )}
+                      </>
+                    )}
+                  </div>
+                );
+              }}
+            />
+          )}
+        {voteInputStore.view === VoteInputView.Manual && (
+          <div>
+            <TextInput name={"test"} block />
+          </div>
         )}
       </div>
     );
