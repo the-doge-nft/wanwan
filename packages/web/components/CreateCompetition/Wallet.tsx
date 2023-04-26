@@ -1,10 +1,10 @@
-import { Nft, OwnedNft, TokenBalance } from "alchemy-sdk";
+import { Nft, OwnedNft } from "alchemy-sdk";
 import { observer } from "mobx-react-lite";
 import { useCallback, useMemo, useRef } from "react";
 import { objectKeys } from "../../helpers/arrays";
 import { css } from "../../helpers/css";
 import { abbreviate } from "../../helpers/strings";
-import { Wallet } from "../../interfaces";
+import { ERC20Balance, Wallet } from "../../interfaces";
 import WalletStore from "../../store/Wallet.store";
 import Accordion from "../DSL/Accordion/Accordion";
 import AspectRatio from "../DSL/AspectRatio/AspectRatio";
@@ -16,27 +16,32 @@ interface WalletProps {
   showAll?: boolean;
   selectedAddress?: string;
   filterContractAddresses?: string[];
-  onERC721AddressSelected?: (params: {
+  onNFTAddressSelected?: (params: {
     address: string;
     nfts: OwnedNft[];
   }) => void;
   onERC20AddressSelected?: (params: {
     address: string;
-    balance: TokenBalance[];
+    balance: ERC20Balance[];
   }) => void;
-  renderSelection?: (params: {
+  renderNftSelection?: (params: {
     address: string;
     nfts: OwnedNft[];
+  }) => JSX.Element;
+  renderErc20Selection?: (params: {
+    address: string;
+    balance: ERC20Balance[];
   }) => JSX.Element;
 }
 
 const WalletView = observer(
   ({
     wallet,
-    onERC721AddressSelected,
+    onNFTAddressSelected: onERC721AddressSelected,
     onERC20AddressSelected,
     showAll = true,
-    renderSelection,
+    renderNftSelection: renderSelection,
+    renderErc20Selection,
     filterContractAddresses,
     selectedAddress,
   }: WalletProps) => {
@@ -77,7 +82,7 @@ const WalletView = observer(
       <div>
         <div className={css("mt-2")}>
           <Accordion>
-            <Accordion.Item value={"test"} trigger={<Text>NFTs</Text>}>
+            <Accordion.Item value={"NFTs"} trigger={<Text>NFTs</Text>}>
               {!store.hasNfts && <NoneFound />}
               {store.hasNfts && (
                 <div className={css("grid", "grid-cols-6", "gap-4")}>
@@ -160,14 +165,13 @@ const WalletView = observer(
                           key={`erc-20-all`}
                           address={"all"}
                           title={"All"}
-                          count={store.getSelectedERC20TokensCount("all")}
                           isSelected={store.selectedAddress === "all"}
                           onClick={() => {
                             store.selectedAddress = "all";
                             if (onERC20AddressSelected) {
                               onERC20AddressSelected({
                                 address: "all",
-                                balance: store.selectedERC20Tokens,
+                                balance: store.selectedERC20Balances,
                               });
                             }
                           }}
@@ -177,7 +181,6 @@ const WalletView = observer(
                         <Selector
                           key={`contract-selector-${address}`}
                           title={store.getErc20ContractTitle(address)}
-                          count={store.getSelectedERC20TokensCount(address)}
                           address={address as string}
                           isSelected={store.selectedAddress === address}
                           onClick={() => {
@@ -185,7 +188,7 @@ const WalletView = observer(
                             if (onERC20AddressSelected) {
                               onERC20AddressSelected({
                                 address: store.selectedAddress! as string,
-                                balance: store.selectedERC20Tokens,
+                                balance: store.selectedERC20Balances,
                               });
                             }
                           }}
@@ -193,7 +196,13 @@ const WalletView = observer(
                       ))}
                     </div>
                   </div>
-                  <div className={css("col-span-4")}></div>
+                  <div className={css("col-span-4")}>
+                    {renderErc20Selection &&
+                      renderErc20Selection({
+                        address: store.selectedAddress! as string,
+                        balance: store.selectedERC20Balances,
+                      })}
+                  </div>
                 </div>
               )}
             </Accordion.Item>
@@ -286,7 +295,7 @@ interface SelectorProps {
   address: string;
   isSelected: boolean;
   title: string;
-  count: number;
+  count?: number;
 }
 
 const Selector = observer(
@@ -317,9 +326,11 @@ const Selector = observer(
         <Text ellipses type={isSelected ? TextType.Primary : TextType.Grey}>
           {title ? title : abbreviate(address as string)}
         </Text>
-        <Text size={TextSize.xs} type={TextType.Grey}>
-          ({count})
-        </Text>
+        {count && (
+          <Text size={TextSize.xs} type={TextType.Grey}>
+            ({count})
+          </Text>
+        )}
       </div>
     );
   }

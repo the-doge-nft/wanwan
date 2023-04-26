@@ -1,9 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { TokenType } from '@prisma/client';
 import {
   Alchemy,
   GetNftsForOwnerOptions,
   Network,
+  NftTokenType,
   OwnedNft,
   TokenBalanceType,
   TokenBalancesOptionsErc20,
@@ -131,7 +133,7 @@ export class AlchemyService {
     );
     for (const balance of res) {
       //@ts-ignore
-      const metadata = await this.getERC20Metadata(balance.contractAddress);
+      const metadata = await this.getTokenMetadata(balance.contractAddress);
       //@ts-ignore
       balance.metadata = metadata;
       console.log('TESTING', balance);
@@ -156,7 +158,8 @@ export class AlchemyService {
     });
   }
 
-  getERC20Metadata(address: string) {
+  // NOTE: this will NOT throw for ERC721 & ERC115 tokens
+  getTokenMetadata(address: string) {
     return this.alchemy.core.getTokenMetadata(address);
   }
 
@@ -170,6 +173,33 @@ export class AlchemyService {
 
   resolveCachedEnsName(name: string) {
     return this.cache.get(this.getEnsCacheKey(name));
+  }
+
+  async getTokenType(contractAddress: string): Promise<TokenType> {
+    try {
+      const nft = await this.getNftContractMetadata(contractAddress);
+      console.log('NFT', nft);
+
+      if (
+        ![NftTokenType.ERC1155, NftTokenType.ERC721].includes(nft.tokenType)
+      ) {
+        throw new Error('Not an NFT we recognize');
+      }
+
+      return nft.tokenType === NftTokenType.ERC1155
+        ? TokenType.ERC1155
+        : TokenType.ERC721;
+    } catch (e) {
+      console.error('error getting metadata', e);
+      try {
+        const metadata = await this.getTokenMetadata(contractAddress);
+        console.log('METADATA', metadata);
+        return TokenType.ERC20;
+      } catch (e) {
+        console.error('error getting nft', e);
+        throw new Error('Not valid ERC20, ERC1155, or ERC721');
+      }
+    }
   }
 
   async refreshResolveCachedEnsName(name: string) {

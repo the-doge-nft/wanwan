@@ -60,6 +60,18 @@ export const isEthereumAddress = (value: any) => {
   }
 };
 
+export const isValidToken = async (value: any) => {
+  if (isValidEthereumAddress(value)) {
+    try {
+      const { data } = await Http.getTokenType(value);
+      return undefined;
+    } catch (e) {
+      return "Must be valid token";
+    }
+  }
+  return "Must be valid token";
+};
+
 export const isEnsName = (value: any) => {};
 
 const simpleMemoize = (fn: any) => {

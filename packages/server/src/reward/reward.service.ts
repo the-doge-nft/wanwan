@@ -37,7 +37,7 @@ export class RewardService {
     const balances = await this.alchemy.getERC20Balances(address, [
       contractAddress,
     ]);
-    const metadata = await this.alchemy.getERC20Metadata(contractAddress);
+    const metadata = await this.alchemy.getTokenMetadata(contractAddress);
     const balance = balances.tokenBalances[0].tokenBalance;
     const amountAtoms = BigNumber.from(amount).mul(
       BigNumber.from(10).pow(metadata.decimals),

@@ -1,4 +1,4 @@
-import { OwnedNft } from "alchemy-sdk";
+import { NftTokenType, OwnedNft } from "alchemy-sdk";
 import { computed, makeObservable, observable } from "mobx";
 import { objectKeys } from "../helpers/arrays";
 import { abbreviate } from "../helpers/strings";
@@ -31,14 +31,21 @@ export default class WalletStore {
     }
     if (filterContractAddresses) {
       this.wallet = {
-        nft: wallet.nft.filter(
+        nft: this.wallet?.nft.filter(
           (nft) => !filterContractAddresses.includes(nft.contract.address)
         ),
-        erc20: wallet.erc20.filter((erc20) => {
+        erc20: this.wallet?.erc20.filter((erc20) => {
           return !filterContractAddresses.includes(erc20.contractAddress);
         }),
       };
     }
+
+    // filter only for erc1155 and erc721
+    this.wallet.nft.filter((nft) =>
+      [NftTokenType.ERC1155, NftTokenType.ERC721].includes(
+        nft.contract.tokenType
+      )
+    );
   }
 
   @computed
@@ -81,7 +88,7 @@ export default class WalletStore {
   }
 
   @computed
-  get selectedERC20Tokens() {
+  get selectedERC20Balances() {
     if (this.selectedAddress == "all") {
       return this.wallet.erc20;
     } else {

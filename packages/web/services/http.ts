@@ -229,6 +229,10 @@ class _Http {
     return this.http.get<{ nfts: Nft[] }>(`/nft/${contractAddress}`);
   }
 
+  getTokenType(contractAddress: string) {
+    return this.http.get(`/contract/${contractAddress}`);
+  }
+
   static create() {
     return new this(env.api.baseUrl);
   }

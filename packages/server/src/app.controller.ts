@@ -209,9 +209,12 @@ export class AppController {
   @UseGuards(AuthGuard)
   @Get('/contract/:address')
   async getNftForContractAndToken(@Param() { address }: { address: string }) {
-    const metadata = await this.alchemy.getERC20Metadata(address);
-    const nft = await this.alchemy.getNftContractMetadata(address);
-    console.log(metadata, nft);
+    try {
+      const tokenType = await this.alchemy.getTokenType(address);
+      return { tokenType };
+    } catch (e) {
+      throw new BadRequestException('Not a valid token');
+    }
   }
 
   @UseGuards(AdminGuard)

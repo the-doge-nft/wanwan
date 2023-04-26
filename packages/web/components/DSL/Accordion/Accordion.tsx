@@ -12,7 +12,11 @@ interface AccordionProps
 
 const AccordionContext = React.createContext<string[]>([]);
 
-const Accordion = ({ children, ...rest }: AccordionProps) => {
+const Accordion = ({
+  children,
+  type = "multiple",
+  ...rest
+}: AccordionProps) => {
   const [openValues, setOpenValues] = React.useState<string[]>([]);
   return (
     <AccordionContext.Provider value={openValues}>
@@ -21,7 +25,7 @@ const Accordion = ({ children, ...rest }: AccordionProps) => {
         onValueChange={(value) => {
           setOpenValues(value);
         }}
-        type={"multiple"}
+        type={type}
         {...rest}
       >
         {children}

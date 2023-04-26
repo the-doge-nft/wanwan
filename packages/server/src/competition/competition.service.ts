@@ -125,7 +125,7 @@ export class CompetitionService {
       if (!currency) {
         const metadata =
           type === 'ERC20'
-            ? await this.alchemy.getERC20Metadata(contractAddress)
+            ? await this.alchemy.getTokenMetadata(contractAddress)
             : await this.alchemy.getNftContractMetadata(contractAddress);
         const decimals =
           type === 'ERC20' ? (metadata as TokenMetadataResponse).decimals : 0;
