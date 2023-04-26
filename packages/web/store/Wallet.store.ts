@@ -1,7 +1,8 @@
 import { OwnedNft } from "alchemy-sdk";
 import { computed, makeObservable, observable } from "mobx";
 import { objectKeys } from "../helpers/arrays";
-import { Wallet } from "../interfaces";
+import { abbreviate } from "../helpers/strings";
+import { ERC20Balance, Wallet } from "../interfaces";
 
 export enum WalletView {}
 
@@ -54,6 +55,19 @@ export default class WalletStore {
   }
 
   @computed
+  get erc20ByAddress() {
+    const erc20: { [key: string]: Array<ERC20Balance> } = {};
+    this.wallet.erc20.forEach((token) => {
+      if (!erc20[token.contractAddress]) {
+        erc20[token.contractAddress] = [token];
+      } else {
+        erc20[token.contractAddress].push(token);
+      }
+    });
+    return erc20;
+  }
+
+  @computed
   get selectedNfts() {
     if (this.selectedAddress == "all") {
       let nfts: Array<OwnedNft> = [];
@@ -63,6 +77,17 @@ export default class WalletStore {
       return nfts;
     } else {
       return this.nftsByAddress[this.selectedAddress as string];
+    }
+  }
+
+  @computed
+  get selectedERC20Tokens() {
+    if (this.selectedAddress == "all") {
+      return this.wallet.erc20;
+    } else {
+      return this.wallet.erc20.filter(
+        (erc20) => erc20.contractAddress === this.selectedAddress
+      );
     }
   }
 
@@ -77,5 +102,50 @@ export default class WalletStore {
     } else {
       return this.nftsByAddress[address].length;
     }
+  }
+
+  getSelectedERC20TokensCount(address: string | number) {
+    if (address === "all") {
+      return this.wallet.erc20.length;
+    } else {
+      return this.erc20ByAddress[address].length;
+    }
+  }
+
+  getNftContractTitle(address: string | number) {
+    if (address === "all") {
+      return "All";
+    }
+    const contract = this.nftsByAddress[address][0].contract;
+    if (contract.name) {
+      return contract.name;
+    }
+    return abbreviate(contract.address);
+  }
+
+  getErc20ContractTitle(address: string | number) {
+    if (address === "all") {
+      return "All";
+    }
+    const contract = this.erc20ByAddress[address][0];
+    if (contract.metadata?.name) {
+      return contract.metadata?.name;
+    }
+    return abbreviate(contract.contractAddress);
+  }
+
+  @computed
+  get hasNfts() {
+    return objectKeys(this.nftsByAddress).length > 0;
+  }
+
+  @computed
+  get hasERC20s() {
+    return this.wallet.erc20.length > 0;
+  }
+
+  @computed
+  get allNfts() {
+    return this.wallet.nft;
   }
 }

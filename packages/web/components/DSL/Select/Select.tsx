@@ -27,7 +27,9 @@ const Select = ({
     <RadixSelect.Root
       onValueChange={(value) => onChange(value)}
       value={value}
-      defaultValue={defaultValue ? defaultValue : items[0].id}
+      defaultValue={
+        defaultValue ? defaultValue : items?.[0].id ? items[0].id : ""
+      }
     >
       <RadixSelect.Trigger
         className={css(

@@ -1,4 +1,8 @@
-import { OwnedNft, TokenBalance } from "alchemy-sdk";
+import {
+  OwnedNft,
+  TokenBalanceSuccess,
+  TokenMetadataResponse,
+} from "alchemy-sdk";
 
 type DatetimeString = string;
 export type Nullable<T> = T | null;
@@ -197,7 +201,11 @@ export interface ProfileDto {
 
 export interface Wallet {
   nft: Array<OwnedNft>;
-  erc20: Array<TokenBalance>;
+  erc20: Array<ERC20Balance>;
+}
+
+export interface ERC20Balance extends TokenBalanceSuccess {
+  metadata: TokenMetadataResponse;
 }
 
 export type NextString = Nullable<string> | undefined;

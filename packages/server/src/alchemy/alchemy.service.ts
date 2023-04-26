@@ -129,6 +129,13 @@ export class AlchemyService {
         }),
       'tokenBalances',
     );
+    for (const balance of res) {
+      //@ts-ignore
+      const metadata = await this.getERC20Metadata(balance.contractAddress);
+      //@ts-ignore
+      balance.metadata = metadata;
+      console.log('TESTING', balance);
+    }
     return res;
   }
 

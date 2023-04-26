@@ -1,11 +1,12 @@
-import { Nft, OwnedNft } from "alchemy-sdk";
+import { Nft, OwnedNft, TokenBalance } from "alchemy-sdk";
 import { observer } from "mobx-react-lite";
-import { useMemo, useRef } from "react";
+import { useCallback, useMemo, useRef } from "react";
 import { objectKeys } from "../../helpers/arrays";
 import { css } from "../../helpers/css";
 import { abbreviate } from "../../helpers/strings";
 import { Wallet } from "../../interfaces";
 import WalletStore from "../../store/Wallet.store";
+import Accordion from "../DSL/Accordion/Accordion";
 import AspectRatio from "../DSL/AspectRatio/AspectRatio";
 import Text, { TextSize, TextType } from "../DSL/Text/Text";
 import Logo from "../Logo/Logo";
@@ -19,6 +20,10 @@ interface WalletProps {
     address: string;
     nfts: OwnedNft[];
   }) => void;
+  onERC20AddressSelected?: (params: {
+    address: string;
+    balance: TokenBalance[];
+  }) => void;
   renderSelection?: (params: {
     address: string;
     nfts: OwnedNft[];
@@ -29,6 +34,7 @@ const WalletView = observer(
   ({
     wallet,
     onERC721AddressSelected,
+    onERC20AddressSelected,
     showAll = true,
     renderSelection,
     filterContractAddresses,
@@ -42,116 +48,192 @@ const WalletView = observer(
           filterContractAddresses,
           selectedAddress
         ),
-      [wallet, showAll, filterContractAddresses]
+      [wallet, showAll, filterContractAddresses, selectedAddress]
     );
     const selectorRef = useRef<HTMLDivElement>(null);
+
+    const renderDefaultNfts = useCallback(
+      () => (
+        <div
+          className={css("grow", "grid", "grid-cols-3", "overflow-y-auto")}
+          style={
+            selectorRef.current?.clientHeight
+              ? { maxHeight: selectorRef.current.clientHeight }
+              : { maxHeight: "150px" }
+          }
+        >
+          {store.selectedNfts.map((nft, index) => (
+            <NftPreview
+              key={`${nft.tokenId}-${nft.contract.address}-${index}`}
+              nft={nft}
+            />
+          ))}
+        </div>
+      ),
+      [store.selectedNfts]
+    );
+
     return (
       <div>
-        <div className={css("mt-4")}>
-          <Text>NFTs</Text>
-          <div className={css("grid", "grid-cols-6", "gap-4")}>
-            <div className={css("col-span-2")}>
-              {objectKeys(store.nftsByAddress).length > 0 && (
-                <div
-                  className={css(
-                    "flex",
-                    "flex-col",
-                    "gap-1",
-                    "min-h-[400px]",
-                    "overflow-y-auto"
-                  )}
-                  ref={selectorRef}
-                >
-                  {store.showAll && (
-                    <ContractSelector
-                      key={"all"}
-                      store={store}
-                      address={"all"}
-                      onClick={() => {
-                        if (onERC721AddressSelected) {
-                          onERC721AddressSelected({
-                            address: store.selectedAddress! as string,
-                            nfts: store.selectedNfts,
-                          });
-                        }
-                      }}
-                    />
-                  )}
-                  {objectKeys(store.nftsByAddress).map((address) => {
-                    return (
-                      <ContractSelector
-                        key={`contract-selector-${address}`}
-                        store={store}
-                        address={address}
-                        onClick={() => {
-                          if (onERC721AddressSelected) {
-                            onERC721AddressSelected({
-                              address: store.selectedAddress! as string,
-                              nfts: store.selectedNfts,
-                            });
-                          }
-                        }}
-                      />
-                    );
-                  })}
+        <div className={css("mt-2")}>
+          <Accordion>
+            <Accordion.Item value={"test"} trigger={<Text>NFTs</Text>}>
+              {!store.hasNfts && <NoneFound />}
+              {store.hasNfts && (
+                <div className={css("grid", "grid-cols-6", "gap-4")}>
+                  <div className={css("col-span-2")}>
+                    <div
+                      className={css(
+                        "flex",
+                        "flex-col",
+                        "gap-1",
+                        "min-h-[150px]",
+                        "overflow-y-auto"
+                      )}
+                      ref={selectorRef}
+                    >
+                      {store.showAll && (
+                        <Selector
+                          address={"all"}
+                          title={store.getNftContractTitle("all")}
+                          count={store.getSelectedNftsCount("all")}
+                          isSelected={store.selectedAddress === "all"}
+                          onClick={() => {
+                            store.selectedAddress = "all";
+                            if (onERC721AddressSelected) {
+                              onERC721AddressSelected({
+                                address: "all",
+                                nfts: store.allNfts,
+                              });
+                            }
+                          }}
+                        />
+                      )}
+                      {objectKeys(store.nftsByAddress).map((address) => (
+                        <Selector
+                          key={`address-selector-${address}`}
+                          address={address as string}
+                          title={store.getNftContractTitle(address)}
+                          count={store.getSelectedNftsCount(address)}
+                          isSelected={store.selectedAddress === address}
+                          onClick={() => {
+                            store.selectedAddress = address;
+                            if (onERC721AddressSelected) {
+                              onERC721AddressSelected({
+                                address: address as string,
+                                nfts: store.nftsByAddress[address],
+                              });
+                            }
+                          }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                  <div className={css("col-span-4", "flex", "flex-col")}>
+                    {renderSelection &&
+                      renderSelection({
+                        address: store.selectedAddress! as string,
+                        nfts: store.selectedNfts,
+                      })}
+                    {!renderSelection && renderDefaultNfts()}
+                  </div>
                 </div>
               )}
-            </div>
-            <div className={css("col-span-4", "flex", "flex-col")}>
-              {renderSelection &&
-                renderSelection({
-                  address: store.selectedAddress! as string,
-                  nfts: store.selectedNfts,
-                })}
-              {!renderSelection && (
-                <div
-                  className={css(
-                    "grow",
-                    "grid",
-                    "grid-cols-3",
-                    "overflow-y-auto"
-                  )}
-                  style={
-                    selectorRef.current?.clientHeight
-                      ? { maxHeight: selectorRef.current.clientHeight }
-                      : { maxHeight: "400px" }
-                  }
-                >
-                  {store.selectedNfts.map((nft, index) => (
-                    <NftPreview
-                      key={`${nft.tokenId}-${nft.contract.address}-${index}`}
-                      nft={nft}
-                    />
-                  ))}
+            </Accordion.Item>
+            <Accordion.Item value={"erc20"} trigger={<Text>ERC20</Text>}>
+              {!store.hasERC20s && <NoneFound />}
+              {store.hasERC20s && (
+                <div className={css("grid", "grid-cols-6", "gap-4")}>
+                  <div className={css("col-span-2")}>
+                    <div
+                      className={css(
+                        "flex",
+                        "flex-col",
+                        "gap-1",
+                        "min-h-[150px]",
+                        "overflow-y-auto"
+                      )}
+                      ref={selectorRef}
+                    >
+                      {store.showAll && (
+                        <Selector
+                          key={`erc-20-all`}
+                          address={"all"}
+                          title={"All"}
+                          count={store.getSelectedERC20TokensCount("all")}
+                          isSelected={store.selectedAddress === "all"}
+                          onClick={() => {
+                            store.selectedAddress = "all";
+                            if (onERC20AddressSelected) {
+                              onERC20AddressSelected({
+                                address: "all",
+                                balance: store.selectedERC20Tokens,
+                              });
+                            }
+                          }}
+                        />
+                      )}
+                      {objectKeys(store.erc20ByAddress).map((address) => (
+                        <Selector
+                          key={`contract-selector-${address}`}
+                          title={store.getErc20ContractTitle(address)}
+                          count={store.getSelectedERC20TokensCount(address)}
+                          address={address as string}
+                          isSelected={store.selectedAddress === address}
+                          onClick={() => {
+                            store.selectedAddress = address;
+                            if (onERC20AddressSelected) {
+                              onERC20AddressSelected({
+                                address: store.selectedAddress! as string,
+                                balance: store.selectedERC20Tokens,
+                              });
+                            }
+                          }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                  <div className={css("col-span-4")}></div>
                 </div>
               )}
-            </div>
-          </div>
+            </Accordion.Item>
+          </Accordion>
         </div>
       </div>
     );
   }
 );
 
+const NoneFound = () => {
+  return (
+    <div className={css("flex", "flex-col", "items-center", "gap-1", "py-4")}>
+      <Text type={TextType.Grey}>ಠ_ಠ</Text>
+      <Text type={TextType.Grey}>None found</Text>
+    </div>
+  );
+};
+
 interface NftPreviewProps {
   nft: OwnedNft | Nft;
-  size?: number;
+  size?: "lg" | "sm";
   showName?: boolean;
   onClick?: (nft: OwnedNft | Nft) => void;
 }
 
 export const NftPreview = observer(
-  ({ nft, size = 100, showName = true, onClick }: NftPreviewProps) => {
+  ({ nft, size = "lg", showName = true, onClick }: NftPreviewProps) => {
     const thumbnail = nft.media?.[0]?.thumbnail;
     return (
       <div className={css("break-words", "inline-block")}>
-        <span onClick={() => onClick && onClick(nft)}>
+        <span
+          onClick={() => onClick && onClick(nft)}
+          className={css("inline-block")}
+        >
           <AspectRatio
             ratio={"1/1"}
             className={css(
               "bg-no-repeat",
               "bg-cover",
-              `w-[${size}px]`,
               "border-[1px]",
               "border-transparent",
               "rounded-sm",
@@ -159,6 +241,8 @@ export const NftPreview = observer(
                 "bg-gray-100 dark:bg-neutral-800": !thumbnail,
                 "hover:border-black hover:dark:border-white cursor-pointer":
                   !!onClick,
+                "w-[100px]": size === "lg",
+                "w-[50px]": size === "sm",
               }
             )}
           >
@@ -197,19 +281,19 @@ interface ContractSelectorProps {
   onClick?: (address: string | number) => void;
 }
 
-const ContractSelector = observer(
-  ({ store, address, onClick }: ContractSelectorProps) => {
-    const title =
-      address === "all" ? "All" : store.nftsByAddress[address][0].contract.name;
-    const isSelected = store.selectedAddress === address;
+interface SelectorProps {
+  onClick: (address: string) => void;
+  address: string;
+  isSelected: boolean;
+  title: string;
+  count: number;
+}
+
+const Selector = observer(
+  ({ onClick, address, isSelected, title, count }: SelectorProps) => {
     return (
       <div
-        onClick={() => {
-          store.selectedAddress = address;
-          if (onClick) {
-            onClick(address);
-          }
-        }}
+        onClick={() => onClick(address)}
         className={css(
           "cursor-pointer",
           "border-[1px]",
@@ -234,7 +318,7 @@ const ContractSelector = observer(
           {title ? title : abbreviate(address as string)}
         </Text>
         <Text size={TextSize.xs} type={TextType.Grey}>
-          ({store.getSelectedNftsCount(address)})
+          ({count})
         </Text>
       </div>
     );

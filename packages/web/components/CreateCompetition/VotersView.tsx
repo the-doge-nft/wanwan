@@ -1,7 +1,7 @@
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { BsCheckLg, BsPencil, BsWallet2 } from "react-icons/bs";
-import { IoCloseOutline } from "react-icons/io5";
+import { IoCloseOutline, IoPersonOutline } from "react-icons/io5";
 import { css } from "../../helpers/css";
 import { formatWithThousandsSeparators } from "../../helpers/numberFormatter";
 import {
@@ -18,6 +18,7 @@ import Button from "../DSL/Button/Button";
 import Form from "../DSL/Form/Form";
 import { FormDisplay } from "../DSL/Form/FormControl";
 import TextInput from "../DSL/Form/TextInput";
+import { isEthereumAddress, required } from "../DSL/Form/validation";
 import Link, { LinkType } from "../DSL/Link/Link";
 import Spinner, { SpinnerSize } from "../DSL/Spinner/Spinner";
 import Text, { TextSize, TextType } from "../DSL/Text/Text";
@@ -27,7 +28,7 @@ import Wallet, { NftPreview } from "./Wallet";
 
 const VotersView = observer(({ store }: CompetitionStoreProp) => {
   return (
-    <Form onSubmit={async () => store.onVotersSubmit()}>
+    <>
       <FormDisplay
         label={"Voters"}
         description={"Who should be able to vote on memes in this competition?"}
@@ -36,7 +37,7 @@ const VotersView = observer(({ store }: CompetitionStoreProp) => {
         <Detail>Anyone with an Ethereum wallet will be able to vote</Detail>
       )}
       {store.votersStore.hasVoters && (
-        <div>
+        <div className={css("flex", "flex-col", "gap-4")}>
           {store.votersStore.votingRule.map((voteInputStore, i) => (
             <VotingItem
               key={`voting-item-${i}`}
@@ -56,8 +57,13 @@ const VotersView = observer(({ store }: CompetitionStoreProp) => {
           + Voting Rule
         </Button>
       </div>
-      <Buttons store={store} canGoNext={store.votersStore.allVotersConfirmed} />
-    </Form>
+      <Form onSubmit={async () => store.onVotersSubmit()}>
+        <Buttons
+          store={store}
+          canGoNext={store.votersStore.allVotersConfirmed}
+        />
+      </Form>
+    </>
   );
 });
 
@@ -73,10 +79,8 @@ const VotingItem = observer(
   }) => {
     const [showInfo, setShowInfo] = useState(false);
     return (
-      <div key={`voter-${index}`}>
-        <div>
-          <Text>*{index + 1}</Text>
-        </div>
+      <div key={`voter-${index}`} className={css("flex", "flex-col")}>
+        <Text>*{index + 1}</Text>
         <div className={css("flex", "items-center", "gap-2")}>
           <Button onClick={() => store.votersStore.removeVote(index)}>
             <IoCloseOutline size={12} />
@@ -95,7 +99,8 @@ const VotingItem = observer(
               <AddManuallyButton store={voteInputStore} />
             </div>
           )}
-          {voteInputStore.view === VoteInputView.Wallet && (
+          {(voteInputStore.view === VoteInputView.Wallet ||
+            voteInputStore.view === VoteInputView.Manual) && (
             <div
               className={css(
                 "flex",
@@ -121,18 +126,6 @@ const VotingItem = observer(
                   <BsPencil size={14} />
                 </Button>
               )}
-            </div>
-          )}
-          {voteInputStore.view === VoteInputView.Manual && (
-            <div
-              className={css(
-                "flex",
-                "justify-between",
-                "w-full",
-                "items-center"
-              )}
-            >
-              <AddFromWalletButton store={voteInputStore} />
             </div>
           )}
         </div>
@@ -189,7 +182,7 @@ const VotingItem = observer(
                               .map((nft) => (
                                 <NftPreview
                                   key={`nft-preview-${nft.contract.address}-${nft.tokenId}`}
-                                  size={50}
+                                  size={"sm"}
                                   nft={nft}
                                   showName={false}
                                 />
@@ -277,8 +270,15 @@ const VotingItem = observer(
             />
           )}
         {voteInputStore.view === VoteInputView.Manual && (
-          <div>
-            <TextInput name={"test"} block />
+          <div className={css("mt-2")}>
+            <Form onSubmit={async () => {}}>
+              <TextInput
+                block
+                label={"Token Address"}
+                name={"tokenAddress"}
+                validate={[required, isEthereumAddress]}
+              />
+            </Form>
           </div>
         )}
       </div>
@@ -297,23 +297,35 @@ const RenderIfDefined = ({ value }: { value?: string | number }) => {
   );
 };
 
-const AddFromWalletButton = ({ store }: { store: VoteInputStore }) => {
+const AddFromWalletButton = ({
+  store,
+  showText = true,
+}: {
+  store: VoteInputStore;
+  showText?: boolean;
+}) => {
   return (
-    <Button onClick={() => (store.view = "wallet")}>
+    <Button onClick={() => (store.view = VoteInputView.Wallet)}>
       <div className={css("flex", "items-center", "gap-1.5")}>
         <BsWallet2 size={14} />
-        <Text size={TextSize.xs}>from your wallet</Text>
+        {showText && <Text size={TextSize.xs}>wallet</Text>}
       </div>
     </Button>
   );
 };
 
-const AddManuallyButton = ({ store }: { store: VoteInputStore }) => {
+const AddManuallyButton = ({
+  store,
+  showText = true,
+}: {
+  store: VoteInputStore;
+  showText?: boolean;
+}) => {
   return (
-    <Button onClick={() => (store.view = "manual")}>
+    <Button onClick={() => (store.view = VoteInputView.Manual)}>
       <div className={css("flex", "items-center", "gap-1.5")}>
-        <BsPencil size={14} />
-        <Text size={TextSize.xs}>add manually</Text>
+        <IoPersonOutline size={14} />
+        {showText && <Text size={TextSize.xs}>manual</Text>}
       </div>
     </Button>
   );

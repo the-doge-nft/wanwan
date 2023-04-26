@@ -21,7 +21,7 @@ export default class CreateCompetitionVoteStore {
 
   @action
   removeVote(index: number) {
-    this.votingRule.splice(index, 1);
+    this.votingRule = this.votingRule.filter((_, i) => i !== index);
   }
 
   @computed

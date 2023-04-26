@@ -20,10 +20,7 @@ export const CreateButton = () => {
       <div className={css("py-2")}>
         <DropdownItem>
           <Link href={"/create-meme"}>
-            <Button
-              // onClick={() => (AppStore.modals.isCreateMemeModalOpen = true)}
-              block
-            >
+            <Button block>
               <div className={css("flex", "items-center", "gap-0.5")}>
                 <AiOutlinePlus size={15} />
                 Meme
@@ -33,12 +30,7 @@ export const CreateButton = () => {
         </DropdownItem>
         <DropdownItem className={css("mt-2")}>
           <Link href={"/create-competition"}>
-            <Button
-              // onClick={() =>
-              //   (AppStore.modals.isCreateCompetitionModalOpen = true)
-              // }
-              block
-            >
+            <Button block>
               <div className={css("flex", "items-center", "gap-0.5")}>
                 <AiOutlinePlus size={15} />
                 Competition

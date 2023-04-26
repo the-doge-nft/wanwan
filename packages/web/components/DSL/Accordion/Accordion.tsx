@@ -42,8 +42,17 @@ const Item: React.FC<PropsWithChildren<ItemProps>> = ({
   const context = React.useContext(AccordionContext);
   const isOpen = context.includes(value);
   return (
-    <RadixAccordion.Item value={value} className={css("border-neutral-800")}>
-      <RadixAccordion.Header className={css("p-2")}>
+    <RadixAccordion.Item value={value} className={css()}>
+      <RadixAccordion.Header
+        className={css(
+          "p-1",
+          "hover:dark:border-neutral-700",
+          "hover:border-black",
+          "border-[1px]",
+          "border-transparent",
+          "rounded-sm"
+        )}
+      >
         <RadixAccordion.Trigger className={css("w-full")}>
           <div className={css("flex", "items-center", "justify-between")}>
             <div>{trigger}</div>
@@ -51,7 +60,7 @@ const Item: React.FC<PropsWithChildren<ItemProps>> = ({
           </div>
         </RadixAccordion.Trigger>
       </RadixAccordion.Header>
-      <RadixAccordion.Content className={css("px-2", "pb-4")}>
+      <RadixAccordion.Content className={css("p-1", "mt-2")}>
         {children}
       </RadixAccordion.Content>
     </RadixAccordion.Item>

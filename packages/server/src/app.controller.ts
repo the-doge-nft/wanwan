@@ -206,6 +206,14 @@ export class AppController {
     return this.alchemy.getNftsForContract(address);
   }
 
+  @UseGuards(AuthGuard)
+  @Get('/contract/:address')
+  async getNftForContractAndToken(@Param() { address }: { address: string }) {
+    const metadata = await this.alchemy.getERC20Metadata(address);
+    const nft = await this.alchemy.getNftContractMetadata(address);
+    console.log(metadata, nft);
+  }
+
   @UseGuards(AdminGuard)
   @Get('/admin/tweet')
   async adminTweet() {
