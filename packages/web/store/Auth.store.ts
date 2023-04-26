@@ -23,7 +23,7 @@ export default class AuthStore extends Reactionable(EmptyClass) {
   memes: Array<Meme> = [];
 
   @observable
-  hasLoggedIn = false;
+  isLoggedIn = false;
 
   @observable
   isAdmin = false;
@@ -133,7 +133,7 @@ export default class AuthStore extends Reactionable(EmptyClass) {
 
   onLoginSuccess(address: string) {
     this.address = address as Address;
-    this.hasLoggedIn = true;
+    this.isLoggedIn = true;
     this.getStatus();
     AppStore.events.publish(AppStore.events.events.LOGIN);
   }

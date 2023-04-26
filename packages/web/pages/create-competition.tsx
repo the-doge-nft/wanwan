@@ -1,20 +1,31 @@
 import { observer } from "mobx-react-lite";
 import { useEffect, useMemo } from "react";
 import CreateCompetition from "../components/CreateCompetition/CreateCompetition";
+import { ConnectButton } from "../components/DSL/Button/Button";
+import Text from "../components/DSL/Text/Text";
 import { css } from "../helpers/css";
 import AppLayout from "../layouts/App.layout";
+import AppStore from "../store/App.store";
 import CreateCompetitionStore from "../store/CreateCompetition/CreateCompetition.store";
 
 const CreateCompetitionPage = observer(() => {
   const store = useMemo(() => new CreateCompetitionStore(), []);
   useEffect(() => {
-    store.init();
-  }, []);
+    if (AppStore.auth.isLoggedIn) {
+      store.init();
+    }
+  }, [AppStore.auth.isLoggedIn, store]);
   return (
     <AppLayout>
       <div className={css("h-full", "flex", "justify-center", "items-center")}>
         <div className={css("max-w-xl", "w-full")}>
-          <CreateCompetition store={store} />
+          {AppStore.auth.isLoggedIn && <CreateCompetition store={store} />}
+          {!AppStore.auth.isLoggedIn && (
+            <div className={css("text-center")}>
+              <ConnectButton />
+              <Text>to create a competition</Text>
+            </div>
+          )}
         </div>
       </div>
     </AppLayout>

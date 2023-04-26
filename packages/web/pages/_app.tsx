@@ -170,7 +170,7 @@ const WagmiAccountSwitchWatcher = observer(() => {
     if (
       AppStore.auth.address !== undefined &&
       AppStore.auth.address !== address &&
-      AppStore.auth.hasLoggedIn
+      AppStore.auth.isLoggedIn
     ) {
       AppStore.auth.onAccountSwitch();
     }
@@ -179,12 +179,12 @@ const WagmiAccountSwitchWatcher = observer(() => {
   useEffect(() => {
     if (
       AppStore.auth.status === "authenticated" &&
-      !AppStore.auth.hasLoggedIn &&
+      !AppStore.auth.isLoggedIn &&
       address
     ) {
       AppStore.auth.onLoginSuccess(address);
     }
-  }, [address, AppStore.auth.hasLoggedIn, AppStore.auth.status]);
+  }, [address, AppStore.auth.isLoggedIn, AppStore.auth.status]);
   return <></>;
 });
 
