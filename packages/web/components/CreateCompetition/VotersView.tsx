@@ -187,7 +187,8 @@ const VotingItem = observer(
                               "gap-1",
                               "grow",
                               "items-center",
-                              "justify-center"
+                              "justify-center",
+                              "flex-wrap"
                             )}
                           >
                             {!voteInputStore.isLoadingNfts &&

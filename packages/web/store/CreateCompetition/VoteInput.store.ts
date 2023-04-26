@@ -56,7 +56,6 @@ export default class VoteInputStore extends Reactionable(EmptyClass) {
         if (isValidEthereumAddress(address)) {
           Http.getTokenType(address)
             .then(({ data }) => {
-              console.log(data);
               this.isManualTokenValid = true;
               this.contractAddress = address;
               if (data.tokenType === TokenType.ERC721) {
