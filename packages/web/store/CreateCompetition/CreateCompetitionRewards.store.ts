@@ -37,6 +37,4 @@ export default class CreateCompetitionRewardsStore {
   get canAddReward() {
     return this.rewards.length < 3;
   }
-
-  destroy() {}
 }

@@ -38,7 +38,9 @@ const VotersView = observer(({ store }: CompetitionStoreProp) => {
         description={"Who should be able to vote on memes in this competition?"}
       />
       {!store.votersStore.hasVoters && (
-        <Detail>Anyone with an Ethereum wallet will be able to vote</Detail>
+        <Detail>
+          <Text bold>Anyone</Text> with an Ethereum wallet will be able to vote
+        </Detail>
       )}
       {store.votersStore.hasVoters && (
         <div className={css("flex", "flex-col", "gap-4")}>

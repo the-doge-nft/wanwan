@@ -2,7 +2,7 @@ import { NftTokenType, OwnedNft } from "alchemy-sdk";
 import { computed, makeObservable, observable } from "mobx";
 import { objectKeys } from "../helpers/arrays";
 import { abbreviate } from "../helpers/strings";
-import { ERC20Balance, Wallet } from "../interfaces";
+import { ERC20Balance, Nullable, Wallet } from "../interfaces";
 
 export enum WalletView {}
 
@@ -20,7 +20,7 @@ export default class WalletStore {
     wallet: Wallet,
     showAll: boolean,
     filterContractAddresses?: Array<string>,
-    selectedAddress?: string
+    selectedAddress?: Nullable<string>
   ) {
     makeObservable(this);
     this.wallet = wallet;

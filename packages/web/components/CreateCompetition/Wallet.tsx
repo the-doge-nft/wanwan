@@ -4,7 +4,7 @@ import { useCallback, useMemo, useRef } from "react";
 import { objectKeys } from "../../helpers/arrays";
 import { css } from "../../helpers/css";
 import { abbreviate } from "../../helpers/strings";
-import { ERC20Balance, Wallet } from "../../interfaces";
+import { ERC20Balance, Nullable, Wallet } from "../../interfaces";
 import WalletStore from "../../store/Wallet.store";
 import Accordion from "../DSL/Accordion/Accordion";
 import AspectRatio from "../DSL/AspectRatio/AspectRatio";
@@ -14,7 +14,7 @@ import Logo from "../Logo/Logo";
 interface WalletProps {
   wallet: Wallet;
   showAll?: boolean;
-  selectedAddress?: string;
+  selectedAddress?: Nullable<string>;
   filterContractAddresses?: string[];
   onNFTAddressSelected?: (params: {
     address: string;
@@ -67,7 +67,7 @@ const WalletView = observer(
               : { maxHeight: "150px" }
           }
         >
-          {store.selectedNfts.map((nft, index) => (
+          {store?.selectedNfts?.map((nft, index) => (
             <NftPreview
               key={`${nft.tokenId}-${nft.contract.address}-${index}`}
               nft={nft}
