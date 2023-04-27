@@ -1,5 +1,7 @@
-import { makeObservable, observable } from "mobx";
-import { Nullable, TokenType } from "./../../interfaces/index";
+import { BaseNft, NftTokenType, OwnedNft } from "alchemy-sdk";
+import { action, computed, makeObservable, observable } from "mobx";
+import { abbreviate } from "../../helpers/strings";
+import { ERC20Balance, Nullable, TokenType } from "./../../interfaces/index";
 
 export default class RewardInputStore {
   @observable
@@ -9,12 +11,109 @@ export default class RewardInputStore {
   contractAddress: Nullable<string> = null;
 
   @observable
-  tokenId: Nullable<string> = null;
+  tokenId: Nullable<string | number> = null;
 
   @observable
-  amount: Nullable<string> = null;
+  amount: Nullable<string | number> = null;
+
+  @observable
+  selectedNft: Nullable<BaseNft> = null;
+
+  @observable
+  isConfirmed = false;
+
+  @observable
+  maxAmount = 0;
+
+  @observable
+  name: Nullable<string> = null;
 
   constructor() {
     makeObservable(this);
+  }
+
+  @action
+  setSelectedToken(
+    contractAddress: string,
+    tokenType: TokenType,
+    tokenId?: string | number
+  ) {
+    this.contractAddress = contractAddress;
+    this.tokenType = tokenType;
+    if (tokenId) {
+      this.tokenId = tokenId;
+    }
+  }
+
+  @action
+  onNFTAddressSelected({
+    address,
+    nfts,
+  }: {
+    address: string;
+    nfts: OwnedNft[];
+  }) {
+    this.contractAddress = address;
+    this.maxAmount = 1;
+    this.tokenId = null;
+    this.name = null;
+
+    const tokenType = nfts?.[0]?.tokenType;
+    if (tokenType === NftTokenType.ERC1155) {
+      this.tokenType = TokenType.ERC1155;
+    } else {
+      this.tokenType = TokenType.ERC721;
+    }
+  }
+
+  @action
+  setSelectedNft(nft: OwnedNft) {
+    this.selectedNft = nft;
+    this.contractAddress = nft.contract.address;
+    this.tokenId = nft.tokenId;
+    this.amount = 1;
+    if (nft.tokenType === NftTokenType.ERC1155) {
+      this.tokenType = TokenType.ERC1155;
+    } else {
+      this.tokenType = TokenType.ERC721;
+    }
+    this.name = nft.title;
+  }
+
+  @action
+  setSelectedERC20({
+    address,
+    balance,
+  }: {
+    address: string;
+    balance: ERC20Balance[];
+  }) {
+    this.contractAddress = address;
+    this.tokenType = TokenType.ERC20;
+    // this.amount = balance;
+  }
+
+  @computed
+  get selectedDisplayName() {
+    if (this.name) {
+      return this.name;
+    } else if (this.tokenType === TokenType.ERC20) {
+      if (this.contractAddress) {
+        return abbreviate(this.contractAddress);
+      }
+    }
+    return null;
+  }
+
+  @computed
+  get showCanConfirm() {
+    if (
+      this.tokenType === TokenType.ERC721 ||
+      this.tokenType === TokenType.ERC1155
+    ) {
+      return !!this.tokenId;
+    }
+    // @next-needs to be updated to balance check
+    return !!this.amount;
   }
 }

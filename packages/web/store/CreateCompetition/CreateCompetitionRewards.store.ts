@@ -37,4 +37,11 @@ export default class CreateCompetitionRewardsStore {
   get canAddReward() {
     return this.rewards.length < 3;
   }
+
+  @computed
+  get tokenAddressesToFilter() {
+    return this.rewards
+      .filter((address) => !!address)
+      .map((reward) => reward.contractAddress);
+  }
 }

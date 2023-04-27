@@ -1,4 +1,4 @@
-import { Nft, OwnedNft } from "alchemy-sdk";
+import { BaseNft, Nft, OwnedNft } from "alchemy-sdk";
 import { observer } from "mobx-react-lite";
 import { useCallback, useMemo, useRef } from "react";
 import { objectKeys } from "../../helpers/arrays";
@@ -16,6 +16,8 @@ interface WalletProps {
   showAll?: boolean;
   selectedAddress?: Nullable<string>;
   filterContractAddresses?: string[];
+  selectedNft?: Nullable<BaseNft>;
+  onNFTSelection?: (nft: OwnedNft | Nft) => void;
   onNFTAddressSelected?: (params: {
     address: string;
     nfts: OwnedNft[];
@@ -37,13 +39,15 @@ interface WalletProps {
 const WalletView = observer(
   ({
     wallet,
-    onNFTAddressSelected: onERC721AddressSelected,
+    onNFTAddressSelected,
     onERC20AddressSelected,
     showAll = true,
-    renderNftSelection: renderSelection,
+    renderNftSelection,
     renderErc20Selection,
     filterContractAddresses,
     selectedAddress,
+    onNFTSelection,
+    selectedNft: selectedNFt,
   }: WalletProps) => {
     const store = useMemo(
       () =>
@@ -60,7 +64,13 @@ const WalletView = observer(
     const renderDefaultNfts = useCallback(
       () => (
         <div
-          className={css("grow", "grid", "grid-cols-3", "overflow-y-auto")}
+          className={css(
+            "grow",
+            "grid",
+            "grid-cols-3",
+            "overflow-y-auto",
+            "gap-2"
+          )}
           style={
             selectorRef.current?.clientHeight
               ? { maxHeight: selectorRef.current.clientHeight }
@@ -71,15 +81,20 @@ const WalletView = observer(
             <NftPreview
               key={`${nft.tokenId}-${nft.contract.address}-${index}`}
               nft={nft}
+              onClick={(nft) => onNFTSelection && onNFTSelection(nft)}
+              isSelected={
+                nft.contract.address === selectedNFt?.contract.address &&
+                nft.tokenId === selectedNFt?.tokenId
+              }
             />
           ))}
         </div>
       ),
-      [store.selectedNfts]
+      [store.selectedNfts, onNFTSelection, selectedNFt]
     );
 
     return (
-      <div>
+      <div className={css("w-full")}>
         <div className={css("mt-2")}>
           <Accordion>
             <Accordion.Item value={"NFTs"} trigger={<Text>NFTs</Text>}>
@@ -105,8 +120,8 @@ const WalletView = observer(
                           isSelected={store.selectedAddress === "all"}
                           onClick={() => {
                             store.selectedAddress = "all";
-                            if (onERC721AddressSelected) {
-                              onERC721AddressSelected({
+                            if (onNFTAddressSelected) {
+                              onNFTAddressSelected({
                                 address: "all",
                                 nfts: store.allNfts,
                               });
@@ -123,8 +138,8 @@ const WalletView = observer(
                           isSelected={store.selectedAddress === address}
                           onClick={() => {
                             store.selectedAddress = address;
-                            if (onERC721AddressSelected) {
-                              onERC721AddressSelected({
+                            if (onNFTAddressSelected) {
+                              onNFTAddressSelected({
                                 address: address as string,
                                 nfts: store.nftsByAddress[address],
                               });
@@ -135,12 +150,12 @@ const WalletView = observer(
                     </div>
                   </div>
                   <div className={css("col-span-4", "flex", "flex-col")}>
-                    {renderSelection &&
-                      renderSelection({
+                    {renderNftSelection &&
+                      renderNftSelection({
                         address: store.selectedAddress! as string,
                         nfts: store.selectedNfts,
                       })}
-                    {!renderSelection && renderDefaultNfts()}
+                    {!renderNftSelection && renderDefaultNfts()}
                   </div>
                 </div>
               )}
@@ -158,7 +173,7 @@ const WalletView = observer(
                         "min-h-[150px]",
                         "overflow-y-auto"
                       )}
-                      ref={selectorRef}
+                      // ref={selectorRef}
                     >
                       {store.showAll && (
                         <Selector
@@ -227,10 +242,17 @@ interface NftPreviewProps {
   size?: "lg" | "sm";
   showName?: boolean;
   onClick?: (nft: OwnedNft | Nft) => void;
+  isSelected?: boolean;
 }
 
 export const NftPreview = observer(
-  ({ nft, size = "lg", showName = true, onClick }: NftPreviewProps) => {
+  ({
+    nft,
+    size = "lg",
+    showName = true,
+    onClick,
+    isSelected,
+  }: NftPreviewProps) => {
     const thumbnail = nft.media?.[0]?.thumbnail;
     return (
       <div className={css("break-words", "inline-block")}>
@@ -252,6 +274,7 @@ export const NftPreview = observer(
                   !!onClick,
                 "w-[100px]": size === "lg",
                 "w-[50px]": size === "sm",
+                "border-black dark:border-white": isSelected,
               }
             )}
           >
@@ -263,9 +286,20 @@ export const NftPreview = observer(
               />
             )}
             {!thumbnail && (
-              <div className={css("flex", "justify-center", "items-center")}>
+              <div
+                className={css(
+                  "flex",
+                  "justify-center",
+                  "items-center",
+                  "flex-col",
+                  "gap-1"
+                )}
+              >
                 <Text>
                   <Logo size={24} />
+                </Text>
+                <Text size={TextSize.xxs} type={TextType.Grey}>
+                  no preview
                 </Text>
               </div>
             )}
