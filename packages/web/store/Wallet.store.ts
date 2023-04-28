@@ -58,14 +58,24 @@ export default class WalletStore {
 
     if (balancesToFilter) {
       balancesToFilter.forEach((balance) => {
-        const index = this.wallet.erc20.findIndex(
-          (item) => item.contractAddress === balance.address
-        );
-        this.wallet.erc20[index].tokenBalance = BigNumber.from(
-          this.wallet.erc20[index].tokenBalance
-        )
-          .sub(balance.balance)
-          .toString();
+        if (balance.address === "eth") {
+          this.wallet.eth = Number(
+            Number(this.wallet.eth) - Number(balance.balance)
+          ).toString();
+        } else {
+          const index = this.wallet.erc20.findIndex(
+            (item) =>
+              item.contractAddress.toLowerCase() ===
+              balance.address.toLowerCase()
+          );
+          console.log("INDEX", index);
+          console.log("TEST", this.wallet.erc20[index]);
+          this.wallet.erc20[index].tokenBalance = BigNumber.from(
+            this.wallet.erc20[index].tokenBalance
+          )
+            .sub(balance.balance)
+            .toString();
+        }
       });
     }
 
