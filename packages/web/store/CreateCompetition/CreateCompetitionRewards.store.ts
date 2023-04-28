@@ -1,6 +1,5 @@
 import { action, computed, makeObservable, observable } from "mobx";
 import { objectKeys } from "../../helpers/arrays";
-import { jsonify } from "../../helpers/strings";
 import { TokenType } from "../../interfaces";
 import { EmptyClass } from "../../services/mixins";
 import { Reactionable } from "../../services/mixins/reactionable";
@@ -89,11 +88,6 @@ export default class CreateCompetitionRewardsStore extends Reactionable(
         }
       }
     });
-    console.log(
-      "ETH BALANCES BALANCES TO FILTER",
-      jsonify(balancesToFilter),
-      index
-    );
     return objectKeys(balancesToFilter).map((key) => ({
       address: key as string,
       balance: balancesToFilter[key],
