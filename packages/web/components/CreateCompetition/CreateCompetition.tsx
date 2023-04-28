@@ -22,6 +22,7 @@ import CuratorsView from "./CuratorsView";
 import DescriptionView from "./DescriptionView";
 import DetailsView from "./DetailsView";
 import NameView from "./NameView";
+import ReviewView from "./ReviewView";
 import RewardsView from "./RewardsView";
 import VotersView from "./VotersView";
 
@@ -49,6 +50,9 @@ const CreateCompetition = observer(({ store }: CompetitionStoreProp) => {
       )}
       {store.currentView === CreateCompetitionView.Rewards && (
         <RewardsView store={store} />
+      )}
+      {store.currentView === CreateCompetitionView.Review && (
+        <ReviewView store={store} />
       )}
     </>
   );

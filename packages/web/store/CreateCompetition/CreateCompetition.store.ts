@@ -65,7 +65,7 @@ export default class CreateCompetitionStore extends Navigable<
   constructor() {
     super();
     makeObservable(this);
-    this.currentView = CreateCompetitionView.Rewards;
+    this.currentView = CreateCompetitionView.Name;
   }
 
   init() {
@@ -136,8 +136,10 @@ export default class CreateCompetitionStore extends Navigable<
     this.currentView = CreateCompetitionView.Description;
   }
 
-  onDescriptionSubmit(json: JSONContent) {
-    this.description = json;
+  onDescriptionSubmit(json: JSONContent | null) {
+    if (json) {
+      this.description = json;
+    }
     this.currentView = CreateCompetitionView.Details;
   }
 
@@ -188,5 +190,20 @@ export default class CreateCompetitionStore extends Navigable<
 
   onCoverFileClear() {
     this.coverImageFile = undefined;
+  }
+
+  @computed
+  get hasVoters() {
+    return this.votersStore.votingRule.length > 0;
+  }
+
+  @computed
+  get hasCurators() {
+    return this.curatorStore.curators.length > 0;
+  }
+
+  @computed
+  get hasRewards() {
+    return this.rewardStore.rewards.length > 0;
   }
 }

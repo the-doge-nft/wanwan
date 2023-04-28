@@ -16,6 +16,7 @@ import { maxValue, minValue, required } from "../DSL/Form/validation";
 import Link from "../DSL/Link/Link";
 import Text from "../DSL/Text/Text";
 import { Buttons } from "./CreateCompetition";
+import Detail from "./Detail";
 import Wallet from "./Wallet";
 
 interface RewardsViewProps {
@@ -29,7 +30,9 @@ const RewardsView = observer(({ store }: RewardsViewProps) => {
         label={"Rewards"}
         description={"What are you offering for the best memes?"}
       />
-      <div className={css("break-words")}></div>
+      {!store.rewardStore.isRewardsVisible && (
+        <Detail>No rewards will be offered for memes</Detail>
+      )}
       {store.rewardStore.isRewardsVisible && (
         <div className={css("flex", "flex-col", "gap-6")}>
           {store.rewardStore.rewards.map((rewardStore, index) => {

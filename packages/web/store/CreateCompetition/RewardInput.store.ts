@@ -43,7 +43,7 @@ export default class RewardInputStore {
     this.contractAddress = "eth";
     this.tokenId = null;
     this.amount = "";
-    // this.name = "ETH";
+    this.name = "ETH";
   }
 
   @action

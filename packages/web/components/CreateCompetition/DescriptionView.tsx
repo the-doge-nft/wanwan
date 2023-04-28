@@ -1,21 +1,4 @@
-import Bold from "@tiptap/extension-bold";
-import Italic from "@tiptap/extension-italic";
-
-import BulletList from "@tiptap/extension-bullet-list";
-import Color from "@tiptap/extension-color";
-import Document from "@tiptap/extension-document";
-import Dropcursor from "@tiptap/extension-dropcursor";
-import Heading from "@tiptap/extension-heading";
-import History from "@tiptap/extension-history";
-import Image from "@tiptap/extension-image";
-import Link from "@tiptap/extension-link";
-import ListItem from "@tiptap/extension-list-item";
-import Paragraph from "@tiptap/extension-paragraph";
-import TiptapText from "@tiptap/extension-text";
-import TextAlign from "@tiptap/extension-text-align";
-import TextStyle from "@tiptap/extension-text-style";
-import Underline from "@tiptap/extension-underline";
-import { Editor, EditorContent, useEditor } from "@tiptap/react";
+import { Editor, EditorContent } from "@tiptap/react";
 import { observer } from "mobx-react-lite";
 import { ChangeEvent, ReactNode, useRef } from "react";
 import {
@@ -36,81 +19,18 @@ import CreateCompetitionStore from "../../store/CreateCompetition/CreateCompetit
 import Button, { Submit } from "../DSL/Button/Button";
 import Form from "../DSL/Form/Form";
 import { FormDisplay } from "../DSL/Form/FormControl";
-import { textFieldBaseStyles } from "../DSL/Input/Input";
-import { LinkType, linkTypeStyles } from "../DSL/Link/Link";
 import Spinner, { SpinnerSize } from "../DSL/Spinner/Spinner";
 import Text, { TextSize } from "../DSL/Text/Text";
+import { useTipTapEditor } from "../TipTapEditor/TipTapEditor";
 import { CompetitionStoreProp } from "./CreateCompetition";
 
 const DescriptionView = observer(({ store }: CompetitionStoreProp) => {
-  const editor = useEditor({
-    extensions: [
-      Document,
-      Paragraph,
-      TiptapText,
-      Dropcursor.configure({ class: "text-black dark:text-white" }),
-      ListItem,
-      TextStyle,
-      TextAlign.configure({
-        types: ["heading", "paragraph"],
-        alignments: ["left", "center", "right", "justify"],
-      }),
-      Color.configure({
-        types: ["textStyle"],
-      }),
-      Heading.configure({
-        levels: [1, 2],
-      }),
-      History.configure({
-        depth: 10,
-      }),
-      Underline.configure({
-        HTMLAttributes: {
-          class: "underline",
-        },
-      }),
-      Image.configure({
-        inline: true,
-        HTMLAttributes: {
-          class: "max-w-[150px] w-full mx-auto inline-block",
-        },
-      }),
-      Italic.configure({
-        HTMLAttributes: {
-          class: "italic",
-        },
-      }),
-      Bold.configure({
-        HTMLAttributes: {
-          class: "font-bold",
-        },
-      }),
-      Link.configure({
-        autolink: true,
-        openOnClick: true,
-        HTMLAttributes: {
-          class: css(linkTypeStyles[LinkType.Primary], "cursor-pointer"),
-        },
-      }),
-      BulletList.configure({
-        itemTypeName: "listItem",
-        HTMLAttributes: {
-          class: "list-disc list-inside",
-        },
-      }),
-    ],
-    editorProps: {
-      attributes: {
-        class: css(textFieldBaseStyles),
-      },
-    },
-    content: store.description ? store.description : "",
-  });
+  const editor = useTipTapEditor(store.description ? store.description : "");
   return (
     <Form
-      onSubmit={async (values: any) =>
-        store.onDescriptionSubmit(editor!.getJSON())
-      }
+      onSubmit={async (values: any) => {
+        store.onDescriptionSubmit(editor?.isEmpty ? null : editor!.getJSON());
+      }}
     >
       <FormDisplay
         label={"Description"}

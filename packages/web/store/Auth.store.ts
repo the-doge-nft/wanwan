@@ -140,6 +140,7 @@ export default class AuthStore extends Reactionable(EmptyClass) {
 
   onLogoutSuccess() {
     this.address = null;
+    this.isLoggedIn = false;
     this.getStatus();
     this.getIsAdmin();
     AppStore.events.publish(AppStore.events.events.LOGOUT);

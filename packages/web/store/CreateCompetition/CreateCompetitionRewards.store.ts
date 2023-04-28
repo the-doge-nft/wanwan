@@ -42,7 +42,10 @@ export default class CreateCompetitionRewardsStore extends Reactionable(
 
   @computed
   get canAddReward() {
-    return this.rewards.length < 10;
+    return (
+      this.rewards.length < 10 &&
+      this.rewards.every((store) => store.isConfirmed)
+    );
   }
 
   @computed
