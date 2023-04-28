@@ -12,7 +12,7 @@ import Button, { Submit } from "../DSL/Button/Button";
 import Form from "../DSL/Form/Form";
 import { FormDisplay } from "../DSL/Form/FormControl";
 import NumberInput from "../DSL/Form/NumberInput";
-import { required } from "../DSL/Form/validation";
+import { maxValue, minValue, required } from "../DSL/Form/validation";
 import Link from "../DSL/Link/Link";
 import Text from "../DSL/Text/Text";
 import { Buttons } from "./CreateCompetition";
@@ -39,7 +39,6 @@ const RewardsView = observer(({ store }: RewardsViewProps) => {
                 index={index}
                 wallet={store.wallet!}
                 onRemoveClick={() => store.rewardStore.removeReward(index)}
-                nftsToFilter={store.rewardStore.getNftsToHide(index)}
                 rewardStore={store.rewardStore}
                 store={rewardStore}
               />
@@ -117,7 +116,9 @@ const RewardInputItem = observer(
             )}
           </div>
           <div className={css("flex", "items-center", "gap-2")}>
-            {/* {store.tokenId && <Text>{store.tokenId}</Text>} */}
+            {!store.isNFT && store.amount !== "" && (
+              <Text>{formatWithThousandsSeparators(store.amount)}</Text>
+            )}
             {!store.isConfirmed &&
               store.showCanConfirm &&
               store.contractAddress && (
@@ -132,7 +133,6 @@ const RewardInputItem = observer(
             )}
           </div>
         </div>
-
         {!store.isConfirmed && (
           <div className={css("flex", "gap-2", "w-full")}>
             <Wallet
@@ -145,13 +145,20 @@ const RewardInputItem = observer(
               onNFTAddressSelected={(nft) => store.onNFTAddressSelected(nft)}
               onERC20AddressSelected={(erc20) => store.setSelectedERC20(erc20)}
               filterContractAddresses={addressesToFilter}
-              onEthSelected={(balance) => store.onEthSelected()}
+              onEthSelected={() => store.onEthSelected()}
               balancesToFilter={rewardStore.getBalancesToHide(index)}
               renderEthSelection={(balance) => {
                 return (
                   <FormNumberInput
                     value={store.amount}
-                    maxAmount={balance}
+                    maxAmount={formatUnits(
+                      balance.tokenBalance,
+                      balance.metadata.decimals!
+                    )}
+                    minAmount={(
+                      (1 * 10) **
+                      (-1 * balance.metadata.decimals!)
+                    ).toString()}
                     onChange={(value) => (store.amount = value)}
                     onSuccess={() => (store.isConfirmed = true)}
                   />
@@ -171,6 +178,7 @@ const RewardInputItem = observer(
                     value={store.amount}
                     maxAmount={maxAmount}
                     onSuccess={() => (store.isConfirmed = true)}
+                    minAmount={((1 * 10) ** (-1 * decimals!)).toString()}
                   />
                 );
               }}
@@ -184,6 +192,7 @@ const RewardInputItem = observer(
 
 interface FormNumberInputProps {
   maxAmount: string;
+  minAmount: string;
   value: string;
   onChange: (value: string) => void;
   onSuccess?: () => void;
@@ -191,13 +200,23 @@ interface FormNumberInputProps {
 
 const FormNumberInput = ({
   maxAmount,
+  minAmount,
   value,
   onChange,
   onSuccess,
 }: FormNumberInputProps) => {
   return (
-    <div className={css("flex", "justify-center", "items-center", "h-full")}>
+    <div
+      className={css(
+        "flex",
+        "justify-center",
+        "items-center",
+        "h-full",
+        "w-full"
+      )}
+    >
       <Form
+        className={css("w-full")}
         onSubmit={async () => {
           onSuccess && onSuccess();
         }}
@@ -208,12 +227,17 @@ const FormNumberInput = ({
           label={"Amount"}
           name={"amount"}
           placeholder={`max: ${formatWithThousandsSeparators(maxAmount)}`}
-          max={Number(maxAmount)}
-          validate={required}
+          validate={[
+            required,
+            minValue(Number(minAmount)),
+            maxValue(Number(maxAmount)),
+          ]}
           block
         />
         <div className={css("mt-2")}>
-          <Submit block>٩(◕‿◕)۶</Submit>
+          <Submit block>
+            <BsCheckLg size={14} />
+          </Submit>
         </div>
       </Form>
     </div>

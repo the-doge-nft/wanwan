@@ -4,7 +4,7 @@ import { useCallback, useMemo } from "react";
 import { objectKeys } from "../../helpers/arrays";
 import { css } from "../../helpers/css";
 import { abbreviate } from "../../helpers/strings";
-import { ERC20Balance, Nullable, Wallet } from "../../interfaces";
+import { ERC20Balance, EthBalance, Nullable, Wallet } from "../../interfaces";
 import WalletStore from "../../store/Wallet.store";
 import Accordion from "../DSL/Accordion/Accordion";
 import AspectRatio from "../DSL/AspectRatio/AspectRatio";
@@ -12,7 +12,7 @@ import Text, { TextSize, TextType } from "../DSL/Text/Text";
 import Logo from "../Logo/Logo";
 
 export interface TokenBalance {
-  address: string;
+  address: string | "eth";
   balance: string;
 }
 
@@ -41,8 +41,8 @@ interface WalletProps {
     address: string;
     balance: ERC20Balance[];
   }) => JSX.Element;
-  onEthSelected?: (balance: string) => void;
-  renderEthSelection?: (balance: string) => JSX.Element;
+  onEthSelected?: (balance: EthBalance) => void;
+  renderEthSelection?: (balance: EthBalance) => JSX.Element;
 }
 
 const WalletView = observer(

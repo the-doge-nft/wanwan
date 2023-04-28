@@ -200,10 +200,15 @@ export interface ProfileDto {
   externalUrl: Nullable<string>;
 }
 
+export interface EthBalance {
+  tokenBalance: string;
+  metadata: TokenMetadataResponse;
+}
+
 export interface Wallet {
   nft: Array<OwnedNft>;
   erc20: Array<ERC20Balance>;
-  eth: string;
+  eth: EthBalance;
 }
 
 export interface ERC20Balance extends TokenBalanceSuccess {

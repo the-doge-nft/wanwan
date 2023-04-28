@@ -1,4 +1,6 @@
 import { action, computed, makeObservable, observable } from "mobx";
+import { objectKeys } from "../../helpers/arrays";
+import { jsonify } from "../../helpers/strings";
 import { TokenType } from "../../interfaces";
 import { EmptyClass } from "../../services/mixins";
 import { Reactionable } from "../../services/mixins/reactionable";
@@ -59,16 +61,42 @@ export default class CreateCompetitionRewardsStore extends Reactionable(
   }
 
   getBalancesToHide(index: number) {
-    const voteInputsBefore = this.rewards.filter((item, i) => i !== index);
-    return voteInputsBefore
+    const balancesToFilter: { [key: string]: string } = {};
+    const rewardStores = this.rewards
+      .filter((item, i) => i !== index)
       .filter(
         (input) =>
-          input.tokenType === TokenType.ERC20 ||
+          (input.tokenType === TokenType.ERC20 && input.contractAddress) ||
           input.tokenType === TokenType.ETH
-      )
-      .map((input) => ({
-        address: input.contractAddress as string,
-        balance: input.amount,
-      }));
+      );
+    rewardStores.forEach((store) => {
+      if (store.tokenType === TokenType.ETH) {
+        if (balancesToFilter?.eth) {
+          balancesToFilter["eth"] = Number(
+            Number(balancesToFilter["eth"]) + Number(store.amount)
+          ).toString();
+        } else {
+          balancesToFilter["eth"] = store.amount;
+        }
+      } else {
+        if (balancesToFilter[store.contractAddress!]) {
+          balancesToFilter[store.contractAddress!] = Number(
+            Number(balancesToFilter[store.contractAddress!]) +
+              Number(store.amount)
+          ).toString();
+        } else {
+          balancesToFilter[store.contractAddress!] = store.amount;
+        }
+      }
+    });
+    console.log(
+      "ETH BALANCES BALANCES TO FILTER",
+      jsonify(balancesToFilter),
+      index
+    );
+    return objectKeys(balancesToFilter).map((key) => ({
+      address: key as string,
+      balance: balancesToFilter[key],
+    }));
   }
 }

@@ -92,7 +92,11 @@ export default class RewardInputStore {
     } else {
       this.tokenType = TokenType.ERC721;
     }
-    this.name = nft.title;
+    if (nft.title) {
+      this.name = nft.title;
+    } else {
+      this.name = `${nft.contract.name} #${nft.tokenId}`;
+    }
   }
 
   @action
@@ -106,6 +110,7 @@ export default class RewardInputStore {
     this.contractAddress = address;
     this.tokenType = TokenType.ERC20;
     this.amount = "";
+    this.name = balance?.[0]?.metadata.name;
     // this.amount = balance;
   }
 
@@ -131,8 +136,7 @@ export default class RewardInputStore {
     ) {
       return !!this.tokenId;
     }
-    // @next-needs to be updated to balance check
-    return !!this.amount;
+    return false;
   }
 
   @computed
@@ -157,5 +161,14 @@ export default class RewardInputStore {
       }
       return getOpenSeaURL(this.contractAddress!, this.tokenId!);
     }
+  }
+
+  @computed
+  get isNFT() {
+    return (
+      (this.tokenType === TokenType.ERC1155 ||
+        this.tokenType === TokenType.ERC721) &&
+      this.tokenType !== null
+    );
   }
 }

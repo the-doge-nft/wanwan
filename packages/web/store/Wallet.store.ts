@@ -1,6 +1,7 @@
 import { NftTokenType, OwnedNft } from "alchemy-sdk";
 import { BigNumber } from "ethers";
-import { computed, makeObservable, observable } from "mobx";
+import { parseUnits } from "ethers/lib/utils.js";
+import { computed, makeObservable, observable, toJS } from "mobx";
 import { TokenBalance } from "../components/CreateCompetition/Wallet";
 import { objectKeys } from "../helpers/arrays";
 import { abbreviate } from "../helpers/strings";
@@ -27,22 +28,19 @@ export default class WalletStore {
     balancesToFilter?: TokenBalance[]
   ) {
     makeObservable(this);
-    this.wallet = wallet;
+    this.wallet = toJS(wallet);
     this.showAll = showAll;
 
     if (selectedAddress) {
       this.selectedAddress = selectedAddress;
     }
     if (filterContractAddresses) {
-      this.wallet = {
-        nft: this.wallet?.nft?.filter(
-          (nft) => !filterContractAddresses.includes(nft.contract.address)
-        ),
-        erc20: this.wallet?.erc20.filter((erc20) => {
-          return !filterContractAddresses.includes(erc20.contractAddress);
-        }),
-        eth: this.wallet?.eth,
-      };
+      this.wallet.nft = this.wallet.nft.filter(
+        (nft) => !filterContractAddresses.includes(nft.contract.address)
+      );
+      this.wallet.erc20 = this.wallet.erc20.filter((erc20) => {
+        return !filterContractAddresses.includes(erc20.contractAddress);
+      });
     }
 
     if (nftsToFilter) {
@@ -59,21 +57,33 @@ export default class WalletStore {
     if (balancesToFilter) {
       balancesToFilter.forEach((balance) => {
         if (balance.address === "eth") {
-          this.wallet.eth = Number(
-            Number(this.wallet.eth) - Number(balance.balance)
-          ).toString();
+          const amountToSub = parseUnits(
+            balance.balance,
+            this.wallet.eth.metadata.decimals!
+          );
+          const ethBalance = BigNumber.from(this.wallet.eth.tokenBalance);
+          const subbedBalance = ethBalance.sub(amountToSub);
+          this.wallet.eth.tokenBalance = subbedBalance.toHexString();
         } else {
           const index = this.wallet.erc20.findIndex(
             (item) =>
               item.contractAddress.toLowerCase() ===
               balance.address.toLowerCase()
           );
-          console.log("INDEX", index);
-          console.log("TEST", this.wallet.erc20[index]);
-          this.wallet.erc20[index].tokenBalance = BigNumber.from(
+          if (index === -1) {
+            throw new Error("SHOULD NOT HIT");
+          }
+          const erc20Balance = BigNumber.from(
             this.wallet.erc20[index].tokenBalance
-          )
-            .sub(balance.balance)
+          );
+          const amountToSub = BigNumber.from(
+            parseUnits(
+              balance.balance,
+              this.wallet.erc20[index].metadata.decimals!
+            )
+          );
+          this.wallet.erc20[index].tokenBalance = erc20Balance
+            .sub(amountToSub)
             .toString();
         }
       });
@@ -84,6 +94,10 @@ export default class WalletStore {
       [NftTokenType.ERC1155, NftTokenType.ERC721].includes(
         nft.contract.tokenType
       )
+    );
+    // filter zero balances
+    this.wallet.erc20 = this.wallet.erc20.filter((erc20) =>
+      BigNumber.from(erc20.tokenBalance).gt(0)
     );
   }
 
@@ -197,10 +211,10 @@ export default class WalletStore {
 
   @computed
   get hasEthBalance() {
-    if (!this.wallet.eth) {
+    if (!this.wallet.eth.tokenBalance) {
       return false;
     }
-    return Number(this.wallet.eth) > 0;
+    return BigNumber.from(this.wallet.eth.tokenBalance).gt(0);
   }
 
   @computed
