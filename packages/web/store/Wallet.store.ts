@@ -1,5 +1,7 @@
 import { NftTokenType, OwnedNft } from "alchemy-sdk";
+import { BigNumber } from "ethers";
 import { computed, makeObservable, observable } from "mobx";
+import { TokenBalance } from "../components/CreateCompetition/Wallet";
 import { objectKeys } from "../helpers/arrays";
 import { abbreviate } from "../helpers/strings";
 import { ERC20Balance, Nullable, Wallet } from "../interfaces";
@@ -21,7 +23,8 @@ export default class WalletStore {
     showAll: boolean,
     filterContractAddresses?: Array<string>,
     selectedAddress?: Nullable<string>,
-    nftsToFilter?: Array<OwnedNft>
+    nftsToFilter?: Array<OwnedNft>,
+    balancesToFilter?: TokenBalance[]
   ) {
     makeObservable(this);
     this.wallet = wallet;
@@ -43,22 +46,31 @@ export default class WalletStore {
     }
 
     if (nftsToFilter) {
-      this.wallet = {
-        nft: this.wallet?.nft?.filter(
-          (nft) =>
-            !nftsToFilter.find(
-              (nftToFilter) =>
-                nftToFilter.contract.address === nft.contract.address &&
-                nftToFilter.tokenId === nft.tokenId
-            )
-        ),
-        erc20: this.wallet?.erc20,
-        eth: this.wallet?.eth,
-      };
+      this.wallet.nft = this.wallet?.nft?.filter(
+        (nft) =>
+          !nftsToFilter.find(
+            (nftToFilter) =>
+              nftToFilter.contract.address === nft.contract.address &&
+              nftToFilter.tokenId === nft.tokenId
+          )
+      );
+    }
+
+    if (balancesToFilter) {
+      balancesToFilter.forEach((balance) => {
+        const index = this.wallet.erc20.findIndex(
+          (item) => item.contractAddress === balance.address
+        );
+        this.wallet.erc20[index].tokenBalance = BigNumber.from(
+          this.wallet.erc20[index].tokenBalance
+        )
+          .sub(balance.balance)
+          .toString();
+      });
     }
 
     // filter only for erc1155 and erc721
-    this.wallet?.nft?.filter((nft) =>
+    this.wallet.nft = this.wallet.nft?.filter((nft) =>
       [NftTokenType.ERC1155, NftTokenType.ERC721].includes(
         nft.contract.tokenType
       )

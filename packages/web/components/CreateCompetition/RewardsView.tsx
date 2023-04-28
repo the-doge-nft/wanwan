@@ -1,4 +1,3 @@
-import { OwnedNft } from "alchemy-sdk";
 import { formatUnits } from "ethers/lib/utils.js";
 import { observer } from "mobx-react-lite";
 import { BsCheckLg, BsPencil } from "react-icons/bs";
@@ -69,7 +68,6 @@ interface RewardInputItemProps {
   wallet: WalletI;
   addressesToFilter?: string[];
   onRemoveClick: () => void;
-  nftsToFilter?: OwnedNft[];
   rewardStore: CreateCompetitionRewardsStore;
   store: RewardInputStore;
 }
@@ -80,7 +78,6 @@ const RewardInputItem = observer(
     wallet,
     addressesToFilter,
     onRemoveClick,
-    nftsToFilter,
     rewardStore,
     store,
   }: RewardInputItemProps) => {
@@ -149,6 +146,7 @@ const RewardInputItem = observer(
               onERC20AddressSelected={(erc20) => store.setSelectedERC20(erc20)}
               filterContractAddresses={addressesToFilter}
               onEthSelected={(balance) => store.onEthSelected()}
+              balancesToFilter={rewardStore.getBalancesToHide(index)}
               renderEthSelection={(balance) => {
                 return (
                   <FormNumberInput
@@ -215,7 +213,7 @@ const FormNumberInput = ({
           block
         />
         <div className={css("mt-2")}>
-          <Submit block>Looks good</Submit>
+          <Submit block>٩(◕‿◕)۶</Submit>
         </div>
       </Form>
     </div>

@@ -1,4 +1,5 @@
 import { action, computed, makeObservable, observable } from "mobx";
+import { TokenType } from "../../interfaces";
 import { EmptyClass } from "../../services/mixins";
 import { Reactionable } from "../../services/mixins/reactionable";
 import RewardInputStore from "./RewardInput.store";
@@ -55,5 +56,19 @@ export default class CreateCompetitionRewardsStore extends Reactionable(
     return voteInputsBefore
       .filter((input) => input.selectedNft)
       .map((input) => input.selectedNft!);
+  }
+
+  getBalancesToHide(index: number) {
+    const voteInputsBefore = this.rewards.filter((item, i) => i !== index);
+    return voteInputsBefore
+      .filter(
+        (input) =>
+          input.tokenType === TokenType.ERC20 ||
+          input.tokenType === TokenType.ETH
+      )
+      .map((input) => ({
+        address: input.contractAddress as string,
+        balance: input.amount,
+      }));
   }
 }

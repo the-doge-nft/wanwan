@@ -11,6 +11,11 @@ import AspectRatio from "../DSL/AspectRatio/AspectRatio";
 import Text, { TextSize, TextType } from "../DSL/Text/Text";
 import Logo from "../Logo/Logo";
 
+export interface TokenBalance {
+  address: string;
+  balance: string;
+}
+
 interface WalletProps {
   wallet: Wallet;
   showAll?: boolean;
@@ -18,6 +23,7 @@ interface WalletProps {
   filterContractAddresses?: string[];
   selectedNft?: Nullable<BaseNft>;
   nftsToFilter?: OwnedNft[];
+  balancesToFilter?: TokenBalance[];
   onNFTSelection?: (nft: OwnedNft) => void;
   onNFTAddressSelected?: (params: {
     address: string;
@@ -54,6 +60,7 @@ const WalletView = observer(
     nftsToFilter,
     renderEthSelection,
     onEthSelected,
+    balancesToFilter,
   }: WalletProps) => {
     const store = useMemo(
       () =>
@@ -62,9 +69,17 @@ const WalletView = observer(
           showAll,
           filterContractAddresses,
           selectedAddress,
-          nftsToFilter
+          nftsToFilter,
+          balancesToFilter
         ),
-      [wallet, showAll, filterContractAddresses, selectedAddress, nftsToFilter]
+      [
+        wallet,
+        showAll,
+        filterContractAddresses,
+        selectedAddress,
+        nftsToFilter,
+        balancesToFilter,
+      ]
     );
 
     const renderDefaultNfts = useCallback(
