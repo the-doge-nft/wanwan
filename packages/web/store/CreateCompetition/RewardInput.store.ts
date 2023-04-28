@@ -5,6 +5,7 @@ import {
   getEtherscanURL,
   getOpenSeaURL,
 } from "../../helpers/strings";
+import AppStore from "../App.store";
 import { ERC20Balance, Nullable, TokenType } from "./../../interfaces/index";
 
 export default class RewardInputStore {
@@ -18,7 +19,7 @@ export default class RewardInputStore {
   tokenId: Nullable<string | number> = null;
 
   @observable
-  amount: Nullable<string | number> = null;
+  amount: string = "";
 
   @observable
   selectedNft: OwnedNft | null = null;
@@ -34,6 +35,15 @@ export default class RewardInputStore {
 
   constructor() {
     makeAutoObservable(this);
+  }
+
+  @action
+  onEthSelected() {
+    this.tokenType = TokenType.ETH;
+    this.contractAddress = "eth";
+    this.tokenId = null;
+    this.amount = "";
+    // this.name = "ETH";
   }
 
   @action
@@ -76,7 +86,7 @@ export default class RewardInputStore {
     this.selectedNft = nft;
     this.contractAddress = nft.contract.address;
     this.tokenId = nft.tokenId;
-    this.amount = 1;
+    this.amount = "1";
     if (nft.tokenType === NftTokenType.ERC1155) {
       this.tokenType = TokenType.ERC1155;
     } else {
@@ -107,6 +117,8 @@ export default class RewardInputStore {
       if (this.contractAddress) {
         return abbreviate(this.contractAddress);
       }
+    } else if (this.tokenType === TokenType.ETH) {
+      return "ETH";
     }
     return null;
   }
@@ -137,6 +149,8 @@ export default class RewardInputStore {
     }
     if (this.tokenType === TokenType.ERC20) {
       return getEtherscanURL(this.contractAddress!, "token");
+    } else if (this.tokenType === TokenType.ETH) {
+      return getEtherscanURL(AppStore.auth.address as string, "address");
     } else {
       if (!this.tokenId) {
         return null;

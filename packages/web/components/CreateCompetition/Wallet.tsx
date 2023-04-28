@@ -35,6 +35,7 @@ interface WalletProps {
     address: string;
     balance: ERC20Balance[];
   }) => JSX.Element;
+  onEthSelected?: (balance: string) => void;
   renderEthSelection?: (balance: string) => JSX.Element;
 }
 
@@ -52,6 +53,7 @@ const WalletView = observer(
     selectedNft,
     nftsToFilter,
     renderEthSelection,
+    onEthSelected,
   }: WalletProps) => {
     const store = useMemo(
       () =>
@@ -207,6 +209,7 @@ const WalletView = observer(
                           isSelected={store.selectedAddress === "eth"}
                           onClick={() => {
                             store.selectedAddress = "eth";
+                            onEthSelected && onEthSelected(store.wallet.eth);
                           }}
                         />
                       )}

@@ -13,8 +13,9 @@ import Button, { Submit } from "../DSL/Button/Button";
 import Form from "../DSL/Form/Form";
 import { FormDisplay } from "../DSL/Form/FormControl";
 import NumberInput from "../DSL/Form/NumberInput";
+import { required } from "../DSL/Form/validation";
 import Link from "../DSL/Link/Link";
-import Text, { TextType } from "../DSL/Text/Text";
+import Text from "../DSL/Text/Text";
 import { Buttons } from "./CreateCompetition";
 import Wallet from "./Wallet";
 
@@ -147,8 +148,16 @@ const RewardInputItem = observer(
               onNFTAddressSelected={(nft) => store.onNFTAddressSelected(nft)}
               onERC20AddressSelected={(erc20) => store.setSelectedERC20(erc20)}
               filterContractAddresses={addressesToFilter}
+              onEthSelected={(balance) => store.onEthSelected()}
               renderEthSelection={(balance) => {
-                return <FormNumberInput maxAmount={balance} />;
+                return (
+                  <FormNumberInput
+                    value={store.amount}
+                    maxAmount={balance}
+                    onChange={(value) => (store.amount = value)}
+                    onSuccess={() => (store.isConfirmed = true)}
+                  />
+                );
               }}
               renderErc20Selection={(erc20) => {
                 const balance = erc20.balance?.[0];
@@ -158,7 +167,14 @@ const RewardInputItem = observer(
                 const tokenBalance = balance?.tokenBalance;
                 const decimals = balance?.metadata.decimals;
                 const maxAmount = formatUnits(tokenBalance, decimals as number);
-                return <FormNumberInput maxAmount={maxAmount} />;
+                return (
+                  <FormNumberInput
+                    onChange={(value) => (store.amount = value)}
+                    value={store.amount}
+                    maxAmount={maxAmount}
+                    onSuccess={() => (store.isConfirmed = true)}
+                  />
+                );
               }}
             />
           </div>
@@ -170,26 +186,39 @@ const RewardInputItem = observer(
 
 interface FormNumberInputProps {
   maxAmount: string;
+  value: string;
+  onChange: (value: string) => void;
+  onSuccess?: () => void;
 }
 
-const FormNumberInput = ({ maxAmount }: FormNumberInputProps) => {
+const FormNumberInput = ({
+  maxAmount,
+  value,
+  onChange,
+  onSuccess,
+}: FormNumberInputProps) => {
   return (
-    <Form onSubmit={async () => {}}>
-      <NumberInput
-        label={"Amount"}
-        name={"amount"}
-        placeholder={"amount"}
-        max={Number(maxAmount)}
-        block
-      />
-      <div className={css("flex", "gap-1")}>
-        <Text type={TextType.Grey}>balance:</Text>
-        <Text type={TextType.Grey}>
-          {formatWithThousandsSeparators(maxAmount)}
-        </Text>
-      </div>
-      <Submit />
-    </Form>
+    <div className={css("flex", "justify-center", "items-center", "h-full")}>
+      <Form
+        onSubmit={async () => {
+          onSuccess && onSuccess();
+        }}
+      >
+        <NumberInput
+          value={value}
+          onChange={onChange}
+          label={"Amount"}
+          name={"amount"}
+          placeholder={`max: ${formatWithThousandsSeparators(maxAmount)}`}
+          max={Number(maxAmount)}
+          validate={required}
+          block
+        />
+        <div className={css("mt-2")}>
+          <Submit block>Looks good</Submit>
+        </div>
+      </Form>
+    </div>
   );
 };
 

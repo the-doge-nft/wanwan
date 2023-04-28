@@ -40,6 +40,7 @@ export enum TokenType {
   ERC1155 = "ERC1155",
   ERC721 = "ERC721",
   ERC20 = "ERC20",
+  ETH = "ETH",
 }
 
 export interface Currency {
