@@ -1,6 +1,6 @@
-import { BaseNft, NftTokenType, OwnedNft } from "alchemy-sdk";
-import { action, computed, makeObservable, observable } from "mobx";
-import { abbreviate } from "../../helpers/strings";
+import { NftTokenType, OwnedNft } from "alchemy-sdk";
+import { action, computed, makeAutoObservable, observable } from "mobx";
+import { abbreviate, getEtherscanURL } from "../../helpers/strings";
 import { ERC20Balance, Nullable, TokenType } from "./../../interfaces/index";
 
 export default class RewardInputStore {
@@ -17,7 +17,7 @@ export default class RewardInputStore {
   amount: Nullable<string | number> = null;
 
   @observable
-  selectedNft: Nullable<BaseNft> = null;
+  selectedNft: OwnedNft | null = null;
 
   @observable
   isConfirmed = false;
@@ -29,7 +29,7 @@ export default class RewardInputStore {
   name: Nullable<string> = null;
 
   constructor() {
-    makeObservable(this);
+    makeAutoObservable(this);
   }
 
   @action
@@ -57,6 +57,7 @@ export default class RewardInputStore {
     this.maxAmount = 1;
     this.tokenId = null;
     this.name = null;
+    this.selectedNft = null;
 
     const tokenType = nfts?.[0]?.tokenType;
     if (tokenType === NftTokenType.ERC1155) {
@@ -69,6 +70,7 @@ export default class RewardInputStore {
   @action
   setSelectedNft(nft: OwnedNft) {
     this.selectedNft = nft;
+    console.log("SELECTED NFT", this.selectedNft);
     this.contractAddress = nft.contract.address;
     this.tokenId = nft.tokenId;
     this.amount = 1;
@@ -115,5 +117,12 @@ export default class RewardInputStore {
     }
     // @next-needs to be updated to balance check
     return !!this.amount;
+  }
+
+  @computed
+  get externalUrl() {
+    if (this.tokenType === TokenType.ERC20) {
+      return getEtherscanURL(this.contractAddress!, "token");
+    }
   }
 }

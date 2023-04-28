@@ -17,7 +17,8 @@ interface WalletProps {
   selectedAddress?: Nullable<string>;
   filterContractAddresses?: string[];
   selectedNft?: Nullable<BaseNft>;
-  onNFTSelection?: (nft: OwnedNft | Nft) => void;
+  nftsToFilter?: OwnedNft[];
+  onNFTSelection?: (nft: OwnedNft) => void;
   onNFTAddressSelected?: (params: {
     address: string;
     nfts: OwnedNft[];
@@ -47,7 +48,8 @@ const WalletView = observer(
     filterContractAddresses,
     selectedAddress,
     onNFTSelection,
-    selectedNft: selectedNFt,
+    selectedNft,
+    nftsToFilter,
   }: WalletProps) => {
     const store = useMemo(
       () =>
@@ -55,9 +57,10 @@ const WalletView = observer(
           wallet,
           showAll,
           filterContractAddresses,
-          selectedAddress
+          selectedAddress,
+          nftsToFilter
         ),
-      [wallet, showAll, filterContractAddresses, selectedAddress]
+      [wallet, showAll, filterContractAddresses, selectedAddress, nftsToFilter]
     );
     const selectorRef = useRef<HTMLDivElement>(null);
 
@@ -81,16 +84,18 @@ const WalletView = observer(
             <NftPreview
               key={`${nft.tokenId}-${nft.contract.address}-${index}`}
               nft={nft}
-              onClick={(nft) => onNFTSelection && onNFTSelection(nft)}
+              onClick={(nft) =>
+                onNFTSelection && onNFTSelection(nft as OwnedNft)
+              }
               isSelected={
-                nft.contract.address === selectedNFt?.contract.address &&
-                nft.tokenId === selectedNFt?.tokenId
+                nft.contract.address === selectedNft?.contract.address &&
+                nft.tokenId === selectedNft?.tokenId
               }
             />
           ))}
         </div>
       ),
-      [store.selectedNfts, onNFTSelection, selectedNFt]
+      [store.selectedNfts, onNFTSelection, selectedNft]
     );
 
     return (

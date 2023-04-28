@@ -1,24 +1,25 @@
+import { OwnedNft } from "alchemy-sdk";
 import { observer } from "mobx-react-lite";
-import { useMemo } from "react";
 import { BsCheckLg, BsPencil } from "react-icons/bs";
 import { IoCloseOutline } from "react-icons/io5";
 import { css } from "../../helpers/css";
 import { jsonify } from "../../helpers/strings";
 import { Wallet as WalletI } from "../../interfaces";
 import CreateCompetitionStore from "../../store/CreateCompetition/CreateCompetition.store";
+import CreateCompetitionRewardsStore from "../../store/CreateCompetition/CreateCompetitionRewards.store";
 import RewardInputStore from "../../store/CreateCompetition/RewardInput.store";
 import Button from "../DSL/Button/Button";
 import Form from "../DSL/Form/Form";
 import { FormDisplay } from "../DSL/Form/FormControl";
 import Text from "../DSL/Text/Text";
-import { Buttons, CompetitionStoreProp } from "./CreateCompetition";
+import { Buttons } from "./CreateCompetition";
 import Wallet from "./Wallet";
 
 interface RewardsViewProps {
   store: CreateCompetitionStore;
 }
 
-const RewardsView = observer(({ store }: CompetitionStoreProp) => {
+const RewardsView = observer(({ store }: RewardsViewProps) => {
   return (
     <Form onSubmit={async () => store.onRewardsSubmit()}>
       <FormDisplay
@@ -29,20 +30,17 @@ const RewardsView = observer(({ store }: CompetitionStoreProp) => {
       {store.rewardStore.isRewardsVisible && (
         <div className={css("flex", "flex-col", "gap-6")}>
           {store.rewardStore.rewards.map((rewardStore, index) => {
-            if (store.wallet) {
-              return (
-                <RewardInputItem
-                  key={`reward-input-item-${index}`}
-                  index={index}
-                  wallet={store.wallet}
-                  addressesToFilter={
-                    store.rewardStore.tokenAddressesToFilter as string[]
-                  }
-                  onRemoveClick={() => store.rewardStore.removeReward(index)}
-                />
-              );
-            }
-            return <></>;
+            return (
+              <RewardInputItem
+                key={`reward-input-item-${index}`}
+                index={index}
+                wallet={store.wallet!}
+                onRemoveClick={() => store.rewardStore.removeReward(index)}
+                nftsToFilter={store.rewardStore.getNftsToHide(index)}
+                rewardStore={store.rewardStore}
+                store={rewardStore}
+              />
+            );
           })}
         </div>
       )}
@@ -65,6 +63,9 @@ interface RewardInputItemProps {
   wallet: WalletI;
   addressesToFilter?: string[];
   onRemoveClick: () => void;
+  nftsToFilter?: OwnedNft[];
+  rewardStore: CreateCompetitionRewardsStore;
+  store: RewardInputStore;
 }
 
 const RewardInputItem = observer(
@@ -73,6 +74,9 @@ const RewardInputItem = observer(
     wallet,
     addressesToFilter,
     onRemoveClick,
+    nftsToFilter,
+    rewardStore,
+    store,
   }: RewardInputItemProps) => {
     const place = index + 1;
     let prefix = "st";
@@ -81,7 +85,6 @@ const RewardInputItem = observer(
     } else if (place === 3) {
       prefix = "rd";
     }
-    const store = useMemo(() => new RewardInputStore(), []);
     return (
       <div key={`reward-input-${index}`} className={css()}>
         <div
@@ -106,7 +109,7 @@ const RewardInputItem = observer(
             )}
           </div>
           <div className={css("flex", "items-center", "gap-2")}>
-            {store.tokenId && <Text>{store.tokenId}</Text>}
+            {/* {store.tokenId && <Text>{store.tokenId}</Text>} */}
             {!store.isConfirmed &&
               store.showCanConfirm &&
               store.contractAddress && (
@@ -129,6 +132,7 @@ const RewardInputItem = observer(
               showAll={false}
               selectedAddress={store.contractAddress}
               selectedNft={store.selectedNft}
+              nftsToFilter={rewardStore.getNftsToHide(index)}
               onNFTSelection={(nft) => store.setSelectedNft(nft)}
               onNFTAddressSelected={(nft) => store.onNFTAddressSelected(nft)}
               onERC20AddressSelected={(erc20) => store.setSelectedERC20(erc20)}
@@ -138,8 +142,6 @@ const RewardInputItem = observer(
                   <div className={css("break-words")}>{jsonify(erc20)}</div>
                 );
               }}
-              // onERC20AddressSelected={}
-              // renderNftSelection={}
               // renderErc20Selection={}
             />
           </div>

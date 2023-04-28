@@ -1,22 +1,27 @@
 import { action, computed, makeObservable, observable } from "mobx";
+import { EmptyClass } from "../../services/mixins";
+import { Reactionable } from "../../services/mixins/reactionable";
 import RewardInputStore from "./RewardInput.store";
 
-export default class CreateCompetitionRewardsStore {
+export default class CreateCompetitionRewardsStore extends Reactionable(
+  EmptyClass
+) {
   @observable
   rewards: RewardInputStore[] = [];
 
   constructor() {
+    super();
     makeObservable(this);
   }
 
   @action
   addReward() {
-    this.rewards.push(new RewardInputStore());
+    this.rewards = [...this.rewards, new RewardInputStore()];
   }
 
   @action
   removeReward(index: number) {
-    this.rewards.splice(index, 1);
+    this.rewards = this.rewards.filter((_, i) => i !== index);
   }
 
   get isRewardsVisible() {
@@ -43,5 +48,12 @@ export default class CreateCompetitionRewardsStore {
     return this.rewards
       .filter((address) => !!address)
       .map((reward) => reward.contractAddress);
+  }
+
+  getNftsToHide(index: number) {
+    const voteInputsBefore = this.rewards.filter((item, i) => i !== index);
+    return voteInputsBefore
+      .filter((input) => input.selectedNft)
+      .map((input) => input.selectedNft!);
   }
 }

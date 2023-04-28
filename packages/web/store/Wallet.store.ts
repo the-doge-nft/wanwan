@@ -20,7 +20,8 @@ export default class WalletStore {
     wallet: Wallet,
     showAll: boolean,
     filterContractAddresses?: Array<string>,
-    selectedAddress?: Nullable<string>
+    selectedAddress?: Nullable<string>,
+    nftsToFilter?: Array<OwnedNft>
   ) {
     makeObservable(this);
     this.wallet = wallet;
@@ -31,7 +32,7 @@ export default class WalletStore {
     }
     if (filterContractAddresses) {
       this.wallet = {
-        nft: this.wallet?.nft.filter(
+        nft: this.wallet?.nft?.filter(
           (nft) => !filterContractAddresses.includes(nft.contract.address)
         ),
         erc20: this.wallet?.erc20.filter((erc20) => {
@@ -40,8 +41,22 @@ export default class WalletStore {
       };
     }
 
+    if (nftsToFilter) {
+      this.wallet = {
+        nft: this.wallet?.nft?.filter(
+          (nft) =>
+            !nftsToFilter.find(
+              (nftToFilter) =>
+                nftToFilter.contract.address === nft.contract.address &&
+                nftToFilter.tokenId === nft.tokenId
+            )
+        ),
+        erc20: this.wallet?.erc20,
+      };
+    }
+
     // filter only for erc1155 and erc721
-    this.wallet.nft.filter((nft) =>
+    this.wallet?.nft?.filter((nft) =>
       [NftTokenType.ERC1155, NftTokenType.ERC721].includes(
         nft.contract.tokenType
       )
@@ -51,7 +66,7 @@ export default class WalletStore {
   @computed
   get nftsByAddress() {
     const nfts: { [key: string]: Array<OwnedNft> } = {};
-    this.wallet.nft.forEach((nft) => {
+    this.wallet.nft?.forEach((nft) => {
       if (!nfts[nft.contract.address]) {
         nfts[nft.contract.address] = [nft];
       } else {
