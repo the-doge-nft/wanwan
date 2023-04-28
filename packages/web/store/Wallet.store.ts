@@ -38,6 +38,7 @@ export default class WalletStore {
         erc20: this.wallet?.erc20.filter((erc20) => {
           return !filterContractAddresses.includes(erc20.contractAddress);
         }),
+        eth: this.wallet?.eth,
       };
     }
 
@@ -52,6 +53,7 @@ export default class WalletStore {
             )
         ),
         erc20: this.wallet?.erc20,
+        eth: this.wallet?.eth,
       };
     }
 
@@ -169,5 +171,18 @@ export default class WalletStore {
   @computed
   get allNfts() {
     return this.wallet.nft;
+  }
+
+  @computed
+  get hasEthBalance() {
+    if (!this.wallet.eth) {
+      return false;
+    }
+    return Number(this.wallet.eth) > 0;
+  }
+
+  @computed
+  get hasTokenBalances() {
+    return this.hasERC20s || this.hasEthBalance;
   }
 }

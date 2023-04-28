@@ -136,9 +136,12 @@ export class AlchemyService {
       const metadata = await this.getTokenMetadata(balance.contractAddress);
       //@ts-ignore
       balance.metadata = metadata;
-      console.log('TESTING', balance);
     }
     return res;
+  }
+
+  getEthBalance(address: string) {
+    return this.alchemy.core.getBalance(address);
   }
 
   getIsSpamContract(address: string) {

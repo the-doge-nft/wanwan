@@ -1,17 +1,20 @@
 import { OwnedNft } from "alchemy-sdk";
+import { formatUnits } from "ethers/lib/utils.js";
 import { observer } from "mobx-react-lite";
 import { BsCheckLg, BsPencil } from "react-icons/bs";
 import { IoCloseOutline } from "react-icons/io5";
 import { css } from "../../helpers/css";
-import { jsonify } from "../../helpers/strings";
+import { formatWithThousandsSeparators } from "../../helpers/numberFormatter";
 import { Wallet as WalletI } from "../../interfaces";
 import CreateCompetitionStore from "../../store/CreateCompetition/CreateCompetition.store";
 import CreateCompetitionRewardsStore from "../../store/CreateCompetition/CreateCompetitionRewards.store";
 import RewardInputStore from "../../store/CreateCompetition/RewardInput.store";
-import Button from "../DSL/Button/Button";
+import Button, { Submit } from "../DSL/Button/Button";
 import Form from "../DSL/Form/Form";
 import { FormDisplay } from "../DSL/Form/FormControl";
-import Text from "../DSL/Text/Text";
+import NumberInput from "../DSL/Form/NumberInput";
+import Link from "../DSL/Link/Link";
+import Text, { TextType } from "../DSL/Text/Text";
 import { Buttons } from "./CreateCompetition";
 import Wallet from "./Wallet";
 
@@ -21,7 +24,7 @@ interface RewardsViewProps {
 
 const RewardsView = observer(({ store }: RewardsViewProps) => {
   return (
-    <Form onSubmit={async () => store.onRewardsSubmit()}>
+    <>
       <FormDisplay
         label={"Rewards"}
         description={"What are you offering for the best memes?"}
@@ -53,8 +56,10 @@ const RewardsView = observer(({ store }: RewardsViewProps) => {
           + Reward
         </Button>
       </div>
-      <Buttons store={store} />
-    </Form>
+      <Form onSubmit={async () => store.onRewardsSubmit()}>
+        <Buttons store={store} />
+      </Form>
+    </>
   );
 });
 
@@ -105,7 +110,12 @@ const RewardInputItem = observer(
               <IoCloseOutline size={12} />
             </Button>
             {store.selectedDisplayName && (
-              <Text>{store.selectedDisplayName}</Text>
+              <div className={css("flex", "items-center", "gap-2")}>
+                {store.selectedTokenLink && (
+                  <Link isExternal href={store.selectedTokenLink} />
+                )}
+                <Text>{store.selectedDisplayName}</Text>
+              </div>
             )}
           </div>
           <div className={css("flex", "items-center", "gap-2")}>
@@ -137,12 +147,19 @@ const RewardInputItem = observer(
               onNFTAddressSelected={(nft) => store.onNFTAddressSelected(nft)}
               onERC20AddressSelected={(erc20) => store.setSelectedERC20(erc20)}
               filterContractAddresses={addressesToFilter}
-              renderErc20Selection={(erc20) => {
-                return (
-                  <div className={css("break-words")}>{jsonify(erc20)}</div>
-                );
+              renderEthSelection={(balance) => {
+                return <FormNumberInput maxAmount={balance} />;
               }}
-              // renderErc20Selection={}
+              renderErc20Selection={(erc20) => {
+                const balance = erc20.balance?.[0];
+                if (!balance) {
+                  return <></>;
+                }
+                const tokenBalance = balance?.tokenBalance;
+                const decimals = balance?.metadata.decimals;
+                const maxAmount = formatUnits(tokenBalance, decimals as number);
+                return <FormNumberInput maxAmount={maxAmount} />;
+              }}
             />
           </div>
         )}
@@ -150,5 +167,30 @@ const RewardInputItem = observer(
     );
   }
 );
+
+interface FormNumberInputProps {
+  maxAmount: string;
+}
+
+const FormNumberInput = ({ maxAmount }: FormNumberInputProps) => {
+  return (
+    <Form onSubmit={async () => {}}>
+      <NumberInput
+        label={"Amount"}
+        name={"amount"}
+        placeholder={"amount"}
+        max={Number(maxAmount)}
+        block
+      />
+      <div className={css("flex", "gap-1")}>
+        <Text type={TextType.Grey}>balance:</Text>
+        <Text type={TextType.Grey}>
+          {formatWithThousandsSeparators(maxAmount)}
+        </Text>
+      </div>
+      <Submit />
+    </Form>
+  );
+};
 
 export default RewardsView;

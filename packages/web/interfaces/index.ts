@@ -202,6 +202,7 @@ export interface ProfileDto {
 export interface Wallet {
   nft: Array<OwnedNft>;
   erc20: Array<ERC20Balance>;
+  eth: string;
 }
 
 export interface ERC20Balance extends TokenBalanceSuccess {

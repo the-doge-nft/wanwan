@@ -14,6 +14,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { formatEther } from 'ethers/lib/utils';
 import { AlchemyService } from './alchemy/alchemy.service';
 import { AppService } from './app.service';
 import { ADMIN_ADDRESSES, AdminGuard } from './auth/admin.guard';
@@ -191,7 +192,8 @@ export class AppController {
   async getWallet(@Req() { user }: AuthenticatedRequest) {
     const nft = await this.alchemy.getNftsForOwner(user.address);
     const erc20 = await this.alchemy.getTokenBalances(user.address);
-    return { nft, erc20 };
+    const eth = await this.alchemy.getEthBalance(user.address);
+    return { nft, erc20, eth: formatEther(eth) };
   }
 
   @UseGuards(AuthGuard)

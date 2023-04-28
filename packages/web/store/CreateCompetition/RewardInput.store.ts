@@ -1,6 +1,10 @@
 import { NftTokenType, OwnedNft } from "alchemy-sdk";
 import { action, computed, makeAutoObservable, observable } from "mobx";
-import { abbreviate, getEtherscanURL } from "../../helpers/strings";
+import {
+  abbreviate,
+  getEtherscanURL,
+  getOpenSeaURL,
+} from "../../helpers/strings";
 import { ERC20Balance, Nullable, TokenType } from "./../../interfaces/index";
 
 export default class RewardInputStore {
@@ -70,7 +74,6 @@ export default class RewardInputStore {
   @action
   setSelectedNft(nft: OwnedNft) {
     this.selectedNft = nft;
-    console.log("SELECTED NFT", this.selectedNft);
     this.contractAddress = nft.contract.address;
     this.tokenId = nft.tokenId;
     this.amount = 1;
@@ -92,6 +95,7 @@ export default class RewardInputStore {
   }) {
     this.contractAddress = address;
     this.tokenType = TokenType.ERC20;
+    this.amount = "";
     // this.amount = balance;
   }
 
@@ -123,6 +127,21 @@ export default class RewardInputStore {
   get externalUrl() {
     if (this.tokenType === TokenType.ERC20) {
       return getEtherscanURL(this.contractAddress!, "token");
+    }
+  }
+
+  @computed
+  get selectedTokenLink() {
+    if (!this.contractAddress) {
+      return null;
+    }
+    if (this.tokenType === TokenType.ERC20) {
+      return getEtherscanURL(this.contractAddress!, "token");
+    } else {
+      if (!this.tokenId) {
+        return null;
+      }
+      return getOpenSeaURL(this.contractAddress!, this.tokenId!);
     }
   }
 }

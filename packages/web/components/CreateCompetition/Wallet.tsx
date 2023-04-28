@@ -1,6 +1,6 @@
 import { BaseNft, Nft, OwnedNft } from "alchemy-sdk";
 import { observer } from "mobx-react-lite";
-import { useCallback, useMemo, useRef } from "react";
+import { useCallback, useMemo } from "react";
 import { objectKeys } from "../../helpers/arrays";
 import { css } from "../../helpers/css";
 import { abbreviate } from "../../helpers/strings";
@@ -35,6 +35,7 @@ interface WalletProps {
     address: string;
     balance: ERC20Balance[];
   }) => JSX.Element;
+  renderEthSelection?: (balance: string) => JSX.Element;
 }
 
 const WalletView = observer(
@@ -50,6 +51,7 @@ const WalletView = observer(
     onNFTSelection,
     selectedNft,
     nftsToFilter,
+    renderEthSelection,
   }: WalletProps) => {
     const store = useMemo(
       () =>
@@ -62,7 +64,6 @@ const WalletView = observer(
         ),
       [wallet, showAll, filterContractAddresses, selectedAddress, nftsToFilter]
     );
-    const selectorRef = useRef<HTMLDivElement>(null);
 
     const renderDefaultNfts = useCallback(
       () => (
@@ -74,11 +75,6 @@ const WalletView = observer(
             "overflow-y-auto",
             "gap-2"
           )}
-          style={
-            selectorRef.current?.clientHeight
-              ? { maxHeight: selectorRef.current.clientHeight }
-              : { maxHeight: "150px" }
-          }
         >
           {store?.selectedNfts?.map((nft, index) => (
             <NftPreview
@@ -112,10 +108,10 @@ const WalletView = observer(
                         "flex",
                         "flex-col",
                         "gap-1",
-                        "min-h-[150px]",
-                        "overflow-y-auto"
+                        "min-h-[100px]",
+                        "overflow-y-auto",
+                        "max-h-[350px]"
                       )}
-                      ref={selectorRef}
                     >
                       {store.showAll && (
                         <Selector
@@ -154,7 +150,15 @@ const WalletView = observer(
                       ))}
                     </div>
                   </div>
-                  <div className={css("col-span-4", "flex", "flex-col")}>
+                  <div
+                    className={css(
+                      "col-span-4",
+                      "flex",
+                      "flex-col",
+                      "max-h-[350px]",
+                      "overflow-y-auto"
+                    )}
+                  >
                     {renderNftSelection &&
                       renderNftSelection({
                         address: store.selectedAddress! as string,
@@ -165,9 +169,9 @@ const WalletView = observer(
                 </div>
               )}
             </Accordion.Item>
-            <Accordion.Item value={"erc20"} trigger={<Text>ERC20</Text>}>
-              {!store.hasERC20s && <NoneFound />}
-              {store.hasERC20s && (
+            <Accordion.Item value={"erc20"} trigger={<Text>Tokens</Text>}>
+              {!store.hasTokenBalances && <NoneFound />}
+              {store.hasTokenBalances && (
                 <div className={css("grid", "grid-cols-6", "gap-4")}>
                   <div className={css("col-span-2")}>
                     <div
@@ -178,7 +182,6 @@ const WalletView = observer(
                         "min-h-[150px]",
                         "overflow-y-auto"
                       )}
-                      // ref={selectorRef}
                     >
                       {store.showAll && (
                         <Selector
@@ -194,6 +197,16 @@ const WalletView = observer(
                                 balance: store.selectedERC20Balances,
                               });
                             }
+                          }}
+                        />
+                      )}
+                      {store.hasEthBalance && (
+                        <Selector
+                          title={"ETH"}
+                          address={"eth"}
+                          isSelected={store.selectedAddress === "eth"}
+                          onClick={() => {
+                            store.selectedAddress = "eth";
                           }}
                         />
                       )}
@@ -218,10 +231,15 @@ const WalletView = observer(
                   </div>
                   <div className={css("col-span-4")}>
                     {renderErc20Selection &&
+                      store.selectedAddress &&
+                      store.selectedERC20Balances &&
                       renderErc20Selection({
                         address: store.selectedAddress! as string,
                         balance: store.selectedERC20Balances,
                       })}
+                    {renderEthSelection &&
+                      store.selectedAddress === "eth" &&
+                      renderEthSelection(store.wallet.eth)}
                   </div>
                 </div>
               )}
