@@ -46,7 +46,7 @@ const CompetitionRewards = observer(({ store }: CompetitionRewardsProps) => {
                     reward.currencyAmountAtoms,
                     reward.currency.decimals
                   )
-                ).toLocaleString()}
+                ).toString()}
                 )
               </Text>
             </div>

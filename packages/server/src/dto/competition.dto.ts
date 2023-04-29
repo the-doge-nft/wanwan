@@ -20,7 +20,6 @@ import {
   ValidatorConstraintInterface,
   registerDecorator,
 } from 'class-validator';
-import { BigNumber } from 'ethers';
 import {
   formatEthereumAddress,
   isValidEthereumAddress,
@@ -81,10 +80,7 @@ function IsNumberStringGreaterThan(
       options: validationOptions,
       validator: {
         validate(value: any, { constraints }: ValidationArguments) {
-          return (
-            typeof value === 'string' &&
-            BigNumber.from(value).gte(constraints[0])
-          );
+          return Number(value) > constraints[0];
         },
         defaultMessage() {
           return `Must be a string and greater than ${minValue}`;
@@ -114,12 +110,12 @@ class CurrencyDto {
   contractAddress: string;
 
   @IsOptional()
-  @IsNumberStringGreaterThan(0)
+  @IsNumberStringGreaterThan(-1)
   @Validate(NftTokensTokenIdRequired)
   tokenId?: string;
 
   @IsNotEmpty()
-  @IsNumberStringGreaterThan(1)
+  @IsNumberStringGreaterThan(0)
   amount: string;
 }
 

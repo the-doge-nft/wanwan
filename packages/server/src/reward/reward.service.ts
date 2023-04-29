@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Prisma, TokenType } from '@prisma/client';
 import { BigNumber } from 'ethers';
+import { parseEther } from 'ethers/lib/utils';
 import { AlchemyService } from '../alchemy/alchemy.service';
 import { RewardsDto } from '../dto/competition.dto';
 import { PrismaService } from './../prisma.service';
@@ -64,7 +65,9 @@ export class RewardService {
   }
 
   private async getIsETHRewardValid(address: string, reward: RewardsDto) {
-    return false;
+    const ethBalance = await this.alchemy.getEthBalance(address);
+    console.log(ethBalance);
+    return ethBalance.gte(parseEther(reward.currency.amount));
   }
 
   upsert(args: Prisma.RewardUpsertArgs) {

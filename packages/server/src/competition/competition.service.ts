@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Competition, Prisma, TokenType, User } from '@prisma/client';
 import { TokenMetadataResponse } from 'alchemy-sdk';
-import { BigNumber } from 'ethers';
+import { parseEther, parseUnits } from 'ethers/lib/utils';
 import { CompetitionVotingRuleService } from '../competition-voting-rule/competition-voting-rule.service';
 import { CurrencyService } from '../currency/currency.service';
 import { CompetitionDto, RewardsDto } from '../dto/competition.dto';
@@ -101,43 +101,10 @@ export class CompetitionService {
       });
 
       for (const voter of voters) {
-        let currency = await this.currency.findFirst({
-          where: { type: voter.type, contractAddress: voter.contractAddress },
-        });
-
-        // @next -- move this logic elsewhere
-        if (!currency) {
-          if (voter.type !== TokenType.ETH) {
-            const metadata = await this.alchemy.getTokenMetadata(
-              voter.contractAddress,
-            );
-            // NFTs don't have decimal amounts
-            let decimals = 0;
-            if (voter.type === TokenType.ERC20) {
-              decimals = (metadata as TokenMetadataResponse).decimals;
-            }
-
-            currency = await this.currency.create({
-              data: {
-                type: voter.type,
-                contractAddress: voter.contractAddress,
-                symbol: metadata.symbol,
-                name: metadata.name,
-                decimals,
-              },
-            });
-          } else if (voter.type === TokenType.ETH) {
-            currency = await this.currency.create({
-              data: {
-                type: voter.type,
-                contractAddress: null,
-                symbol: 'ETH',
-                name: 'Ether',
-                decimals: 18,
-              },
-            });
-          }
-        }
+        const currency = await this.getCurrencyOrCreate(
+          voter.contractAddress,
+          voter.type,
+        );
 
         await this.votingRule.create({
           data: {
@@ -171,37 +138,22 @@ export class CompetitionService {
 
   private async upsertRewards(competition: Competition, rewards: RewardsDto[]) {
     for (const reward of rewards) {
-      const { contractAddress, type } = reward.currency;
-      let currency = await this.currency.findFirst({
-        where: {
-          contractAddress,
-          type,
-        },
-      });
-      if (!currency) {
-        const metadata =
-          type === 'ERC20'
-            ? await this.alchemy.getTokenMetadata(contractAddress)
-            : await this.alchemy.getNftContractMetadata(contractAddress);
-        const decimals =
-          type === 'ERC20' ? (metadata as TokenMetadataResponse).decimals : 0;
-        currency = await this.currency.create({
-          data: {
-            type: reward.currency.type,
-            contractAddress: reward.currency.contractAddress,
-            symbol: metadata.symbol,
-            name: metadata.name,
-            decimals,
-          },
-        });
+      const currency = await this.getCurrencyOrCreate(
+        reward.currency.contractAddress,
+        reward.currency.type,
+      );
+      console.log('testing');
+      // We only support single NFT transfers for now
+      let currencyAmountAtoms = '1';
+      if (reward.currency.type === TokenType.ETH) {
+        currencyAmountAtoms = parseEther(reward.currency.amount).toString();
+      } else {
+        currencyAmountAtoms = parseUnits(
+          reward.currency.amount,
+          currency.decimals,
+        ).toString();
       }
-      // next -- need support for decimals here
-      const currencyAmountAtoms =
-        type === 'ERC20'
-          ? BigNumber.from(reward.currency.amount)
-              .mul(BigNumber.from(10).pow(currency.decimals))
-              .toString()
-          : reward.currency.amount;
+
       await this.reward.create({
         data: {
           competitionId: competition.id,
@@ -212,6 +164,48 @@ export class CompetitionService {
         },
       });
     }
+  }
+
+  private async getCurrencyOrCreate(
+    contractAddress: string | null,
+    type: TokenType,
+  ) {
+    let currency = await this.currency.findFirst({
+      where: { contractAddress, type },
+    });
+    if (currency) {
+      return currency;
+    }
+
+    if (type !== TokenType.ETH) {
+      const metadata = await this.alchemy.getTokenMetadata(contractAddress);
+      // NFTs don't have decimal amounts
+      let decimals = 0;
+      if (type === TokenType.ERC20) {
+        decimals = (metadata as TokenMetadataResponse).decimals;
+      }
+
+      currency = await this.currency.create({
+        data: {
+          type,
+          contractAddress,
+          symbol: metadata.symbol,
+          name: metadata.name,
+          decimals,
+        },
+      });
+    } else if (type === TokenType.ETH) {
+      currency = await this.currency.create({
+        data: {
+          type,
+          contractAddress: null,
+          symbol: 'ETH',
+          name: 'Ethereum',
+          decimals: 18,
+        },
+      });
+    }
+    return currency;
   }
 
   async findMany(args?: Prisma.CompetitionFindManyArgs) {
