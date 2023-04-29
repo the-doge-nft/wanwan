@@ -6,7 +6,7 @@ import { PropsWithChildren, useEffect, useMemo } from "react";
 import { TfiLayoutGrid2Alt } from "react-icons/tfi";
 import AsyncGrid from "../components/DSL/AsyncGrid/AsyncGrid";
 import Link, { LinkType } from "../components/DSL/Link/Link";
-import Pane, { PaneType } from "../components/DSL/Pane/Pane";
+import Pane from "../components/DSL/Pane/Pane";
 import Text, { TextSize } from "../components/DSL/Text/Text";
 import CompetitionPreviewLink from "../components/PreviewLink/CompetitionPreviewLink";
 import MemePreviewLink from "../components/PreviewLink/MemePreviewLink";
@@ -41,12 +41,12 @@ const Home: React.FC<HomeProps> = observer(({ stats }) => {
       </Head>
       <main className={css()}>
         <div className={css("flex", "flex-col", "gap-4")}>
-          <Pane title={"What is wanwan?"} type={PaneType.Secondary}>
+          {/* <Pane title={"What is wanwan?"} type={PaneType.Secondary}>
             <Text size={TextSize.sm}>
               wanwan is a platform for meme competitions. Add memes to your
               profile & submit them to competitions to win prizes.
             </Text>
-          </Pane>
+          </Pane> */}
           <Pane title={"Competitions"}>
             <AsyncGrid
               isLoading={store.isCompetitionsLoading}
@@ -65,7 +65,9 @@ const Home: React.FC<HomeProps> = observer(({ stats }) => {
             title={"Recent Memes"}
             rightOfTitle={
               <Link type={LinkType.Secondary} href={"/memes"}>
-                <TfiLayoutGrid2Alt size={18} />
+                <span className={css("text-slate-700", "dark:text-slate-400")}>
+                  <TfiLayoutGrid2Alt size={18} />
+                </span>
               </Link>
             }
           >
