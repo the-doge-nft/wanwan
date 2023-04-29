@@ -46,7 +46,7 @@ const CompetitionSubmissions: React.FC<{ store: CompetitionIdStore }> =
           hasData={store.memes.length > 0}
           renderNoData={() => <NoDataFound>No memes submitted</NoDataFound>}
         >
-          {store.memes.map((meme) => {
+          {store.memes.map((meme, index) => {
             const score = meme.votes.reduce((acc, vote) => acc + vote.score, 0);
             const userVoteScore = meme.votes.find(
               (vote) => vote.user.id === AppStore.auth.profile?.user.id
@@ -68,16 +68,27 @@ const CompetitionSubmissions: React.FC<{ store: CompetitionIdStore }> =
                   rightOfTitle={renderRightOfTitle(meme.id)}
                   type={PaneType.Grey}
                   title={
-                    <div className={css("text-black", "dark:text-white")}>
-                      <Text type={TextType.NoColor}>Posted by </Text>
-                      <Link
-                        type={LinkType.Secondary}
-                        href={`/profile/${meme.user.address}/meme`}
-                      >
-                        {meme.user.ens
-                          ? meme.user.ens
-                          : abbreviate(meme.user.address)}
-                      </Link>
+                    <div
+                      className={css(
+                        "text-black",
+                        "dark:text-white",
+                        "items-center",
+                        "flex",
+                        "justify-between"
+                      )}
+                    >
+                      <div>
+                        <Text type={TextType.NoColor}>Posted by </Text>
+                        <Link
+                          type={LinkType.Secondary}
+                          href={`/profile/${meme.user.address}/meme`}
+                        >
+                          {meme.user.ens
+                            ? meme.user.ens
+                            : abbreviate(meme.user.address)}
+                        </Link>
+                      </div>
+                      <Text type={TextType.Grey}>{index + 1}</Text>
                     </div>
                   }
                 >

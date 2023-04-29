@@ -1,4 +1,5 @@
 import { computed, makeObservable, observable } from "mobx";
+import Router from "next/router";
 import { Meme, Nullable } from "../interfaces";
 import { EmptyClass } from "../services/mixins";
 import { Navigable } from "../services/mixins/navigable";
@@ -41,8 +42,8 @@ export default class CreateMemeStore extends Navigable(EmptyClass) {
     const { data } = await Http.postMeme(formData);
     this.isSubmitLoading = false;
     this.meme = data;
-    this.currentView = CreateMemeView.Success;
     AppStore.events.publish(AppStore.events.events.MEME_CREATED);
+    Router.push(`/meme/${data.id}`);
   }
 
   onFileDrop(file: File) {
