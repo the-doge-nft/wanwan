@@ -97,45 +97,54 @@ const Memes = observer(({ memes, params, next }: MemesPageProps) => {
   };
   return (
     <AppLayout>
-      <Pane
-        title={"Memes"}
-        rightOfTitle={
-          <div className={css("flex", "items-center", "gap-2")}>
-            <div
-              className={css("cursor-pointer")}
-              onClick={() => (store.view = View.Column)}
-            >
-              <AspectRatio
-                ratio={"1/1.5"}
-                className={css("w-[12px]", {
-                  "bg-slate-700 dark:bg-slate-400": store.view === View.Column,
-                  "bg-slate-400 dark:bg-slate-700": store.view === View.Grid,
-                })}
-              />
-            </div>
-            <div
-              className={css("cursor-pointer", {
-                "text-slate-700 dark:text-slate-400": store.view === View.Grid,
-                "text-slate-400 dark:text-slate-700":
-                  store.view === View.Column,
-              })}
-              onClick={() => (store.view = View.Grid)}
-            >
-              <TfiLayoutGrid2Alt size={18} />
-            </div>
-          </div>
-        }
+      <div
+        className={css(
+          "flex",
+          "items-center",
+          "gap-2",
+          "justify-between",
+          "mb-2",
+          "border-[1px]",
+          "border-black",
+          "p-1",
+          "bg-slate-300",
+          "dark:bg-slate-800"
+        )}
       >
-        <InfiniteScroll
-          next={() => store.next()}
-          dataLength={store.dataLength}
-          hasMore={store.hasMore}
-          endDataMessage={`All memes shown (${store.dataLength})`}
-        >
-          {store.view === View.Column && renderColumnView()}
-          {store.view === View.Grid && renderGridView()}
-        </InfiniteScroll>
-      </Pane>
+        <Text bold>Memes</Text>
+        <div className={css("flex", "items-center", "gap-2")}>
+          <div
+            className={css("cursor-pointer")}
+            onClick={() => (store.view = View.Column)}
+          >
+            <AspectRatio
+              ratio={"1/1.5"}
+              className={css("w-[12px]", {
+                "bg-slate-700 dark:bg-slate-400": store.view === View.Column,
+                "bg-slate-400 dark:bg-slate-700": store.view === View.Grid,
+              })}
+            />
+          </div>
+          <div
+            className={css("cursor-pointer", {
+              "text-slate-700 dark:text-slate-400": store.view === View.Grid,
+              "text-slate-400 dark:text-slate-700": store.view === View.Column,
+            })}
+            onClick={() => (store.view = View.Grid)}
+          >
+            <TfiLayoutGrid2Alt size={18} />
+          </div>
+        </div>
+      </div>
+      <InfiniteScroll
+        next={() => store.next()}
+        dataLength={store.dataLength}
+        hasMore={store.hasMore}
+        endDataMessage={`All memes shown (${store.dataLength})`}
+      >
+        {store.view === View.Column && renderColumnView()}
+        {store.view === View.Grid && renderGridView()}
+      </InfiniteScroll>
     </AppLayout>
   );
 });

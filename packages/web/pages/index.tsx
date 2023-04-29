@@ -3,10 +3,11 @@ import { observer } from "mobx-react-lite";
 import { GetServerSideProps } from "next";
 import Head from "next/head";
 import { PropsWithChildren, useEffect, useMemo } from "react";
+import { TfiLayoutGrid2Alt } from "react-icons/tfi";
 import AsyncGrid from "../components/DSL/AsyncGrid/AsyncGrid";
 import Link, { LinkType } from "../components/DSL/Link/Link";
 import Pane, { PaneType } from "../components/DSL/Pane/Pane";
-import Text, { TextSize, TextType } from "../components/DSL/Text/Text";
+import Text, { TextSize } from "../components/DSL/Text/Text";
 import CompetitionPreviewLink from "../components/PreviewLink/CompetitionPreviewLink";
 import MemePreviewLink from "../components/PreviewLink/MemePreviewLink";
 import env from "../environment";
@@ -64,9 +65,7 @@ const Home: React.FC<HomeProps> = observer(({ stats }) => {
             title={"Recent Memes"}
             rightOfTitle={
               <Link type={LinkType.Secondary} href={"/memes"}>
-                <Text size={TextSize.xs} type={TextType.NoColor}>
-                  All
-                </Text>
+                <TfiLayoutGrid2Alt size={18} />
               </Link>
             }
           >
