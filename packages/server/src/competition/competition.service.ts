@@ -111,7 +111,8 @@ export class CompetitionService {
             const metadata = await this.alchemy.getTokenMetadata(
               voter.contractAddress,
             );
-            let decimals = 1;
+            // NFTs don't have decimal amounts
+            let decimals = 0;
             if (voter.type === TokenType.ERC20) {
               decimals = (metadata as TokenMetadataResponse).decimals;
             }
