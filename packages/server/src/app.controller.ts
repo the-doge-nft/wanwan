@@ -151,6 +151,11 @@ export class AppController {
     return this.profile.get(addressOrEns);
   }
 
+  @Get('profile/:address/likes')
+  async getProfileLikes(@Param() { address }: { address: string }) {
+    return this.meme.getLikesForAddress(address);
+  }
+
   @UseGuards(AuthGuard)
   @Post('/profile')
   async postProfile(

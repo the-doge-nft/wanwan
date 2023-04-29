@@ -1,5 +1,5 @@
-import { computed, makeObservable, observable } from "mobx";
-import { Comment } from "../interfaces";
+import { action, computed, makeObservable, observable } from "mobx";
+import { Comment, Meme } from "../interfaces";
 import Http from "./../services/http";
 import AppStore from "./App.store";
 
@@ -7,8 +7,16 @@ export default class MemeIdStore {
   @observable
   comments: Comment[] = [];
 
-  constructor(private readonly id: string) {
+  @observable
+  meme: Meme;
+
+  @observable
+  likes?: number = 0;
+
+  constructor(private readonly id: string, meme: Meme) {
     makeObservable(this);
+    this.meme = meme;
+    this.likes = this.meme.likes;
   }
 
   async init() {
@@ -49,5 +57,34 @@ export default class MemeIdStore {
   @computed
   get canComment() {
     return AppStore.auth.isAuthed;
+  }
+
+  @action
+  private getMeme() {
+    return Http.getMeme(this.id).then(({ data }) => {
+      console.log(data);
+      this.meme = data;
+      this.likes = this.meme.likes;
+    });
+  }
+
+  @computed
+  get isMemeLiked() {
+    return AppStore.auth.memeIdsLiked.includes(this.meme.id);
+  }
+
+  toggleLike() {
+    if (!AppStore.auth.isLoggedIn) {
+      return;
+    }
+    if (this.isMemeLiked) {
+      return Http.getUnlikeMeme(this.id).then(() =>
+        Promise.all([this.getMeme(), AppStore.auth.getLikedMemeIds()])
+      );
+    } else {
+      return Http.getLikeMeme(this.id).then(() =>
+        Promise.all([this.getMeme(), AppStore.auth.getLikedMemeIds()])
+      );
+    }
   }
 }

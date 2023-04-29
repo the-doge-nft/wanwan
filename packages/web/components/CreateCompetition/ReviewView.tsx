@@ -32,7 +32,7 @@ const ReviewView = observer(({ store }: ReviewViewProps) => {
         </div>
       </Pane>
       {store.coverImageFile && (
-        <Pane title={"Cover Image"}>
+        <Pane title={"Cover"}>
           <div>
             <img
               src={URL.createObjectURL(store.coverImageFile)}

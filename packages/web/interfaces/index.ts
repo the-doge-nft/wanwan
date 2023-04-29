@@ -123,6 +123,7 @@ export interface Meme {
   mediaId: number;
   media: Media;
   user: User;
+  likes?: number;
 }
 
 export interface Submission {

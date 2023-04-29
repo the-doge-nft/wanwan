@@ -78,3 +78,8 @@ export function decodeBase64(value: string) {
 export function encodeBase64(obj: object) {
   return Buffer.from(JSON.stringify(obj)).toString("base64");
 }
+
+export function getBingReverseImageSearchURL(url: string) {
+  return `https://www.bing.com/images/search?q=imgurl:${url}
+                            &view=detailv2&selectedindex=0&iss=sbi&id=${url}&ccid=zUFO%2BkX6&mediaurl=${url}&exph=511&expw=498&vt=2&sim=11`;
+}

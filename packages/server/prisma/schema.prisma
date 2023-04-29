@@ -30,6 +30,7 @@ model User {
   Reward              Reward[]
   Comment             Comment[]
   Submission          Submission[]
+  MemeLikes           MemeLikes[]
 }
 
 model Meme {
@@ -47,6 +48,7 @@ model Meme {
   votes            Vote[]
   comments         Comment[]
   SocialMemeShares SocialMemeShares[]
+  MemeLikes        MemeLikes[]
 }
 
 model Competition {
@@ -194,4 +196,16 @@ model SocialMemeShares {
   memeId    Int
   meme      Meme           @relation(fields: [memeId], references: [id])
   createdAt DateTime       @default(now())
+}
+
+model MemeLikes {
+  id          Int      @id @default(autoincrement())
+  createdAt   DateTime @default(now())
+  score       Int      @default(0)
+  memeId      Int
+  meme        Meme     @relation(fields: [memeId], references: [id])
+  createdById Int
+  user        User     @relation(fields: [createdById], references: [id])
+
+  @@unique([createdById, memeId])
 }

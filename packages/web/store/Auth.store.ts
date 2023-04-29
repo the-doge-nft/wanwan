@@ -28,6 +28,9 @@ export default class AuthStore extends Reactionable(EmptyClass) {
   @observable
   isAdmin = false;
 
+  @observable
+  memeIdsLiked: Array<number> = [];
+
   constructor() {
     super();
     makeObservable(this);
@@ -53,6 +56,7 @@ export default class AuthStore extends Reactionable(EmptyClass) {
             this.getProfile();
             this.getUserMemes();
             this.getIsAdmin();
+            this.getLikedMemeIds();
           } else {
             this.profile = null;
             this.memes = [];
@@ -121,6 +125,12 @@ export default class AuthStore extends Reactionable(EmptyClass) {
       filters: [{ key: "address", operation: "equals", value: this.address }],
       sorts: [{ key: "createdAt", direction: "desc" }],
     }).then(({ data }) => (this.memes = data.data));
+  }
+
+  getLikedMemeIds() {
+    return Http.getAddressLikes(this.address!).then(
+      ({ data }) => (this.memeIdsLiked = data)
+    );
   }
 
   runOrAuthPrompt(fn: () => void) {

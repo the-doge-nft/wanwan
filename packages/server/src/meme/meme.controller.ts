@@ -97,4 +97,16 @@ export class MemeController {
   getComment(@Param() { id }: IdDto) {
     return this.comment.getByMemeId(id);
   }
+
+  @Get(':id/like')
+  @UseGuards(AuthGuard)
+  likeMeme(@Param() { id }: IdDto, @Req() { user }: AuthenticatedRequest) {
+    return this.meme.likeMeme(id, user.id);
+  }
+
+  @Get(':id/unlike')
+  @UseGuards(AuthGuard)
+  unlikeMeme(@Param() { id }: IdDto, @Req() { user }: AuthenticatedRequest) {
+    return this.meme.unlikeMeme(id, user.id);
+  }
 }

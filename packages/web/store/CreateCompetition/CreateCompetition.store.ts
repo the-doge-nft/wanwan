@@ -3,6 +3,7 @@ import { AxiosResponse } from "axios";
 import { add } from "date-fns";
 import { zonedTimeToUtc } from "date-fns-tz";
 import { computed, makeObservable, observable } from "mobx";
+import Router from "next/router";
 import { dateToDateTimeLocalInput } from "../../components/DSL/Form/DateInput";
 import { getTimezone } from "../../helpers/dates";
 import { Competition, Media, Nullable, Wallet } from "../../interfaces/index";
@@ -125,7 +126,7 @@ export default class CreateCompetitionStore extends Navigable<
       this.competitionReceipt = compReceiptWithCover;
     }
     this.isLoading = false;
-    this.currentView = CreateCompetitionView.Success;
+    Router.push(`/competition/${this.competitionReceipt.id}`);
   }
 
   @computed
@@ -143,8 +144,6 @@ export default class CreateCompetitionStore extends Navigable<
         return "Curate it";
       case CreateCompetitionView.Rewards:
         return "Reward it";
-      case CreateCompetitionView.Create:
-        return "New competition";
       case CreateCompetitionView.Success:
         return "You did it";
       default:

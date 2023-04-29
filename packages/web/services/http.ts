@@ -239,6 +239,18 @@ class _Http {
     return this.http.get(`/contract/${contractAddress}`);
   }
 
+  getLikeMeme(id: number | string) {
+    return this.http.get(`/meme/${id}/like`);
+  }
+
+  getUnlikeMeme(id: number | string) {
+    return this.http.get(`/meme/${id}/unlike`);
+  }
+
+  getAddressLikes(address: string) {
+    return this.http.get<Array<number>>(`/profile/${address}/likes`);
+  }
+
   static create() {
     return new this(env.api.baseUrl);
   }

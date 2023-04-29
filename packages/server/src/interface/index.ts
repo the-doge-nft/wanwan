@@ -19,7 +19,7 @@ export type CompetitionWithDefaultInclude = Prisma.CompetitionGetPayload<{
 }>;
 
 export type MemeWithDefaultInclude = Prisma.MemeGetPayload<{
-  include: { media: true; user: true };
+  include: { media: true; user: true; MemeLikes: true };
 }>;
 
 export type CommentWithDefaultInclude = Prisma.CommentGetPayload<{
@@ -37,4 +37,5 @@ export interface UserWithExtras extends User {
 export interface MemeWithExtras extends Meme {
   media: MediaWithExtras;
   user: UserWithExtras;
+  likes: number;
 }

@@ -18,6 +18,7 @@ import Form from "../../components/DSL/Form/Form";
 import TextInput from "../../components/DSL/Form/TextInput";
 import Link, { LinkType } from "../../components/DSL/Link/Link";
 import Text, { TextSize, TextType } from "../../components/DSL/Text/Text";
+import Logo from "../../components/Logo/Logo";
 import env from "../../environment";
 import {
   DESCRIPTION,
@@ -26,7 +27,10 @@ import {
   getBaseUrl,
 } from "../../environment/vars";
 import { css } from "../../helpers/css";
-import { abbreviate } from "../../helpers/strings";
+import {
+  abbreviate,
+  getBingReverseImageSearchURL,
+} from "../../helpers/strings";
 import { Comment, Meme } from "../../interfaces";
 import AppLayout from "../../layouts/App.layout";
 import Http from "../../services/http";
@@ -42,7 +46,7 @@ const MemeById = observer(({ meme }: MemeByIdProps) => {
   const {
     query: { id },
   } = useRouter();
-  const store = useMemo(() => new MemeIdStore(id as string), [id]);
+  const store = useMemo(() => new MemeIdStore(id as string, meme), [id, meme]);
   useEffect(() => {
     store.init();
   }, [store]);
@@ -59,7 +63,7 @@ const MemeById = observer(({ meme }: MemeByIdProps) => {
         <title>{env.app.name}</title>
         <meta
           name="description"
-          content={meme.description ? meme.description : ""}
+          content={store.meme.description ? store.meme.description : ""}
           key="desc"
         />
         <meta property="og:site_name" content={title} />
@@ -77,19 +81,19 @@ const MemeById = observer(({ meme }: MemeByIdProps) => {
         <div>
           <div className={css("relative")}>
             <Image
-              width={meme.media.width}
-              height={meme.media.height}
-              src={meme.media.url}
-              alt={meme.media.url}
+              width={store.meme.media.width}
+              height={store.meme.media.height}
+              src={store.meme.media.url}
+              alt={store.meme.media.url}
               className={css("m-auto", "w-full")}
               unoptimized={extension?.toLocaleLowerCase() === "gif"}
             />
           </div>
           <div className={css("mt-8", "w-full", "flex", "justify-between")}>
             <div className={css("col-span-8", "flex", "flex-col")}>
-              {meme.name && <Text bold>{meme.name}</Text>}
-              {meme.description && (
-                <Text size={TextSize.sm}>{meme.description}</Text>
+              {store.meme.name && <Text bold>{store.meme.name}</Text>}
+              {store.meme.description && (
+                <Text size={TextSize.sm}>{store.meme.description}</Text>
               )}
             </div>
             <div
@@ -101,28 +105,51 @@ const MemeById = observer(({ meme }: MemeByIdProps) => {
                 "flex-col"
               )}
             >
-              <Link href={`/profile/${meme.user.address}/meme`}>
+              <Link href={`/profile/${store.meme.user.address}/meme`}>
                 <Text type={TextType.NoColor} size={TextSize.sm}>
-                  {meme.user.ens
-                    ? meme.user.ens
-                    : abbreviate(meme.user.address)}
+                  {store.meme.user.ens
+                    ? store.meme.user.ens
+                    : abbreviate(store.meme.user.address)}
                 </Text>
               </Link>
-              <div className={css("flex", "items-center", "gap-1", "mt-0.5")}>
-                <TwitterShareButton
-                  url={url}
-                  title={title}
-                  className={css("mt-0.5")}
-                >
+              <div className={css("flex", "items-center", "gap-1.5", "mt-0.5")}>
+                <Link
+                  isExternal
+                  className={css("w-full")}
+                  href={getBingReverseImageSearchURL(store.meme.media.url)}
+                />
+                <span className={css("inline-flex", "items-center", "gap-0.5")}>
+                  <button
+                    onClick={() => store.toggleLike()}
+                    className={css({
+                      "cursor-default": !AppStore.auth.isLoggedIn,
+                    })}
+                  >
+                    <Text
+                      type={
+                        store.isMemeLiked ? TextType.Primary : TextType.Grey
+                      }
+                    >
+                      <Logo size={20} />
+                    </Text>
+                  </button>
+                  <Text
+                    size={TextSize.xs}
+                    type={
+                      store.likes && store.likes > 0
+                        ? TextType.Primary
+                        : TextType.Grey
+                    }
+                  >
+                    {store.likes}
+                  </Text>
+                </span>
+                <TwitterShareButton url={url} title={title}>
                   <Text type={TextType.Grey}>
                     <BsTwitter size={16} />
                   </Text>
                 </TwitterShareButton>
-                <RedditShareButton
-                  url={url}
-                  title={title}
-                  className={css("mt-0.5")}
-                >
+                <RedditShareButton url={url} title={title}>
                   <Text type={TextType.Grey}>
                     <BsReddit size={16} />
                   </Text>
@@ -131,9 +158,8 @@ const MemeById = observer(({ meme }: MemeByIdProps) => {
             </div>
           </div>
         </div>
-
         <Text size={TextSize.xs} type={TextType.Grey}>
-          {format(new Date(meme.createdAt), "Pp")}
+          {format(new Date(store.meme.createdAt), "Pp")}
         </Text>
         <div className={css("mt-8")}>
           <CommentForm
