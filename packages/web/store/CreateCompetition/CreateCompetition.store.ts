@@ -5,7 +5,7 @@ import { zonedTimeToUtc } from "date-fns-tz";
 import { computed, makeObservable, observable } from "mobx";
 import { dateToDateTimeLocalInput } from "../../components/DSL/Form/DateInput";
 import { getTimezone } from "../../helpers/dates";
-import { Media, Nullable, Wallet } from "../../interfaces/index";
+import { Competition, Media, Nullable, Wallet } from "../../interfaces/index";
 import Http from "../../services/http";
 import { Constructor, EmptyClass } from "../../services/mixins/index";
 import { Navigable } from "../../services/mixins/navigable";
@@ -21,8 +21,6 @@ export enum CreateCompetitionView {
   Curators = "Curators",
   Rewards = "Rewards",
   Review = "Review",
-
-  Create = "Create",
   Success = "Success",
 }
 
@@ -33,6 +31,9 @@ export default class CreateCompetitionStore extends Navigable<
   minEndsAtDate = dateToDateTimeLocalInput(add(new Date(), { minutes: 1 }));
   maxEndsAtDate = dateToDateTimeLocalInput(add(new Date(), { years: 1 }));
   defaultEndsAtDate = dateToDateTimeLocalInput(add(new Date(), { days: 1 }));
+
+  @observable
+  competitionReceipt?: Competition = undefined;
 
   @observable
   name = "";
@@ -78,13 +79,7 @@ export default class CreateCompetitionStore extends Navigable<
     this.curatorStore.destroy();
   }
 
-  onCompetitionSubmit() {
-    // endsAt
-    // maxUserSubmissions
-    // curators
-    // rewards
-    // voters
-    /////////////////////////////////////////////////////////////////////
+  async onCompetitionSubmit() {
     const body: { [key: string]: any } = {};
     this.isLoading = true;
     body.name = this.name.trim();
@@ -119,46 +114,18 @@ export default class CreateCompetitionStore extends Navigable<
         },
       });
     });
-    return Http.postCompetition(body).then(({ data }) => {
-      if (this.coverImageFile) {
-        return Http.updateCompetitionCoverPhoto(
-          data.id,
+    const { data: compReceipt } = await Http.postCompetition(body);
+    this.competitionReceipt = compReceipt;
+    if (this.coverImageFile) {
+      const { data: compReceiptWithCover } =
+        await Http.updateCompetitionCoverPhoto(
+          compReceipt.id,
           this.coverImageFile
-        ).finally(() => (this.isLoading = false));
-      } else {
-        this.isLoading = false;
-      }
-    });
-
-    // this.isLoading = true;
-    // const formValues = { ...values };
-    // const curators: string[] = [];
-    // const body: { [key: string]: any } = {};
-    // for (const [key, value] of Object.entries(formValues)) {
-    //   if (key.startsWith(this.curators.CURATOR_INPUT_PREFIX)) {
-    //     const formattedAddress = formatEthereumAddress(value as string);
-    //     if (!curators.includes(formattedAddress)) {
-    //       curators.push(formatEthereumAddress(value as string));
-    //     }
-    //   }
-    // }
-    // body.name = values.name.trim();
-    // body.description =
-    //   values.description !== "" ? values.description.trim() : null;
-    // body.endsAt = zonedTimeToUtc(values.endsAt, getTimezone());
-    // body.maxUserSubmissions = parseInt(values.maxUserSubmissions);
-    // body.curators = curators;
-    // const rewards = this.getRewardItems(values);
-    // body.rewards = rewards;
-    // return Http.postCompetition(body)
-    //   .then(() => {
-    //     this.isLoading = false;
-    //     this.currentView = CreateCompetitionView.Success;
-    //   })
-    //   .catch((e) => {
-    //     this.isLoading = false;
-    //     throw e;
-    //   });
+        );
+      this.competitionReceipt = compReceiptWithCover;
+    }
+    this.isLoading = false;
+    this.currentView = CreateCompetitionView.Success;
   }
 
   @computed

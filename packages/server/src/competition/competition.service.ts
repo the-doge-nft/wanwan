@@ -130,10 +130,11 @@ export class CompetitionService {
 
   async updateCoverImage(file: Express.Multer.File, id: number, creator: User) {
     const media = await this.media.create(file, creator.id);
-    return this.prisma.competition.update({
+    const comp = await this.prisma.competition.update({
       where: { id },
       data: { coverMediaId: media.id },
     });
+    return this.findFirst({ where: { id: comp.id } });
   }
 
   private async upsertRewards(competition: Competition, rewards: RewardsDto[]) {

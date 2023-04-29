@@ -10,6 +10,7 @@ import DetailsView from "./DetailsView";
 import NameView from "./NameView";
 import ReviewView from "./ReviewView";
 import RewardsView from "./RewardsView";
+import SuccessView from "./SuccessView";
 import VotersView from "./VotersView";
 
 export interface CompetitionStoreProp {
@@ -40,6 +41,9 @@ const CreateCompetition = observer(({ store }: CompetitionStoreProp) => {
       {store.currentView === CreateCompetitionView.Review && (
         <ReviewView store={store} />
       )}
+      {store.currentView === CreateCompetitionView.Success && (
+        <SuccessView store={store} />
+      )}
     </>
   );
 });
@@ -49,13 +53,18 @@ export const Buttons = observer(
     store,
     submitLabel,
     canGoNext = true,
-  }: CompetitionStoreProp & { canGoNext?: boolean; submitLabel?: string }) => {
+    isLoading = false,
+  }: CompetitionStoreProp & {
+    canGoNext?: boolean;
+    submitLabel?: string;
+    isLoading?: boolean;
+  }) => {
     return (
       <div className={css("w-full", "flex", "gap-2", "mt-4")}>
-        <Button block onClick={() => store.goBack()}>
+        <Button block onClick={() => store.goBack()} isLoading={isLoading}>
           Back
         </Button>
-        <Submit block disabled={!canGoNext}>
+        <Submit block disabled={!canGoNext} isLoading={isLoading}>
           {submitLabel ? submitLabel : "Next"}
         </Submit>
       </div>

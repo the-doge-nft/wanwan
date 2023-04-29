@@ -105,7 +105,11 @@ const ReviewView = observer(({ store }: ReviewViewProps) => {
         </Pane>
       )}
       <Form onSubmit={async () => store.onCompetitionSubmit()}>
-        <Buttons store={store} submitLabel={"Submit"} />
+        <Buttons
+          store={store}
+          submitLabel={"Submit"}
+          isLoading={store.isLoading}
+        />
       </Form>
     </div>
   );
