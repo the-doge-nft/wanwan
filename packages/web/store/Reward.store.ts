@@ -59,16 +59,22 @@ export default class RewardStore {
 
   @computed
   get contractWriteConfig() {
+    if (this.reward.currency.type === TokenType.ETH) {
+      return null;
+    }
     return {
       address: this.reward.currency.contractAddress as Address,
-      abi: this.contractInfo.abi,
-      functionName: this.contractInfo.method,
-      args: this.contractInfo.args,
+      abi: this.contractInfo!.abi,
+      functionName: this.contractInfo!.method,
+      args: this.contractInfo!.args,
     };
   }
 
   @computed
   get contractInfo() {
+    if (this.reward.currency.type === TokenType.ETH) {
+      return null;
+    }
     return this.tokenTypeToContract[this.reward.currency.type];
   }
 
@@ -81,5 +87,10 @@ export default class RewardStore {
       txId,
       rewardId: this.reward.id,
     });
+  }
+
+  @computed
+  get tokenType() {
+    return this.reward.currency.type;
   }
 }

@@ -139,7 +139,9 @@ const Toolbar = observer(
           </ToolbarItem>
           <ToolbarItem
             isActive={editor?.isActive("link")}
-            onClick={() => editor?.chain().focus().toggleLink().run()}
+            // TODO: Add link support
+            // onClick={() => editor?.chain().focus().toggleLink().run()}
+            onClick={() => {}}
           >
             <Text>
               <AiOutlineLink />
