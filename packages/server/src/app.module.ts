@@ -32,6 +32,7 @@ import { TwitterController } from './twitter/twitter.controller';
 import { TwitterService } from './twitter/twitter.service';
 import { UserService } from './user/user.service';
 import { VoteService } from './vote/vote.service';
+import { CompetitionVotingRuleService } from './competition-voting-rule/competition-voting-rule.service';
 
 @Module({
   imports: [
@@ -97,6 +98,7 @@ import { VoteService } from './vote/vote.service';
     CacheService,
     AppService,
     TwitterService,
+    CompetitionVotingRuleService,
   ],
 })
 export class AppModule {}

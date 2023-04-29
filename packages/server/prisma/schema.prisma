@@ -74,8 +74,8 @@ model CompetitionVotingRule {
   deletedAt     DateTime?
   competitionId Int
   competition   Competition @relation(fields: [competitionId], references: [id])
-  curencyId     Int
-  currency      Currency    @relation(fields: [curencyId], references: [id])
+  currencyId    Int
+  currency      Currency    @relation(fields: [currencyId], references: [id])
 }
 
 model CompeitionCurator {
@@ -175,7 +175,7 @@ model Reward {
 model Currency {
   id                    Int                     @id @default(autoincrement())
   type                  TokenType
-  contractAddress       String                  @unique
+  contractAddress       String?                 @unique
   decimals              Int
   symbol                String?
   name                  String?

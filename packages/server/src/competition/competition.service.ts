@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { Competition, Prisma, User } from '@prisma/client';
+import { Competition, Prisma, TokenType, User } from '@prisma/client';
 import { TokenMetadataResponse } from 'alchemy-sdk';
 import { BigNumber } from 'ethers';
-import { MediaService } from 'src/media/media.service';
+import { CompetitionVotingRuleService } from '../competition-voting-rule/competition-voting-rule.service';
 import { CurrencyService } from '../currency/currency.service';
 import { CompetitionDto, RewardsDto } from '../dto/competition.dto';
 import { CompetitionWithDefaultInclude } from '../interface';
+import { MediaService } from '../media/media.service';
 import { AlchemyService } from './../alchemy/alchemy.service';
 import { CompetitionCuratorService } from './../competition-curator/competition-curator.service';
 import { PrismaService } from './../prisma.service';
@@ -28,6 +29,7 @@ export class CompetitionService {
     private readonly media: MediaService,
     private readonly alchemy: AlchemyService,
     private readonly user: UserService,
+    private readonly votingRule: CompetitionVotingRuleService,
   ) {}
 
   private get defaultInclude(): Prisma.CompetitionInclude {
@@ -43,7 +45,11 @@ export class CompetitionService {
         },
       },
       user: true,
-      votingRule: true,
+      votingRule: {
+        include: {
+          currency: true,
+        },
+      },
       coverMedia: true,
     };
   }
@@ -93,6 +99,53 @@ export class CompetitionService {
         data: { ...competition, createdById: creator.id },
         include: this.defaultInclude,
       });
+
+      for (const voter of voters) {
+        let currency = await this.currency.findFirst({
+          where: { type: voter.type, contractAddress: voter.contractAddress },
+        });
+
+        // @next -- move this logic elsewhere
+        if (!currency) {
+          if (voter.type !== TokenType.ETH) {
+            const metadata = await this.alchemy.getTokenMetadata(
+              voter.contractAddress,
+            );
+            let decimals = 1;
+            if (voter.type === TokenType.ERC20) {
+              decimals = (metadata as TokenMetadataResponse).decimals;
+            }
+
+            currency = await this.currency.create({
+              data: {
+                type: voter.type,
+                contractAddress: voter.contractAddress,
+                symbol: metadata.symbol,
+                name: metadata.name,
+                decimals,
+              },
+            });
+          } else if (voter.type === TokenType.ETH) {
+            currency = await this.currency.create({
+              data: {
+                type: voter.type,
+                contractAddress: null,
+                symbol: 'ETH',
+                name: 'Ether',
+                decimals: 18,
+              },
+            });
+          }
+        }
+
+        await this.votingRule.create({
+          data: {
+            competitionId: comp.id,
+            currencyId: currency.id,
+          },
+        });
+      }
+
       await this.competitionCurator.upsert(
         comp.id,
         Array.from(new Set([...curators, creator.address])),

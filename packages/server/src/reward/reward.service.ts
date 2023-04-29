@@ -21,6 +21,8 @@ export class RewardService {
         promises.push(this.getIsERC20RewardValid(address, reward));
       } else if (type === TokenType.ERC1155 || type === TokenType.ERC721) {
         promises.push(this.getIsNftRewardValid(address, reward));
+      } else if (type === TokenType.ETH) {
+        promises.push(this.getIsETHRewardValid(address, reward));
       } else {
         throw new Error('Token type invalid');
       }
@@ -59,6 +61,10 @@ export class RewardService {
       `querying nft reward balance -- [user::${address} contract::${contractAddress} tokenId::${tokenId}]    balance::${balance} >= amount::${reward.currency.amount}`,
     );
     return balance >= parseInt(reward.currency.amount);
+  }
+
+  private async getIsETHRewardValid(address: string, reward: RewardsDto) {
+    return false;
   }
 
   upsert(args: Prisma.RewardUpsertArgs) {

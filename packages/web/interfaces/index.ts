@@ -62,7 +62,15 @@ export interface RewardBody {
   };
 }
 
-export interface VotingRule {}
+export interface CompetitionVotingRule {
+  id: number;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: Nullable<string>;
+  competitionId: number;
+  currencyId: number;
+  currency: Currency;
+}
 
 export interface Competition {
   id: number;
@@ -78,7 +86,7 @@ export interface Competition {
   curators: User[];
   rewards: Reward[];
   user: User;
-  votingRule: VotingRule[];
+  votingRule: CompetitionVotingRule[];
 }
 
 export interface Vote {

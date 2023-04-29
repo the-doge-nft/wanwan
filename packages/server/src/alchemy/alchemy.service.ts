@@ -70,25 +70,20 @@ export class AlchemyService {
       contractAddresses: [contractAddress],
       pageSize,
     });
-    this.logger.log('got inital nfts', balance.ownedNfts.length);
     pageKey = balance.pageKey;
     nfts = nfts.concat(balance.ownedNfts);
 
     // to optimize -- check if balance is in here before concating
     while (pageKey) {
-      this.logger.log('querying for next page nfts');
       const nextBalance = await this.alchemy.nft.getNftsForOwner(ownerAddress, {
         contractAddresses: [contractAddress],
         pageKey,
         pageSize,
       });
       nfts = [...nfts, ...nextBalance.ownedNfts];
-      this.logger.log('got nfts', nfts.length);
       pageKey = nextBalance.pageKey;
     }
-    console.log(nfts.map((item) => item.tokenId));
     const tokenIdBalance = nfts.filter((item) => {
-      console.log(item.tokenId, tokenId);
       return item.tokenId === tokenId;
     })?.[0]?.balance;
     return tokenIdBalance || 0;

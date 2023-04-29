@@ -5,7 +5,12 @@ import CompetitionSubmissions from "../../components/CompetitionById/Competition
 import CompetitionUserSubmissions from "../../components/CompetitionById/CompetitionUserSubmissions";
 import { CollapsablePane, PaneType } from "../../components/DSL/Pane/Pane";
 import { css } from "../../helpers/css";
-import { Competition, CompetitionMeme } from "../../interfaces";
+import {
+  Competition,
+  CompetitionMeme,
+  CompetitionVotingRule,
+  TokenType,
+} from "../../interfaces";
 import AppLayout from "../../layouts/App.layout";
 import Http from "../../services/http";
 import redirectTo404 from "../../services/redirect/404";
@@ -16,9 +21,10 @@ import CompetitionRewards from "../../components/CompetitionById/CompetitionRewa
 import CompetitionStats from "../../components/CompetitionById/CompetitionStats";
 import CompetitionSubmit from "../../components/CompetitionById/CompetitionSubmit";
 import CurateModal from "../../components/CompetitionById/CurateModal";
+import Link from "../../components/DSL/Link/Link";
 import Text, { TextType } from "../../components/DSL/Text/Text";
 import TipTapEditor from "../../components/TipTapEditor/TipTapEditor";
-import { jsonify } from "../../helpers/strings";
+import { getEtherscanURL } from "../../helpers/strings";
 
 interface CompetitionByIdProps {
   competition: Competition;
@@ -89,8 +95,12 @@ const CompetitionById: React.FC<CompetitionByIdProps> = observer(
             isExpanded={true}
             onChange={() => {}}
           >
-            {/* @next -- we need to add voting rule saving on the backend */}
-            {jsonify(store.competition.votingRule)}
+            {store.competition.votingRule.map((rule) => (
+              <VotingRuleItem
+                key={`voting-rule-${rule.currency.contractAddress}`}
+                rule={rule}
+              />
+            ))}
           </CollapsablePane>
           <CollapsablePane
             title={`Rewards`}
@@ -160,6 +170,25 @@ const CompetitionById: React.FC<CompetitionByIdProps> = observer(
     );
   }
 );
+
+interface VotingRuleItemProps {
+  rule: CompetitionVotingRule;
+}
+
+const VotingRuleItem = ({ rule }: VotingRuleItemProps) => {
+  const type = rule.currency.type;
+  let name = rule.currency.name;
+  let url = getEtherscanURL(rule.currency.contractAddress, "token");
+  if (type === TokenType.ERC1155 || type === TokenType.ERC721) {
+    url = getEtherscanURL(rule.currency.contractAddress, "token");
+  }
+  return (
+    <div className={css("flex", "items-center", "gap-2")}>
+      <Link isExternal href={url} />
+      <Text>{name}</Text>
+    </div>
+  );
+};
 
 export const getServerSideProps: GetServerSideProps<
   CompetitionByIdProps

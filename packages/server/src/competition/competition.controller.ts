@@ -133,9 +133,9 @@ export class CompetitionController {
     }
 
     // @next -- lookup custom voting rules
-    if (!(await this.alchemy.getIsPixelHolder(user.address))) {
-      throw new BadRequestException('You must hold a Doge Pixel to vote');
-    }
+    // if (!(await this.alchemy.getIsPixelHolder(user.address))) {
+    //   throw new BadRequestException('You must hold a Doge Pixel to vote');
+    // }
 
     return this.vote.vote({
       ...vote,

@@ -10,7 +10,11 @@ export type CompetitionWithDefaultInclude = Prisma.CompetitionGetPayload<{
     rewards: { include: { currency: true } };
     user: true;
     coverMedia: true;
-    votingRule: true;
+    votingRule: {
+      include: {
+        currency: true;
+      };
+    };
   };
 }>;
 
