@@ -74,7 +74,11 @@ const Link: React.FC<LinkProps> = ({
           )}
         </a>
       ) : (
-        <NextLink href={href} className={css(styles)} onClick={onClick}>
+        <NextLink
+          href={href}
+          className={css(styles, "inline")}
+          onClick={onClick}
+        >
           {children}
         </NextLink>
       )}

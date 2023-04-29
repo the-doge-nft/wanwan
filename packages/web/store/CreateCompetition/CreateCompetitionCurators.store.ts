@@ -37,4 +37,9 @@ export default class CreateCompetitionCuratorsStore {
   destroy() {
     this.curators.forEach((curator) => curator.destroy());
   }
+
+  @computed
+  get hasCurators() {
+    return this.curators.length > 0;
+  }
 }

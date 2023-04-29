@@ -18,13 +18,13 @@ const CompetitionPreviewLink = ({
         <AspectRatio
           className={css("bg-cover", "bg-center", "bg-no-repeat", "h-full")}
           ratio={
-            competition?.media
-              ? `${competition.media.width}/${competition.media.height}`
+            competition?.coverMedia
+              ? `${competition.coverMedia.width}/${competition.coverMedia.height}`
               : "1/1"
           }
           style={
-            competition.media
-              ? { backgroundImage: `url(${competition.media.url})` }
+            competition.coverMedia
+              ? { backgroundImage: `url(${competition.coverMedia.url})` }
               : {}
           }
         >

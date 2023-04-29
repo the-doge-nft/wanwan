@@ -171,4 +171,12 @@ export default class RewardInputStore {
       this.tokenType !== null
     );
   }
+
+  @computed
+  get thumbnail() {
+    if (!this.selectedNft) {
+      return null;
+    }
+    return this.selectedNft?.media?.[0]?.thumbnail;
+  }
 }

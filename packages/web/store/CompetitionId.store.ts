@@ -42,6 +42,9 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
   isCurateModalOpen = false;
 
   @observable
+  showTitle = true;
+
+  @observable
   private _memeIdToCurate?: number;
 
   @observable

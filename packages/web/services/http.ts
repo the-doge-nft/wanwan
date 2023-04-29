@@ -67,6 +67,12 @@ class _Http {
     });
   }
 
+  updateCompetitionCoverPhoto(id: number, file: File) {
+    const formData = new FormData();
+    formData.append("file", file);
+    return this.http.post<Competition>(`/competition/${id}/cover`, formData);
+  }
+
   postMedia(formData: FormData) {
     return this.http.post<Media>("/media", formData);
   }

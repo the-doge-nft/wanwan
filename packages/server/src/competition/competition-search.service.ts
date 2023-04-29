@@ -31,12 +31,8 @@ export class CompetitionSearchService extends Search<
     builder.include('curators', { include: { user: true } });
     builder.include('rewards', { include: { currency: true } });
     builder.include('user', true);
-    builder.include('submissions', {
-      where: { deletedAt: null },
-      include: { meme: { include: { media: true } } },
-      orderBy: { createdAt: 'asc' },
-      take: 1,
-    });
+    builder.include('coverMedia', true);
+    builder.include('votingRule', true);
   }
 
   onCustomKeyFilter(filter, builder) {

@@ -7,16 +7,11 @@ import ActivePill from "../ActivePill/ActivePill";
 import Link, { LinkType } from "../DSL/Link/Link";
 import Text, { TextSize } from "../DSL/Text/Text";
 
-const CompetitionDetails: React.FC<{ store: CompetitionByIdStore }> = observer(
+const CompetitionStats: React.FC<{ store: CompetitionByIdStore }> = observer(
   ({ store }) => {
     return (
       <>
         <div className={css("flex", "flex-col", "gap-4", "flex-wrap")}>
-          {store.competition.description && (
-            <div>
-              <Text size={TextSize.sm}>{store.competition.description}</Text>
-            </div>
-          )}
           <div
             className={css(
               "grid",
@@ -70,9 +65,11 @@ const Detail = ({ label, children }: DetailProps) => {
       <Text size={TextSize.sm} bold>
         {label}
       </Text>
-      <Text size={TextSize.sm}>{children}</Text>
+      <Text ellipses size={TextSize.sm}>
+        {children}
+      </Text>
     </div>
   );
 };
 
-export default CompetitionDetails;
+export default CompetitionStats;

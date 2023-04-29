@@ -9,11 +9,8 @@ export type CompetitionWithDefaultInclude = Prisma.CompetitionGetPayload<{
     curators: { include: { user: true } };
     rewards: { include: { currency: true } };
     user: true;
-    submissions: {
-      include: { meme: { include: { media: true } } };
-      orderBy: { createdAt: 'asc' };
-      take: 1;
-    };
+    coverMedia: true;
+    votingRule: true;
   };
 }>;
 

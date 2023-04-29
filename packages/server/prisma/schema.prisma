@@ -50,20 +50,32 @@ model Meme {
 }
 
 model Competition {
-  id                 Int                 @id @default(autoincrement())
+  id                 Int                     @id @default(autoincrement())
   name               String
   description        String?
   maxUserSubmissions Int
   endsAt             DateTime
-  createdAt          DateTime            @default(now())
-  updatedAt          DateTime            @default(now())
+  createdAt          DateTime                @default(now())
+  updatedAt          DateTime                @default(now())
   createdById        Int
   coverMediaId       Int?
-  coverMedia         Media?              @relation(fields: [coverMediaId], references: [id])
-  user               User                @relation(fields: [createdById], references: [id])
+  coverMedia         Media?                  @relation(fields: [coverMediaId], references: [id])
+  user               User                    @relation(fields: [createdById], references: [id])
   submissions        Submission[]
   rewards            Reward[]
   curators           CompeitionCurator[]
+  votingRule         CompetitionVotingRule[]
+}
+
+model CompetitionVotingRule {
+  id            Int         @id @default(autoincrement())
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @default(now())
+  deletedAt     DateTime?
+  competitionId Int
+  competition   Competition @relation(fields: [competitionId], references: [id])
+  curencyId     Int
+  currency      Currency    @relation(fields: [curencyId], references: [id])
 }
 
 model CompeitionCurator {
@@ -161,13 +173,14 @@ model Reward {
 }
 
 model Currency {
-  id              Int       @id @default(autoincrement())
-  type            TokenType
-  contractAddress String    @unique
-  decimals        Int
-  symbol          String?
-  name            String?
-  Reward          Reward[]
+  id                    Int                     @id @default(autoincrement())
+  type                  TokenType
+  contractAddress       String                  @unique
+  decimals              Int
+  symbol                String?
+  name                  String?
+  Reward                Reward[]
+  CompetitionVotingRule CompetitionVotingRule[]
 }
 
 enum SocialPlatform {

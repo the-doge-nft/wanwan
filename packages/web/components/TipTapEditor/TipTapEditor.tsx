@@ -17,12 +17,13 @@ import Underline from "@tiptap/extension-underline";
 import { EditorContent, JSONContent, useEditor } from "@tiptap/react";
 import { useEffect } from "react";
 import { css } from "../../helpers/css";
-import { textFieldBaseStyles } from "../DSL/Input/Input";
+import { textFieldBaseStyles, textFieldBorderStyles } from "../DSL/Input/Input";
 import { LinkType, linkTypeStyles } from "../DSL/Link/Link";
 
 interface TipTapEditorProps {
   content: JSONContent;
   readonly?: boolean;
+  border?: boolean;
 }
 
 export const getTipTapEditorExtensions = () => [
@@ -81,20 +82,27 @@ export const getTipTapEditorExtensions = () => [
   }),
 ];
 
-export const useTipTapEditor = (content: JSONContent | string) => {
+export const useTipTapEditor = (
+  content: JSONContent | string,
+  border?: boolean
+) => {
   return useEditor({
     extensions: getTipTapEditorExtensions(),
     editorProps: {
       attributes: {
-        class: css(textFieldBaseStyles),
+        class: css(textFieldBaseStyles, { [textFieldBorderStyles]: border }),
       },
     },
     content: content,
   });
 };
 
-const TipTapEditor = ({ content, readonly = false }: TipTapEditorProps) => {
-  const editor = useTipTapEditor(content);
+const TipTapEditor = ({
+  content,
+  readonly = false,
+  border = true,
+}: TipTapEditorProps) => {
+  const editor = useTipTapEditor(content, border);
   useEffect(() => {
     if (readonly) {
       editor?.setEditable(false);

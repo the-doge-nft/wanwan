@@ -11,10 +11,13 @@ import Http from "../../services/http";
 import redirectTo404 from "../../services/redirect/404";
 import { default as CompetitionByIdStore } from "../../store/CompetitionId.store";
 
-import CompetitionDetails from "../../components/CompetitionById/CompetitionDetails";
+import Image from "next/image";
 import CompetitionRewards from "../../components/CompetitionById/CompetitionRewards";
+import CompetitionStats from "../../components/CompetitionById/CompetitionStats";
 import CompetitionSubmit from "../../components/CompetitionById/CompetitionSubmit";
 import CurateModal from "../../components/CompetitionById/CurateModal";
+import Text, { TextType } from "../../components/DSL/Text/Text";
+import TipTapEditor from "../../components/TipTapEditor/TipTapEditor";
 
 interface CompetitionByIdProps {
   competition: Competition;
@@ -38,15 +41,49 @@ const CompetitionById: React.FC<CompetitionByIdProps> = observer(
       <AppLayout>
         <div className={css("flex", "flex-col", "gap-2")}>
           <CollapsablePane
+            onChange={(value) => (store.showTitle = value)}
+            isExpanded={store.showTitle}
+            title={
+              <div className={css("flex", "items-center", "gap-2")}>
+                {store.competition.coverMedia && (
+                  <div className={css("relative", "w-[25px]", "h-[25px]")}>
+                    <Image
+                      fill
+                      alt={store.competition.name}
+                      src={store.competition.coverMedia.url}
+                      style={{ objectFit: "contain" }}
+                    />
+                  </div>
+                )}
+                <Text>{store.competition.name}</Text>
+              </div>
+            }
+          >
+            {store.competition.description && (
+              <div className={css("grow")}>
+                <TipTapEditor
+                  border={false}
+                  readonly
+                  content={JSON.parse(store.competition.description)}
+                />
+              </div>
+            )}
+            {!store.competition.description && (
+              <div className={css("text-center", "p-4")}>
+                <Text type={TextType.Grey}>No description</Text>
+              </div>
+            )}
+          </CollapsablePane>
+          <CollapsablePane
             type={PaneType.Secondary}
-            title={store.competition.name}
+            title={"Stats"}
             onChange={(val) => (store.showDetails = val)}
             isExpanded={store.showDetails}
           >
-            <CompetitionDetails store={store} />
+            <CompetitionStats store={store} />
           </CollapsablePane>
           <CollapsablePane
-            title={`Rewards: (${store.rewards.length})`}
+            title={`Rewards`}
             type={PaneType.Secondary}
             isExpanded={store.showRewards}
             onChange={(val) => (store.showRewards = val)}
@@ -96,15 +133,19 @@ const CompetitionById: React.FC<CompetitionByIdProps> = observer(
             </div>
           </div>
         </div>
-        {store.isCurateModalOpen && store.memeToCurate && <CurateModal 
-          onConfirm={() => {
-            store.runThenRefreshMemes(() => store.hideSubmission()).then(() => store.isCurateModalOpen = false)
-          }} 
-          onChange={(isOpen) => store.isCurateModalOpen = isOpen} 
-          isOpen={store.isCurateModalOpen} 
-          competition={store.competition} 
-          meme={store.memeToCurate}
-        />}
+        {store.isCurateModalOpen && store.memeToCurate && (
+          <CurateModal
+            onConfirm={() => {
+              store
+                .runThenRefreshMemes(() => store.hideSubmission())
+                .then(() => (store.isCurateModalOpen = false));
+            }}
+            onChange={(isOpen) => (store.isCurateModalOpen = isOpen)}
+            isOpen={store.isCurateModalOpen}
+            competition={store.competition}
+            meme={store.memeToCurate}
+          />
+        )}
       </AppLayout>
     );
   }

@@ -12,13 +12,13 @@ import {
   IsString,
   Max,
   Min,
-  registerDecorator,
   Validate,
   ValidateNested,
   ValidationArguments,
   ValidationOptions,
   ValidatorConstraint,
   ValidatorConstraintInterface,
+  registerDecorator,
 } from 'class-validator';
 import { BigNumber } from 'ethers';
 import {
@@ -94,11 +94,21 @@ function IsNumberStringGreaterThan(
   };
 }
 
+class VoterDto {
+  @IsNotEmpty()
+  @IsEnum(TokenType)
+  type: TokenType;
+
+  @IsString()
+  contractAddress: string;
+}
+
 class CurrencyDto {
   @IsNotEmpty()
   @IsEnum(TokenType)
   type: TokenType;
 
+  // @next -- needs to be updated to handle ETH rewards
   @IsNotEmpty()
   @IsString()
   contractAddress: string;
@@ -162,4 +172,10 @@ export class CompetitionDto {
   @Validate(UniqueCompetitionRank)
   @Type(() => RewardsDto)
   rewards: RewardsDto[];
+
+  @IsNotEmpty()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => VoterDto)
+  voters: VoterDto[];
 }

@@ -4,13 +4,20 @@ import {
   Controller,
   Get,
   Logger,
+  MaxFileSizeValidator,
   Param,
+  ParseFilePipe,
   Post,
   Query,
   Req,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { Request } from 'express';
+import { MediaService } from 'src/media/media.service';
+import MemeMediaFileValidator from 'src/validator/meme-media-file.validator';
 import { AlchemyService } from '../alchemy/alchemy.service';
 import { AuthGuard } from '../auth/auth.guard';
 import { CompetitionDto } from '../dto/competition.dto';
@@ -59,6 +66,31 @@ export class CompetitionController {
       .catch((e) => {
         throw new BadRequestException(e.message);
       });
+  }
+
+  @Post('/:id/cover')
+  @UseGuards(AuthGuard)
+  @UseInterceptors(
+    FileInterceptor(MediaService.FILE_NAME, {
+      dest: MediaService.FILE_UPLOAD_PATH,
+    }),
+  )
+  async postCoverImage(
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MemeMediaFileValidator(),
+          new MaxFileSizeValidator({
+            maxSize: MediaService.MAX_SIZE_MEDIA_BYTES,
+          }),
+        ],
+      }),
+    )
+    file: Express.Multer.File,
+    @Req() { user }: AuthenticatedRequest,
+    @Param() { id }: IdDto,
+  ) {
+    return this.competition.updateCoverImage(file, id, user);
   }
 
   @Get('/')

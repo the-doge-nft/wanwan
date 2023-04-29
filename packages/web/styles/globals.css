@@ -122,10 +122,10 @@ body {
 }
 
 .ProseMirror {
-    min-height: 8em;
+    min-height: min-content;
     max-height: 45em;
     overflow-y: auto;
-    resize: vertical;
+    /* resize: vertical; */
 }
 
 /* needed for tiptap bulleted lists */

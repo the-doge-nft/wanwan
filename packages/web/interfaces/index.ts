@@ -72,7 +72,7 @@ export interface Competition {
   updatedAt: DatetimeString;
   createdById: number;
   isActive: boolean;
-  media?: Media;
+  coverMedia?: Media;
   curators: User[];
   rewards: Reward[];
   user: User;

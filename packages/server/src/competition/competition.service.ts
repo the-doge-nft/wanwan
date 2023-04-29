@@ -43,13 +43,8 @@ export class CompetitionService {
         },
       },
       user: true,
-      // grab the first submission for the cover image for the competiiton
-      submissions: {
-        where: { deletedAt: null },
-        include: { meme: { include: { media: true } } },
-        orderBy: { createdAt: 'desc' },
-        take: 1,
-      },
+      votingRule: true,
+      coverMedia: true,
     };
   }
 
@@ -57,14 +52,12 @@ export class CompetitionService {
     if (competition === null) {
       return null;
     }
-    const media = competition?.submissions[0]?.meme?.media;
     return {
       ...competition,
       curators: competition?.curators.map((item) => item.user),
       user: await this.user.addExtra(competition.user),
-      media: media ? this.media.addExtra(media) : undefined,
-      submissions: undefined,
       isActive: new Date(competition.endsAt) > new Date(),
+      coverMedia: this.media.addExtra(competition.coverMedia),
     };
   }
 
@@ -84,6 +77,7 @@ export class CompetitionService {
     curators,
     creator,
     rewards,
+    voters,
     ...competition
   }: CompetitionDto & { creator: User }) {
     const isRewardsValid = await this.reward.getIsAddressCustodyingRewards(
@@ -111,6 +105,14 @@ export class CompetitionService {
       // since we rely on external apis in upsertRewards -- we delete the comp if it doesnt work here???
       throw new Error('TODO HOW SHOULD WE HANDLE HERE');
     }
+  }
+
+  async updateCoverImage(file: Express.Multer.File, id: number, creator: User) {
+    const media = await this.media.create(file, creator.id);
+    return this.prisma.competition.update({
+      where: { id },
+      data: { coverMediaId: media.id },
+    });
   }
 
   private async upsertRewards(competition: Competition, rewards: RewardsDto[]) {

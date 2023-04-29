@@ -61,15 +61,16 @@ const CreateCompetition = observer(({ store }: CompetitionStoreProp) => {
 export const Buttons = observer(
   ({
     store,
+    submitLabel,
     canGoNext = true,
-  }: CompetitionStoreProp & { canGoNext?: boolean }) => {
+  }: CompetitionStoreProp & { canGoNext?: boolean; submitLabel?: string }) => {
     return (
       <div className={css("w-full", "flex", "gap-2", "mt-4")}>
         <Button block onClick={() => store.goBack()}>
           Back
         </Button>
         <Submit block disabled={!canGoNext}>
-          Next
+          {submitLabel ? submitLabel : "Next"}
         </Submit>
       </div>
     );

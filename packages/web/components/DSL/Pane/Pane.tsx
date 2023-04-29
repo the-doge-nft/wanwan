@@ -96,7 +96,13 @@ export const CollapsablePane: React.FC<
         className={css("cursor-pointer")}
         onClick={() => onChange(!isExpanded)}
       >
-        <Text type={TextType.White}>
+        <Text
+          type={
+            rest.type === PaneType.Primary || !rest.type
+              ? TextType.Primary
+              : TextType.White
+          }
+        >
           {isExpanded ? (
             <AiOutlineMinus size={16} />
           ) : (

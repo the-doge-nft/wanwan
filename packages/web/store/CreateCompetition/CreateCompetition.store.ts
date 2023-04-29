@@ -1,8 +1,10 @@
 import { JSONContent } from "@tiptap/react";
 import { AxiosResponse } from "axios";
 import { add } from "date-fns";
+import { zonedTimeToUtc } from "date-fns-tz";
 import { computed, makeObservable, observable } from "mobx";
 import { dateToDateTimeLocalInput } from "../../components/DSL/Form/DateInput";
+import { getTimezone } from "../../helpers/dates";
 import { Media, Nullable, Wallet } from "../../interfaces/index";
 import Http from "../../services/http";
 import { Constructor, EmptyClass } from "../../services/mixins/index";
@@ -76,7 +78,58 @@ export default class CreateCompetitionStore extends Navigable<
     this.curatorStore.destroy();
   }
 
-  onCompetitionSubmit(values: any) {
+  onCompetitionSubmit() {
+    // endsAt
+    // maxUserSubmissions
+    // curators
+    // rewards
+    // voters
+    /////////////////////////////////////////////////////////////////////
+    const body: { [key: string]: any } = {};
+    this.isLoading = true;
+    body.name = this.name.trim();
+    body.endsAt = zonedTimeToUtc(this.endsAt, getTimezone());
+    body.maxUserSubmissions = Number(this.maxUserSubmissions);
+    if (this.description) {
+      body.description = JSON.stringify(this.description);
+    }
+
+    body.curators = [];
+    this.curatorStore.curators.forEach((store) =>
+      body.curators.push(store.address)
+    );
+
+    body.voters = [];
+    this.votersStore.votingRule.forEach((store) => {
+      body.voters.push({
+        type: store.tokenType,
+        contractAddress: store.contractAddress,
+      });
+    });
+
+    body.rewards = [];
+    this.rewardStore.rewards.forEach((store, index) => {
+      body.rewards.push({
+        competitionRank: index + 1,
+        currency: {
+          type: store.tokenType,
+          contractAddress: store.contractAddress,
+          tokenId: store.tokenId,
+          amount: store.amount,
+        },
+      });
+    });
+    return Http.postCompetition(body).then(({ data }) => {
+      if (this.coverImageFile) {
+        return Http.updateCompetitionCoverPhoto(
+          data.id,
+          this.coverImageFile
+        ).finally(() => (this.isLoading = false));
+      } else {
+        this.isLoading = false;
+      }
+    });
+
     // this.isLoading = true;
     // const formValues = { ...values };
     // const curators: string[] = [];

@@ -59,7 +59,7 @@ const RewardsView = observer(({ store }: RewardsViewProps) => {
         </Button>
       </div>
       <Form onSubmit={async () => store.onRewardsSubmit()}>
-        <Buttons store={store} />
+        <Buttons store={store} canGoNext={store.rewardStore.allConfirmed} />
       </Form>
     </>
   );

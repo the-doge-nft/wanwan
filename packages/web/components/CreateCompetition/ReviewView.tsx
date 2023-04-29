@@ -1,6 +1,13 @@
 import { observer } from "mobx-react-lite";
 import { css } from "../../helpers/css";
-import { abbreviate, getEtherscanURL } from "../../helpers/strings";
+import {
+  abbreviate,
+  getEtherscanURL,
+  getOpenSeaURL,
+} from "../../helpers/strings";
+import { TokenType } from "../../interfaces";
+import AppStore from "../../store/App.store";
+import RewardInputStore from "../../store/CreateCompetition/RewardInput.store";
 import Form from "../DSL/Form/Form";
 import Link from "../DSL/Link/Link";
 import Pane from "../DSL/Pane/Pane";
@@ -36,63 +43,87 @@ const ReviewView = observer(({ store }: ReviewViewProps) => {
           )}
         </Pane>
       )}
+      {store.hasCurators && (
+        <Pane title={"Curators"}>
+          {store.curatorStore.curators.map((store) => (
+            <div
+              key={`curator-input-${store.address}`}
+              className={css("flex", "items-center", "gap-2")}
+            >
+              <Link
+                isExternal
+                href={getEtherscanURL(store.address!, "address")}
+              />
+              <Text>{store.ens ? store.ens : abbreviate(store.address!)}</Text>
+            </div>
+          ))}
+        </Pane>
+      )}
       {store.hasVoters && (
         <Pane title={"Vote Rules"}>
           {store.votersStore.votingRule.map((store) => (
             <div
               key={`voter-input-${store.contractAddress}-${store.tokenType}`}
+              className={css("flex", "items-center", "justify-between")}
             >
-              <Link
-                isExternal
-                href={getEtherscanURL(store.contractAddress!, "token")}
-              >
-                {abbreviate(store.contractAddress!)}
-              </Link>
-            </div>
-          ))}
-        </Pane>
-      )}
-      {store.hasCurators && (
-        <Pane title={"Curators"}>
-          {store.curatorStore.curators.map((store) => (
-            <div key={`curator-input-${store.address}`}>
-              <Link
-                isExternal
-                href={getEtherscanURL(store.address!, "address")}
-              >
-                {abbreviate(store.address!)}
-              </Link>
+              <div className={css("flex", "items-center", "gap-2")}>
+                <Link
+                  isExternal
+                  href={getEtherscanURL(store.contractAddress!, "token")}
+                />
+                {store.name && <Text>{store.name}</Text>}
+              </div>
+              {store.holdersLength && (
+                <Text type={TextType.Grey}>{store.holdersLength} holders</Text>
+              )}
             </div>
           ))}
         </Pane>
       )}
       {store.hasRewards && (
         <Pane title={"Rewards"}>
-          {store.rewardStore.rewards.map((store) => (
-            <RewardItem
-              store={store}
-              key={`reward-input-${store.contractAddress}`}
-            />
-          ))}
+          <div className={css("flex", "flex-col", "gap-1")}>
+            {store.rewardStore.rewards.map((store, index) => (
+              <div
+                key={`reward-input-${store.contractAddress}`}
+                className={css("flex", "items-center", "gap-2", "w-full")}
+              >
+                <Text>{index + 1}</Text>
+                <RewardItem store={store} />
+              </div>
+            ))}
+          </div>
         </Pane>
       )}
-
-      <Form onSubmit={async () => {}}>
-        <Buttons store={store} />
+      <Form onSubmit={async () => store.onCompetitionSubmit()}>
+        <Buttons store={store} submitLabel={"Submit"} />
       </Form>
     </div>
   );
 });
 
-const RewardItem = ({ store }: any) => {
+const RewardItem = observer(({ store }: { store: RewardInputStore }) => {
   return (
-    <div>
-      <Link isExternal href={getEtherscanURL(store.contractAddress!, "token")}>
-        {abbreviate(store.contractAddress!)}
-      </Link>
-      {store.isNFT && <img src={store.selectedNft?.media?.[0]?.thumbnail} />}
+    <div className={css("flex", "justify-between", "grow")}>
+      <div className={css("flex", "items-center", "gap-2")}>
+        <Link
+          isExternal
+          href={
+            store.isNFT
+              ? getOpenSeaURL(store.contractAddress!, store.tokenId!)
+              : store.tokenType === TokenType.ETH
+              ? getEtherscanURL(AppStore.auth.address!, "address")
+              : getEtherscanURL(store.contractAddress!, "token")
+          }
+        />
+        <Text>{store.name}</Text>
+      </div>
+      {!store.isNFT && <Text>{store.amount}</Text>}
+      {store.isNFT && store.thumbnail && (
+        <img width={40} src={store.thumbnail} />
+      )}
     </div>
   );
-};
+});
 
 export default ReviewView;
