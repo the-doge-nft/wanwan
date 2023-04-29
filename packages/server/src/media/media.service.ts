@@ -16,6 +16,20 @@ export class MediaService {
   static FILE_NAME = 'file';
 
   private awsRegion: string;
+  private cdnPrefix: string;
+
+  constructor(
+    private readonly s3: S3Service,
+    private readonly prisma: PrismaService,
+    private readonly config: ConfigService<Config>,
+  ) {
+    this.awsRegion = this.config.get('aws').region;
+    if (this.config.get('isProd')) {
+      this.cdnPrefix = 'media.wanwan.me';
+    } else {
+      this.cdnPrefix = 'd2ajgff3y4gfea.cloudfront.net';
+    }
+  }
 
   private getFileName(file: Express.Multer.File, createdById: number) {
     return `${createdById}-${file.filename}-${
@@ -26,7 +40,7 @@ export class MediaService {
   private getS3Url(media: Media) {
     // @next CDN
     // https://dev-meme-media.s3.us-east-2.amazonaws.com/1-0cd6cce944fddb2e285dca0acd8103c2-2023-01-06.jpeg
-    return `https://${media.s3BucketName}.s3.${this.awsRegion}.amazonaws.com/${media.filename}`;
+    return `https://${this.cdnPrefix}/${media.filename}`;
   }
 
   addExtra(item: Media | null): MediaWithExtras | null {
@@ -38,13 +52,6 @@ export class MediaService {
 
   private addExtras(media: Array<Media>) {
     return media.map((item) => this.addExtra(item));
-  }
-  constructor(
-    private readonly s3: S3Service,
-    private readonly prisma: PrismaService,
-    private readonly config: ConfigService<Config>,
-  ) {
-    this.awsRegion = this.config.get('aws').region;
   }
 
   static supportedMedia = [
