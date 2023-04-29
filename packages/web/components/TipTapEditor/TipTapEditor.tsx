@@ -90,7 +90,10 @@ export const useTipTapEditor = (
     extensions: getTipTapEditorExtensions(),
     editorProps: {
       attributes: {
-        class: css(textFieldBaseStyles, { [textFieldBorderStyles]: border }),
+        class: css(textFieldBaseStyles, {
+          [textFieldBorderStyles]: border,
+          "resize-y": border,
+        }),
       },
     },
     content: content,

@@ -25,7 +25,10 @@ import { useTipTapEditor } from "../TipTapEditor/TipTapEditor";
 import { CompetitionStoreProp } from "./CreateCompetition";
 
 const DescriptionView = observer(({ store }: CompetitionStoreProp) => {
-  const editor = useTipTapEditor(store.description ? store.description : "");
+  const editor = useTipTapEditor(
+    store.description ? store.description : "",
+    true
+  );
   return (
     <Form
       onSubmit={async (values: any) => {

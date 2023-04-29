@@ -18,6 +18,7 @@ import CompetitionSubmit from "../../components/CompetitionById/CompetitionSubmi
 import CurateModal from "../../components/CompetitionById/CurateModal";
 import Text, { TextType } from "../../components/DSL/Text/Text";
 import TipTapEditor from "../../components/TipTapEditor/TipTapEditor";
+import { jsonify } from "../../helpers/strings";
 
 interface CompetitionByIdProps {
   competition: Competition;
@@ -46,12 +47,12 @@ const CompetitionById: React.FC<CompetitionByIdProps> = observer(
             title={
               <div className={css("flex", "items-center", "gap-2")}>
                 {store.competition.coverMedia && (
-                  <div className={css("relative", "w-[25px]", "h-[25px]")}>
+                  <div className={css("relative", "w-[20px]", "h-[20px]")}>
                     <Image
                       fill
                       alt={store.competition.name}
                       src={store.competition.coverMedia.url}
-                      style={{ objectFit: "contain" }}
+                      style={{ objectFit: "cover" }}
                     />
                   </div>
                 )}
@@ -81,6 +82,15 @@ const CompetitionById: React.FC<CompetitionByIdProps> = observer(
             isExpanded={store.showDetails}
           >
             <CompetitionStats store={store} />
+          </CollapsablePane>
+          <CollapsablePane
+            type={PaneType.Secondary}
+            title={"Voters"}
+            isExpanded={true}
+            onChange={() => {}}
+          >
+            {/* @next -- we need to add voting rule saving on the backend */}
+            {jsonify(store.competition.votingRule)}
           </CollapsablePane>
           <CollapsablePane
             title={`Rewards`}

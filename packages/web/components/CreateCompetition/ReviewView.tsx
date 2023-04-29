@@ -33,13 +33,22 @@ const ReviewView = observer(({ store }: ReviewViewProps) => {
       </Pane>
       {store.coverImageFile && (
         <Pane title={"Cover Image"}>
-          <img src={URL.createObjectURL(store.coverImageFile)} />
+          <div>
+            <img
+              src={URL.createObjectURL(store.coverImageFile)}
+              className={css("mx-auto")}
+            />
+          </div>
         </Pane>
       )}
       {store.description && (
         <Pane title={"Description"}>
           {store.description && (
-            <TipTapEditor readonly={true} content={store.description} />
+            <TipTapEditor
+              readonly={true}
+              content={store.description}
+              border={false}
+            />
           )}
         </Pane>
       )}
@@ -60,7 +69,7 @@ const ReviewView = observer(({ store }: ReviewViewProps) => {
         </Pane>
       )}
       {store.hasVoters && (
-        <Pane title={"Vote Rules"}>
+        <Pane title={"Voters"}>
           {store.votersStore.votingRule.map((store) => (
             <div
               key={`voter-input-${store.contractAddress}-${store.tokenType}`}

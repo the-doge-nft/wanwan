@@ -1,7 +1,7 @@
 import { Nft } from "alchemy-sdk";
 import { action, computed, makeObservable, observable } from "mobx";
 import { formatWithThousandsSeparators } from "../../helpers/numberFormatter";
-import { isValidEthereumAddress } from "../../helpers/strings";
+import { abbreviate, isValidEthereumAddress } from "../../helpers/strings";
 import { Nullable, TokenType } from "../../interfaces";
 import Http from "../../services/http";
 import { EmptyClass } from "../../services/mixins";
@@ -81,7 +81,11 @@ export default class VoteInputStore extends Reactionable(EmptyClass) {
   setInput(address: string, tokenType: TokenType, name?: Nullable<string>) {
     this.contractAddress = address;
     this.tokenType = tokenType;
-    this.name = name;
+    if (name) {
+      this.name = name;
+    } else {
+      this.name = abbreviate(this.contractAddress);
+    }
     this.getHolders();
     this.getNfts();
   }

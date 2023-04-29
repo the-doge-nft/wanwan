@@ -62,6 +62,8 @@ export interface RewardBody {
   };
 }
 
+export interface VotingRule {}
+
 export interface Competition {
   id: number;
   name: string;
@@ -76,6 +78,7 @@ export interface Competition {
   curators: User[];
   rewards: Reward[];
   user: User;
+  votingRule: VotingRule[];
 }
 
 export interface Vote {

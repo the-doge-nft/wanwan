@@ -64,7 +64,7 @@ export class AlchemyService {
   ) {
     let nfts: OwnedNft[] = [];
     let pageKey: string | undefined | null = null;
-    const pageSize = 1;
+    const pageSize = 100;
 
     const balance = await this.alchemy.nft.getNftsForOwner(ownerAddress, {
       contractAddresses: [contractAddress],
