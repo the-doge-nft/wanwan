@@ -89,19 +89,21 @@ const CompetitionById: React.FC<CompetitionByIdProps> = observer(
           >
             <CompetitionStats store={store} />
           </CollapsablePane>
-          <CollapsablePane
-            type={PaneType.Secondary}
-            title={"Voters"}
-            isExpanded={true}
-            onChange={() => {}}
-          >
-            {store.competition.votingRule.map((rule) => (
-              <VotingRuleItem
-                key={`voting-rule-${rule.currency.contractAddress}`}
-                rule={rule}
-              />
-            ))}
-          </CollapsablePane>
+          {store.hasVoters && (
+            <CollapsablePane
+              type={PaneType.Secondary}
+              title={"Voters"}
+              isExpanded={store.showVoters}
+              onChange={(value) => (store.showVoters = value)}
+            >
+              {store.competition.votingRule.map((rule) => (
+                <VotingRuleItem
+                  key={`voting-rule-${rule.currency.contractAddress}`}
+                  rule={rule}
+                />
+              ))}
+            </CollapsablePane>
+          )}
           <CollapsablePane
             title={`Rewards`}
             type={PaneType.Secondary}

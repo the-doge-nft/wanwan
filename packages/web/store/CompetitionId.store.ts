@@ -45,6 +45,9 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
   showTitle = true;
 
   @observable
+  showVoters = true;
+
+  @observable
   private _memeIdToCurate?: number;
 
   @observable
@@ -316,5 +319,10 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
       competitionId: this.competition.id,
       memeId: this._memeIdToCurate!,
     });
+  }
+
+  @computed
+  get hasVoters() {
+    return this.competition.votingRule.length > 0;
   }
 }
