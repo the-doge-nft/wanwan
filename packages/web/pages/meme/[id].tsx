@@ -113,11 +113,6 @@ const MemeById = observer(({ meme }: MemeByIdProps) => {
                 </Text>
               </Link>
               <div className={css("flex", "items-center", "gap-1.5", "mt-0.5")}>
-                <Link
-                  isExternal
-                  className={css("w-full")}
-                  href={getBingReverseImageSearchURL(store.meme.media.url)}
-                />
                 <span className={css("inline-flex", "items-center", "gap-0.5")}>
                   <button
                     onClick={() => store.toggleLike()}
@@ -144,6 +139,12 @@ const MemeById = observer(({ meme }: MemeByIdProps) => {
                     {store.likes}
                   </Text>
                 </span>
+                <Link
+                  isExternal
+                  type={LinkType.Tertiary}
+                  className={css("w-full")}
+                  href={getBingReverseImageSearchURL(store.meme.media.url)}
+                />
                 <TwitterShareButton url={url} title={title}>
                   <Text type={TextType.Grey}>
                     <BsTwitter size={16} />
