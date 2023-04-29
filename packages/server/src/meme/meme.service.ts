@@ -26,7 +26,6 @@ export class MemeService {
     ...item
   }: MemeWithDefaultInclude): Promise<MemeWithExtras> {
     if (item === null) return null;
-    console.log(MemeLikes);
     return {
       ...item,
       media: this.media.addExtra(item.media),
