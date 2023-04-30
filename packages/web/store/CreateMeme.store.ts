@@ -1,5 +1,6 @@
-import { computed, makeObservable, observable } from "mobx";
+import { action, computed, makeObservable, observable } from "mobx";
 import Router from "next/router";
+import { FileWithPreview } from "../components/DSL/Form/MediaInput";
 import { Meme, Nullable } from "../interfaces";
 import { EmptyClass } from "../services/mixins";
 import { Navigable } from "../services/mixins/navigable";
@@ -13,7 +14,7 @@ export enum CreateMemeView {
 
 export default class CreateMemeStore extends Navigable(EmptyClass) {
   @observable
-  private file: Nullable<File> = null;
+  files: Array<FileWithPreview> = [];
 
   @observable
   meme: Nullable<Meme> = null;
@@ -31,7 +32,7 @@ export default class CreateMemeStore extends Navigable(EmptyClass) {
     this.isSubmitLoading = true;
 
     const formData = new FormData();
-    formData.append("file", this.file!);
+    // formData.append("file", this.files!);
     if (values.name) {
       formData.append("name", values.name);
     }
@@ -46,12 +47,22 @@ export default class CreateMemeStore extends Navigable(EmptyClass) {
     Router.push(`/meme/${data.id}`);
   }
 
-  onFileDrop(file: File) {
-    this.file = file;
+  onDropAccepted(files: Array<File>) {
+    //@ts-ignore
+    const filesWithPreview: FileWithPreview[] = files.map((file) => {
+      return { ...file, preview: URL.createObjectURL(file) };
+    });
+    this.files = this.files.concat(filesWithPreview);
+    console.log("DROP ACCEPTED", files);
   }
 
   onFileClear() {
-    this.file = null;
+    this.files = [];
+  }
+
+  @action
+  removeFile(index: number) {
+    this.files.splice(index, 1);
   }
 
   @computed
@@ -64,5 +75,10 @@ export default class CreateMemeStore extends Navigable(EmptyClass) {
       default:
         return "";
     }
+  }
+
+  @computed
+  get hasFiles() {
+    return this.files.length > 0;
   }
 }

@@ -11,7 +11,7 @@ const CreateMemePage = observer(() => {
   return (
     <AppLayout>
       <div className={css("h-full", "flex", "justify-center", "items-center")}>
-        <div className={css("max-w-lg", "w-full")}>
+        <div className={css("w-full")}>
           <CreateMeme
             store={store}
             formButtons={<Submit block isLoading={store.isSubmitLoading} />}
