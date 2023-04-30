@@ -47,8 +47,14 @@ const LeaderboardPage = observer(({ leaderboard }: LeaderboardPageProps) => {
                   "border-[1px]",
                   "border-black",
                   "dark:border-neutral-700",
-                  { "bg-netural-200 dark:bg-neutral-800": !user.avatar }
+                  {
+                    "bg-netural-200 dark:bg-neutral-800": !user.avatar,
+                    "bg-cover bg-center bg-norepeat": user.avatar,
+                  }
                 )}
+                style={
+                  user.avatar ? { backgroundImage: `url(${user.avatar})` } : {}
+                }
               />
               <Link href={`/profile/${user.address}/meme`}>
                 <Text type={TextType.NoColor}>
