@@ -15,6 +15,9 @@ import { css } from "../../helpers/css";
 import AppStore from "../../store/App.store";
 import CreateMemeStore, { CreateMemeView } from "../../store/CreateMeme.store";
 import AspectRatio from "../DSL/AspectRatio/AspectRatio";
+import Form from "../DSL/Form/Form";
+import { FileWithPreview } from "../DSL/Form/MediaInput";
+import TextInput from "../DSL/Form/TextInput";
 import Pane from "../DSL/Pane/Pane";
 import Text, { TextSize, TextType } from "../DSL/Text/Text";
 
@@ -87,34 +90,12 @@ const CreateMemeForm: React.FC<{
             className={css("grid", "grid-cols-1", "md:grid-cols-2", "gap-4")}
           >
             {store.files.map((file, index) => (
-              <Pane
-                key={file.name}
-                title={"TEST"}
-                rightOfTitle={
-                  <button
-                    onClick={() => store.removeFile(index)}
-                    className={css(
-                      "text-white",
-                      "border-[1px]",
-                      "border-white"
-                    )}
-                  >
-                    <Text>
-                      <IoCloseOutline size={18} />
-                    </Text>
-                  </button>
-                }
-              >
-                <div className={css("relative", "w-full", "h-[300px]")}>
-                  <div>{file.name}</div>
-                  <Image
-                    alt={file.name}
-                    src={file.preview}
-                    fill
-                    className={css("object-contain")}
-                  />
-                </div>
-              </Pane>
+              <MemeForm
+                key={`meme-form-input-${index}`}
+                store={store}
+                file={file}
+                onRemove={() => store.removeFile(index)}
+              />
             ))}
           </div>
         )}
@@ -130,6 +111,43 @@ const CreateMemeForm: React.FC<{
     </>
   );
 });
+
+interface MemeFormProps {
+  file: FileWithPreview;
+  store: CreateMemeStore;
+  onRemove: () => void;
+}
+
+const MemeForm = ({ file, onRemove }: MemeFormProps) => {
+  return (
+    <Pane
+      key={file.name}
+      // title={}
+      rightOfTitle={
+        <button
+          onClick={() => onRemove()}
+          className={css("text-white", "border-[1px]", "border-white")}
+        >
+          <Text>
+            <IoCloseOutline size={18} />
+          </Text>
+        </button>
+      }
+    >
+      <div className={css("relative", "w-full", "h-[300px]")}>
+        <Image
+          alt={file.name}
+          src={file.preview}
+          fill
+          className={css("object-contain")}
+        />
+      </div>
+      <Form onSubmit={async () => {}}>
+        <TextInput name={`text-input`} label={"Name"} block />
+      </Form>
+    </Pane>
+  );
+};
 
 interface MemeInputProps {
   store: CreateMemeStore;

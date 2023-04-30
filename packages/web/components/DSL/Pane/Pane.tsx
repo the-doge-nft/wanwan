@@ -63,7 +63,7 @@ const Pane: React.FC<PropsWithChildren<PaneProps>> = observer(
           (css(paneTypeStyles[type].container), basePaneStyles.container)
         }
       >
-        {title && (
+        {(title || rightOfTitle) && (
           <div
             className={css(paneTypeStyles[type].title, basePaneStyles.title)}
           >
