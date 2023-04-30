@@ -51,7 +51,7 @@ const FormControl = ({
       />
       <div
         className={css({
-          "flex items-stretch gap-2": !!rightOfInput || !!leftOfInput,
+          "flex items-center gap-2": !!rightOfInput || !!leftOfInput,
         })}
       >
         {leftOfInput && leftOfInput}

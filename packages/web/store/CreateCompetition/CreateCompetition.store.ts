@@ -1,15 +1,15 @@
 import { JSONContent } from "@tiptap/react";
-import { AxiosResponse } from "axios";
 import { add } from "date-fns";
 import { zonedTimeToUtc } from "date-fns-tz";
 import { computed, makeObservable, observable } from "mobx";
 import Router from "next/router";
 import { dateToDateTimeLocalInput } from "../../components/DSL/Form/DateInput";
 import { getTimezone } from "../../helpers/dates";
-import { Competition, Media, Nullable, Wallet } from "../../interfaces/index";
+import { Competition, Nullable, Wallet } from "../../interfaces/index";
 import Http from "../../services/http";
 import { Constructor, EmptyClass } from "../../services/mixins/index";
 import { Navigable } from "../../services/mixins/navigable";
+import TipTapEditorToolbarStore from "../TipTapEditorToolbar.store";
 import CreateCompetitionCuratorsStore from "./CreateCompetitionCurators.store";
 import CreateCompetitionRewardsStore from "./CreateCompetitionRewards.store";
 import CreateCompetitionVoteStore from "./CreateCompetitionVoters.store";
@@ -65,6 +65,9 @@ export default class CreateCompetitionStore extends Navigable<
 
   @observable
   coverImageFile?: File = undefined;
+
+  @observable
+  toolbarStore = new TipTapEditorToolbarStore();
 
   constructor() {
     super();
@@ -179,29 +182,6 @@ export default class CreateCompetitionStore extends Navigable<
   }
 
   onFileAccepted(file: File) {}
-
-  postNewImage(file: File) {
-    const formData = new FormData();
-    formData.set("file", file);
-    this.isLoading = true;
-    return Http.postMedia(formData).finally(() => (this.isLoading = false));
-  }
-
-  onFileChange(
-    targetFiles: FileList,
-    onSuccess: (responses: AxiosResponse<Media, any>[]) => void
-  ) {
-    this.isLoading = true;
-    return Promise.all(
-      Object.values(targetFiles).map((file) => {
-        return this.postNewImage(file);
-      })
-    )
-      .then((responses) => {
-        return onSuccess(responses);
-      })
-      .finally(() => (this.isLoading = false));
-  }
 
   onCoverFileAccepted(file: File) {
     this.coverImageFile = file;

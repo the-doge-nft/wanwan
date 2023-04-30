@@ -1,11 +1,13 @@
+import { JSONContent } from "@tiptap/react";
 import { action, computed, makeObservable, observable } from "mobx";
 import Router from "next/router";
 import { FileWithPreview } from "../components/DSL/Form/MediaInput";
-import { Meme, Nullable } from "../interfaces";
+import { Nullable } from "../interfaces";
 import { EmptyClass } from "../services/mixins";
 import { Navigable } from "../services/mixins/navigable";
 import Http from "./../services/http";
 import AppStore from "./App.store";
+import TipTapEditorToolbarStore from "./TipTapEditorToolbar.store";
 
 export enum CreateMemeView {
   Create = "Create",
@@ -14,10 +16,7 @@ export enum CreateMemeView {
 
 export default class CreateMemeStore extends Navigable(EmptyClass) {
   @observable
-  files: Array<FileWithPreview> = [];
-
-  @observable
-  meme: Nullable<Meme> = null;
+  memes: Array<MemeStore> = [];
 
   @observable
   isSubmitLoading = false;
@@ -42,7 +41,6 @@ export default class CreateMemeStore extends Navigable(EmptyClass) {
 
     const { data } = await Http.postMeme(formData);
     this.isSubmitLoading = false;
-    this.meme = data;
     AppStore.events.publish(AppStore.events.events.MEME_CREATED);
     Router.push(`/meme/${data.id}`);
   }
@@ -53,17 +51,12 @@ export default class CreateMemeStore extends Navigable(EmptyClass) {
         preview: URL.createObjectURL(file),
       });
     });
-    this.files = this.files.concat(filesWithPreview);
-    console.log("DROP ACCEPTED", files);
-  }
-
-  onFileClear() {
-    this.files = [];
+    filesWithPreview.forEach((file) => this.memes.push(new MemeStore(file)));
   }
 
   @action
   removeFile(index: number) {
-    this.files.splice(index, 1);
+    this.memes.splice(index, 1);
   }
 
   @computed
@@ -79,7 +72,48 @@ export default class CreateMemeStore extends Navigable(EmptyClass) {
   }
 
   @computed
-  get hasFiles() {
-    return this.files.length > 0;
+  get hasMemes() {
+    return this.memes.length > 0;
+  }
+}
+
+export class MemeStore {
+  @observable
+  file: FileWithPreview;
+
+  @observable
+  name = "";
+
+  @observable
+  description: Nullable<JSONContent> = null;
+
+  @observable
+  toolbarStore = new TipTapEditorToolbarStore();
+
+  @observable
+  showName = false;
+
+  @observable
+  showDescription = false;
+
+  constructor(file: FileWithPreview) {
+    makeObservable(this);
+    this.file = file;
+  }
+
+  @action
+  toggleShowName() {
+    this.showName = !this.showName;
+    if (!this.showName) {
+      this.name = "";
+    }
+  }
+
+  @action
+  toggleShowDescription() {
+    this.showDescription = !this.showDescription;
+    if (!this.showDescription) {
+      this.description = null;
+    }
   }
 }
