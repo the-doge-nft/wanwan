@@ -41,13 +41,10 @@ const Home: React.FC<HomeProps> = observer(({ stats }) => {
       </Head>
       <main className={css()}>
         <div className={css("flex", "flex-col", "gap-4")}>
-          {/* <Pane title={"What is wanwan?"} type={PaneType.Secondary}>
-            <Text size={TextSize.sm}>
-              wanwan is a platform for meme competitions. Add memes to your
-              profile & submit them to competitions to win prizes.
-            </Text>
-          </Pane> */}
-          <Pane title={"Competitions"}>
+          <Pane
+            title={"Competitions"}
+            rightOfTitle={<ViewAllLink href={"/competitions"} />}
+          >
             <AsyncGrid
               isLoading={store.isCompetitionsLoading}
               data={store.competitions}
@@ -63,13 +60,7 @@ const Home: React.FC<HomeProps> = observer(({ stats }) => {
           </Pane>
           <Pane
             title={"Recent Memes"}
-            rightOfTitle={
-              <Link type={LinkType.Secondary} href={"/memes"}>
-                <span className={css("text-slate-700", "dark:text-slate-400")}>
-                  <TfiLayoutGrid2Alt size={18} />
-                </span>
-              </Link>
-            }
+            rightOfTitle={<ViewAllLink href={"/memes"} />}
           >
             <AsyncGrid
               isLoading={store.isMemesLoading}
@@ -107,6 +98,16 @@ const Home: React.FC<HomeProps> = observer(({ stats }) => {
     </AppLayout>
   );
 });
+
+const ViewAllLink = ({ href }: { href: string }) => {
+  return (
+    <Link type={LinkType.Secondary} href={href}>
+      <span className={css("text-slate-700", "dark:text-slate-400")}>
+        <TfiLayoutGrid2Alt size={18} />
+      </span>
+    </Link>
+  );
+};
 
 interface StatProps {
   label: string;

@@ -2,13 +2,10 @@ import { observer } from "mobx-react-lite";
 import { GetServerSideProps } from "next";
 import Image from "next/image";
 import { useMemo } from "react";
-import { TfiLayoutGrid2Alt } from "react-icons/tfi";
-import AspectRatio from "../components/DSL/AspectRatio/AspectRatio";
-import AsyncGrid from "../components/DSL/AsyncGrid/AsyncGrid";
-import InfiniteScroll from "../components/DSL/InfiniteScroll/InfiniteScroll";
 import Link, { LinkType } from "../components/DSL/Link/Link";
 import Pane, { PaneType } from "../components/DSL/Pane/Pane";
 import Text from "../components/DSL/Text/Text";
+import GridOrColumnScrollableView from "../components/GridOrColumnScrollableView/GridOrColumnScrollableView";
 import MemePreviewLink from "../components/PreviewLink/MemePreviewLink";
 import { css } from "../helpers/css";
 import { abbreviate } from "../helpers/strings";
@@ -16,7 +13,7 @@ import { Meme, NextString, SearchParams } from "../interfaces";
 import AppLayout from "../layouts/App.layout";
 import Http from "../services/http";
 import redirectTo404 from "../services/redirect/404";
-import MemePageStore, { View } from "../store/MemePage.store";
+import MemePageStore from "../store/MemePage.store";
 
 interface MemesPageProps {
   memes: Meme[];
@@ -24,16 +21,17 @@ interface MemesPageProps {
   next?: NextString;
 }
 
-const Memes = observer(({ memes, params, next }: MemesPageProps) => {
+const MemePage = observer(({ memes, params, next }: MemesPageProps) => {
   const store = useMemo(
-    () => new MemePageStore(memes, params, next),
+    () => new MemePageStore(memes, next, params),
     [memes, params, next]
   );
-
-  const renderColumnView = () => {
-    return (
-      <div className={css("flex", "flex-col", "gap-2")}>
-        {store.data.map((meme) => (
+  return (
+    <AppLayout>
+      <GridOrColumnScrollableView<Meme>
+        title={"Meme"}
+        store={store}
+        renderColumnItem={(meme) => (
           <Pane
             key={`meme-preview-${meme.id}`}
             type={PaneType.Grey}
@@ -81,70 +79,11 @@ const Memes = observer(({ memes, params, next }: MemesPageProps) => {
               />
             </Link>
           </Pane>
-        ))}
-      </div>
-    );
-  };
-
-  const renderGridView = () => {
-    return (
-      <AsyncGrid isLoading={false} data={store.data}>
-        {store.data.map((meme) => (
-          <MemePreviewLink key={`meme-preview-${meme.id}`} meme={meme} />
-        ))}
-      </AsyncGrid>
-    );
-  };
-  return (
-    <AppLayout>
-      <div
-        className={css(
-          "flex",
-          "items-center",
-          "gap-2",
-          "justify-between",
-          "mb-2",
-          "border-[1px]",
-          "border-black",
-          "p-1",
-          "bg-slate-300",
-          "dark:bg-slate-800"
         )}
-      >
-        <Text bold>Memes</Text>
-        <div className={css("flex", "items-center", "gap-2")}>
-          <div
-            className={css("cursor-pointer")}
-            onClick={() => (store.view = View.Column)}
-          >
-            <AspectRatio
-              ratio={"1/1.5"}
-              className={css("w-[12px]", {
-                "bg-slate-700 dark:bg-slate-400": store.view === View.Column,
-                "bg-slate-400 dark:bg-slate-700": store.view === View.Grid,
-              })}
-            />
-          </div>
-          <div
-            className={css("cursor-pointer", {
-              "text-slate-700 dark:text-slate-400": store.view === View.Grid,
-              "text-slate-400 dark:text-slate-700": store.view === View.Column,
-            })}
-            onClick={() => (store.view = View.Grid)}
-          >
-            <TfiLayoutGrid2Alt size={18} />
-          </div>
-        </div>
-      </div>
-      <InfiniteScroll
-        next={() => store.next()}
-        dataLength={store.dataLength}
-        hasMore={store.hasMore}
-        endDataMessage={`All memes shown (${store.dataLength})`}
-      >
-        {store.view === View.Column && renderColumnView()}
-        {store.view === View.Grid && renderGridView()}
-      </InfiniteScroll>
+        renderGridItem={(meme) => (
+          <MemePreviewLink key={`meme-preview-${meme.id}`} meme={meme} />
+        )}
+      />
     </AppLayout>
   );
 });
@@ -170,4 +109,4 @@ export const getServerSideProps: GetServerSideProps<
   }
 };
 
-export default Memes;
+export default MemePage;

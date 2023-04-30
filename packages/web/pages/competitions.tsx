@@ -1,0 +1,58 @@
+import { observer } from "mobx-react-lite";
+import { GetServerSideProps } from "next";
+import { useMemo } from "react";
+import GridOrColumnScrollableView from "../components/GridOrColumnScrollableView/GridOrColumnScrollableView";
+import { jsonify } from "../helpers/strings";
+import { Competition, NextString, SearchParams } from "../interfaces";
+import AppLayout from "../layouts/App.layout";
+import Http from "../services/http";
+import redirectTo404 from "../services/redirect/404";
+import CompetitionPageStore from "../store/CompetitionPage.store";
+
+interface CompetitionsPageProps {
+  competitions: Competition[];
+  params: SearchParams;
+  next?: NextString;
+}
+
+const CompetitionsPage = observer(
+  ({ competitions, next, params }: CompetitionsPageProps) => {
+    const store = useMemo(
+      () => new CompetitionPageStore(competitions, next, params),
+      [competitions, next, params]
+    );
+    return (
+      <AppLayout>
+        <GridOrColumnScrollableView<Competition>
+          title={"Competitions"}
+          store={store}
+          renderColumnItem={(comp) => jsonify(comp)}
+          renderGridItem={(comp) => jsonify(comp)}
+        />
+      </AppLayout>
+    );
+  }
+);
+
+export const getServerSideProps: GetServerSideProps<
+  CompetitionsPageProps
+> = async () => {
+  const params: SearchParams = {
+    count: 48,
+    offset: 0,
+    sorts: [{ key: "createdAt", direction: "desc" }],
+    filters: [],
+  };
+  try {
+    const {
+      data: { data: competitions, next },
+    } = await Http.searchCompetition(params);
+    return {
+      props: { competitions, params, next },
+    };
+  } catch (e) {
+    return redirectTo404();
+  }
+};
+
+export default CompetitionsPage;

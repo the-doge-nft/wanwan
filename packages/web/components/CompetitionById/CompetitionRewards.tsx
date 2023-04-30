@@ -57,24 +57,20 @@ const CompetitionRewards = observer(({ store }: CompetitionRewardsProps) => {
                 </>
               ) : (
                 <>
-                  {store.isCreator && (
-                    <>
-                      {winnerAddress && !reward.txId && (
-                        <CompetitionDistributeReward
-                          reward={reward}
-                          toAddress={winnerAddress}
-                          onSuccess={() => store.getCompetition()}
-                        />
-                      )}
-                      {!winnerAddress && (
-                        <Text type={TextType.Grey}>no winner</Text>
-                      )}
-                    </>
+                  {store.isCreator && winnerAddress && !reward.txId && (
+                    <CompetitionDistributeReward
+                      reward={reward}
+                      toAddress={winnerAddress}
+                      onSuccess={() => store.getCompetition()}
+                    />
                   )}
-                  {!store.isCreator && !reward.txId && (
+                  {!store.isCreator && !reward.txId && winnerAddress && (
                     <Text size={TextSize.xs} type={TextType.Grey}>
                       waiting on distribution
                     </Text>
+                  )}
+                  {!winnerAddress && (
+                    <Text type={TextType.Grey}>no winner</Text>
                   )}
                   {reward.txId && (
                     <Link isExternal href={getEtherscanURL(reward.txId, "tx")}>
