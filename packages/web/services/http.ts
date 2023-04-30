@@ -7,6 +7,7 @@ import {
   Comment,
   Competition,
   CompetitionMeme,
+  Leaderboard,
   Media,
   MediaRequirements,
   Meme,
@@ -249,6 +250,10 @@ class _Http {
 
   getAddressLikes(address: string) {
     return this.http.get<Array<number>>(`/profile/${address}/likes`);
+  }
+
+  getLeaderboard() {
+    return this.http.get<Array<Leaderboard>>("/leaderboard");
   }
 
   static create() {

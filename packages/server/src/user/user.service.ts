@@ -12,16 +12,19 @@ export class UserService {
   ) {}
 
   async addExtra(user: User): Promise<UserWithExtras> {
+    if (user === null) {
+      return null;
+    }
     const ens = await this.ethers.getCachedEnsName(user.address);
     return { ...user, ens };
   }
 
   async addExtras(users: User[]): Promise<UserWithExtras[]> {
-    const ret = [];
+    const usersWithExtras = [];
     for (const user of users) {
-      users.push(await this.addExtra(user));
+      usersWithExtras.push(await this.addExtra(user));
     }
-    return ret;
+    return usersWithExtras;
   }
 
   count(args?: Prisma.UserCountArgs) {
@@ -33,7 +36,8 @@ export class UserService {
   }
 
   async findMany(args?: Prisma.UserFindManyArgs) {
-    return this.addExtras(await this.prisma.user.findMany(args));
+    const many = await this.prisma.user.findMany(args);
+    return this.addExtras(many);
   }
 
   async findFirst(args?: Prisma.UserFindFirstArgs) {
@@ -62,5 +66,16 @@ export class UserService {
     const wan =
       memes / memeFactor + votes / voteFactor + submissions / submissionFactor;
     return wan;
+  }
+
+  async getLeaderboard() {
+    const users = await this.findMany();
+    const usersWithWan = [];
+    for (const user of users) {
+      const wan = await this.getWanScore(user.address);
+      usersWithWan.push({ wan, ...user });
+    }
+    usersWithWan.sort((a, b) => b.wan - a.wan);
+    return usersWithWan;
   }
 }

@@ -230,6 +230,11 @@ export class AppController {
     }
   }
 
+  @Get('leaderboard')
+  getLeaderboard() {
+    return this.users.getLeaderboard();
+  }
+
   @UseGuards(AdminGuard)
   @Get('/admin/tweet')
   async adminTweet() {

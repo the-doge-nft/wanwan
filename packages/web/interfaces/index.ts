@@ -228,3 +228,7 @@ export interface ERC20Balance extends TokenBalanceSuccess {
 }
 
 export type NextString = Nullable<string> | undefined;
+
+export interface Leaderboard extends Profile {
+  wan: number;
+}

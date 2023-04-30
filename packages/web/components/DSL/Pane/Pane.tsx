@@ -15,10 +15,17 @@ interface PaneProps {
   title?: React.ReactNode;
   type?: PaneType;
   rightOfTitle?: React.ReactNode;
+  padding?: boolean;
 }
 
 const Pane: React.FC<PropsWithChildren<PaneProps>> = observer(
-  ({ children, title, type = PaneType.Primary, rightOfTitle }) => {
+  ({
+    children,
+    title,
+    type = PaneType.Primary,
+    rightOfTitle,
+    padding = true,
+  }) => {
     const basePaneStyles = {
       container: css("border-[1px]", borderColorCss),
       title: css(
@@ -30,7 +37,7 @@ const Pane: React.FC<PropsWithChildren<PaneProps>> = observer(
         "items-center",
         "w-full"
       ),
-      body: css("text-sm", { "p-2": children }),
+      body: css("text-sm", { "p-2": children && padding }),
     };
 
     const paneTypeStyles = {
@@ -63,7 +70,9 @@ const Pane: React.FC<PropsWithChildren<PaneProps>> = observer(
             <div className={css("grow")}>
               <Text
                 type={
-                  type === PaneType.Primary ? TextType.Primary : TextType.White
+                  type === PaneType.Primary || type === PaneType.Grey
+                    ? TextType.Primary
+                    : TextType.White
                 }
               >
                 {title}

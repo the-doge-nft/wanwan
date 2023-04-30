@@ -7,7 +7,7 @@ import GridOrColumnScrollableStore, {
 import AspectRatio from "../DSL/AspectRatio/AspectRatio";
 import AsyncGrid from "../DSL/AsyncGrid/AsyncGrid";
 import InfiniteScroll from "../DSL/InfiniteScroll/InfiniteScroll";
-import Text from "../DSL/Text/Text";
+import Pane from "../DSL/Pane/Pane";
 
 interface GridOrColumnScrollableViewProps<T> {
   title: string;
@@ -16,6 +16,7 @@ interface GridOrColumnScrollableViewProps<T> {
   renderGridItem: (item: T) => ReactNode;
 }
 
+// @next -- how can we make observable w generic passed
 export default function GridOrColumnScrollableView<T>({
   title,
   store,
@@ -23,60 +24,52 @@ export default function GridOrColumnScrollableView<T>({
   renderGridItem,
 }: GridOrColumnScrollableViewProps<T>) {
   return (
-    <>
-      <div
-        className={css(
-          "flex",
-          "items-center",
-          "gap-2",
-          "justify-between",
-          "mb-2",
-          "border-[1px]",
-          "border-black",
-          "dark:border-neutral-700",
-          "p-1",
-          "bg-slate-300",
-          "dark:bg-slate-800"
-        )}
-      >
-        <Text bold>{title}</Text>
-        <div className={css("flex", "items-center", "gap-2")}>
-          <div
-            className={css("cursor-pointer")}
-            onClick={() => (store.view = View.Column)}
-          >
-            <AspectRatio
-              ratio={"1/1.5"}
-              className={css("w-[12px]", {
-                "bg-slate-700 dark:bg-slate-400": store.view === View.Column,
-                "bg-slate-400 dark:bg-slate-700": store.view === View.Grid,
+    <div className={css("flex", "flex-col", "gap-2")}>
+      <Pane
+        title={title}
+        rightOfTitle={
+          <div className={css("flex", "items-center", "gap-2")}>
+            <div
+              className={css("cursor-pointer")}
+              onClick={() => (store.view = View.Column)}
+            >
+              <AspectRatio
+                ratio={"1/1.5"}
+                className={css("w-[12px]", {
+                  "bg-slate-700 dark:bg-slate-400": store.view === View.Column,
+                  "bg-slate-400 dark:bg-slate-700": store.view === View.Grid,
+                })}
+              />
+            </div>
+            <div
+              className={css("cursor-pointer", {
+                "text-slate-700 dark:text-slate-400": store.view === View.Grid,
+                "text-slate-400 dark:text-slate-700":
+                  store.view === View.Column,
               })}
-            />
+              onClick={() => (store.view = View.Grid)}
+            >
+              <TfiLayoutGrid2Alt size={18} />
+            </div>
           </div>
-          <div
-            className={css("cursor-pointer", {
-              "text-slate-700 dark:text-slate-400": store.view === View.Grid,
-              "text-slate-400 dark:text-slate-700": store.view === View.Column,
-            })}
-            onClick={() => (store.view = View.Grid)}
-          >
-            <TfiLayoutGrid2Alt size={18} />
-          </div>
-        </div>
-      </div>
+        }
+      />
       <InfiniteScroll
         next={() => store.next()}
         dataLength={store.dataLength}
         hasMore={store.hasMore}
       >
-        {store.view === View.Column &&
-          store.data.map((item) => renderColumnItem(item))}
+        {store.view === View.Column && (
+          <div className={css("flex", "flex-col", "gap-2")}>
+            {store.data.map((item) => renderColumnItem(item))}
+          </div>
+        )}
         {store.view === View.Grid && (
           <AsyncGrid isLoading={store.isLoading} data={store.data}>
             {store.data.map((item) => renderGridItem(item))}
           </AsyncGrid>
         )}
       </InfiniteScroll>
-    </>
+    </div>
   );
 }

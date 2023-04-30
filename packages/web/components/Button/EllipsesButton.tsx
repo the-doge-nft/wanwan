@@ -10,7 +10,7 @@ import {
   BsFillSunFill,
   BsTwitter,
 } from "react-icons/bs";
-import { vars } from "../../environment/vars";
+import { isDev, vars } from "../../environment/vars";
 import { css } from "../../helpers/css";
 import AppStore from "../../store/App.store";
 import Button from "../DSL/Button/Button";
@@ -18,6 +18,14 @@ import { Divider } from "../DSL/Divider/Divider";
 import Dropdown, { DropdownItem } from "../DSL/Dropdown/Dropdown";
 import Link, { LinkType } from "../DSL/Link/Link";
 import Text, { TextSize, TextType } from "../DSL/Text/Text";
+
+const navItems: { name: string; link: string }[] = [];
+if (isDev()) {
+  navItems.push(
+    { name: "DSL", link: "/dsl" },
+    { name: "Dev Assets", link: "/devAssets" }
+  );
+}
 
 const EllipsesButton = observer(() => {
   return (
@@ -48,6 +56,11 @@ const EllipsesButton = observer(() => {
       </DropdownItem>
       <DropdownItem className={css("mt-2")}>
         <div className={css("flex", "flex-col")}>
+          <Link href={"/leaderboard"} type={LinkType.Secondary}>
+            <Text size={TextSize.lg} type={TextType.NoColor}>
+              Leaderboard
+            </Text>
+          </Link>
           <Link href={"/memes"} type={LinkType.Secondary}>
             <Text size={TextSize.lg} type={TextType.NoColor}>
               Explore
@@ -58,6 +71,13 @@ const EllipsesButton = observer(() => {
               FAQ
             </Text>
           </Link>
+          {navItems.map((item) => (
+            <Link key={item.name} href={item.link} type={LinkType.Secondary}>
+              <Text type={TextType.NoColor} size={TextSize.lg}>
+                {item.name}
+              </Text>
+            </Link>
+          ))}
         </div>
         <div className={css("my-1.5")}>
           <Divider />

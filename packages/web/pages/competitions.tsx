@@ -2,7 +2,7 @@ import { observer } from "mobx-react-lite";
 import { GetServerSideProps } from "next";
 import { useMemo } from "react";
 import GridOrColumnScrollableView from "../components/GridOrColumnScrollableView/GridOrColumnScrollableView";
-import { jsonify } from "../helpers/strings";
+import CompetitionPreviewLink from "../components/PreviewLink/CompetitionPreviewLink";
 import { Competition, NextString, SearchParams } from "../interfaces";
 import AppLayout from "../layouts/App.layout";
 import Http from "../services/http";
@@ -26,8 +26,12 @@ const CompetitionsPage = observer(
         <GridOrColumnScrollableView<Competition>
           title={"Competitions"}
           store={store}
-          renderColumnItem={(comp) => jsonify(comp)}
-          renderGridItem={(comp) => jsonify(comp)}
+          renderColumnItem={(comp) => (
+            <CompetitionPreviewLink competition={comp} />
+          )}
+          renderGridItem={(comp) => (
+            <CompetitionPreviewLink competition={comp} />
+          )}
         />
       </AppLayout>
     );
