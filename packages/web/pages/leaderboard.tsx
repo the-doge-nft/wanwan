@@ -23,9 +23,9 @@ const LeaderboardPage = observer(({ leaderboard }: LeaderboardPageProps) => {
         padding={false}
         rightOfTitle={<Text>Wan</Text>}
       >
-        {leaderboard.map((item, index) => (
+        {leaderboard.map((user, index) => (
           <div
-            key={item.address}
+            key={user.address}
             className={css(
               "flex",
               "justify-between",
@@ -43,22 +43,22 @@ const LeaderboardPage = observer(({ leaderboard }: LeaderboardPageProps) => {
                 className={css(
                   "w-[30px]",
                   "h-[30px]",
-                  "bg-neutral-200",
                   "rounded-full",
                   "border-[1px]",
                   "border-black",
-                  "dark:border-white"
+                  "dark:border-neutral-700",
+                  { "bg-netural-200 dark:bg-neutral-800": !user.avatar }
                 )}
               />
-              <Link href={`/profile/${item.address}/meme`}>
+              <Link href={`/profile/${user.address}/meme`}>
                 <Text type={TextType.NoColor}>
-                  {item.ens ? item.ens : abbreviate(item.address)}
+                  {user.ens ? user.ens : abbreviate(user.address)}
                 </Text>
               </Link>
             </div>
 
             <Text size={TextSize.sm} bold>
-              {item.wan}
+              {user.wan}
             </Text>
           </div>
         ))}
