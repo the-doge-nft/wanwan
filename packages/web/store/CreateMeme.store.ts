@@ -48,9 +48,10 @@ export default class CreateMemeStore extends Navigable(EmptyClass) {
   }
 
   onDropAccepted(files: Array<File>) {
-    //@ts-ignore
     const filesWithPreview: FileWithPreview[] = files.map((file) => {
-      return { ...file, preview: URL.createObjectURL(file) };
+      return Object.assign(file, {
+        preview: URL.createObjectURL(file),
+      });
     });
     this.files = this.files.concat(filesWithPreview);
     console.log("DROP ACCEPTED", files);
