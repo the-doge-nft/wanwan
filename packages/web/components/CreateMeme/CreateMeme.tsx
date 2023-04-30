@@ -14,6 +14,7 @@ import {
 import { getBaseUrl } from "../../environment/vars";
 import { objectKeys } from "../../helpers/arrays";
 import { css } from "../../helpers/css";
+import { bytesToSize } from "../../helpers/numberFormatter";
 import AppStore from "../../store/App.store";
 import CreateMemeStore, {
   CreateMemeView,
@@ -109,7 +110,7 @@ const CreateMemeForm: React.FC<{
         {AppStore.settings.mimeTypeToExtension && (
           <MemeInput
             store={store}
-            maxSizeBites={AppStore.settings.maxSizeBytes}
+            maxSizeBytes={AppStore.settings.maxSizeBytes}
             acceptedMimeToExtension={AppStore.settings.mimeTypeToExtension}
             title={store.hasMemes ? "+ Add more" : "Drop memes for money"}
           />
@@ -216,17 +217,22 @@ const MemeForm = observer(({ store, onRemove }: MemeFormProps) => {
 
 interface MemeInputProps {
   store: CreateMemeStore;
-  maxSizeBites: number;
+  maxSizeBytes: number;
   acceptedMimeToExtension: { [key: string]: string[] };
   title: string;
 }
 
 const MemeInput = observer(
-  ({ store, maxSizeBites, acceptedMimeToExtension, title }: MemeInputProps) => {
+  ({
+    store,
+    maxSizeBytes: maxSizeBytes,
+    acceptedMimeToExtension,
+    title,
+  }: MemeInputProps) => {
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
       onDropAccepted: (files) => store.onDropAccepted(files),
       multiple: true,
-      maxSize: maxSizeBites,
+      maxSize: maxSizeBytes,
       maxFiles: 100,
     });
     const acceptedExtensionsLabel = useMemo(() => {
@@ -266,6 +272,9 @@ const MemeInput = observer(
             <Text size={TextSize.xs} type={TextType.Grey}>
               accepted: {acceptedExtensionsLabel}
             </Text>
+            <div className={css("mt-0.5", "text-xs")}>
+              Max Size: {bytesToSize(maxSizeBytes)}
+            </div>
           </div>
         )}
         <input {...getInputProps()} />
