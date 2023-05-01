@@ -256,6 +256,10 @@ class _Http {
     return this.http.get<Array<Leaderboard>>("/leaderboard");
   }
 
+  postSearch(search: string) {
+    return this.http.post("/search", { search });
+  }
+
   static create() {
     return new this(env.api.baseUrl);
   }

@@ -2,8 +2,10 @@ import { JSONContent } from "@tiptap/react";
 import { action, computed, makeObservable, observable } from "mobx";
 import Router from "next/router";
 import { FileWithPreview } from "../components/DSL/Form/MediaInput";
+import { jsonify } from "../helpers/strings";
 import { Nullable } from "../interfaces";
 import { EmptyClass } from "../services/mixins";
+import { Loadable } from "../services/mixins/loadable";
 import { Navigable } from "../services/mixins/navigable";
 import Http from "./../services/http";
 import AppStore from "./App.store";
@@ -11,15 +13,11 @@ import TipTapEditorToolbarStore from "./TipTapEditorToolbar.store";
 
 export enum CreateMemeView {
   Create = "Create",
-  Success = "Success",
 }
 
-export default class CreateMemeStore extends Navigable(EmptyClass) {
+export default class CreateMemeStore extends Navigable(Loadable(EmptyClass)) {
   @observable
   memes: Array<MemeStore> = [];
-
-  @observable
-  isSubmitLoading = false;
 
   constructor() {
     super();
@@ -27,22 +25,11 @@ export default class CreateMemeStore extends Navigable(EmptyClass) {
     this.currentView = CreateMemeView.Create;
   }
 
-  async onMemeSubmit(values: any) {
-    this.isSubmitLoading = true;
-
-    const formData = new FormData();
-    // formData.append("file", this.files!);
-    if (values.name) {
-      formData.append("name", values.name);
-    }
-    if (values.description) {
-      formData.append("description", values.description);
-    }
-
-    const { data } = await Http.postMeme(formData);
-    this.isSubmitLoading = false;
-    AppStore.events.publish(AppStore.events.events.MEME_CREATED);
-    Router.push(`/meme/${data.id}`);
+  submit() {
+    const promises = this.memes.map((meme) => meme.submit());
+    return Promise.all(promises).then(() => {
+      Router.push(`/profile/${AppStore.auth.address}/memes`);
+    });
   }
 
   onDropAccepted(files: Array<File>) {
@@ -64,8 +51,6 @@ export default class CreateMemeStore extends Navigable(EmptyClass) {
     switch (this.currentView) {
       case CreateMemeView.Create:
         return "New meme";
-      case CreateMemeView.Success:
-        return "You did it";
       default:
         return "";
     }
@@ -77,7 +62,7 @@ export default class CreateMemeStore extends Navigable(EmptyClass) {
   }
 }
 
-export class MemeStore {
+export class MemeStore extends Loadable(EmptyClass) {
   @observable
   file: FileWithPreview;
 
@@ -97,6 +82,7 @@ export class MemeStore {
   showDescription = false;
 
   constructor(file: FileWithPreview) {
+    super();
     makeObservable(this);
     this.file = file;
   }
@@ -115,5 +101,21 @@ export class MemeStore {
     if (!this.showDescription) {
       this.description = null;
     }
+  }
+
+  submit() {
+    const formData = new FormData();
+    formData.append("file", this.file);
+    if (this.name) {
+      formData.append("name", this.name);
+    }
+    if (this.description) {
+      formData.append("description", jsonify(this.description));
+    }
+    return this.tapWithLoading(() =>
+      Http.postMeme(formData).then(() =>
+        AppStore.events.publish(AppStore.events.events.MEME_CREATED)
+      )
+    );
   }
 }

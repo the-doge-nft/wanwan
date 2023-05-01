@@ -1,131 +1,60 @@
 import { EditorContent } from "@tiptap/react";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
-import { ReactNode, useMemo } from "react";
+import { useMemo } from "react";
 import { useDropzone } from "react-dropzone";
 import { AiOutlineMinus, AiOutlinePlus } from "react-icons/ai";
 import { IoCloseOutline } from "react-icons/io5";
-import {
-  RedditIcon,
-  RedditShareButton,
-  TwitterIcon,
-  TwitterShareButton,
-} from "react-share";
-import { getBaseUrl } from "../../environment/vars";
 import { objectKeys } from "../../helpers/arrays";
 import { css } from "../../helpers/css";
 import { bytesToSize } from "../../helpers/numberFormatter";
 import AppStore from "../../store/App.store";
-import CreateMemeStore, {
-  CreateMemeView,
-  MemeStore,
-} from "../../store/CreateMeme.store";
-import AspectRatio from "../DSL/AspectRatio/AspectRatio";
+import CreateMemeStore, { MemeStore } from "../../store/CreateMeme.store";
 import Button from "../DSL/Button/Button";
 import Form from "../DSL/Form/Form";
 import { FormLabel } from "../DSL/Form/FormControl";
 import TextInput from "../DSL/Form/TextInput";
 import Pane from "../DSL/Pane/Pane";
+import Spinner, { SpinnerSize } from "../DSL/Spinner/Spinner";
 import Text, { TextSize, TextType } from "../DSL/Text/Text";
 import { useTipTapEditor } from "../TipTapEditor/TipTapEditor";
 import TipTapEditorToolbar from "../TipTapEditor/TipTapEditorToolbar";
 
 const CreateMeme: React.FC<{
   store: CreateMemeStore;
-  formButtons?: ReactNode;
-}> = observer(({ store, formButtons }) => {
+}> = observer(({ store }) => {
   return (
-    <>
-      {store.currentView === CreateMemeView.Create && (
-        <CreateMemeForm store={store} formButtons={formButtons} />
-      )}
-      {store.currentView === CreateMemeView.Success && (
-        <Success store={store} />
-      )}
-    </>
-  );
-});
-
-const CreateMemeForm: React.FC<{
-  store: CreateMemeStore;
-  formButtons?: ReactNode;
-}> = observer(({ store, formButtons }) => {
-  return (
-    <>
-      {/* <Form onSubmit={(values) => store.onMemeSubmit(values)}>
-        <div className={css("flex", "flex-col", "gap-2")}>
-          <TextInput
-            block
-            name={"name"}
-            label={"Name"}
-            disabled={store.isSubmitLoading}
-          />
-          <TextInput
-            block
-            name={"description"}
-            label={"Description"}
-            disabled={store.isSubmitLoading}
-          />
-          {AppStore.settings.mimeTypeToExtension && (
-            <MediaInput
-              label={"Media"}
-              name={"file"}
-              validate={required}
-              onDropAccepted={(file) => store.onFileDrop(file)}
-              onClear={() => store.onFileClear()}
-              maxSizeBytes={AppStore.settings.maxSizeBytes}
-              acceptedMimeToExtension={AppStore.settings.mimeTypeToExtension}
-              disabled={store.isSubmitLoading}
+    <div className={css("flex", "flex-col", "gap-4")}>
+      {store.hasMemes && (
+        <div className={css("grid", "grid-cols-1", "md:grid-cols-2", "gap-4")}>
+          {store.memes.map((memeStore, index) => (
+            <MemeDetails
+              key={`meme-form-input-${index}`}
+              store={memeStore}
+              onRemove={() => store.removeFile(index)}
             />
-          )}
-          {formButtons && formButtons}
-          {!formButtons && (
-            <div className={css("mt-4", "flex", "gap-2")}>
-              <Submit block isLoading={store.isSubmitLoading} />
-              <Button
-                block
-                disabled={store.isSubmitLoading}
-                onClick={() => (AppStore.modals.isCreateMemeModalOpen = false)}
-              >
-                Cancel
-              </Button>
-            </div>
-          )}
+          ))}
         </div>
-      </Form> */}
-      <div className={css("flex", "flex-col", "gap-4")}>
-        {store.hasMemes && (
-          <div
-            className={css("grid", "grid-cols-1", "md:grid-cols-2", "gap-4")}
-          >
-            {store.memes.map((memeStore, index) => (
-              <MemeForm
-                key={`meme-form-input-${index}`}
-                store={memeStore}
-                onRemove={() => store.removeFile(index)}
-              />
-            ))}
-          </div>
-        )}
-        {AppStore.settings.mimeTypeToExtension && (
-          <MemeInput
-            store={store}
-            maxSizeBytes={AppStore.settings.maxSizeBytes}
-            acceptedMimeToExtension={AppStore.settings.mimeTypeToExtension}
-            title={store.hasMemes ? "+ Add more" : "Drop memes for money"}
-          />
-        )}
-      </div>
-    </>
+      )}
+      {AppStore.settings.mimeTypeToExtension && (
+        <MemeInput
+          store={store}
+          maxSizeBytes={AppStore.settings.maxSizeBytes}
+          acceptedMimeToExtension={AppStore.settings.mimeTypeToExtension}
+          title={store.hasMemes ? "+ Add more" : "Drop memes for money"}
+        />
+      )}
+      {store.hasMemes && <Button onClick={() => store.submit()}>Submit</Button>}
+    </div>
   );
 });
 
-interface MemeFormProps {
+interface MemeDetailsProps {
   store: MemeStore;
   onRemove: () => void;
 }
 
-const MemeForm = observer(({ store, onRemove }: MemeFormProps) => {
+const MemeDetails = observer(({ store, onRemove }: MemeDetailsProps) => {
   const editor = useTipTapEditor(
     store.description ? store.description : "",
     true
@@ -152,6 +81,7 @@ const MemeForm = observer(({ store, onRemove }: MemeFormProps) => {
           fill
           className={css("object-contain")}
         />
+        {store.isLoading && <Spinner size={SpinnerSize.lg} />}
       </div>
       <Form
         onSubmit={async () => {}}
@@ -195,10 +125,12 @@ const MemeForm = observer(({ store, onRemove }: MemeFormProps) => {
                   <EditorContent editor={editor} />
                 </div>
               </div>
-              <TipTapEditorToolbar
-                store={store.toolbarStore}
-                editor={editor!}
-              />
+              {editor && (
+                <TipTapEditorToolbar
+                  store={store.toolbarStore}
+                  editor={editor}
+                />
+              )}
             </div>
           </div>
         )}
@@ -269,11 +201,15 @@ const MemeInput = observer(
         {!isDragActive && (
           <div className={css("flex", "flex-col", "items-center", "gap-2")}>
             <Text>{title}</Text>
-            <Text size={TextSize.xs} type={TextType.Grey}>
-              accepted: {acceptedExtensionsLabel}
-            </Text>
-            <div className={css("mt-0.5", "text-xs")}>
-              Max Size: {bytesToSize(maxSizeBytes)}
+            <div>
+              <Text size={TextSize.xs} type={TextType.Grey}>
+                accepted: {acceptedExtensionsLabel}
+              </Text>
+              <div className={css("text-xs", "text-center")}>
+                <Text size={TextSize.xs} type={TextType.Grey}>
+                  Max Size: {bytesToSize(maxSizeBytes)}
+                </Text>
+              </div>
             </div>
           </div>
         )}
@@ -282,56 +218,5 @@ const MemeInput = observer(
     );
   }
 );
-
-const Success: React.FC<{ store: CreateMemeStore }> = observer(({ store }) => {
-  return (
-    <div>
-      <div
-        className={css(
-          "text-center",
-          "flex",
-          "items-center",
-          "gap-2",
-          "justify-center"
-        )}
-      >
-        <Text>~~~</Text>
-        <Text size={TextSize.lg}>Meme Created</Text>
-        <Text>~~~</Text>
-      </div>
-      <div className={css("mt-2")}>
-        <AspectRatio
-          className={css("bg-contain", "bg-no-repeat", "bg-center")}
-          ratio={`${store.meme?.media.width}/${store.meme?.media.height}`}
-          style={{ backgroundImage: `url(${store.meme?.media.url})` }}
-        />
-      </div>
-      <div>
-        <div
-          className={css(
-            "flex",
-            "items-center",
-            "justify-center",
-            "gap-2",
-            "mt-4"
-          )}
-        >
-          <TwitterShareButton
-            title={"I just posted a meme on wanwan"}
-            url={getBaseUrl() + `/meme/` + store.meme!.id}
-          >
-            <TwitterIcon size={20} />
-          </TwitterShareButton>
-          <RedditShareButton
-            title={"I just posted a meme on wanwan"}
-            url={getBaseUrl() + `/meme/` + store.meme!.id}
-          >
-            <RedditIcon size={20} />
-          </RedditShareButton>
-        </div>
-      </div>
-    </div>
-  );
-});
 
 export default CreateMeme;

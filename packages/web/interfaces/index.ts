@@ -232,3 +232,9 @@ export type NextString = Nullable<string> | undefined;
 export interface Leaderboard extends Profile {
   wan: number;
 }
+
+export interface Search {
+  memes: Array<Meme>;
+  competitions: Array<Competition>;
+  users: Array<User>;
+}

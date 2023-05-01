@@ -9,7 +9,15 @@ import Logo from "../Logo/Logo";
 
 const Header = observer(() => {
   return (
-    <div className={css("flex", "justify-between", "relative")}>
+    <div
+      className={css(
+        "flex",
+        "justify-between",
+        "relative",
+        "items-center",
+        "gap-4"
+      )}
+    >
       <div className={css("flex", "gap-2")}>
         <Link
           type={LinkType.Secondary}
@@ -19,6 +27,9 @@ const Header = observer(() => {
           <Logo />
         </Link>
       </div>
+      {/* <div className={css("grow")}>
+        <SearchBar />
+      </div> */}
       <div className={css("z-10", "flex", "gap-2", "items-stretch")}>
         {AppStore.auth.isAuthed && <CreateButton />}
         <ConnectButton size={ButtonSize.lg} />

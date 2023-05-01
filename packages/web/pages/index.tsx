@@ -6,10 +6,11 @@ import { PropsWithChildren, useEffect, useMemo } from "react";
 import { TfiLayoutGrid2Alt } from "react-icons/tfi";
 import AsyncGrid from "../components/DSL/AsyncGrid/AsyncGrid";
 import Link, { LinkType } from "../components/DSL/Link/Link";
-import Pane from "../components/DSL/Pane/Pane";
+import Pane, { PaneType } from "../components/DSL/Pane/Pane";
 import Text, { TextSize } from "../components/DSL/Text/Text";
 import CompetitionPreviewLink from "../components/PreviewLink/CompetitionPreviewLink";
 import MemePreviewLink from "../components/PreviewLink/MemePreviewLink";
+import SearchBar from "../components/SearchBar/SearchBar";
 import env from "../environment";
 import { css } from "../helpers/css";
 import { Stats } from "../interfaces";
@@ -41,6 +42,14 @@ const Home: React.FC<HomeProps> = observer(({ stats }) => {
       </Head>
       <main className={css()}>
         <div className={css("flex", "flex-col", "gap-4")}>
+          <Pane
+            type={PaneType.Grey}
+            title={
+              <div className={css("grow")}>
+                <SearchBar />
+              </div>
+            }
+          />
           <Pane
             title={"Competitions"}
             rightOfTitle={<ViewAllLink href={"/competitions"} />}

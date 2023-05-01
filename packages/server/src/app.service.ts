@@ -5,11 +5,13 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 import { SocialPlatform } from '@prisma/client';
 import { InjectSentry, SentryService } from '@travelerdev/nestjs-sentry';
 import { lookup } from 'mime-types';
+import { CompetitionService } from './competition/competition.service';
 import { EthersService } from './ethers/ethers.service';
 import { abbreviate } from './helpers/strings';
 import { MemeService } from './meme/meme.service';
 import { PrismaService } from './prisma.service';
 import { TwitterService } from './twitter/twitter.service';
+import { UserService } from './user/user.service';
 
 @Injectable()
 export class AppService implements OnModuleInit {
@@ -23,6 +25,8 @@ export class AppService implements OnModuleInit {
     private readonly twitter: TwitterService,
     private readonly http: HttpService,
     private readonly config: ConfigService,
+    private readonly competition: CompetitionService,
+    private readonly user: UserService,
     @InjectSentry() private readonly sentryClient: SentryService,
   ) {}
 
@@ -113,5 +117,37 @@ export class AppService implements OnModuleInit {
       select: { address: true },
     });
     return users.map((user) => user.address);
+  }
+
+  async search(search: string) {
+    const take = 5;
+    const memes = await this.meme.findMany({
+      where: {
+        name: {
+          contains: search,
+          mode: 'insensitive',
+        },
+      },
+      take,
+    });
+    const competitions = await this.competition.findMany({
+      where: {
+        name: {
+          contains: search,
+          mode: 'insensitive',
+        },
+      },
+      take,
+    });
+    const users = await this.user.findMany({
+      where: {
+        address: {
+          contains: search,
+          mode: 'insensitive',
+        },
+      },
+      take,
+    });
+    return { memes, competitions, users };
   }
 }

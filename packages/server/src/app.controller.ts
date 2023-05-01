@@ -246,4 +246,9 @@ export class AppController {
   getIsAdmin(@Req() { user }: AuthenticatedRequest) {
     return ADMIN_ADDRESSES.includes(user.address);
   }
+
+  @Post('/search')
+  getSearch(@Body() { search }: { search: string }) {
+    return this.app.search(search);
+  }
 }
