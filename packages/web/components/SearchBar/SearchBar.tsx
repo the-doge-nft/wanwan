@@ -2,6 +2,7 @@ import { observer } from "mobx-react-lite";
 import { useMemo } from "react";
 import { css } from "../../helpers/css";
 import SearchBarStore from "../../store/SearchBar.store";
+import ActivePill from "../ActivePill/ActivePill";
 import Input from "../DSL/Input/Input";
 import Link from "../DSL/Link/Link";
 import Text, { TextType } from "../DSL/Text/Text";
@@ -17,7 +18,7 @@ const SearchBar = observer(() => {
           console.log(value);
           store.setSearch(value);
         }}
-        placeholder={"search..."}
+        placeholder={"enjoy memes"}
       />
       {store.showDropdown && (
         <div
@@ -26,6 +27,8 @@ const SearchBar = observer(() => {
             "bg-white",
             "border-[1px]",
             "border-black",
+            "dark:border-neutral-700",
+            "dark:bg-neutral-900",
             "w-full",
             "z-10",
             "mt-1",
@@ -48,8 +51,12 @@ const SearchBar = observer(() => {
             </div>
           )}
           {store.data.competitions.map((comp) => (
-            <div key={`comp-${comp.id}`}>
+            <div
+              key={`comp-${comp.id}`}
+              className={css("flex", "justify-between", "w-full")}
+            >
               <Link href={`/competition/${comp.id}`}>{comp.name}</Link>
+              {comp.isActive && <ActivePill />}
             </div>
           ))}
           {store.hasUsers && (

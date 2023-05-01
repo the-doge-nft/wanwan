@@ -42,14 +42,7 @@ const Home: React.FC<HomeProps> = observer(({ stats }) => {
       </Head>
       <main className={css()}>
         <div className={css("flex", "flex-col", "gap-4")}>
-          <Pane
-            type={PaneType.Grey}
-            title={
-              <div className={css("grow")}>
-                <SearchBar />
-              </div>
-            }
-          />
+          <Pane type={PaneType.Grey} title={<SearchBar />} />
           <Pane
             title={"Competitions"}
             rightOfTitle={<ViewAllLink href={"/competitions"} />}

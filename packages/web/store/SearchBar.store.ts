@@ -34,7 +34,6 @@ export default class SearchBarStore extends Reactionable(Loadable(EmptyClass)) {
   @action
   setSearch(search: string) {
     this.search = search;
-    console.log(this.search, "SETTING");
   }
 
   @computed
