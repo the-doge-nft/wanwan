@@ -35,21 +35,13 @@ const SearchBar = observer(() => {
             "p-2"
           )}
         >
-          {store.hasMemes && (
-            <div>
-              <Text>Memes</Text>
-            </div>
-          )}
+          {store.hasMemes && <Text bold>Memes</Text>}
           {store.data.memes.map((meme) => (
             <div key={`meme-${meme.id}`}>
               <Link href={`/meme/${meme.id}`}>{meme.name}</Link>
             </div>
           ))}
-          {store.hasCompetitions && (
-            <div>
-              <Text>Competitions</Text>
-            </div>
-          )}
+          {store.hasCompetitions && <Text bold>Competitions</Text>}
           {store.data.competitions.map((comp) => (
             <div
               key={`comp-${comp.id}`}
@@ -59,11 +51,7 @@ const SearchBar = observer(() => {
               {comp.isActive && <ActivePill />}
             </div>
           ))}
-          {store.hasUsers && (
-            <div>
-              <Text>Users</Text>
-            </div>
-          )}
+          {store.hasUsers && <Text bold>Users</Text>}
           {store.data.users.map((user) => (
             <div key={`user-${user.address}`}>
               <Link href={`/profile/${user.address}/meme`}>{user.address}</Link>
