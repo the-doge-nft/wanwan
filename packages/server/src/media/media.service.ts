@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Media, Prisma } from '@prisma/client';
-import { readFileSync, unlinkSync } from 'fs';
+import { unlinkSync } from 'fs';
 import sizeOf from 'image-size';
 import { join } from 'path';
 import { Config } from '../config/config';
@@ -72,11 +72,12 @@ export class MediaService {
       join(__dirname, '..', '..', '..', file.destination) + file.filename;
     const { width, height } = sizeOf(filePath);
 
-    await this.s3.putObject({
-      body: readFileSync(filePath),
-      bucket,
-      key: filename,
-    });
+    // @next -- remove comments
+    // await this.s3.putObject({
+    //   body: readFileSync(filePath),
+    //   bucket,
+    //   key: filename,
+    // });
 
     const media = await this.prisma.media.create({
       data: {

@@ -1,7 +1,7 @@
 import { EditorContent } from "@tiptap/react";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useDropzone } from "react-dropzone";
 import { AiOutlineMinus, AiOutlinePlus } from "react-icons/ai";
 import { IoCloseOutline } from "react-icons/io5";
@@ -59,6 +59,10 @@ const MemeDetails = observer(({ store, onRemove }: MemeDetailsProps) => {
     store.description ? store.description : "",
     true
   );
+  const json = editor?.getJSON();
+  useEffect(() => {
+    store.description = json;
+  }, [json, store]);
   return (
     <Pane
       key={store.file.name}
@@ -74,11 +78,11 @@ const MemeDetails = observer(({ store, onRemove }: MemeDetailsProps) => {
         </button>
       }
     >
-      <div className={css("relative", "w-full", "h-[300px]")}>
+      <div className={css("relative", "w-full", "h-[200px]")}>
         <Image
+          fill
           alt={store.file.name}
           src={store.file.preview}
-          fill
           className={css("object-contain")}
         />
         {store.isLoading && <Spinner size={SpinnerSize.lg} />}
@@ -189,28 +193,32 @@ const MemeInput = observer(
           "items-center",
           "overflow-hidden",
           "rounded-sm",
-          "p-7",
           "hover:border-black",
           "dark:border-neutral-600",
           "dark:hover:border-neutral-400",
-          "md:min-h-[200px]",
-          "cursor-pointer"
+          "cursor-pointer",
+          {
+            "md:min-h-[80px] p-4": store.hasMemes,
+            "md:min-h-[200px] p-7": !store.hasMemes,
+          }
         )}
       >
         {isDragActive && <Text>wow</Text>}
         {!isDragActive && (
           <div className={css("flex", "flex-col", "items-center", "gap-2")}>
             <Text>{title}</Text>
-            <div>
-              <Text size={TextSize.xs} type={TextType.Grey}>
-                accepted: {acceptedExtensionsLabel}
-              </Text>
-              <div className={css("text-xs", "text-center")}>
+            {!store.hasMemes && (
+              <div>
                 <Text size={TextSize.xs} type={TextType.Grey}>
-                  Max Size: {bytesToSize(maxSizeBytes)}
+                  accepted: {acceptedExtensionsLabel}
                 </Text>
+                <div className={css("text-xs", "text-center")}>
+                  <Text size={TextSize.xs} type={TextType.Grey}>
+                    Max Size: {bytesToSize(maxSizeBytes)}
+                  </Text>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         )}
         <input {...getInputProps()} />

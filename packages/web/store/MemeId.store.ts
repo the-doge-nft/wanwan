@@ -1,3 +1,4 @@
+import { JSONContent } from "@tiptap/react";
 import { action, computed, makeObservable, observable } from "mobx";
 import { Comment, Meme } from "../interfaces";
 import Http from "./../services/http";
@@ -13,10 +14,26 @@ export default class MemeIdStore {
   @observable
   likes?: number = 0;
 
+  @observable
+  description?: JSONContent | string = undefined;
+
+  @observable
+  isDescriptionRichText = false;
+
   constructor(private readonly id: string, meme: Meme) {
     makeObservable(this);
     this.meme = meme;
     this.likes = this.meme.likes;
+    if (this.meme.description) {
+      try {
+        const json = JSON.parse(this.meme.description as string);
+        this.description = json;
+        this.isDescriptionRichText = true;
+      } catch (e) {
+        this.description = this.meme.description;
+        this.isDescriptionRichText = false;
+      }
+    }
   }
 
   async init() {

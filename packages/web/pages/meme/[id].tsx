@@ -1,3 +1,4 @@
+import { JSONContent } from "@tiptap/react";
 import {
   differenceInDays,
   differenceInHours,
@@ -19,6 +20,7 @@ import TextInput from "../../components/DSL/Form/TextInput";
 import Link, { LinkType } from "../../components/DSL/Link/Link";
 import Text, { TextSize, TextType } from "../../components/DSL/Text/Text";
 import Logo from "../../components/Logo/Logo";
+import TipTapEditor from "../../components/TipTapEditor/TipTapEditor";
 import env from "../../environment";
 import {
   DESCRIPTION,
@@ -92,8 +94,17 @@ const MemeById = observer(({ meme }: MemeByIdProps) => {
           <div className={css("mt-8", "w-full", "flex", "justify-between")}>
             <div className={css("col-span-8", "flex", "flex-col")}>
               {store.meme.name && <Text bold>{store.meme.name}</Text>}
-              {store.meme.description && (
-                <Text size={TextSize.sm}>{store.meme.description}</Text>
+              {store.meme.description && !store.isDescriptionRichText && (
+                <Text size={TextSize.sm}>
+                  {store.meme.description as string}
+                </Text>
+              )}
+              {store.meme.description && store.isDescriptionRichText && (
+                <TipTapEditor
+                  content={store.description as JSONContent}
+                  border={false}
+                  readonly
+                />
               )}
             </div>
             <div

@@ -3,7 +3,6 @@ import { action, computed, makeObservable, observable } from "mobx";
 import Router from "next/router";
 import { FileWithPreview } from "../components/DSL/Form/MediaInput";
 import { jsonify } from "../helpers/strings";
-import { Nullable } from "../interfaces";
 import { EmptyClass } from "../services/mixins";
 import { Loadable } from "../services/mixins/loadable";
 import { Navigable } from "../services/mixins/navigable";
@@ -28,7 +27,7 @@ export default class CreateMemeStore extends Navigable(Loadable(EmptyClass)) {
   submit() {
     const promises = this.memes.map((meme) => meme.submit());
     return Promise.all(promises).then(() => {
-      Router.push(`/profile/${AppStore.auth.address}/memes`);
+      Router.push(`/profile/${AppStore.auth.address}/meme`);
     });
   }
 
@@ -70,7 +69,7 @@ export class MemeStore extends Loadable(EmptyClass) {
   name = "";
 
   @observable
-  description: Nullable<JSONContent> = null;
+  description?: JSONContent = undefined;
 
   @observable
   toolbarStore = new TipTapEditorToolbarStore();
@@ -85,6 +84,7 @@ export class MemeStore extends Loadable(EmptyClass) {
     super();
     makeObservable(this);
     this.file = file;
+    this.isLoading = false;
   }
 
   @action

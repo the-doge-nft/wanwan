@@ -1,3 +1,4 @@
+import { JSONContent } from "@tiptap/react";
 import {
   OwnedNft,
   TokenBalanceSuccess,
@@ -115,7 +116,7 @@ export interface Media {
 export interface Meme {
   id: number;
   name: string;
-  description?: string;
+  description?: string | JSONContent;
   createdAt: DatetimeString;
   updatedAt: DatetimeString;
   deletedAt?: DatetimeString;
