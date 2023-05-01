@@ -12,6 +12,9 @@ export default class SearchBarStore extends Reactionable(Loadable(EmptyClass)) {
   @observable
   search = "";
 
+  @observable
+  showDropdown = false;
+
   constructor() {
     super();
     makeObservable(this);
@@ -19,7 +22,10 @@ export default class SearchBarStore extends Reactionable(Loadable(EmptyClass)) {
       () => this.search,
       (search) => {
         if (this.search !== "") {
+          this.showDropdown = true;
           this.query(search);
+        } else {
+          this.showDropdown = false;
         }
       }
     );
@@ -54,10 +60,5 @@ export default class SearchBarStore extends Reactionable(Loadable(EmptyClass)) {
   @computed
   get hasCompetitions() {
     return this.data.competitions.length > 0;
-  }
-
-  @computed
-  get showDropdown() {
-    return this.search !== "";
   }
 }
