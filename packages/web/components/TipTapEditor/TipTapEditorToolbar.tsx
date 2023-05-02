@@ -163,6 +163,7 @@ const ToolbarItem = observer(
     children: ReactNode;
     isActive?: boolean;
   }) => {
+    console.log("debug:: isActive", isActive);
     return (
       <span
         className={css(

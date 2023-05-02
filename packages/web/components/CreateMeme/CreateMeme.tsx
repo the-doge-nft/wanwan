@@ -1,8 +1,8 @@
 import { EditorContent } from "@tiptap/react";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
-import { useEffect, useMemo } from "react";
-import { useDropzone } from "react-dropzone";
+import { useCallback, useMemo } from "react";
+import { FileRejection, useDropzone } from "react-dropzone";
 import { AiOutlineMinus, AiOutlinePlus } from "react-icons/ai";
 import { IoCloseOutline } from "react-icons/io5";
 import { objectKeys } from "../../helpers/arrays";
@@ -17,6 +17,7 @@ import TextInput from "../DSL/Form/TextInput";
 import Pane from "../DSL/Pane/Pane";
 import Spinner, { SpinnerSize } from "../DSL/Spinner/Spinner";
 import Text, { TextSize, TextType } from "../DSL/Text/Text";
+import { errorToast } from "../DSL/Toast/Toast";
 import { useTipTapEditor } from "../TipTapEditor/TipTapEditor";
 import TipTapEditorToolbar from "../TipTapEditor/TipTapEditorToolbar";
 
@@ -44,7 +45,11 @@ const CreateMeme: React.FC<{
           title={store.hasMemes ? "+ Add more" : "Drop memes for money"}
         />
       )}
-      {store.hasMemes && <Button onClick={() => store.submit()}>Submit</Button>}
+      {store.hasMemes && (
+        <Button onClick={() => store.submit()} isLoading={store.isLoading}>
+          Submit
+        </Button>
+      )}
     </div>
   );
 });
@@ -57,18 +62,20 @@ interface MemeDetailsProps {
 const MemeDetails = observer(({ store, onRemove }: MemeDetailsProps) => {
   const editor = useTipTapEditor(
     store.description ? store.description : "",
-    true
+    true,
+    {
+      onUpdate: ({ editor }) => {
+        store.description = editor?.getJSON();
+      },
+    }
   );
-  const json = editor?.getJSON();
-  useEffect(() => {
-    store.description = json;
-  }, [json, store]);
   return (
     <Pane
       key={store.file.name}
       title={store.name}
       rightOfTitle={
         <button
+          disabled={store.isDisabled}
           onClick={() => onRemove()}
           className={css("text-white", "border-[1px]", "border-white")}
         >
@@ -85,7 +92,16 @@ const MemeDetails = observer(({ store, onRemove }: MemeDetailsProps) => {
           src={store.file.preview}
           className={css("object-contain")}
         />
-        {store.isLoading && <Spinner size={SpinnerSize.lg} />}
+        {store.isLoading && (
+          <div className={css("z-10")}>
+            <Spinner size={SpinnerSize.lg} />
+          </div>
+        )}
+        {store.isSubmited && (
+          <div>
+            <Text type={TextType.Grey}>{"( ͡⏿ ͜ʖ ͡⏿)"}</Text>
+          </div>
+        )}
       </div>
       <Form
         onSubmit={async () => {}}
@@ -95,7 +111,10 @@ const MemeDetails = observer(({ store, onRemove }: MemeDetailsProps) => {
           <div className={css("flex", "items-center", "gap-2", "w-full")}>
             <TextInput
               leftOfInput={
-                <Button onClick={() => store.toggleShowName()}>
+                <Button
+                  disabled={store.isLoading || store.isSubmited}
+                  onClick={() => store.toggleShowName()}
+                >
                   <AiOutlineMinus size={12} />
                 </Button>
               }
@@ -104,11 +123,15 @@ const MemeDetails = observer(({ store, onRemove }: MemeDetailsProps) => {
               label={"Name"}
               value={store.name}
               onChange={(value) => (store.name = value)}
+              disabled={store.isDisabled}
             />
           </div>
         )}
         {!store.showName && (
-          <Button onClick={() => store.toggleShowName()}>
+          <Button
+            onClick={() => store.toggleShowName()}
+            disabled={store.isLoading || store.isSubmited}
+          >
             <div className={css("flex", "items-center", "gap-0.5")}>
               <AiOutlinePlus size={15} />
               <Text>name</Text>
@@ -121,12 +144,18 @@ const MemeDetails = observer(({ store, onRemove }: MemeDetailsProps) => {
               <FormLabel>Description</FormLabel>
               <div className={css("flex", "items-start", "gap-2")}>
                 <div className={css("mt-1")}>
-                  <Button onClick={() => store.toggleShowDescription()}>
+                  <Button
+                    disabled={store.isLoading || store.isSubmited}
+                    onClick={() => store.toggleShowDescription()}
+                  >
                     <AiOutlineMinus size={12} />
                   </Button>
                 </div>
                 <div className={css("grow")}>
-                  <EditorContent editor={editor} />
+                  <EditorContent
+                    editor={editor}
+                    disabled={store.isLoading || store.isSubmited}
+                  />
                 </div>
               </div>
               {editor && (
@@ -139,7 +168,10 @@ const MemeDetails = observer(({ store, onRemove }: MemeDetailsProps) => {
           </div>
         )}
         {!store.showDescription && (
-          <Button onClick={() => store.toggleShowDescription()}>
+          <Button
+            disabled={store.isLoading || store.isSubmited}
+            onClick={() => store.toggleShowDescription()}
+          >
             <div className={css("flex", "items-center", "gap-0.5")}>
               <AiOutlinePlus size={15} />
               <Text>description</Text>
@@ -165,11 +197,27 @@ const MemeInput = observer(
     acceptedMimeToExtension,
     title,
   }: MemeInputProps) => {
+    const onDropRejected = useCallback((fileRejections: FileRejection[]) => {
+      fileRejections.forEach((file) => {
+        file.errors.forEach((error) => {
+          if (error.code === "file-too-large") {
+            errorToast(
+              `File must be smaller than ${bytesToSize(maxSizeBytes)}`
+            );
+          } else {
+            errorToast(error.message);
+          }
+        });
+      });
+    }, []);
+
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
       onDropAccepted: (files) => store.onDropAccepted(files),
       multiple: true,
       maxSize: maxSizeBytes,
       maxFiles: 100,
+      onDropRejected,
+      accept: acceptedMimeToExtension,
     });
     const acceptedExtensionsLabel = useMemo(() => {
       const extensions = objectKeys(acceptedMimeToExtension).reduce(

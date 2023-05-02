@@ -7,7 +7,7 @@ import { Reactionable } from "../services/mixins/reactionable";
 
 export default class SearchBarStore extends Reactionable(Loadable(EmptyClass)) {
   @observable
-  data: Search = { memes: [], users: [], competitions: [] };
+  data: Search = { memes: [], profiles: [], competitions: [] };
 
   @observable
   search = "";
@@ -44,7 +44,7 @@ export default class SearchBarStore extends Reactionable(Loadable(EmptyClass)) {
 
   @computed
   get hasResults() {
-    return this.hasMemes || this.hasUsers || this.hasCompetitions;
+    return this.hasMemes || this.hasProfiles || this.hasCompetitions;
   }
 
   @computed
@@ -53,12 +53,16 @@ export default class SearchBarStore extends Reactionable(Loadable(EmptyClass)) {
   }
 
   @computed
-  get hasUsers() {
-    return this.data.users.length > 0;
+  get hasProfiles() {
+    return this.data.profiles.length > 0;
   }
 
   @computed
   get hasCompetitions() {
     return this.data.competitions.length > 0;
+  }
+
+  destroy() {
+    return this.disposeReactions();
   }
 }

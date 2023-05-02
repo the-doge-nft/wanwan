@@ -27,18 +27,17 @@ export class ProfileService {
     let address: string;
     if (isAddress) {
       address = formatEthereumAddress(addressOrEns);
-      ens = await this.ethers.getEnsName(address);
+      ens = await this.ethers.getCachedEnsName(address);
       if (ens) {
-        avatar = await this.ethers.getAvatar(ens);
+        avatar = await this.ethers.getCachedAvatar(ens);
       }
     } else {
       address = await this.ethers.resolveName(addressOrEns);
       if (!address) {
         throw new NameNotFoundError();
       }
-      avatar = await this.ethers.getAvatar(addressOrEns);
+      avatar = await this.ethers.getCachedAvatar(addressOrEns);
     }
-    await this.ethers.refreshEnsCache(address);
     const user = await this.user.findFirst({ where: { address } });
     const memes = await this.meme.findMany({
       where: { user: { address } },

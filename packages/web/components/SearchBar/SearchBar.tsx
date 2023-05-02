@@ -1,11 +1,12 @@
 import { observer } from "mobx-react-lite";
-import { useEffect, useMemo, useRef } from "react";
+import { ReactNode, useEffect, useMemo, useRef } from "react";
 import { css } from "../../helpers/css";
+import { abbreviate } from "../../helpers/strings";
 import SearchBarStore from "../../store/SearchBar.store";
 import ActivePill from "../ActivePill/ActivePill";
 import Input from "../DSL/Input/Input";
 import Link from "../DSL/Link/Link";
-import Text, { TextType } from "../DSL/Text/Text";
+import Text, { TextSize, TextType } from "../DSL/Text/Text";
 
 const SearchBar = observer(() => {
   const store = useMemo(() => new SearchBarStore(), []);
@@ -31,6 +32,11 @@ const SearchBar = observer(() => {
     };
     // eslint-disable-next-line
   }, [ref]);
+  useEffect(() => {
+    return () => {
+      store.destroy();
+    };
+  }, []);
   return (
     <div className={css("font-normal", "py-1", "relative")}>
       <Input
@@ -40,7 +46,7 @@ const SearchBar = observer(() => {
           console.log(value);
           store.setSearch(value);
         }}
-        placeholder={"enjoy memes"}
+        placeholder={"enjoy"}
       />
       <div
         ref={ref}
@@ -55,39 +61,124 @@ const SearchBar = observer(() => {
           "z-10",
           "mt-1",
           "p-2",
+          "flex",
+          "flex-col",
+          "gap-1",
           { hidden: !store.showDropdown }
         )}
       >
-        {store.hasMemes && <Text bold>Memes</Text>}
-        {store.data.memes.map((meme) => (
-          <div key={`meme-${meme.id}`}>
-            <Link href={`/meme/${meme.id}`}>{meme.name}</Link>
+        {store.hasMemes && (
+          <div>
+            <Text bold>Memes</Text>
+            <div className={css("flex", "flex-col", "gap-0.5")}>
+              {store.data.memes.map((meme) => (
+                <SearchItem
+                  href={`/meme/${meme.id}`}
+                  image={meme.media.url}
+                  key={`meme-search-item-${meme.id}`}
+                >
+                  <Text type={TextType.NoColor}>{meme.name}</Text>
+                </SearchItem>
+              ))}
+            </div>
           </div>
-        ))}
-        {store.hasCompetitions && <Text bold>Competitions</Text>}
-        {store.data.competitions.map((comp) => (
-          <div
-            key={`comp-${comp.id}`}
-            className={css("flex", "justify-between", "w-full")}
-          >
-            <Link href={`/competition/${comp.id}`}>{comp.name}</Link>
-            {comp.isActive && <ActivePill />}
+        )}
+        {store.hasCompetitions && (
+          <div>
+            <Text bold>Competitions</Text>
+            <div className={css("flex", "flex-col", "gap-0.5")}>
+              {store.data.competitions.map((comp) => (
+                <SearchItem
+                  href={`/competition/${comp.id}`}
+                  key={`comp-${comp.id}`}
+                  image={comp.coverMedia?.url}
+                >
+                  <div
+                    className={css(
+                      "w-full",
+                      "flex",
+                      "justify-between",
+                      "items-center"
+                    )}
+                  >
+                    <Text type={TextType.NoColor}>{comp.name}</Text>
+                    {comp.isActive && <ActivePill />}
+                  </div>
+                </SearchItem>
+              ))}
+            </div>
           </div>
-        ))}
-        {store.hasUsers && <Text bold>Users</Text>}
-        {store.data.users.map((user) => (
-          <div key={`user-${user.address}`}>
-            <Link href={`/profile/${user.address}/meme`}>{user.address}</Link>
+        )}
+
+        {store.hasProfiles && (
+          <div>
+            <Text bold>Users</Text>
+            <div className={css("flex", "flex-col", "gap-0.5")}>
+              {store.data.profiles.map((profile) => (
+                <SearchItem
+                  key={`search-item-user-${profile.address}`}
+                  href={`/profile/${profile.user.address}/meme`}
+                  image={profile.avatar}
+                >
+                  <Text type={TextType.NoColor}>
+                    {profile.ens
+                      ? profile.ens
+                      : abbreviate(profile.user.address)}
+                  </Text>
+                </SearchItem>
+              ))}
+            </div>
           </div>
-        ))}
+        )}
+
         {!store.hasResults && (
-          <div className={css("text-center")}>
-            <Text type={TextType.Grey}>None found</Text>
+          <div className={css("text-center", "flex", "flex-col", "gap-1")}>
+            <Text type={TextType.Grey}>{"( ˘︹˘ )"}</Text>
+            <Text type={TextType.Grey} size={TextSize.xxs}>
+              no results
+            </Text>
           </div>
         )}
       </div>
     </div>
   );
 });
+
+interface SearchItemsProps {
+  href: string;
+  image?: string;
+  children?: ReactNode;
+}
+
+const SearchItem = ({ href, children, image }: SearchItemsProps) => {
+  return (
+    <Link
+      href={href}
+      className={css(
+        "flex",
+        "items-center",
+        "gap-2",
+        "hover:dark:bg-neutral-800",
+        "hover:bg-neutral-200",
+        "p-1"
+      )}
+    >
+      <div
+        className={css(
+          "relative",
+          "w-[25px]",
+          "h-[25px]",
+          "bg-neutral-100",
+          "dark:bg-neutral-700",
+          "bg-cover",
+          "bg-center",
+          "bg-norepeat"
+        )}
+        style={image ? { backgroundImage: `url(${image})` } : {}}
+      />
+      {children}
+    </Link>
+  );
+};
 
 export default SearchBar;

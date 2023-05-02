@@ -17,6 +17,10 @@ export class EthersService {
     return `ens:${address.toLowerCase()}`;
   }
 
+  private getAvatarCacheKey(address: string) {
+    return `ens:avatar:${address.toLowerCase()}`;
+  }
+
   constructor(
     private readonly config: ConfigService<Config>,
     private readonly cache: CacheService,
@@ -47,6 +51,19 @@ export class EthersService {
     );
   }
 
+  async refreshAvatarCache(address: string) {
+    const ens = await this.cache.get<string>(this.getEnsCacheKey(address));
+    if (!ens) {
+      return;
+    }
+    const avatar = await this.getAvatar(ens);
+    return this.cache.set(
+      this.getAvatarCacheKey(address),
+      avatar,
+      this.secondsToCacheEns,
+    );
+  }
+
   getCachedEnsName(address: string) {
     return this.cache.get<string>(this.getEnsCacheKey(address));
   }
@@ -66,5 +83,9 @@ export class EthersService {
 
   getAvatar(ens: string) {
     return this.provider.getAvatar(ens);
+  }
+
+  getCachedAvatar(address: string) {
+    return this.cache.get<string>(this.getAvatarCacheKey(address));
   }
 }

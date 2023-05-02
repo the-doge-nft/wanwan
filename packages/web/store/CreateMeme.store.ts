@@ -21,12 +21,14 @@ export default class CreateMemeStore extends Navigable(Loadable(EmptyClass)) {
   constructor() {
     super();
     makeObservable(this);
+    this.isLoading = false;
     this.currentView = CreateMemeView.Create;
   }
 
-  submit() {
+  async submit() {
     const promises = this.memes.map((meme) => meme.submit());
     return Promise.all(promises).then(() => {
+      AppStore.events.publish(AppStore.events.events.MEME_CREATED);
       Router.push(`/profile/${AppStore.auth.address}/meme`);
     });
   }
@@ -80,6 +82,9 @@ export class MemeStore extends Loadable(EmptyClass) {
   @observable
   showDescription = false;
 
+  @observable
+  isSubmited = false;
+
   constructor(file: FileWithPreview) {
     super();
     makeObservable(this);
@@ -99,7 +104,7 @@ export class MemeStore extends Loadable(EmptyClass) {
   toggleShowDescription() {
     this.showDescription = !this.showDescription;
     if (!this.showDescription) {
-      this.description = null;
+      this.description = undefined;
     }
   }
 
@@ -113,9 +118,14 @@ export class MemeStore extends Loadable(EmptyClass) {
       formData.append("description", jsonify(this.description));
     }
     return this.tapWithLoading(() =>
-      Http.postMeme(formData).then(() =>
-        AppStore.events.publish(AppStore.events.events.MEME_CREATED)
-      )
+      Http.postMeme(formData).then(() => {
+        this.isSubmited = true;
+      })
     );
+  }
+
+  @computed
+  get isDisabled() {
+    return this.isLoading || this.isSubmited;
   }
 }

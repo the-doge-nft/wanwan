@@ -14,7 +14,12 @@ import TiptapText from "@tiptap/extension-text";
 import TextAlign from "@tiptap/extension-text-align";
 import TextStyle from "@tiptap/extension-text-style";
 import Underline from "@tiptap/extension-underline";
-import { EditorContent, JSONContent, useEditor } from "@tiptap/react";
+import {
+  EditorContent,
+  EditorOptions,
+  JSONContent,
+  useEditor,
+} from "@tiptap/react";
 import { useEffect } from "react";
 import { css } from "../../helpers/css";
 import { textFieldBaseStyles, textFieldBorderStyles } from "../DSL/Input/Input";
@@ -84,7 +89,8 @@ export const getTipTapEditorExtensions = () => [
 
 export const useTipTapEditor = (
   content: JSONContent | string,
-  border?: boolean
+  border?: boolean,
+  options?: Partial<EditorOptions>
 ) => {
   return useEditor({
     extensions: getTipTapEditorExtensions(),
@@ -97,6 +103,7 @@ export const useTipTapEditor = (
       },
     },
     content: content,
+    ...options,
   });
 };
 

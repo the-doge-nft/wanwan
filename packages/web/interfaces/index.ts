@@ -237,5 +237,5 @@ export interface Leaderboard extends Profile {
 export interface Search {
   memes: Array<Meme>;
   competitions: Array<Competition>;
-  users: Array<User>;
+  profiles: Array<Profile>;
 }
