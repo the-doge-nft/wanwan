@@ -32,20 +32,12 @@ const SearchBar = observer(() => {
     };
     // eslint-disable-next-line
   }, [ref]);
-  useEffect(() => {
-    return () => {
-      store.destroy();
-    };
-  }, []);
   return (
     <div className={css("font-normal", "py-1", "relative")}>
       <Input
         block
         value={store.search}
-        onChange={(value) => {
-          console.log(value);
-          store.setSearch(value);
-        }}
+        onChange={(value) => store.setSearch(value)}
         placeholder={"enjoy"}
       />
       <div

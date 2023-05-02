@@ -3,9 +3,8 @@ import { Search } from "../interfaces";
 import Http from "../services/http";
 import { EmptyClass } from "../services/mixins";
 import { Loadable } from "../services/mixins/loadable";
-import { Reactionable } from "../services/mixins/reactionable";
 
-export default class SearchBarStore extends Reactionable(Loadable(EmptyClass)) {
+export default class SearchBarStore extends Loadable(EmptyClass) {
   @observable
   data: Search = { memes: [], profiles: [], competitions: [] };
 
@@ -18,17 +17,6 @@ export default class SearchBarStore extends Reactionable(Loadable(EmptyClass)) {
   constructor() {
     super();
     makeObservable(this);
-    this.react(
-      () => this.search,
-      (search) => {
-        if (this.search !== "") {
-          this.showDropdown = true;
-          this.query(search);
-        } else {
-          this.showDropdown = false;
-        }
-      }
-    );
   }
 
   private query(search: string) {
@@ -40,6 +28,12 @@ export default class SearchBarStore extends Reactionable(Loadable(EmptyClass)) {
   @action
   setSearch(search: string) {
     this.search = search;
+    if (this.search !== "") {
+      this.showDropdown = true;
+      this.query(search);
+    } else {
+      this.showDropdown = false;
+    }
   }
 
   @computed
@@ -60,9 +54,5 @@ export default class SearchBarStore extends Reactionable(Loadable(EmptyClass)) {
   @computed
   get hasCompetitions() {
     return this.data.competitions.length > 0;
-  }
-
-  destroy() {
-    return this.disposeReactions();
   }
 }
