@@ -1,3 +1,4 @@
+import { JSONContent } from "@tiptap/react";
 import { observer } from "mobx-react-lite";
 import { useCallback } from "react";
 import { IoCloseOutline } from "react-icons/io5";
@@ -11,6 +12,7 @@ import AsyncWrap, { NoDataFound } from "../DSL/AsyncWrap/AsyncWrap";
 import Link, { LinkType } from "../DSL/Link/Link";
 import Pane, { PaneType } from "../DSL/Pane/Pane";
 import Text, { TextSize, TextType } from "../DSL/Text/Text";
+import TipTapEditor from "../TipTapEditor/TipTapEditor";
 
 const CompetitionSubmissions: React.FC<{ store: CompetitionIdStore }> =
   observer(({ store }) => {
@@ -62,6 +64,14 @@ const CompetitionSubmissions: React.FC<{ store: CompetitionIdStore }> =
               "font-bold",
               { "text-red-800": score < 0 }
             );
+            let isDescriptionRichText = false;
+            let description = meme.description;
+            if (description) {
+              try {
+                description = JSON.parse(meme.description as string);
+                isDescriptionRichText = true;
+              } catch (e) {}
+            }
             return (
               <div key={`meme-preview-${meme.id}`} className={css("relative")}>
                 <Pane
@@ -155,7 +165,19 @@ const CompetitionSubmissions: React.FC<{ store: CompetitionIdStore }> =
                         <Text size={TextSize.sm} bold>
                           {meme.name}
                         </Text>
-                        <Text size={TextSize.sm}>{meme.description}</Text>
+                        {isDescriptionRichText && description && (
+                          <TipTapEditor
+                            content={description as JSONContent}
+                            border={false}
+                            readonly
+                          />
+                        )}
+                        {!isDescriptionRichText && description && (
+                          <Text size={TextSize.sm}>
+                            {meme.description as string}
+                          </Text>
+                        )}
+
                         <Link href={`/meme/${meme.id}`}>
                           <AspectRatio
                             className={css(

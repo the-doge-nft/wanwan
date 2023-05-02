@@ -54,7 +54,6 @@ const MemeById = observer(({ meme }: MemeByIdProps) => {
   }, [store]);
 
   const title = meme.name ? `${meme.name} on wanwan.me` : TITLE;
-  const description = meme.description ? meme.description : DESCRIPTION;
   const socialCardUrl = meme.media.url;
   let url = getBaseUrl() + `/meme/` + meme.id;
   const extension = meme.media.url.split(".").pop();
@@ -63,18 +62,14 @@ const MemeById = observer(({ meme }: MemeByIdProps) => {
     <>
       <Head>
         <title>{env.app.name}</title>
-        <meta
-          name="description"
-          content={store.meme.description ? store.meme.description : ""}
-          key="desc"
-        />
+        <meta name="description" content={DESCRIPTION} key="desc" />
         <meta property="og:site_name" content={title} />
         <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
+        <meta property="og:description" content={DESCRIPTION} />
         <meta property="og:image" content={socialCardUrl} />
         <meta property="og:url" content={url} />
         <meta name="twitter:title" content={title} />
-        <meta name="twitter:description" content={description} />
+        <meta name="twitter:description" content={DESCRIPTION} />
         <meta name="twitter:image" content={socialCardUrl} />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:site" content={TWITTER_USERNAME} />
