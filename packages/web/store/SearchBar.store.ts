@@ -1,4 +1,5 @@
 import { action, computed, makeObservable, observable } from "mobx";
+import sleep from "../helpers/sleep";
 import { Search } from "../interfaces";
 import Http from "../services/http";
 import { EmptyClass } from "../services/mixins";
@@ -17,11 +18,16 @@ export default class SearchBarStore extends Loadable(EmptyClass) {
   constructor() {
     super();
     makeObservable(this);
+    this.isLoading = true;
   }
 
   private query(search: string) {
     return this.tapWithLoading(() =>
-      Http.postSearch(search).then(({ data }) => (this.data = data))
+      Http.postSearch(search).then(async ({ data }) => {
+        await sleep(1000);
+        this.data = data;
+        return data;
+      })
     );
   }
 
