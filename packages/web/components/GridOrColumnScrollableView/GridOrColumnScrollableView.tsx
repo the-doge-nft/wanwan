@@ -68,7 +68,7 @@ const GridOrColumnScrollableView = observer(
             </div>
           )}
           {store.view === View.Grid && (
-            <AsyncGrid isLoading={store.isLoading} data={store.data}>
+            <AsyncGrid isLoading={false} data={store.data}>
               {store.data.map((item) => renderGridItem(item))}
             </AsyncGrid>
           )}
