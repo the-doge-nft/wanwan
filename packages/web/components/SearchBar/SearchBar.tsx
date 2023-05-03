@@ -61,7 +61,7 @@ const SearchBar = observer(() => {
       >
         {store.isLoading && (
           <div className={css("flex", "justify-center")}>
-            <Text type={TextType.Grey}>...loading...</Text>
+            <Text type={TextType.Grey}>...</Text>
           </div>
         )}
         {!store.isLoading && (
@@ -132,8 +132,7 @@ const SearchBar = observer(() => {
 
             {!store.hasResults && (
               <div className={css("text-center", "flex", "flex-col", "gap-1")}>
-                <Text type={TextType.Grey}>{"( ˘︹˘ )"}</Text>
-                <Text type={TextType.Grey}>no results</Text>
+                <Text type={TextType.Grey}>No results</Text>
               </div>
             )}
           </>

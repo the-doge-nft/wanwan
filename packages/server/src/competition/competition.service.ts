@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Competition, Prisma, TokenType, User } from '@prisma/client';
-import { TokenMetadataResponse } from 'alchemy-sdk';
+import { BigNumber, TokenMetadataResponse } from 'alchemy-sdk';
 import { parseEther, parseUnits } from 'ethers/lib/utils';
 import { CompetitionVotingRuleService } from '../competition-voting-rule/competition-voting-rule.service';
 import { CurrencyService } from '../currency/currency.service';
@@ -143,7 +143,6 @@ export class CompetitionService {
         reward.currency.contractAddress,
         reward.currency.type,
       );
-      console.log('testing');
       // We only support single NFT transfers for now
       let currencyAmountAtoms = '1';
       if (reward.currency.type === TokenType.ETH) {
@@ -268,5 +267,43 @@ export class CompetitionService {
       where: { memeId_competitionId: { memeId, competitionId } },
       data: { deletedAt: new Date() },
     });
+  }
+
+  async getCanUserVote(userAddress: string, competitionId: number) {
+    const votingRules = await this.votingRule.findMany({
+      where: {
+        competitionId,
+      },
+    });
+    for (const rule of votingRules) {
+      const { currency } = rule;
+
+      if (
+        currency.type === TokenType.ERC721 ||
+        currency.type === TokenType.ERC1155
+      ) {
+        const isValid = await this.alchemy.verifyNftOwnership(
+          userAddress,
+          currency.contractAddress,
+        );
+        if (!isValid) {
+          return false;
+        }
+      } else if (currency.type === TokenType.ERC20) {
+        const balances = await this.alchemy.getERC20Balances(userAddress, [
+          currency.contractAddress,
+        ]);
+        const balance = balances.tokenBalances?.[0];
+        if (BigNumber.from(balance?.tokenBalance).lte(0)) {
+          return false;
+        }
+      } else if (currency.type === TokenType.ETH) {
+        const balance = await this.alchemy.getEthBalance(userAddress);
+        if (BigNumber.from(balance).lte(0)) {
+          return false;
+        }
+      }
+    }
+    return true;
   }
 }

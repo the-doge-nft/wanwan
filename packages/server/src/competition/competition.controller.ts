@@ -132,6 +132,10 @@ export class CompetitionController {
       throw new BadRequestException('Competition has ended');
     }
 
+    if (!(await this.competition.getCanUserVote(user.address, competitionId))) {
+      throw new BadRequestException('You cannot vote for this competition');
+    }
+
     // @next -- lookup custom voting rules
     // if (!(await this.alchemy.getIsPixelHolder(user.address))) {
     //   throw new BadRequestException('You must hold a Doge Pixel to vote');

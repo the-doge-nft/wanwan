@@ -61,7 +61,7 @@ export const Buttons = observer(
   }) => {
     return (
       <div className={css("w-full", "flex", "gap-2", "mt-4")}>
-        <Button block onClick={() => store.goBack()} isLoading={isLoading}>
+        <Button block onClick={() => store.goBack()} disabled={isLoading}>
           Back
         </Button>
         <Submit block disabled={!canGoNext} isLoading={isLoading}>

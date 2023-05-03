@@ -82,8 +82,10 @@ const ReviewView = observer(({ store }: ReviewViewProps) => {
                 />
                 {store.name && <Text>{store.name}</Text>}
               </div>
-              {store.holdersLength && (
+              {store.holdersLength ? (
                 <Text type={TextType.Grey}>{store.holdersLength} holders</Text>
+              ) : (
+                <></>
               )}
             </div>
           ))}

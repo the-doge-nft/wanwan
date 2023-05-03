@@ -12,6 +12,7 @@ import { AuthModule } from './auth/auth.module';
 import { CacheService } from './cache/cache.service';
 import { CommentService } from './comment/comment.service';
 import { CompetitionCuratorService } from './competition-curator/competition-curator.service';
+import { CompetitionVotingRuleService } from './competition-voting-rule/competition-voting-rule.service';
 import { CompetitionSearchService } from './competition/competition-search.service';
 import { CompetitionController } from './competition/competition.controller';
 import { CompetitionService } from './competition/competition.service';
@@ -32,7 +33,6 @@ import { TwitterController } from './twitter/twitter.controller';
 import { TwitterService } from './twitter/twitter.service';
 import { UserService } from './user/user.service';
 import { VoteService } from './vote/vote.service';
-import { CompetitionVotingRuleService } from './competition-voting-rule/competition-voting-rule.service';
 
 @Module({
   imports: [

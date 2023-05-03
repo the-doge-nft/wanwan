@@ -51,7 +51,7 @@ const CompetitionSubmissions: React.FC<{ store: CompetitionIdStore }> =
           {store.memes.map((meme, index) => {
             const score = meme.votes.reduce((acc, vote) => acc + vote.score, 0);
             const userVoteScore = meme.votes.find(
-              (vote) => vote.user.id === AppStore.auth.profile?.user.id
+              (vote) => vote.user.id === AppStore.auth?.profile?.user?.id
             )?.score;
             const baseArrowStyles = css("text-neutral-500", {
               "hover:text-red-800 dark:hover:text-red-800":

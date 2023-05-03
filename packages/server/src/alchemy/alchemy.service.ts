@@ -53,7 +53,7 @@ export class AlchemyService {
     return this.verifyNftOwnership(address, this.pixelContractAddress);
   }
 
-  private verifyNftOwnership(address: string, contractAddress: string) {
+  verifyNftOwnership(address: string, contractAddress: string) {
     return this.alchemy.nft.verifyNftOwnership(address, contractAddress);
   }
 
