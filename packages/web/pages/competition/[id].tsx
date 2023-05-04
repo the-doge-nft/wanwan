@@ -16,7 +16,6 @@ import Http from "../../services/http";
 import redirectTo404 from "../../services/redirect/404";
 import { default as CompetitionByIdStore } from "../../store/CompetitionId.store";
 
-import Image from "next/image";
 import CompetitionRewards from "../../components/CompetitionById/CompetitionRewards";
 import CompetitionStats from "../../components/CompetitionById/CompetitionStats";
 import CompetitionSubmit from "../../components/CompetitionById/CompetitionSubmit";
@@ -50,21 +49,7 @@ const CompetitionById: React.FC<CompetitionByIdProps> = observer(
           <CollapsablePane
             onChange={(value) => (store.showTitle = value)}
             isExpanded={store.showTitle}
-            title={
-              <div className={css("flex", "items-center", "gap-2")}>
-                {store.competition.coverMedia && (
-                  <div className={css("relative", "w-[20px]", "h-[20px]")}>
-                    <Image
-                      fill
-                      alt={store.competition.name}
-                      src={store.competition.coverMedia.url}
-                      style={{ objectFit: "cover" }}
-                    />
-                  </div>
-                )}
-                <Text>{store.competition.name}</Text>
-              </div>
-            }
+            title={store.competition.name}
           >
             {store.competition.description && (
               <div className={css("grow")}>
