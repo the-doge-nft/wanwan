@@ -66,7 +66,13 @@ const MemeDetails = observer(({ store, onRemove }: MemeDetailsProps) => {
         <button
           disabled={store.isDisabled}
           onClick={() => onRemove()}
-          className={css("text-white", "border-[1px]", "border-white")}
+          className={css(
+            "dark:text-white",
+            "text-black",
+            "border-[1px]",
+            "dark:border-white",
+            "border-black"
+          )}
         >
           <Text>
             <IoCloseOutline size={18} />
@@ -105,7 +111,7 @@ const MemeDetails = observer(({ store, onRemove }: MemeDetailsProps) => {
                   disabled={store.isLoading || store.isSubmited}
                   onClick={() => store.toggleShowName()}
                 >
-                  <Text type={TextType.Grey}>
+                  <Text type={TextType.NoColor}>
                     <AiOutlineMinus size={12} />
                   </Text>
                 </Button>
@@ -120,17 +126,29 @@ const MemeDetails = observer(({ store, onRemove }: MemeDetailsProps) => {
           </div>
         )}
         {!store.showName && (
-          <span className={css("inline-flex", "items-center", "gap-1")}>
+          <span
+            className={css("inline-flex", "items-center", "gap-1", "group")}
+          >
             <Button
               size={ButtonSize.xs}
               onClick={() => store.toggleShowName()}
               disabled={store.isLoading || store.isSubmited}
             >
-              <div className={css("flex", "items-center", "gap-0.5")}>
-                <Text type={TextType.Grey}>
+              <div
+                className={css(
+                  "flex",
+                  "items-center",
+                  "gap-0.5",
+                  "group-hover:text-black",
+                  "text-neutral-400",
+                  "dark:text-neutral-600",
+                  "dark:group-hover:text-white"
+                )}
+              >
+                <Text type={TextType.NoColor}>
                   <AiOutlinePlus size={15} />
                 </Text>
-                <Text type={TextType.Grey} size={TextSize.xs}>
+                <Text type={TextType.NoColor} size={TextSize.xs}>
                   name
                 </Text>
               </div>
@@ -148,7 +166,7 @@ const MemeDetails = observer(({ store, onRemove }: MemeDetailsProps) => {
                     disabled={store.isLoading || store.isSubmited}
                     onClick={() => store.toggleShowDescription()}
                   >
-                    <Text type={TextType.Grey}>
+                    <Text type={TextType.Primary}>
                       <AiOutlineMinus size={12} />
                     </Text>
                   </Button>
@@ -164,20 +182,32 @@ const MemeDetails = observer(({ store, onRemove }: MemeDetailsProps) => {
           </div>
         )}
         {!store.showDescription && (
-          <Button
-            size={ButtonSize.xs}
-            disabled={store.isLoading || store.isSubmited}
-            onClick={() => store.toggleShowDescription()}
-          >
-            <div className={css("flex", "items-center", "gap-0.5")}>
-              <Text type={TextType.Grey}>
-                <AiOutlinePlus size={15} />
-              </Text>
-              <Text type={TextType.Grey} size={TextSize.xs}>
-                description
-              </Text>
-            </div>
-          </Button>
+          <span className={css("group")}>
+            <Button
+              size={ButtonSize.xs}
+              disabled={store.isLoading || store.isSubmited}
+              onClick={() => store.toggleShowDescription()}
+            >
+              <div
+                className={css(
+                  "flex",
+                  "items-center",
+                  "gap-0.5",
+                  "group-hover:text-black",
+                  "text-neutral-400",
+                  "dark:text-neutral-600",
+                  "dark:group-hover:text-white"
+                )}
+              >
+                <Text type={TextType.NoColor}>
+                  <AiOutlinePlus size={15} />
+                </Text>
+                <Text type={TextType.NoColor} size={TextSize.xs}>
+                  description
+                </Text>
+              </div>
+            </Button>
+          </span>
         )}
       </Form>
     </Pane>
