@@ -17,13 +17,7 @@ const CompetitionPreviewLink = ({
         href={`/competition/${competition.id}`}
       >
         <AspectRatio
-          className={css(
-            "bg-cover",
-            "bg-center",
-            "bg-no-repeat",
-            "h-full",
-            "relative"
-          )}
+          className={css("bg-cover", "bg-center", "bg-no-repeat", "h-full")}
           ratio={
             competition?.coverMedia
               ? `${competition.coverMedia.width}/${competition.coverMedia.height}`
@@ -48,23 +42,23 @@ const CompetitionPreviewLink = ({
               <ActivePill />
             </div>
           )}
-          {!competition.coverMedia && (
-            <div
-              className={css(
-                "absolute",
-                "top-[50%]",
-                "left-[50%]",
-                "-translate-x-1/2",
-                "-translate-y-1/2",
-                "text-neutral-300",
-                "dark:text-neutral-700",
-                "group-hover:text-red-700"
-              )}
-            >
-              <Logo size={32} />
-            </div>
-          )}
         </AspectRatio>
+        {!competition.coverMedia && (
+          <div
+            className={css(
+              "absolute",
+              "top-[50%]",
+              "left-[50%]",
+              "-translate-x-1/2",
+              "-translate-y-1/2",
+              "text-neutral-300",
+              "dark:text-neutral-700",
+              "group-hover:text-red-700"
+            )}
+          >
+            <Logo size={32} />
+          </div>
+        )}
       </PreviewLink>
     </div>
   );
