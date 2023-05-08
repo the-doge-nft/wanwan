@@ -37,9 +37,10 @@ const GridOrColumnScrollableView = observer(
                 <AspectRatio
                   ratio={"1/1.5"}
                   className={css("w-[12px]", {
-                    "bg-slate-700 dark:bg-slate-400":
+                    "bg-slate-700 dark:bg-slate-400 ":
                       store.view === View.Column,
-                    "bg-slate-400 dark:bg-slate-700": store.view === View.Grid,
+                    "bg-slate-400 dark:bg-slate-700 dark:hover:bg-slate-400 hover:bg-slate-700":
+                      store.view === View.Grid,
                   })}
                 />
               </div>
@@ -47,7 +48,7 @@ const GridOrColumnScrollableView = observer(
                 className={css("cursor-pointer", {
                   "text-slate-700 dark:text-slate-400":
                     store.view === View.Grid,
-                  "text-slate-400 dark:text-slate-700":
+                  "text-slate-400 hover:text-slate-700 dark:text-slate-700 dark:hover:text-slate-400":
                     store.view === View.Column,
                 })}
                 onClick={() => (store.view = View.Grid)}

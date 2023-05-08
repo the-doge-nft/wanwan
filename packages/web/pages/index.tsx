@@ -104,7 +104,14 @@ const Home: React.FC<HomeProps> = observer(({ stats }) => {
 const ViewAllLink = ({ href }: { href: string }) => {
   return (
     <Link type={LinkType.Secondary} href={href}>
-      <span className={css("text-slate-700", "dark:text-slate-400")}>
+      <span
+        className={css(
+          "text-slate-400",
+          "hover:text-slate-700",
+          "dark:hover:text-slate-400",
+          "dark:text-slate-700"
+        )}
+      >
         <TfiLayoutGrid2Alt size={18} />
       </span>
     </Link>

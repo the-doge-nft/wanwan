@@ -1,4 +1,3 @@
-import { EditorContent } from "@tiptap/react";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useCallback, useMemo } from "react";
@@ -18,8 +17,7 @@ import Pane from "../DSL/Pane/Pane";
 import Spinner, { SpinnerSize } from "../DSL/Spinner/Spinner";
 import Text, { TextSize, TextType } from "../DSL/Text/Text";
 import { errorToast } from "../DSL/Toast/Toast";
-import { useTipTapEditor } from "../TipTapEditor/TipTapEditor";
-import TipTapEditorToolbar from "../TipTapEditor/TipTapEditorToolbar";
+import TipTapEditor from "../TipTapEditor/TipTapEditor";
 
 const CreateMeme: React.FC<{
   store: CreateMemeStore;
@@ -60,15 +58,6 @@ interface MemeDetailsProps {
 }
 
 const MemeDetails = observer(({ store, onRemove }: MemeDetailsProps) => {
-  const editor = useTipTapEditor(
-    store.description ? store.description : "",
-    true,
-    {
-      onUpdate: ({ editor }) => {
-        store.description = editor?.getJSON();
-      },
-    }
-  );
   return (
     <Pane
       key={store.file.name}
@@ -152,18 +141,12 @@ const MemeDetails = observer(({ store, onRemove }: MemeDetailsProps) => {
                   </Button>
                 </div>
                 <div className={css("grow")}>
-                  <EditorContent
-                    editor={editor}
-                    disabled={store.isLoading || store.isSubmited}
+                  <TipTapEditor
+                    content={store.description ? store.description : ""}
+                    onUpdate={(json) => (store.description = json)}
                   />
                 </div>
               </div>
-              {editor && (
-                <TipTapEditorToolbar
-                  store={store.toolbarStore}
-                  editor={editor}
-                />
-              )}
             </div>
           </div>
         )}

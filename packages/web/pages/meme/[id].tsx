@@ -48,15 +48,29 @@ const MemeById = observer(({ meme }: MemeByIdProps) => {
   const {
     query: { id },
   } = useRouter();
+  const title = meme.name ? `${meme.name} on wanwan.me` : TITLE;
+  const socialCardUrl = meme.media.url;
+  let url = getBaseUrl() + `/meme/` + meme.id;
+  const extension = meme.media.url.split(".").pop();
+
   const store = useMemo(() => new MemeIdStore(id as string, meme), [id, meme]);
   useEffect(() => {
     store.init();
   }, [store]);
 
-  const title = meme.name ? `${meme.name} on wanwan.me` : TITLE;
-  const socialCardUrl = meme.media.url;
-  let url = getBaseUrl() + `/meme/` + meme.id;
-  const extension = meme.media.url.split(".").pop();
+  const headerOffset = 51;
+  const descriptionOffset = 110;
+  const [windowHeight, setWindowHeight] = useState<null | number>(null);
+  useEffect(() => {
+    const _setWindowHeight = () => {
+      setWindowHeight(window.innerHeight);
+    };
+    _setWindowHeight();
+    window.addEventListener("resize", _setWindowHeight);
+    return () => {
+      return window.removeEventListener("resize", _setWindowHeight);
+    };
+  }, []);
 
   return (
     <>
@@ -76,13 +90,19 @@ const MemeById = observer(({ meme }: MemeByIdProps) => {
       </Head>
       <AppLayout>
         <div>
-          <div className={css("relative")}>
+          <div
+            className={css("relative")}
+            style={{
+              height: windowHeight
+                ? windowHeight - headerOffset - descriptionOffset
+                : 0,
+            }}
+          >
             <Image
-              width={store.meme.media.width}
-              height={store.meme.media.height}
+              fill
               src={store.meme.media.url}
               alt={store.meme.media.url}
-              className={css("m-auto", "w-full")}
+              className={css("m-auto", "w-full", "object-contain")}
               unoptimized={extension?.toLocaleLowerCase() === "gif"}
             />
           </div>

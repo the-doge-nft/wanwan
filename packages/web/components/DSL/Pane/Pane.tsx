@@ -67,8 +67,17 @@ const Pane: React.FC<PropsWithChildren<PaneProps>> = observer(
           <div
             className={css(paneTypeStyles[type].title, basePaneStyles.title)}
           >
-            <div className={css("grow")}>
+            <div
+              className={css(
+                "grow",
+                "overflow-hidden",
+                "text-ellipsis",
+                "dark:text-white",
+                "text-black"
+              )}
+            >
               <Text
+                ellipses
                 type={
                   type === PaneType.Primary || type === PaneType.Grey
                     ? TextType.Primary
