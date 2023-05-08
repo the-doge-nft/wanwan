@@ -21,6 +21,8 @@ export interface User {
   deletedAt: DatetimeString;
   isSuperAdmin: boolean;
   ens: Nullable<string>;
+  avatar: Nullable<string>;
+  wan: number;
 }
 
 export interface Reward {
@@ -149,14 +151,6 @@ export interface CompetitionMeme extends MemeWithVotes, MemeWithScore {
   submissions: Array<Submission>;
 }
 
-export interface Profile {
-  address: string;
-  avatar: string;
-  user: User;
-  memes: Array<Meme>;
-  wan: number;
-}
-
 export interface MediaRequirements {
   maxSizeBytes: number;
   mimeTypeToExtensionMap: { [key: string]: string[] };
@@ -229,12 +223,12 @@ export interface ERC20Balance extends TokenBalanceSuccess {
 
 export type NextString = Nullable<string> | undefined;
 
-export interface Leaderboard extends Profile {
+export interface Leaderboard extends User {
   wan: number;
 }
 
 export interface Search {
   memes: Array<Meme>;
   competitions: Array<Competition>;
-  profiles: Array<Profile>;
+  users: Array<User>;
 }

@@ -24,7 +24,6 @@ import { MemeSearchService } from './meme/meme-search.service';
 import { MemeController } from './meme/meme.controller';
 import { MemeService } from './meme/meme.service';
 import { PrismaService } from './prisma.service';
-import { ProfileService } from './profile/profile.service';
 import { RewardService } from './reward/reward.service';
 import { S3Service } from './s3/s3.service';
 import { StatsService } from './stats/stats.service';
@@ -90,7 +89,6 @@ import { VoteService } from './vote/vote.service';
     RewardService,
     CurrencyService,
     CompetitionCuratorService,
-    ProfileService,
     EthersService,
     CompetitionSearchService,
     MemeSearchService,

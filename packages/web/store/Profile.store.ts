@@ -1,7 +1,7 @@
 import { action, computed, makeObservable, observable } from "mobx";
 import Http from "../services/http";
 import { errorToast } from "./../components/DSL/Toast/Toast";
-import { Competition, Meme, Nullable, Profile } from "./../interfaces/index";
+import { Competition, Meme, Nullable, User } from "./../interfaces/index";
 import AppStore from "./App.store";
 
 export enum ProfileView {
@@ -17,7 +17,7 @@ export default class ProfileStore {
   competitions: Array<Competition> = [];
 
   @observable
-  profile: Profile;
+  user: User;
 
   @observable
   view: ProfileView = ProfileView.Meme;
@@ -31,12 +31,12 @@ export default class ProfileStore {
   @observable
   twitterUsername: Nullable<string> = null;
 
-  constructor(profile: Profile, view: ProfileView) {
+  constructor(profile: User, view: ProfileView) {
     makeObservable(this);
-    this.profile = profile;
-    this.description = this.profile.user.description;
-    this.externalUrl = this.profile.user.externalUrl;
-    this.twitterUsername = this.profile.user.twitterUsername;
+    this.user = profile;
+    this.description = this.user.description;
+    this.externalUrl = this.user.externalUrl;
+    this.twitterUsername = this.user.twitterUsername;
     this.view = view;
   }
 
@@ -61,19 +61,19 @@ export default class ProfileStore {
   }
 
   getMemesIfAuthedUser() {
-    if (AppStore.auth.address === this.profile.address) {
+    if (AppStore.auth.address === this.user.address) {
       this.getUserMemes();
     }
   }
 
   getCompetitionsIfAuthedUser() {
-    if (AppStore.auth.address === this.profile.address) {
+    if (AppStore.auth.address === this.user.address) {
       this.getUserCompetitions();
     }
   }
 
   getProfileIfAuthed(profile: any) {
-    this.profile = profile;
+    this.user = profile;
     this.description = profile.user.description;
     this.externalUrl = profile.user.externalUrl;
     this.twitterUsername = profile.user.twitterUsername;
@@ -87,7 +87,7 @@ export default class ProfileStore {
         {
           key: "address",
           operation: "equals",
-          value: this.profile.address,
+          value: this.user.address,
         },
       ],
       sorts: [{ key: "createdAt", direction: "desc" }],
@@ -106,7 +106,7 @@ export default class ProfileStore {
         {
           key: "address",
           operation: "equals",
-          value: this.profile.address,
+          value: this.user.address,
         },
       ],
       sorts: [{ key: "createdAt", direction: "desc" }],
@@ -163,6 +163,6 @@ export default class ProfileStore {
   }
 
   private getUrl(view: ProfileView) {
-    return `/profile/${this.profile.address}/${view}`;
+    return `/profile/${this.user.address}/${view}`;
   }
 }

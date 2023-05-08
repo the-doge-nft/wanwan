@@ -8,7 +8,7 @@ import { Loadable } from "../services/mixins/loadable";
 
 export default class SearchBarStore extends Loadable(Abortable(EmptyClass)) {
   @observable
-  data: Search = { memes: [], profiles: [], competitions: [] };
+  data: Search = { memes: [], users: [], competitions: [] };
 
   @observable
   search = "";
@@ -51,7 +51,7 @@ export default class SearchBarStore extends Loadable(Abortable(EmptyClass)) {
 
   @computed
   get hasResults() {
-    return this.hasMemes || this.hasProfiles || this.hasCompetitions;
+    return this.hasMemes || this.hasUsers || this.hasCompetitions;
   }
 
   @computed
@@ -60,8 +60,8 @@ export default class SearchBarStore extends Loadable(Abortable(EmptyClass)) {
   }
 
   @computed
-  get hasProfiles() {
-    return this.data.profiles.length > 0;
+  get hasUsers() {
+    return this.data.users.length > 0;
   }
 
   @computed

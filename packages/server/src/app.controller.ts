@@ -25,7 +25,6 @@ import { EthersService } from './ethers/ethers.service';
 import { AuthenticatedRequest } from './interface';
 import { MediaService } from './media/media.service';
 import { MemeService } from './meme/meme.service';
-import { ProfileService } from './profile/profile.service';
 import { StatsService } from './stats/stats.service';
 import { SubmissionService } from './submission/submission.service';
 import { UserService } from './user/user.service';
@@ -39,7 +38,6 @@ export class AppController {
     private readonly meme: MemeService,
     private readonly competition: CompetitionService,
     private readonly submission: SubmissionService,
-    private readonly profile: ProfileService,
     private readonly stats: StatsService,
     private readonly users: UserService,
     private readonly media: MediaService,
@@ -148,7 +146,7 @@ export class AppController {
 
   @Get('profile/:addressOrEns')
   async getProfile(@Param() { addressOrEns }: { addressOrEns: string }) {
-    return this.profile.get(addressOrEns);
+    return this.users.findByAddressOrEns(addressOrEns);
   }
 
   @Get('profile/:address/likes')
@@ -163,7 +161,7 @@ export class AppController {
     @Body() profile: ProfileDto,
   ) {
     await this.users.update({ where: { id: user.id }, data: profile });
-    return this.profile.get(user.address);
+    return this.users.findFirst({ where: { id: user.id } });
   }
 
   @Get('stats')

@@ -1,17 +1,23 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma, User } from '@prisma/client';
+import { EthersService } from '../ethers/ethers.service';
 import { UserWithExtras } from '../interface';
 import { PrismaService } from './../prisma.service';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly ethers: EthersService,
+  ) {}
 
   async addExtra(user: User): Promise<UserWithExtras> {
     if (user === null) {
       return null;
     }
-    return user;
+    const avatar = await this.ethers.getCachedAvatar(user.address);
+    const wan = await this.getWanScore(user.address);
+    return { ...user, avatar, wan };
   }
 
   async addExtras(users: User[]): Promise<UserWithExtras[]> {
@@ -72,5 +78,16 @@ export class UserService {
     }
     usersWithWan.sort((a, b) => b.wan - a.wan);
     return usersWithWan;
+  }
+
+  findByAddressOrEns(addressOrEns: string) {
+    return this.findFirst({
+      where: {
+        OR: [
+          { address: { contains: addressOrEns, mode: 'insensitive' } },
+          { ens: { contains: addressOrEns, mode: 'insensitive' } },
+        ],
+      },
+    });
   }
 }

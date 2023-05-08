@@ -2,6 +2,7 @@ import { observer } from "mobx-react-lite";
 import { ReactNode, useEffect, useMemo, useRef } from "react";
 import { css } from "../../helpers/css";
 import { abbreviate } from "../../helpers/strings";
+import { Nullable } from "../../interfaces";
 import SearchBarStore from "../../store/SearchBar.store";
 import ActivePill from "../ActivePill/ActivePill";
 import Input from "../DSL/Input/Input";
@@ -109,20 +110,18 @@ const SearchBar = observer(() => {
               </div>
             )}
 
-            {store.hasProfiles && (
+            {store.hasUsers && (
               <div>
                 <Text bold>Users</Text>
                 <div className={css("flex", "flex-col", "gap-0.5")}>
-                  {store.data.profiles.map((profile) => (
+                  {store.data.users.map((user) => (
                     <SearchItem
-                      key={`search-item-user-${profile.address}`}
-                      href={`/profile/${profile.user.address}/meme`}
-                      image={profile.avatar}
+                      key={`search-item-user-${user.address}`}
+                      href={`/profile/${user.address}/meme`}
+                      image={user.avatar}
                     >
                       <Text type={TextType.NoColor}>
-                        {profile.user.ens
-                          ? profile.user.ens
-                          : abbreviate(profile.user.address)}
+                        {user.ens ? user.ens : abbreviate(user.address)}
                       </Text>
                     </SearchItem>
                   ))}
@@ -144,7 +143,7 @@ const SearchBar = observer(() => {
 
 interface SearchItemsProps {
   href: string;
-  image?: string;
+  image?: Nullable<string>;
   children?: ReactNode;
 }
 

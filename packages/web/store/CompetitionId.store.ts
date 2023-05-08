@@ -178,8 +178,8 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
       AppStore.auth.isAuthed &&
       this.canUserSelectMemes &&
       this.competition.isActive &&
-      !!AppStore.auth.profile &&
-      AppStore.auth?.profile?.user?.id !== this.competition.createdById
+      !!AppStore.auth.user &&
+      AppStore.auth?.user?.id !== this.competition.createdById
     );
   }
 
@@ -272,7 +272,7 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
   get isCreator() {
     return (
       AppStore.auth.isAuthed &&
-      AppStore.auth.profile?.user?.id === this.competition.createdById
+      AppStore.auth.user?.id === this.competition.createdById
     );
   }
 
@@ -291,10 +291,10 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
   @computed
   get isUserCurator() {
     return (
-      AppStore.auth?.profile?.user?.id &&
+      AppStore.auth?.user?.id &&
       this.competition.curators
         .map((user) => user.id)
-        .includes(AppStore.auth.profile.user.id)
+        .includes(AppStore.auth.user.id)
     );
   }
 

@@ -39,12 +39,12 @@ const ProfileSettingsModal = observer(({}: SettingsModalProps) => {
               "dark:border-neutral-600",
               "dark:bg-neutral-800",
               "rounded-full",
-              { "bg-slate-200": !AppStore.auth.profile?.avatar }
+              { "bg-slate-200": !AppStore.auth.user?.avatar }
             )}
             style={
-              AppStore.auth.profile?.avatar
+              AppStore.auth.user?.avatar
                 ? {
-                    backgroundImage: `url(${AppStore.auth.profile?.avatar})`,
+                    backgroundImage: `url(${AppStore.auth.user?.avatar})`,
                   }
                 : {}
             }
@@ -73,7 +73,7 @@ const ProfileSettingsModal = observer(({}: SettingsModalProps) => {
             <TextInput
               name={"description"}
               label={"Bio"}
-              defaultValue={AppStore.auth.profile?.user?.description || ""}
+              defaultValue={AppStore.auth.user?.description || ""}
               placeholder={"Tell me something about yourself..."}
               block
             />
@@ -81,7 +81,7 @@ const ProfileSettingsModal = observer(({}: SettingsModalProps) => {
               name={"externalUrl"}
               label={"Website"}
               placeholder={"https://..."}
-              defaultValue={AppStore.auth.profile?.user?.externalUrl || ""}
+              defaultValue={AppStore.auth.user?.externalUrl || ""}
               validate={websiteUrl}
               block
             />
@@ -92,7 +92,7 @@ const ProfileSettingsModal = observer(({}: SettingsModalProps) => {
           <div className={css("mb-0.5")}>
             <Text size={TextSize.sm}>Twitter</Text>
           </div>
-          {AppStore.auth.profile?.user?.twitterUsername && (
+          {AppStore.auth.user?.twitterUsername && (
             <div
               className={css(
                 "flex",
@@ -108,10 +108,10 @@ const ProfileSettingsModal = observer(({}: SettingsModalProps) => {
               <Link
                 type={LinkType.Secondary}
                 isExternal
-                href={`https://twitter.com/${AppStore.auth.profile?.user?.twitterUsername}`}
+                href={`https://twitter.com/${AppStore.auth.user?.twitterUsername}`}
               >
                 <Text type={TextType.NoColor}>
-                  {AppStore.auth.profile?.user?.twitterUsername}
+                  {AppStore.auth.user?.twitterUsername}
                 </Text>
               </Link>
               <Button
@@ -119,7 +119,7 @@ const ProfileSettingsModal = observer(({}: SettingsModalProps) => {
                 onClick={() => {
                   setIsDeleteTwitterLoading(true);
                   Http.deleteTwitterUsername()
-                    .then(({ data }) => (AppStore.auth.profile = data))
+                    .then(({ data }) => (AppStore.auth.user = data))
                     .finally(() => setIsDeleteTwitterLoading(false));
                 }}
               >
@@ -127,7 +127,7 @@ const ProfileSettingsModal = observer(({}: SettingsModalProps) => {
               </Button>
             </div>
           )}
-          {!AppStore.auth.profile?.user?.twitterUsername && (
+          {!AppStore.auth.user?.twitterUsername && (
             <div className={css("w-full")}>
               <a href={`${env.api.baseUrl}/twitter/login`}>
                 <Button block>Connect</Button>

@@ -31,7 +31,8 @@ export interface MediaWithExtras extends Media {
 }
 
 export interface UserWithExtras extends User {
-  ens: string | null;
+  avatar: string | null;
+  wan: number;
 }
 
 export interface MemeWithExtras extends Meme {

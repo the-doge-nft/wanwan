@@ -11,13 +11,13 @@ import CompetitionPreviewLink from "../../../components/PreviewLink/CompetitionP
 import MemePreviewLink from "../../../components/PreviewLink/MemePreviewLink";
 import { css } from "../../../helpers/css";
 import { abbreviate, getRainobwURL } from "../../../helpers/strings";
-import { Profile } from "../../../interfaces";
+import { User } from "../../../interfaces";
 import AppLayout from "../../../layouts/App.layout";
 import Http from "../../../services/http";
 import redirectTo404 from "../../../services/redirect/404";
 import ProfileStore, { ProfileView } from "../../../store/Profile.store";
 interface ProfileProps {
-  profile: Profile;
+  profile: User;
 }
 
 const ProfilePage: React.FC<ProfileProps> = observer(({ profile }) => {
@@ -66,7 +66,7 @@ const ProfilePage: React.FC<ProfileProps> = observer(({ profile }) => {
               style={
                 profile.avatar
                   ? {
-                      backgroundImage: `url(${store.profile.avatar})`,
+                      backgroundImage: `url(${store.user.avatar})`,
                     }
                   : {}
               }
@@ -84,11 +84,11 @@ const ProfilePage: React.FC<ProfileProps> = observer(({ profile }) => {
               <Link
                 type={LinkType.Secondary}
                 isExternal
-                href={getRainobwURL(store.profile.address)}
+                href={getRainobwURL(store.user.address)}
               >
-                {store.profile.user.ens
-                  ? store.profile.user.ens
-                  : abbreviate(store.profile.address)}
+                {store.user.ens
+                  ? store.user.ens
+                  : abbreviate(store.user.address)}
               </Link>
             </div>
             <div className={css("flex", "gap-0.5", "items-baseline")}>
@@ -96,7 +96,7 @@ const ProfilePage: React.FC<ProfileProps> = observer(({ profile }) => {
                 wan:
               </Text>
               <Text size={TextSize.sm} bold>
-                {store.profile.wan}
+                {store.user.wan}
               </Text>
             </div>
             <div

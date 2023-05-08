@@ -3,7 +3,7 @@ import { computed, makeObservable, observable } from "mobx";
 import { Address } from "wagmi";
 import { Reactionable } from "../services/mixins/reactionable";
 import { abbreviate } from "./../helpers/strings";
-import { Meme, Profile } from "./../interfaces/index";
+import { Meme, User } from "./../interfaces/index";
 import Http from "./../services/http";
 import { EmptyClass } from "./../services/mixins/index";
 import AppStore from "./App.store";
@@ -17,7 +17,7 @@ export default class AuthStore extends Reactionable(EmptyClass) {
   address: Address | null = null;
 
   @observable
-  profile: Profile | null = null;
+  user: User | null = null;
 
   @observable
   memes: Array<Meme> = [];
@@ -58,7 +58,7 @@ export default class AuthStore extends Reactionable(EmptyClass) {
             this.getIsAdmin();
             this.getLikedMemeIds();
           } else {
-            this.profile = null;
+            this.user = null;
             this.memes = [];
           }
         }
@@ -67,8 +67,8 @@ export default class AuthStore extends Reactionable(EmptyClass) {
     );
   }
 
-  updateProfile(data: Profile) {
-    this.profile = data;
+  updateProfile(data: User) {
+    this.user = data;
   }
 
   getStatus({
@@ -100,7 +100,7 @@ export default class AuthStore extends Reactionable(EmptyClass) {
       throw new Error("Address not available");
     }
     return Http.getProfile(this.address).then(({ data }) => {
-      this.profile = data;
+      this.user = data;
       return data;
     });
   }
@@ -177,15 +177,15 @@ export default class AuthStore extends Reactionable(EmptyClass) {
 
   @computed
   get displayName() {
-    if (!this.profile?.address) {
+    if (!this.user?.address) {
       if (this.address) {
         return abbreviate(this.address);
       }
       return undefined;
     }
-    if (this.profile?.user.ens) {
-      return this.profile.user.ens;
+    if (this.user?.ens) {
+      return this.user.ens;
     }
-    return abbreviate(this.profile.address);
+    return abbreviate(this.user.address);
   }
 }

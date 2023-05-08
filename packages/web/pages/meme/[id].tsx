@@ -242,8 +242,8 @@ const CommentForm: React.FC<{
                     type={LinkType.Secondary}
                   >
                     <Text type={TextType.NoColor} size={TextSize.sm}>
-                      {AppStore.auth.profile?.user?.ens
-                        ? AppStore.auth.profile?.user?.ens
+                      {AppStore.auth.user?.ens
+                        ? AppStore.auth.user?.ens
                         : abbreviate(AppStore.auth.address)}
                     </Text>
                   </Link>

@@ -10,7 +10,6 @@ import { EthersService } from './ethers/ethers.service';
 import { abbreviate } from './helpers/strings';
 import { MemeService } from './meme/meme.service';
 import { PrismaService } from './prisma.service';
-import { ProfileService } from './profile/profile.service';
 import { TwitterService } from './twitter/twitter.service';
 import { UserService } from './user/user.service';
 
@@ -28,7 +27,6 @@ export class AppService implements OnModuleInit {
     private readonly config: ConfigService,
     private readonly competition: CompetitionService,
     private readonly user: UserService,
-    private readonly profile: ProfileService,
     @InjectSentry() private readonly sentryClient: SentryService,
   ) {}
 
@@ -163,10 +161,6 @@ export class AppService implements OnModuleInit {
       },
       take,
     });
-    const profiles = [];
-    for (const user of users) {
-      profiles.push(await this.profile.get(user.address));
-    }
-    return { memes, competitions, profiles };
+    return { memes, competitions, users };
   }
 }

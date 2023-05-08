@@ -11,15 +11,16 @@ import {
   Media,
   MediaRequirements,
   Meme,
-  Profile,
   ProfileDto,
   Reward,
+  Search,
   SearchParams,
   SearchResponse,
   Stats,
   Submission,
   Tweet,
   TweetReply,
+  User,
 } from "../interfaces";
 import AppStore from "../store/App.store";
 import ApiErrorInterceptor from "./interceptors/api-error.interceptor";
@@ -146,11 +147,11 @@ class _Http {
   }
 
   deleteTwitterUsername() {
-    return this.http.post<Profile>("/twitter/delete");
+    return this.http.post<User>("/twitter/delete");
   }
 
   postTwitterAuth(body: { oauth_token: string; oauth_verifier: string }) {
-    return this.http.post<Profile>("/twitter/callback", body);
+    return this.http.post<User>("/twitter/callback", body);
   }
 
   getTwitterLoginUrl() {
@@ -257,7 +258,7 @@ class _Http {
   }
 
   postSearch(search: string, signal?: AbortSignal) {
-    return this.http.post("/search", { search }, { signal });
+    return this.http.post<Search>("/search", { search }, { signal });
   }
 
   static create() {
