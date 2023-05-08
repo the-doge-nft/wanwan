@@ -26,6 +26,7 @@ export default class CreateMemeStore extends Navigable(Loadable(EmptyClass)) {
   }
 
   async submit() {
+    this.isLoading = true;
     const promises = this.memes.map((meme) => meme.submit());
     return Promise.all(promises).then(() => {
       AppStore.events.publish(AppStore.events.events.MEME_CREATED);

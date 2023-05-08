@@ -158,10 +158,7 @@ export default class CreateCompetitionStore extends Navigable<
     this.currentView = CreateCompetitionView.Description;
   }
 
-  onDescriptionSubmit(json: JSONContent | null) {
-    if (json) {
-      this.description = json;
-    }
+  onDescriptionSubmit() {
     this.currentView = CreateCompetitionView.Details;
   }
 

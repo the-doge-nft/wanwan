@@ -101,6 +101,7 @@ export const getTipTapEditorExtensions = () => [
 export const useTipTapEditor = (
   content?: JSONContent | string,
   border?: boolean,
+  readonly?: boolean,
   options?: Partial<EditorOptions>
 ) => {
   return useEditor({
@@ -110,6 +111,7 @@ export const useTipTapEditor = (
         class: css(textFieldBaseStyles, {
           [textFieldBorderStyles]: border,
           "resize-y": border,
+          "!px-0 !py-0": readonly,
         }),
       },
     },
@@ -134,6 +136,7 @@ const TipTapEditor = ({
   const editor = useTipTapEditor(
     content,
     border,
+    readonly,
     onUpdate ? { onUpdate: ({ editor }) => onUpdate(editor.getJSON()) } : {}
   );
   const store = useMemo(() => new TipTapEditorToolbarStore(), []);

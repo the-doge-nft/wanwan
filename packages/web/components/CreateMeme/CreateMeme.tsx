@@ -9,7 +9,7 @@ import { css } from "../../helpers/css";
 import { bytesToSize } from "../../helpers/numberFormatter";
 import AppStore from "../../store/App.store";
 import CreateMemeStore, { MemeStore } from "../../store/CreateMeme.store";
-import Button from "../DSL/Button/Button";
+import Button, { ButtonSize } from "../DSL/Button/Button";
 import Form from "../DSL/Form/Form";
 import { FormLabel } from "../DSL/Form/FormControl";
 import TextInput from "../DSL/Form/TextInput";
@@ -45,7 +45,7 @@ const CreateMeme: React.FC<{
       )}
       {store.hasMemes && (
         <Button onClick={() => store.submit()} isLoading={store.isLoading}>
-          Submit
+          Upload
         </Button>
       )}
     </div>
@@ -101,10 +101,13 @@ const MemeDetails = observer(({ store, onRemove }: MemeDetailsProps) => {
             <TextInput
               leftOfInput={
                 <Button
+                  size={ButtonSize.xs}
                   disabled={store.isLoading || store.isSubmited}
                   onClick={() => store.toggleShowName()}
                 >
-                  <AiOutlineMinus size={12} />
+                  <Text type={TextType.Grey}>
+                    <AiOutlineMinus size={12} />
+                  </Text>
                 </Button>
               }
               block
@@ -117,15 +120,22 @@ const MemeDetails = observer(({ store, onRemove }: MemeDetailsProps) => {
           </div>
         )}
         {!store.showName && (
-          <Button
-            onClick={() => store.toggleShowName()}
-            disabled={store.isLoading || store.isSubmited}
-          >
-            <div className={css("flex", "items-center", "gap-0.5")}>
-              <AiOutlinePlus size={15} />
-              <Text>name</Text>
-            </div>
-          </Button>
+          <span className={css("inline-flex", "items-center", "gap-1")}>
+            <Button
+              size={ButtonSize.xs}
+              onClick={() => store.toggleShowName()}
+              disabled={store.isLoading || store.isSubmited}
+            >
+              <div className={css("flex", "items-center", "gap-0.5")}>
+                <Text type={TextType.Grey}>
+                  <AiOutlinePlus size={15} />
+                </Text>
+                <Text type={TextType.Grey} size={TextSize.xs}>
+                  name
+                </Text>
+              </div>
+            </Button>
+          </span>
         )}
         {store.showDescription && (
           <div className={css("flex", "items-center", "gap-2", "w-full")}>
@@ -134,10 +144,13 @@ const MemeDetails = observer(({ store, onRemove }: MemeDetailsProps) => {
               <div className={css("flex", "items-start", "gap-2")}>
                 <div className={css("mt-1")}>
                   <Button
+                    size={ButtonSize.xs}
                     disabled={store.isLoading || store.isSubmited}
                     onClick={() => store.toggleShowDescription()}
                   >
-                    <AiOutlineMinus size={12} />
+                    <Text type={TextType.Grey}>
+                      <AiOutlineMinus size={12} />
+                    </Text>
                   </Button>
                 </div>
                 <div className={css("grow")}>
@@ -152,12 +165,17 @@ const MemeDetails = observer(({ store, onRemove }: MemeDetailsProps) => {
         )}
         {!store.showDescription && (
           <Button
+            size={ButtonSize.xs}
             disabled={store.isLoading || store.isSubmited}
             onClick={() => store.toggleShowDescription()}
           >
             <div className={css("flex", "items-center", "gap-0.5")}>
-              <AiOutlinePlus size={15} />
-              <Text>description</Text>
+              <Text type={TextType.Grey}>
+                <AiOutlinePlus size={15} />
+              </Text>
+              <Text type={TextType.Grey} size={TextSize.xs}>
+                description
+              </Text>
             </div>
           </Button>
         )}
