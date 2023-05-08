@@ -14,9 +14,7 @@ const AsyncGrid: React.FC<PropsWithChildren<AsyncGridProps>> = ({
   data,
 }) => {
   const renderNoData = useCallback(
-    () => (
-      <NoDataFound>{noDataLabel ? noDataLabel : "No data found"}</NoDataFound>
-    ),
+    () => <NoDataFound>{noDataLabel ? noDataLabel : "None found"}</NoDataFound>,
     [noDataLabel]
   );
 
