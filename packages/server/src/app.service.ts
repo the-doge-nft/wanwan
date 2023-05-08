@@ -47,7 +47,9 @@ export class AppService implements OnModuleInit {
     this.logger.log(`Caching ${addresses.length} ens names`);
     for (const address of addresses) {
       try {
-        await this.ethers.refreshEnsCache(address);
+        const ens = await this.ethers.refreshEnsCache(address);
+        await this.user.update({ where: { address }, data: { ens } });
+
         await this.ethers.refreshAvatarCache(address);
       } catch (e) {
         this.logger.error(e);
@@ -144,10 +146,20 @@ export class AppService implements OnModuleInit {
     });
     const users = await this.user.findMany({
       where: {
-        address: {
-          contains: search,
-          mode: 'insensitive',
-        },
+        OR: [
+          {
+            address: {
+              contains: search,
+              mode: 'insensitive',
+            },
+          },
+          {
+            ens: {
+              contains: search,
+              mode: 'insensitive',
+            },
+          },
+        ],
       },
       take,
     });

@@ -120,8 +120,8 @@ const SearchBar = observer(() => {
                       image={profile.avatar}
                     >
                       <Text type={TextType.NoColor}>
-                        {profile.ens
-                          ? profile.ens
+                        {profile.user.ens
+                          ? profile.user.ens
                           : abbreviate(profile.user.address)}
                       </Text>
                     </SearchItem>

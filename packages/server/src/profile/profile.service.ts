@@ -44,6 +44,6 @@ export class ProfileService {
       orderBy: { createdAt: 'desc' },
     });
     const wan = await this.user.getWanScore(address);
-    return { ens, address, avatar, user, memes, wan };
+    return { address, avatar, user, memes, wan };
   }
 }

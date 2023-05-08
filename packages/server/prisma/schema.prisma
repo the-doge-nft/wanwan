@@ -22,6 +22,7 @@ model User {
   lastAuthedAt        DateTime
   deletedAt           DateTime?
   isSuperAdmin        Boolean             @default(false)
+  ens                 String?
   memes               Meme[]
   media               Media[]
   competitions        Competition[]

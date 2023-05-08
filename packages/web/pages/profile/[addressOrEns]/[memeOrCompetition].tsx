@@ -86,8 +86,8 @@ const ProfilePage: React.FC<ProfileProps> = observer(({ profile }) => {
                 isExternal
                 href={getRainobwURL(store.profile.address)}
               >
-                {store.profile.ens
-                  ? store.profile.ens
+                {store.profile.user.ens
+                  ? store.profile.user.ens
                   : abbreviate(store.profile.address)}
               </Link>
             </div>

@@ -9,7 +9,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Session } from 'express-session';
-import { generateNonce, SiweMessage } from 'siwe';
+import { SiweMessage, generateNonce } from 'siwe';
 import { SiweDto } from '../dto/siwe.dto';
 import { InvalidNonceError } from '../error/InvalidNonce.error';
 import { AuthGuard } from './auth.guard';
@@ -54,11 +54,11 @@ export class AuthController {
       // @next -- we need to expire the cookie at some point
       // session.cookie.expires = new Date(fields.expirationTime);
 
-      await this.ethers.refreshEnsCache(address);
+      const ens = await this.ethers.refreshEnsCache(address);
 
       return this.user.upsert({
         where: { address },
-        update: { lastAuthedAt: new Date() },
+        update: { lastAuthedAt: new Date(), ens },
         create: { lastAuthedAt: new Date(), address },
       });
     } catch (e) {

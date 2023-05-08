@@ -150,7 +150,6 @@ export interface CompetitionMeme extends MemeWithVotes, MemeWithScore {
 }
 
 export interface Profile {
-  ens: null | string;
   address: string;
   avatar: string;
   user: User;

@@ -1,22 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma, User } from '@prisma/client';
 import { UserWithExtras } from '../interface';
-import { EthersService } from './../ethers/ethers.service';
 import { PrismaService } from './../prisma.service';
 
 @Injectable()
 export class UserService {
-  constructor(
-    private readonly prisma: PrismaService,
-    private readonly ethers: EthersService,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   async addExtra(user: User): Promise<UserWithExtras> {
     if (user === null) {
       return null;
     }
-    const ens = await this.ethers.getCachedEnsName(user.address);
-    return { ...user, ens };
+    return user;
   }
 
   async addExtras(users: User[]): Promise<UserWithExtras[]> {
