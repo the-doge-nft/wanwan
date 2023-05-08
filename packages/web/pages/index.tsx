@@ -150,7 +150,7 @@ export const getServerSideProps: GetServerSideProps<HomeProps> = async (
   context
 ) => {
   const params: SearchParams = {
-    count: 6,
+    count: 8,
     offset: 0,
     sorts: [{ key: "createdAt", direction: "desc" }],
     filters: [],

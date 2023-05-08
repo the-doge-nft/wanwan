@@ -40,6 +40,7 @@ export default class SearchBarStore extends Loadable(EmptyClass) {
     } else {
       this.showDropdown = false;
     }
+    console.log("debug:: showdropdown", this.showDropdown);
   }
 
   @computed
