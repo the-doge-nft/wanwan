@@ -95,7 +95,7 @@ const MemeById = observer(({ meme }: MemeByIdProps) => {
             style={{
               height: windowHeight
                 ? windowHeight - headerOffset - descriptionOffset
-                : 0,
+                : 500,
             }}
           >
             <Image

@@ -1,5 +1,5 @@
 import { makeObservable, observable } from "mobx";
-import { Competition, Meme, SearchParams } from "../interfaces";
+import { Competition, Meme, SearchParams, Stats } from "../interfaces";
 import Http from "../services/http";
 import AppStore from "./App.store";
 
@@ -11,25 +11,24 @@ export default class HomeStore {
   competitions: Competition[] = [];
 
   @observable
-  isMemesLoading = false;
+  stats: Stats;
 
-  @observable
-  isCompetitionsLoading = false;
+  private params: SearchParams;
 
-  private params: SearchParams = {
-    count: 12,
-    offset: 0,
-    sorts: [{ key: "createdAt", direction: "desc" }],
-    filters: [],
-  };
-
-  constructor() {
+  constructor(
+    memes: Meme[],
+    competitions: Competition[],
+    stats: Stats,
+    searchParams: SearchParams
+  ) {
     makeObservable(this);
+    this.memes = memes;
+    this.competitions = competitions;
+    this.stats = stats;
+    this.params = searchParams;
   }
 
   init() {
-    this.getMemes();
-    this.getCompetitions();
     AppStore.events.subscribe(
       AppStore.events.events.MEME_CREATED,
       this,
@@ -40,20 +39,32 @@ export default class HomeStore {
       this,
       "getCompetitions" as keyof this
     );
+    AppStore.events.subscribe(
+      AppStore.events.events.MEME_CREATED,
+      this,
+      "getStats" as keyof this
+    );
+    AppStore.events.subscribe(
+      AppStore.events.events.COMPETITION_CREATED,
+      this,
+      "getStats" as keyof this
+    );
   }
 
   private getMemes() {
-    this.isMemesLoading = true;
-    return Http.searchMeme(this.params)
-      .then(({ data }) => (this.memes = data.data))
-      .finally(() => (this.isMemesLoading = false));
+    return Http.searchMeme(this.params).then(
+      ({ data }) => (this.memes = data.data)
+    );
   }
 
   private getCompetitions() {
-    this.isCompetitionsLoading = true;
-    return Http.searchCompetition(this.params)
-      .then(({ data }) => (this.competitions = data.data))
-      .finally(() => (this.isCompetitionsLoading = false));
+    return Http.searchCompetition(this.params).then(
+      ({ data }) => (this.competitions = data.data)
+    );
+  }
+
+  private getStats() {
+    return Http.stats().then(({ data }) => (this.stats = data));
   }
 
   destroy() {
