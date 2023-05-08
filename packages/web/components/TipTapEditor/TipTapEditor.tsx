@@ -26,7 +26,6 @@ import {
   AiOutlineAlignCenter,
   AiOutlineAlignLeft,
   AiOutlineAlignRight,
-  AiOutlineLink,
   AiOutlineUnderline,
   AiOutlineUndo,
   AiOutlineUnorderedList,
@@ -243,7 +242,7 @@ const TipTapEditor = ({
                   <AiOutlineUnorderedList />
                 </Text>
               </ToolbarItem>
-              <ToolbarItem
+              {/* <ToolbarItem
                 active={editor?.isActive("link")}
                 // TODO: Add link support
                 // onClick={() => editor?.chain().focus().toggleLink().run()}
@@ -252,7 +251,7 @@ const TipTapEditor = ({
                 <Text>
                   <AiOutlineLink />
                 </Text>
-              </ToolbarItem>
+              </ToolbarItem> */}
               <ToolbarItem
                 active={editor?.isActive("heading", { level: 1 })}
                 onClick={() =>

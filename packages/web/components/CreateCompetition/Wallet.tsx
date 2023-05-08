@@ -221,6 +221,7 @@ const WalletView = observer(
                         <Selector
                           title={"ETH"}
                           address={"eth"}
+                          // @next -- this is very bad -- make this an enum
                           isSelected={store.selectedAddress === "eth"}
                           onClick={() => {
                             store.selectedAddress = "eth";

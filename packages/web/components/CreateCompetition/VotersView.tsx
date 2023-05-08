@@ -153,6 +153,9 @@ const VotingItem = observer(
                   nfts?.[0].contract.name
                 );
               }}
+              onEthSelected={() =>
+                voteInputStore.setInput("eth", TokenType.ETH, "ETH")
+              }
               onERC20AddressSelected={({ address, balance }) => {
                 const name = balance[0]?.metadata?.name;
                 voteInputStore.setInput(address, TokenType.ERC20, name);
@@ -207,7 +210,7 @@ const VotingItem = observer(
                             {voteInputStore.isLoadingNfts && <Spinner />}
                           </div>
                         </div>
-                        <div
+                        {/* <div
                           className={css(
                             "grow",
                             "w-full",
@@ -224,7 +227,7 @@ const VotingItem = observer(
                             holdersCount={voteInputStore.holdersLength}
                             isHoldersLoading={voteInputStore.isLoadingHolders}
                           />
-                        </div>
+                        </div> */}
                       </>
                     )}
                   </div>
@@ -248,14 +251,23 @@ const VotingItem = observer(
                         will be able to vote
                       </Text>
                     </div>
-                    <div className={css("grow", "flex", "items-end")}>
+                    {/* <div className={css("grow", "flex", "items-end")}>
                       <ContractInfo
                         address={address}
                         tokenType={TokenType.ERC20}
                         showSupply={false}
                         showHolders={false}
                       />
-                    </div>
+                    </div> */}
+                  </div>
+                );
+              }}
+              renderEthSelection={() => {
+                return (
+                  <div className={css("text-center")}>
+                    <Text>
+                      Users must have an <Text bold>ETH</Text> balance to vote
+                    </Text>
                   </div>
                 );
               }}

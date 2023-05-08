@@ -21,7 +21,7 @@ export default class VoteInputStore extends Reactionable(EmptyClass) {
   view: VoteInputView = VoteInputView.Choose;
 
   @observable
-  contractAddress?: string = undefined;
+  contractAddress: Nullable<string> = null;
 
   @observable
   holdersLength?: number = undefined;
@@ -71,23 +71,31 @@ export default class VoteInputStore extends Reactionable(EmptyClass) {
             });
         } else {
           this.isManualTokenValid = false;
-          this.contractAddress = undefined;
+          this.contractAddress = null;
         }
       }
     );
   }
 
   @action
-  setInput(address: string, tokenType: TokenType, name?: Nullable<string>) {
+  setInput(
+    address: string | null,
+    tokenType: TokenType,
+    name?: Nullable<string>
+  ) {
     this.contractAddress = address;
     this.tokenType = tokenType;
     if (name) {
       this.name = name;
     } else {
-      this.name = abbreviate(this.contractAddress);
+      if (this.contractAddress) {
+        this.name = abbreviate(this.contractAddress);
+      }
     }
-    this.getHolders();
-    this.getNfts();
+    if (this.contractAddress !== "eth") {
+      this.getHolders();
+      this.getNfts();
+    }
   }
 
   @action
