@@ -55,6 +55,7 @@ export class AuthController {
       // session.cookie.expires = new Date(fields.expirationTime);
 
       const ens = await this.ethers.refreshEnsCache(address);
+      console.log('debug:: got ens', ens);
 
       return this.user.upsert({
         where: { address },

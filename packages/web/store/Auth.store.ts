@@ -183,8 +183,8 @@ export default class AuthStore extends Reactionable(EmptyClass) {
       }
       return undefined;
     }
-    if (this.profile?.ens) {
-      return this.profile.ens;
+    if (this.profile?.user.ens) {
+      return this.profile.user.ens;
     }
     return abbreviate(this.profile.address);
   }

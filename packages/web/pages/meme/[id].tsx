@@ -231,7 +231,6 @@ const CommentForm: React.FC<{
         type={"textarea"}
         name={"body"}
         placeholder={"What are your thoughts?"}
-        // validate={required}
         label={
           isReply ? undefined : (
             <>
@@ -243,8 +242,8 @@ const CommentForm: React.FC<{
                     type={LinkType.Secondary}
                   >
                     <Text type={TextType.NoColor} size={TextSize.sm}>
-                      {AppStore.auth.profile?.ens
-                        ? AppStore.auth.profile.ens
+                      {AppStore.auth.profile?.user?.ens
+                        ? AppStore.auth.profile?.user?.ens
                         : abbreviate(AppStore.auth.address)}
                     </Text>
                   </Link>
@@ -313,7 +312,7 @@ const MemeComment: React.FC<{
         }
       )}
     >
-      <div className={css("grow")}>
+      <div className={css("grow", { "pr-2": commentReply.length === 0 })}>
         <div className={css("flex", "items-center")}>
           <Link
             type={LinkType.Secondary}
