@@ -256,8 +256,8 @@ class _Http {
     return this.http.get<Array<Leaderboard>>("/leaderboard");
   }
 
-  postSearch(search: string) {
-    return this.http.post("/search", { search });
+  postSearch(search: string, signal?: AbortSignal) {
+    return this.http.post("/search", { search }, { signal });
   }
 
   static create() {

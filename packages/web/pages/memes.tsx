@@ -29,7 +29,7 @@ const MemePage = observer(({ memes, params, next }: MemesPageProps) => {
   return (
     <AppLayout>
       <GridOrColumnScrollableView<Meme>
-        title={"Meme"}
+        title={"Memes"}
         store={store}
         renderColumnItem={(meme) => (
           <Pane

@@ -1,11 +1,12 @@
+import { debounce } from "lodash";
 import { action, computed, makeObservable, observable } from "mobx";
-import sleep from "../helpers/sleep";
 import { Search } from "../interfaces";
 import Http from "../services/http";
 import { EmptyClass } from "../services/mixins";
+import { Abortable } from "../services/mixins/abortable";
 import { Loadable } from "../services/mixins/loadable";
 
-export default class SearchBarStore extends Loadable(EmptyClass) {
+export default class SearchBarStore extends Loadable(Abortable(EmptyClass)) {
   @observable
   data: Search = { memes: [], profiles: [], competitions: [] };
 
@@ -21,26 +22,31 @@ export default class SearchBarStore extends Loadable(EmptyClass) {
     this.isLoading = true;
   }
 
-  private query(search: string) {
+  private query() {
+    this.abort();
     return this.tapWithLoading(() =>
-      Http.postSearch(search).then(async ({ data }) => {
-        await sleep(1000);
-        this.data = data;
-        return data;
-      })
+      Http.postSearch(this.search, this.abortController.signal)
+        .then(async ({ data }) => {
+          this.data = data;
+          return data;
+        })
+        .catch((e) => {})
     );
   }
+
+  debouncedQuery = debounce(this.query, 500);
 
   @action
   setSearch(search: string) {
     this.search = search;
     if (this.search !== "") {
-      this.showDropdown = true;
-      this.query(search);
+      if (!this.showDropdown) {
+        this.showDropdown = true;
+      }
+      this.debouncedQuery();
     } else {
       this.showDropdown = false;
     }
-    console.log("debug:: showdropdown", this.showDropdown);
   }
 
   @computed
