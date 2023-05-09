@@ -126,7 +126,7 @@ export interface Meme {
   mediaId: number;
   media: Media;
   user: User;
-  likes?: number;
+  likes: number;
 }
 
 export interface Submission {

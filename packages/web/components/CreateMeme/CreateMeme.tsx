@@ -40,7 +40,7 @@ const CreateMeme: React.FC<{
           store={store}
           maxSizeBytes={AppStore.settings.maxSizeBytes}
           acceptedMimeToExtension={AppStore.settings.mimeTypeToExtension}
-          title={store.hasMemes ? "+ Add more" : "Drop memes for money"}
+          title={store.hasMemes ? "+ Add more" : "Drop memes"}
         />
       )}
       {store.hasMemes && (
@@ -237,6 +237,7 @@ const MemeInput = observer(
         className={css(
           "border-[1px]",
           "border-dashed",
+          "border-neutral-400",
           "flex",
           "flex-col",
           "relative",

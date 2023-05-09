@@ -1,5 +1,5 @@
 import { AuthenticationStatus } from "@rainbow-me/rainbowkit";
-import { computed, makeObservable, observable } from "mobx";
+import { action, computed, makeObservable, observable } from "mobx";
 import { Address } from "wagmi";
 import { Reactionable } from "../services/mixins/reactionable";
 import { abbreviate } from "./../helpers/strings";
@@ -127,9 +127,10 @@ export default class AuthStore extends Reactionable(EmptyClass) {
     }).then(({ data }) => (this.memes = data.data));
   }
 
+  @action
   getLikedMemeIds() {
     return Http.getAddressLikes(this.address!).then(
-      ({ data }) => (this.memeIdsLiked = data)
+      ({ data }) => (this.memeIdsLiked = data.map((meme) => meme.id))
     );
   }
 

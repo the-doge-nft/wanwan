@@ -12,7 +12,7 @@ export default class MemeIdStore {
   meme: Meme;
 
   @observable
-  likes?: number = 0;
+  likes: number = 0;
 
   @observable
   description?: JSONContent | string = undefined;

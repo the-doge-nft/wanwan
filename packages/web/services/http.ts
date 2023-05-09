@@ -53,6 +53,7 @@ class _Http {
   }
 
   searchMeme(params: SearchParams) {
+    console.log(this.getSearchConfig(params));
     return this.http.get<SearchResponse<Meme>>("/meme/search", {
       params: this.getSearchConfig(params),
     });
@@ -250,7 +251,7 @@ class _Http {
   }
 
   getAddressLikes(address: string) {
-    return this.http.get<Array<number>>(`/profile/${address}/likes`);
+    return this.http.get<Array<Meme>>(`/profile/${address}/likes`);
   }
 
   getLeaderboard() {

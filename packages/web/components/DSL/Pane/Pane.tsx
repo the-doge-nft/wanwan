@@ -69,7 +69,8 @@ const Pane: React.FC<PropsWithChildren<PaneProps>> = observer(
           >
             <div
               className={css("grow", "dark:text-white", "text-black", {
-                "overflow-x-hidden text-ellipsis": typeof title === "string",
+                "overflow-x-hidden text-ellipsis whitespace-nowrap":
+                  typeof title === "string",
               })}
             >
               <Text

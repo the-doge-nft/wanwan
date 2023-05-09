@@ -12,14 +12,13 @@ import Head from "next/head";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
-import { AiFillHeart } from "react-icons/ai";
-import { BsDot, BsReddit, BsTwitter } from "react-icons/bs";
-import { RedditShareButton, TwitterShareButton } from "react-share";
+import { BsDot } from "react-icons/bs";
 import Button, { Submit } from "../../components/DSL/Button/Button";
 import Form from "../../components/DSL/Form/Form";
 import TextInput from "../../components/DSL/Form/TextInput";
 import Link, { LinkType } from "../../components/DSL/Link/Link";
 import Text, { TextSize, TextType } from "../../components/DSL/Text/Text";
+import MemeShareIcons from "../../components/MemeShareIcons/MemeShareIcons";
 import TipTapEditor from "../../components/TipTapEditor/TipTapEditor";
 import env from "../../environment";
 import {
@@ -29,10 +28,7 @@ import {
   getBaseUrl,
 } from "../../environment/vars";
 import { css } from "../../helpers/css";
-import {
-  abbreviate,
-  getBingReverseImageSearchURL,
-} from "../../helpers/strings";
+import { abbreviate } from "../../helpers/strings";
 import { Comment, Meme } from "../../interfaces";
 import AppLayout from "../../layouts/App.layout";
 import Http from "../../services/http";
@@ -106,13 +102,19 @@ const MemeById = observer(({ meme }: MemeByIdProps) => {
               unoptimized={extension?.toLocaleLowerCase() === "gif"}
             />
           </div>
-          <div className={css("mt-8", "w-full", "flex", "justify-between")}>
-            <div className={css("col-span-8", "flex", "flex-col")}>
-              {store.meme.name && <Text bold>{store.meme.name}</Text>}
-              {store.meme.description && !store.isDescriptionRichText && (
-                <Text size={TextSize.sm}>
-                  {store.meme.description as string}
+          <div className={css("mt-8", "w-full", "grid", "grid-cols-12")}>
+            <div className={css("col-span-10")}>
+              {store.meme.name && (
+                <Text bold block>
+                  {store.meme.name}
                 </Text>
+              )}
+              {store.meme.description && !store.isDescriptionRichText && (
+                <div>
+                  <Text size={TextSize.sm}>
+                    {store.meme.description as string}
+                  </Text>
+                </div>
               )}
               {store.meme.description && store.isDescriptionRichText && (
                 <TipTapEditor
@@ -124,7 +126,7 @@ const MemeById = observer(({ meme }: MemeByIdProps) => {
             </div>
             <div
               className={css(
-                "col-span-4",
+                "col-span-2",
                 "flex",
                 "justify-start",
                 "items-end",
@@ -138,71 +140,14 @@ const MemeById = observer(({ meme }: MemeByIdProps) => {
                     : abbreviate(store.meme.user.address)}
                 </Text>
               </Link>
-              <div className={css("flex", "items-center", "gap-1.5", "mt-0.5")}>
-                <span
-                  className={css(
-                    "inline-flex",
-                    "items-center",
-                    "gap-0.5",
-                    "-mr-1"
-                  )}
-                >
-                  <Text
-                    size={TextSize.xs}
-                    type={
-                      store.likes && store.likes > 0
-                        ? TextType.Primary
-                        : TextType.Grey
-                    }
-                  >
-                    {store.likes}
-                  </Text>
-                  <button
-                    onClick={() => store.toggleLike()}
-                    className={css({
-                      "cursor-default": !AppStore.auth.isLoggedIn,
-                    })}
-                  >
-                    <span
-                      className={css({
-                        "text-black dark:text-white": store.isMemeLiked,
-                        "text-neutral-500 hover:text-black dark:hover:text-white":
-                          !store.isMemeLiked,
-                      })}
-                    >
-                      <AiFillHeart size={16} />
-                    </span>
-                  </button>
-                </span>
-                <Link
-                  isExternal
-                  type={LinkType.Tertiary}
-                  className={css("w-full")}
-                  href={getBingReverseImageSearchURL(store.meme.media.url)}
-                />
-                <TwitterShareButton url={url} title={title}>
-                  <span
-                    className={css(
-                      "hover:text-black",
-                      "dark:hover:text-white",
-                      "text-neutral-500"
-                    )}
-                  >
-                    <BsTwitter size={16} />
-                  </span>
-                </TwitterShareButton>
-                <RedditShareButton url={url} title={title}>
-                  <span
-                    className={css(
-                      "hover:text-black",
-                      "dark:hover:text-white",
-                      "text-neutral-500"
-                    )}
-                  >
-                    <BsReddit size={16} />
-                  </span>
-                </RedditShareButton>
-              </div>
+              <MemeShareIcons
+                size={"sm"}
+                meme={store.meme}
+                likes={store.likes}
+                isLiked={store.isMemeLiked}
+                canLike={AppStore.auth.isLoggedIn}
+                onClickLike={() => store.toggleLike()}
+              />
             </div>
           </div>
         </div>

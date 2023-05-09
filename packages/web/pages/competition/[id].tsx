@@ -23,7 +23,7 @@ import CurateModal from "../../components/CompetitionById/CurateModal";
 import Link from "../../components/DSL/Link/Link";
 import Text, { TextType } from "../../components/DSL/Text/Text";
 import TipTapEditor from "../../components/TipTapEditor/TipTapEditor";
-import { getEtherscanURL } from "../../helpers/strings";
+import { abbreviate, getEtherscanURL } from "../../helpers/strings";
 
 interface CompetitionByIdProps {
   competition: Competition;
@@ -164,7 +164,9 @@ interface VotingRuleItemProps {
 
 const VotingRuleItem = ({ rule }: VotingRuleItemProps) => {
   const type = rule.currency.type;
-  let name = rule.currency.name;
+  let name = rule.currency.name
+    ? rule.currency.name
+    : abbreviate(rule.currency.contractAddress);
   let url = getEtherscanURL(rule.currency.contractAddress, "token");
   if (type === TokenType.ERC1155 || type === TokenType.ERC721) {
     url = getEtherscanURL(rule.currency.contractAddress, "token");

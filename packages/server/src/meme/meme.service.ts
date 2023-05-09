@@ -201,6 +201,11 @@ export class MemeService {
       where: { user: { address }, score: { gt: 0 } },
       select: { memeId: true },
     });
-    return data.map((item) => item.memeId);
+    const ids = data.map((item) => item.memeId);
+    return this.findMany({
+      where: {
+        id: { in: ids },
+      },
+    });
   }
 }

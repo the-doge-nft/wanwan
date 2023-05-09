@@ -7,11 +7,15 @@ import AppStore from "./App.store";
 export enum ProfileView {
   Meme = "meme",
   Competition = "competition",
+  Likes = "likes",
 }
 
 export default class ProfileStore {
   @observable
   memes: Array<Meme> = [];
+
+  @observable
+  likedMemes: Array<Meme> = [];
 
   @observable
   competitions: Array<Competition> = [];
@@ -31,9 +35,16 @@ export default class ProfileStore {
   @observable
   twitterUsername: Nullable<string> = null;
 
-  constructor(profile: User, view: ProfileView) {
+  constructor(
+    profile: User,
+    memes: Array<Meme>,
+    competitions: Array<Competition>,
+    view: ProfileView
+  ) {
     makeObservable(this);
     this.user = profile;
+    this.memes = memes;
+    this.competitions = competitions;
     this.description = this.user.description;
     this.externalUrl = this.user.externalUrl;
     this.twitterUsername = this.user.twitterUsername;
@@ -41,8 +52,6 @@ export default class ProfileStore {
   }
 
   init() {
-    this.getUserMemes();
-    this.getUserCompetitions();
     AppStore.events.subscribe(
       AppStore.events.events.MEME_CREATED,
       this,
@@ -58,6 +67,22 @@ export default class ProfileStore {
       this,
       "getProfileIfAuthed"
     );
+    // @next -- PROFILE DATA IS NOT SET ON LOGIN, SO WE NEED TO WAIT FOR IT
+    AppStore.events.subscribe(
+      AppStore.events.events.LOGIN,
+      this,
+      "getLikesIfAuthed"
+    );
+    this.getLikesIfAuthed();
+  }
+
+  @action
+  getLikesIfAuthed() {
+    if (this.canViewLikes) {
+      return Http.getAddressLikes(this.user.address).then(
+        ({ data }) => (this.likedMemes = data)
+      );
+    }
   }
 
   getMemesIfAuthedUser() {
@@ -121,6 +146,8 @@ export default class ProfileStore {
       return this.memes;
     } else if (this.isCompetitionView) {
       return this.competitions;
+    } else if (this.isLikesView) {
+      return this.likedMemes;
     }
     return [];
   }
@@ -136,6 +163,11 @@ export default class ProfileStore {
   }
 
   @computed
+  get isLikesView() {
+    return this.view === ProfileView.Likes;
+  }
+
+  @computed
   get isLoading() {
     return false;
   }
@@ -143,18 +175,23 @@ export default class ProfileStore {
   @action
   goToMemeView() {
     this.view = ProfileView.Meme;
-    const newUrl = this.getUrl(ProfileView.Meme);
-    window.history.replaceState(
-      { ...window.history.state, as: newUrl, url: newUrl },
-      "",
-      newUrl
-    );
+    this.setUrl();
   }
 
   @action
   goToCompetitionView() {
     this.view = ProfileView.Competition;
-    const newUrl = this.getUrl(ProfileView.Competition);
+    this.setUrl();
+  }
+
+  @action
+  goToLikesView() {
+    this.view = ProfileView.Likes;
+    this.setUrl();
+  }
+
+  setUrl() {
+    const newUrl = this.getUrl(this.view);
     window.history.replaceState(
       { ...window.history.state, as: newUrl, url: newUrl },
       "",
@@ -164,5 +201,10 @@ export default class ProfileStore {
 
   private getUrl(view: ProfileView) {
     return `/profile/${this.user.address}/${view}`;
+  }
+
+  @computed
+  get canViewLikes() {
+    return this.user.id === AppStore.auth.user?.id;
   }
 }
