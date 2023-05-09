@@ -180,7 +180,7 @@ const ProfilePage: React.FC<ProfileProps> = observer(
                         "border-b-[1px]",
                         "inline-block",
                         {
-                          "border-black": store.isLikesView,
+                          "border-black dark:border-white": store.isLikesView,
                           "border-transparent": !store.isLikesView,
                         }
                       )}

@@ -141,7 +141,6 @@ const MemeById = observer(({ meme }: MemeByIdProps) => {
                 </Text>
               </Link>
               <MemeShareIcons
-                size={"sm"}
                 meme={store.meme}
                 likes={store.likes}
                 isLiked={store.isMemeLiked}

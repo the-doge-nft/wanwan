@@ -92,9 +92,8 @@ const ColumnItem = observer(({ meme, onLikeClick }: ColumnItemProps) => {
           unoptimized={meme.media.url.split(".").pop()?.toLowerCase() === "gif"}
         />
       </Link>
-      <div className={css("flex", "justify-end", "mt-1.5")}>
+      <div className={css("flex", "justify-end", "mt-2")}>
         <MemeShareIcons
-          size={"sm"}
           meme={meme}
           likes={meme.likes}
           onClickLike={() => onLikeClick(meme.id)}
