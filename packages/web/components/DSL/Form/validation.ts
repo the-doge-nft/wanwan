@@ -97,7 +97,6 @@ export const isEthereumAddressOrEns = simpleMemoize(async (value: string) => {
 
   if (getIsEnsFormat(value)) {
     const { data: address } = await Http.postEnsForAddress(value);
-    console.log(address);
     if (address) {
       return undefined;
     } else {

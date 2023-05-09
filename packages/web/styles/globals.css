@@ -142,3 +142,8 @@ h2 {
     font-size: 1.5rem;
     line-height: normal;
 }
+
+/* don't round inputs on safari mobile */
+input {
+    -webkit-appearance: none;
+}

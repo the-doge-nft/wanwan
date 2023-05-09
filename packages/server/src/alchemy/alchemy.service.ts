@@ -176,8 +176,6 @@ export class AlchemyService {
   async getTokenType(contractAddress: string): Promise<TokenType> {
     try {
       const nft = await this.getNftContractMetadata(contractAddress);
-      console.log('NFT', nft);
-
       if (
         ![NftTokenType.ERC1155, NftTokenType.ERC721].includes(nft.tokenType)
       ) {
@@ -190,8 +188,7 @@ export class AlchemyService {
     } catch (e) {
       console.error('error getting metadata', e);
       try {
-        const metadata = await this.getTokenMetadata(contractAddress);
-        console.log('METADATA', metadata);
+        await this.getTokenMetadata(contractAddress);
         return TokenType.ERC20;
       } catch (e) {
         console.error('error getting nft', e);

@@ -199,7 +199,6 @@ const TipTapEditor = ({
                 className={css("w-[20px]", "h-[20px]", "bg-transparent")}
                 value={editor?.getAttributes("textStyle").color}
                 onChange={(e) => {
-                  console.log("color", e.target.value);
                   editor?.chain().focus().setColor(e.target.value).run();
                 }}
               />

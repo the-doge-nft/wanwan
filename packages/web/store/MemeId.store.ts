@@ -79,7 +79,6 @@ export default class MemeIdStore {
   @action
   private getMeme() {
     return Http.getMeme(this.id).then(({ data }) => {
-      console.log(data);
       this.meme = data;
       this.likes = this.meme.likes;
     });

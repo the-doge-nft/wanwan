@@ -122,7 +122,6 @@ export class CompetitionService {
       return this.findFirst({ where: { id: comp.id } });
     } catch (e) {
       console.error(e);
-      console.log('BIG ERROR');
       // since we rely on external apis in upsertRewards -- we delete the comp if it doesnt work here???
       throw new Error('TODO HOW SHOULD WE HANDLE HERE');
     }

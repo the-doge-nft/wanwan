@@ -1,11 +1,6 @@
 require("dotenv").config();
 const { TwitterApi } = require("twitter-api-v2");
 
-console.log(process.env.TWITTER_CONSUMER_KEY);
-console.log(process.env.TWITTER_CONSUMER_SECRET);
-console.log(process.env.TWITTER_ACCESS_TOKEN);
-console.log(process.env.TWITTER_ACCESS_TOKEN_SECRET);
-
 const main = async () => {
   const client = new TwitterApi({
     appKey: process.env.TWITTER_CONSUMER_KEY,
@@ -16,7 +11,6 @@ const main = async () => {
   const {
     data: { id },
   } = await client.currentUserV2();
-  console.log("user id", id);
 
   const userTweets = await (
     await client.v2.userTimeline(id, {})
@@ -25,7 +19,6 @@ const main = async () => {
     const { id } = tweet;
     const deleted = await client.v2.deleteTweet(id);
     await sleep(500);
-    console.log(tweet, deleted);
   }
 };
 

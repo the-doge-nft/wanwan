@@ -66,7 +66,6 @@ export class RewardService {
 
   private async getIsETHRewardValid(address: string, reward: RewardsDto) {
     const ethBalance = await this.alchemy.getEthBalance(address);
-    console.log(ethBalance);
     return ethBalance.gte(parseEther(reward.currency.amount));
   }
 

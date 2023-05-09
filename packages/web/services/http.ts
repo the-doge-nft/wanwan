@@ -53,7 +53,6 @@ class _Http {
   }
 
   searchMeme(params: SearchParams) {
-    console.log(this.getSearchConfig(params));
     return this.http.get<SearchResponse<Meme>>("/meme/search", {
       params: this.getSearchConfig(params),
     });

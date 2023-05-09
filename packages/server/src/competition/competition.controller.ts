@@ -175,9 +175,6 @@ export class CompetitionController {
         'You are not a curator of this competition',
       );
     }
-
-    console.log('hiding', id, memeId);
-
     return this.competition.hideMemeSubmission(id, memeId);
   }
 

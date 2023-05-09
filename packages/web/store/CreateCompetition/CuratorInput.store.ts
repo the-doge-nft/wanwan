@@ -52,7 +52,6 @@ export default class CuratorInputStore extends Reactionable(EmptyClass) {
             this.ens = null;
           }
         }
-        console.log(newSearch, oldSearch);
       }
     );
   }
