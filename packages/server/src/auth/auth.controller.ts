@@ -55,12 +55,15 @@ export class AuthController {
       // session.cookie.expires = new Date(fields.expirationTime);
 
       const ens = await this.ethers.refreshEnsCache(address);
-      console.log('debug:: got ens', ens);
 
       return this.user.upsert({
         where: { address },
         update: { lastAuthedAt: new Date(), ens },
-        create: { lastAuthedAt: new Date(), address },
+        create: {
+          lastAuthedAt: new Date(),
+          address,
+          ens: ens as string | null,
+        },
       });
     } catch (e) {
       this.logger.error(e);
