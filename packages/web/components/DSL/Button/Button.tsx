@@ -8,8 +8,9 @@ import Spinner, { SpinnerSize } from "../Spinner/Spinner";
 import Text, { TextSize, TextType } from "../Text/Text";
 import { borderColorCss } from "../Theme";
 
-enum ButtonType {
+export enum ButtonType {
   Primary = "primary",
+  Grey = "grey",
 }
 
 export enum ButtonSize {
@@ -50,6 +51,19 @@ const buttonTypeStyles = {
     "items-center",
     "justify-center",
     borderColorCss
+  ),
+  [ButtonType.Grey]: css(
+    "hover:text-black",
+    "text-neutral-400",
+    "dark:text-neutral-600",
+    "dark:hover:text-white",
+    "bg-neutral-200",
+    "border-[1px]",
+    "border-neutral-400",
+    "hover:border-black",
+    "dark:bg-neutral-800",
+    "dark:border-neutral-700",
+    "dark:hover:border-white"
   ),
 };
 

@@ -9,7 +9,7 @@ import { css } from "../../helpers/css";
 import { bytesToSize } from "../../helpers/numberFormatter";
 import AppStore from "../../store/App.store";
 import CreateMemeStore, { MemeStore } from "../../store/CreateMeme.store";
-import Button, { ButtonSize } from "../DSL/Button/Button";
+import Button, { ButtonSize, ButtonType } from "../DSL/Button/Button";
 import Form from "../DSL/Form/Form";
 import { FormLabel } from "../DSL/Form/FormControl";
 import TextInput from "../DSL/Form/TextInput";
@@ -107,13 +107,12 @@ const MemeDetails = observer(({ store, onRemove }: MemeDetailsProps) => {
             <TextInput
               leftOfInput={
                 <Button
+                  type={ButtonType.Grey}
                   size={ButtonSize.xs}
                   disabled={store.isLoading || store.isSubmited}
                   onClick={() => store.toggleShowName()}
                 >
-                  <Text type={TextType.NoColor}>
-                    <AiOutlineMinus size={12} />
-                  </Text>
+                  <AiOutlineMinus size={12} />
                 </Button>
               }
               block
@@ -130,27 +129,14 @@ const MemeDetails = observer(({ store, onRemove }: MemeDetailsProps) => {
             className={css("inline-flex", "items-center", "gap-1", "group")}
           >
             <Button
+              type={ButtonType.Grey}
               size={ButtonSize.xs}
               onClick={() => store.toggleShowName()}
               disabled={store.isLoading || store.isSubmited}
             >
-              <div
-                className={css(
-                  "flex",
-                  "items-center",
-                  "gap-0.5",
-                  "group-hover:text-black",
-                  "text-neutral-400",
-                  "dark:text-neutral-600",
-                  "dark:group-hover:text-white"
-                )}
-              >
-                <Text type={TextType.NoColor}>
-                  <AiOutlinePlus size={15} />
-                </Text>
-                <Text type={TextType.NoColor} size={TextSize.xs}>
-                  name
-                </Text>
+              <div className={css("flex", "items-center", "gap-0.5")}>
+                <AiOutlinePlus size={15} />
+                name
               </div>
             </Button>
           </span>
@@ -162,13 +148,12 @@ const MemeDetails = observer(({ store, onRemove }: MemeDetailsProps) => {
               <div className={css("flex", "items-start", "gap-2")}>
                 <div className={css("mt-1")}>
                   <Button
+                    type={ButtonType.Grey}
                     size={ButtonSize.xs}
                     disabled={store.isLoading || store.isSubmited}
                     onClick={() => store.toggleShowDescription()}
                   >
-                    <Text type={TextType.Primary}>
-                      <AiOutlineMinus size={12} />
-                    </Text>
+                    <AiOutlineMinus size={12} />
                   </Button>
                 </div>
                 <div className={css("grow")}>
@@ -184,27 +169,14 @@ const MemeDetails = observer(({ store, onRemove }: MemeDetailsProps) => {
         {!store.showDescription && (
           <span className={css("group")}>
             <Button
+              type={ButtonType.Grey}
               size={ButtonSize.xs}
               disabled={store.isLoading || store.isSubmited}
               onClick={() => store.toggleShowDescription()}
             >
-              <div
-                className={css(
-                  "flex",
-                  "items-center",
-                  "gap-0.5",
-                  "group-hover:text-black",
-                  "text-neutral-400",
-                  "dark:text-neutral-600",
-                  "dark:group-hover:text-white"
-                )}
-              >
-                <Text type={TextType.NoColor}>
-                  <AiOutlinePlus size={15} />
-                </Text>
-                <Text type={TextType.NoColor} size={TextSize.xs}>
-                  description
-                </Text>
+              <div className={css("flex", "items-center", "gap-0.5")}>
+                <AiOutlinePlus size={15} />
+                description
               </div>
             </Button>
           </span>

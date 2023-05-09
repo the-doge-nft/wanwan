@@ -70,7 +70,10 @@ const Link: React.FC<LinkProps> = ({
         >
           {children && children}
           {isExternal && !hideExternalIcon && (
-            <BsArrowUpRight size={14} className={css("ml-0.5")} />
+            <BsArrowUpRight
+              size={14}
+              className={css({ "ml-0.5": !!children })}
+            />
           )}
         </a>
       ) : (
