@@ -11,44 +11,37 @@ const CompetitionStats: React.FC<{ store: CompetitionByIdStore }> = observer(
   ({ store }) => {
     return (
       <>
-        <div className={css("flex", "flex-col", "gap-4", "flex-wrap")}>
-          <div
-            className={css(
-              "grid",
-              "md:grid-cols-2",
-              "lg:grid-cols-3",
-              "gap-y-1"
-            )}
-          >
-            <Detail label={"Votes:"}>{store.totalVotes}</Detail>
-            <Detail label={"Submissions:"}>{store.memes.length}</Detail>
-            <Detail label={"Entries:"}>
-              {store.competition.maxUserSubmissions}
-            </Detail>
-            <Detail label={"Created:"}>
-              {format(new Date(store.competition.createdAt), "Pp")}
-            </Detail>
-            <Detail label={"Ends:"}>
-              {format(new Date(store.competition.endsAt), "Pp")}
-            </Detail>
+        <div
+          className={css("grid", "md:grid-cols-2", "lg:grid-cols-3", "gap-1")}
+        >
+          <Detail label={"Votes:"}>{store.totalVotes}</Detail>
+          <Detail label={"Submissions:"}>{store.memes.length}</Detail>
+          <Detail label={"Entries:"}>
+            {store.competition.maxUserSubmissions}
+          </Detail>
+          <Detail label={"Created:"}>
+            {format(new Date(store.competition.createdAt), "Pp")}
+          </Detail>
+          <Detail label={"Ends:"}>
+            {format(new Date(store.competition.endsAt), "Pp")}
+          </Detail>
 
-            <Detail label={"By:"}>
-              <Link
-                type={LinkType.Secondary}
-                href={`/profile/${store.competition.user.address}/competition`}
-              >
-                {store.competition.user.ens
-                  ? store.competition.user.ens
-                  : abbreviate(store.competition.user.address)}
-              </Link>
-            </Detail>
-          </div>
-          {store.isActive && (
-            <div className={css("text-right")}>
-              <ActivePill />
-            </div>
-          )}
+          <Detail label={"By:"}>
+            <Link
+              type={LinkType.Secondary}
+              href={`/profile/${store.competition.user.address}/competition`}
+            >
+              {store.competition.user.ens
+                ? store.competition.user.ens
+                : abbreviate(store.competition.user.address)}
+            </Link>
+          </Detail>
         </div>
+        {store.isActive && (
+          <div className={css("text-right")}>
+            <ActivePill />
+          </div>
+        )}
       </>
     );
   }
