@@ -2,7 +2,7 @@ import { makeObservable, observable } from "mobx";
 import AuthStore from "./Auth.store";
 import EventsStore from "./Events.store";
 import ModalsStore from "./Modals.store";
-import RWDStore from "./Rwd.store";
+import RwdStore from "./Rwd.store";
 import SettingsStore from "./Settings.store";
 
 class AppStoreClass {
@@ -19,7 +19,7 @@ class AppStoreClass {
   events: EventsStore;
 
   @observable
-  rwd: RWDStore;
+  rwd: RwdStore;
 
   constructor() {
     makeObservable(this);
@@ -27,7 +27,7 @@ class AppStoreClass {
     this.modals = new ModalsStore();
     this.settings = new SettingsStore();
     this.events = new EventsStore();
-    this.rwd = new RWDStore();
+    this.rwd = new RwdStore();
   }
 
   init() {
