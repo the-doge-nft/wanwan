@@ -134,11 +134,12 @@ export default class AuthStore extends Reactionable(EmptyClass) {
     );
   }
 
-  runOrAuthPrompt(fn: () => void) {
+  runOrAuthPrompt(fn: () => any) {
     if (this.status === "authenticated") {
       fn();
     } else {
       AppStore.modals.isAuthModalOpen = true;
+      return;
     }
   }
 

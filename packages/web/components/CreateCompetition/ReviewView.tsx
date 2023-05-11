@@ -5,7 +5,7 @@ import {
   getEtherscanURL,
   getOpenSeaURL,
 } from "../../helpers/strings";
-import { TokenType } from "../../interfaces";
+import { CurrencyType } from "../../interfaces";
 import AppStore from "../../store/App.store";
 import RewardInputStore from "../../store/CreateCompetition/RewardInput.store";
 import Form from "../DSL/Form/Form";
@@ -127,7 +127,7 @@ const RewardItem = observer(({ store }: { store: RewardInputStore }) => {
           href={
             store.isNFT
               ? getOpenSeaURL(store.contractAddress!, store.tokenId!)
-              : store.tokenType === TokenType.ETH
+              : store.tokenType === CurrencyType.ETH
               ? getEtherscanURL(AppStore.auth.address!, "address")
               : getEtherscanURL(store.contractAddress!, "token")
           }

@@ -108,17 +108,19 @@ const CompetitionSubmissions: React.FC<{ store: CompetitionIdStore }> =
                         onClick={(e) => {
                           e.preventDefault();
                           if (store.competition.isActive) {
-                            AppStore.auth.runOrAuthPrompt(() => {
-                              if (userVoteScore === 1) {
-                                store.runThenRefreshMemes(() =>
-                                  store.zeroVote(meme.id)
-                                );
-                              } else {
-                                store.runThenRefreshMemes(() =>
-                                  store.upVote(meme.id)
-                                );
-                              }
-                            });
+                            AppStore.auth.runOrAuthPrompt(() =>
+                              store.runIfCanVote(() => {
+                                if (userVoteScore === 1) {
+                                  store.runThenRefreshMemes(() =>
+                                    store.zeroVote(meme.id)
+                                  );
+                                } else {
+                                  store.runThenRefreshMemes(() =>
+                                    store.upVote(meme.id)
+                                  );
+                                }
+                              })
+                            );
                           }
                         }}
                         className={css({
@@ -138,17 +140,19 @@ const CompetitionSubmissions: React.FC<{ store: CompetitionIdStore }> =
                         onClick={(e) => {
                           e.preventDefault();
                           if (store.competition.isActive) {
-                            AppStore.auth.runOrAuthPrompt(() => {
-                              if (userVoteScore === -1) {
-                                store.runThenRefreshMemes(() =>
-                                  store.zeroVote(meme.id)
-                                );
-                              } else {
-                                store.runThenRefreshMemes(() =>
-                                  store.downVote(meme.id)
-                                );
-                              }
-                            });
+                            AppStore.auth.runOrAuthPrompt(() =>
+                              store.runIfCanVote(() => {
+                                if (userVoteScore === -1) {
+                                  store.runThenRefreshMemes(() =>
+                                    store.zeroVote(meme.id)
+                                  );
+                                } else {
+                                  store.runThenRefreshMemes(() =>
+                                    store.downVote(meme.id)
+                                  );
+                                }
+                              })
+                            );
                           }
                         }}
                         className={css({

@@ -121,6 +121,15 @@ export class CompetitionController {
     return this.meme.getByCompetitionId(id);
   }
 
+  @Get(':id/voteReason')
+  @UseGuards(AuthGuard)
+  async getUserVoteReason(
+    @Param() { id }: IdDto,
+    @Req() { user }: AuthenticatedRequest,
+  ) {
+    return this.competition.getVoteReason(user.address, id);
+  }
+
   @Post(':id/vote')
   @UseGuards(AuthGuard)
   async postVote(

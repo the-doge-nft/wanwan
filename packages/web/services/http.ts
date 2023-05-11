@@ -7,6 +7,7 @@ import {
   Comment,
   Competition,
   CompetitionMeme,
+  CompetitionVoteReason,
   Leaderboard,
   Media,
   MediaRequirements,
@@ -259,6 +260,12 @@ class _Http {
 
   postSearch(search: string, signal?: AbortSignal) {
     return this.http.post<Search>("/search", { search }, { signal });
+  }
+
+  getCanUserVoteReason(competitionId: number) {
+    return this.http.get<Array<CompetitionVoteReason>>(
+      `/competition/${competitionId}/voteReason`
+    );
   }
 
   static create() {

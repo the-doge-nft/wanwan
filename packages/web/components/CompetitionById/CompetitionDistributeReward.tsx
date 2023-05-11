@@ -9,7 +9,7 @@ import {
   useWaitForTransaction,
 } from "wagmi";
 import { jsonify } from "../../helpers/strings";
-import { Reward, TokenType } from "../../interfaces";
+import { CurrencyType, Reward } from "../../interfaces";
 import Http from "../../services/http";
 import RewardStore from "../../store/Reward.store";
 import Button from "../DSL/Button/Button";
@@ -24,7 +24,7 @@ const CompetitionDistributeReward: React.FC<{
     [reward, toAddress]
   );
 
-  if (store.tokenType === TokenType.ETH) {
+  if (store.tokenType === CurrencyType.ETH) {
     return <DistributeEthReward store={store} onSuccess={() => onSuccess()} />;
   }
 

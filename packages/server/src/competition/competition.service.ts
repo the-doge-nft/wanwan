@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Competition, Prisma, TokenType, User } from '@prisma/client';
+import { Competition, Currency, Prisma, TokenType, User } from '@prisma/client';
 import { BigNumber, TokenMetadataResponse } from 'alchemy-sdk';
 import { parseEther, parseUnits } from 'ethers/lib/utils';
 import { CompetitionVotingRuleService } from '../competition-voting-rule/competition-voting-rule.service';
@@ -269,11 +269,20 @@ export class CompetitionService {
   }
 
   async getCanUserVote(userAddress: string, competitionId: number) {
+    return (await this.getVoteReason(userAddress, competitionId)).some(
+      (item) => item.canVote,
+    );
+  }
+
+  async getVoteReason(userAddress: string, competitionId: number) {
     const votingRules = await this.votingRule.findMany({
       where: {
         competitionId,
       },
     });
+
+    const canVote: Array<{ canVote: boolean; currency: Currency }> = [];
+
     for (const rule of votingRules) {
       const { currency } = rule;
 
@@ -285,24 +294,21 @@ export class CompetitionService {
           userAddress,
           currency.contractAddress,
         );
-        if (!isValid) {
-          return false;
-        }
+        canVote.push({ currency, canVote: isValid });
       } else if (currency.type === TokenType.ERC20) {
         const balances = await this.alchemy.getERC20Balances(userAddress, [
           currency.contractAddress,
         ]);
         const balance = balances.tokenBalances?.[0];
-        if (BigNumber.from(balance?.tokenBalance).lte(0)) {
-          return false;
-        }
+        canVote.push({
+          currency,
+          canVote: BigNumber.from(balance?.tokenBalance).gt(0),
+        });
       } else if (currency.type === TokenType.ETH) {
         const balance = await this.alchemy.getEthBalance(userAddress);
-        if (BigNumber.from(balance).lte(0)) {
-          return false;
-        }
+        canVote.push({ currency, canVote: BigNumber.from(balance).gt(0) });
       }
     }
-    return true;
+    return canVote;
   }
 }

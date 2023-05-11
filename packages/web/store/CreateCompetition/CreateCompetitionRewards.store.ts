@@ -1,6 +1,6 @@
 import { action, computed, makeObservable, observable } from "mobx";
 import { objectKeys } from "../../helpers/arrays";
-import { TokenType } from "../../interfaces";
+import { CurrencyType } from "../../interfaces";
 import { EmptyClass } from "../../services/mixins";
 import { Reactionable } from "../../services/mixins/reactionable";
 import RewardInputStore from "./RewardInput.store";
@@ -70,11 +70,11 @@ export default class CreateCompetitionRewardsStore extends Reactionable(
       .filter((item, i) => i !== index)
       .filter(
         (input) =>
-          (input.tokenType === TokenType.ERC20 && input.contractAddress) ||
-          input.tokenType === TokenType.ETH
+          (input.tokenType === CurrencyType.ERC20 && input.contractAddress) ||
+          input.tokenType === CurrencyType.ETH
       );
     rewardStores.forEach((store) => {
-      if (store.tokenType === TokenType.ETH) {
+      if (store.tokenType === CurrencyType.ETH) {
         if (balancesToFilter?.eth) {
           balancesToFilter["eth"] = Number(
             Number(balancesToFilter["eth"]) + Number(store.amount)

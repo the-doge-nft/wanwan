@@ -13,7 +13,7 @@ import {
   Competition,
   CompetitionMeme,
   CompetitionVotingRule,
-  TokenType,
+  CurrencyType,
 } from "../../interfaces";
 import AppLayout from "../../layouts/App.layout";
 import Http from "../../services/http";
@@ -26,6 +26,7 @@ import CompetitionSubmit from "../../components/CompetitionById/CompetitionSubmi
 import CurateModal from "../../components/CompetitionById/CurateModal";
 import Link from "../../components/DSL/Link/Link";
 import Text, { TextType } from "../../components/DSL/Text/Text";
+import InvalidVoteReasonModal from "../../components/Modals/InvalidVoteReasonModal";
 import TipTapEditor from "../../components/TipTapEditor/TipTapEditor";
 import { abbreviate, getEtherscanURL } from "../../helpers/strings";
 
@@ -51,7 +52,7 @@ const CompetitionById: React.FC<CompetitionByIdProps> = observer(
       <AppLayout>
         <div className={css("flex", "flex-col", "gap-2")}>
           <CollapsablePane
-            {...expandPane(store.showPane, "title")}
+            {...expandPane(store.showPaneStore, "title")}
             title={store.competition.name}
           >
             {store.competition.description && (
@@ -72,7 +73,7 @@ const CompetitionById: React.FC<CompetitionByIdProps> = observer(
           <CollapsablePane
             type={PaneType.Secondary}
             title={"Stats"}
-            {...expandPane(store.showPane, "details")}
+            {...expandPane(store.showPaneStore, "details")}
           >
             <CompetitionStats store={store} />
           </CollapsablePane>
@@ -80,7 +81,7 @@ const CompetitionById: React.FC<CompetitionByIdProps> = observer(
             <CollapsablePane
               type={PaneType.Secondary}
               title={"Voters"}
-              {...expandPane(store.showPane, "voters")}
+              {...expandPane(store.showPaneStore, "voters")}
             >
               {store.competition.votingRule.map((rule) => (
                 <VotingRuleItem
@@ -93,7 +94,7 @@ const CompetitionById: React.FC<CompetitionByIdProps> = observer(
           <CollapsablePane
             title={`Rewards`}
             type={PaneType.Secondary}
-            {...expandPane(store.showPane, "rewards")}
+            {...expandPane(store.showPaneStore, "rewards")}
           >
             <CompetitionRewards store={store} />
           </CollapsablePane>
@@ -121,7 +122,7 @@ const CompetitionById: React.FC<CompetitionByIdProps> = observer(
                 <CollapsablePane
                   type={PaneType.Secondary}
                   title={"Enter Competition"}
-                  {...expandPane(store.showPane, "submitContent")}
+                  {...expandPane(store.showPaneStore, "submitContent")}
                 >
                   <CompetitionSubmit store={store} />
                 </CollapsablePane>
@@ -152,6 +153,13 @@ const CompetitionById: React.FC<CompetitionByIdProps> = observer(
             meme={store.memeToCurate}
           />
         )}
+        {store.isInvalidVoteRuleModalOpen && (
+          <InvalidVoteReasonModal
+            reason={store.invalidVoteReason}
+            isOpen={store.isInvalidVoteRuleModalOpen}
+            onChange={(isOpen) => (store.isInvalidVoteRuleModalOpen = isOpen)}
+          />
+        )}
       </AppLayout>
     );
   }
@@ -167,7 +175,7 @@ const VotingRuleItem = ({ rule }: VotingRuleItemProps) => {
     ? rule.currency.name
     : abbreviate(rule.currency.contractAddress);
   let url = getEtherscanURL(rule.currency.contractAddress, "token");
-  if (type === TokenType.ERC1155 || type === TokenType.ERC721) {
+  if (type === CurrencyType.ERC1155 || type === CurrencyType.ERC721) {
     url = getEtherscanURL(rule.currency.contractAddress, "token");
   }
   return (

@@ -6,11 +6,11 @@ import {
   getOpenSeaURL,
 } from "../../helpers/strings";
 import AppStore from "../App.store";
-import { ERC20Balance, Nullable, TokenType } from "./../../interfaces/index";
+import { CurrencyType, ERC20Balance, Nullable } from "./../../interfaces/index";
 
 export default class RewardInputStore {
   @observable
-  tokenType: Nullable<TokenType> = null;
+  tokenType: Nullable<CurrencyType> = null;
 
   @observable
   contractAddress: Nullable<string> = null;
@@ -39,7 +39,7 @@ export default class RewardInputStore {
 
   @action
   onEthSelected() {
-    this.tokenType = TokenType.ETH;
+    this.tokenType = CurrencyType.ETH;
     this.contractAddress = "eth";
     this.tokenId = null;
     this.amount = "";
@@ -49,7 +49,7 @@ export default class RewardInputStore {
   @action
   setSelectedToken(
     contractAddress: string,
-    tokenType: TokenType,
+    tokenType: CurrencyType,
     tokenId?: string | number
   ) {
     this.contractAddress = contractAddress;
@@ -75,9 +75,9 @@ export default class RewardInputStore {
 
     const tokenType = nfts?.[0]?.tokenType;
     if (tokenType === NftTokenType.ERC1155) {
-      this.tokenType = TokenType.ERC1155;
+      this.tokenType = CurrencyType.ERC1155;
     } else {
-      this.tokenType = TokenType.ERC721;
+      this.tokenType = CurrencyType.ERC721;
     }
   }
 
@@ -88,9 +88,9 @@ export default class RewardInputStore {
     this.tokenId = nft.tokenId;
     this.amount = "1";
     if (nft.tokenType === NftTokenType.ERC1155) {
-      this.tokenType = TokenType.ERC1155;
+      this.tokenType = CurrencyType.ERC1155;
     } else {
-      this.tokenType = TokenType.ERC721;
+      this.tokenType = CurrencyType.ERC721;
     }
     if (nft.title) {
       this.name = nft.title;
@@ -108,7 +108,7 @@ export default class RewardInputStore {
     balance: ERC20Balance[];
   }) {
     this.contractAddress = address;
-    this.tokenType = TokenType.ERC20;
+    this.tokenType = CurrencyType.ERC20;
     this.amount = "";
     this.name = balance?.[0]?.metadata.name;
     // this.amount = balance;
@@ -118,11 +118,11 @@ export default class RewardInputStore {
   get selectedDisplayName() {
     if (this.name) {
       return this.name;
-    } else if (this.tokenType === TokenType.ERC20) {
+    } else if (this.tokenType === CurrencyType.ERC20) {
       if (this.contractAddress) {
         return abbreviate(this.contractAddress);
       }
-    } else if (this.tokenType === TokenType.ETH) {
+    } else if (this.tokenType === CurrencyType.ETH) {
       return "ETH";
     }
     return null;
@@ -131,8 +131,8 @@ export default class RewardInputStore {
   @computed
   get showCanConfirm() {
     if (
-      this.tokenType === TokenType.ERC721 ||
-      this.tokenType === TokenType.ERC1155
+      this.tokenType === CurrencyType.ERC721 ||
+      this.tokenType === CurrencyType.ERC1155
     ) {
       return !!this.tokenId;
     }
@@ -141,7 +141,7 @@ export default class RewardInputStore {
 
   @computed
   get externalUrl() {
-    if (this.tokenType === TokenType.ERC20) {
+    if (this.tokenType === CurrencyType.ERC20) {
       return getEtherscanURL(this.contractAddress!, "token");
     }
   }
@@ -151,9 +151,9 @@ export default class RewardInputStore {
     if (!this.contractAddress) {
       return null;
     }
-    if (this.tokenType === TokenType.ERC20) {
+    if (this.tokenType === CurrencyType.ERC20) {
       return getEtherscanURL(this.contractAddress!, "token");
-    } else if (this.tokenType === TokenType.ETH) {
+    } else if (this.tokenType === CurrencyType.ETH) {
       return getEtherscanURL(AppStore.auth.address as string, "address");
     } else {
       if (!this.tokenId) {
@@ -166,8 +166,8 @@ export default class RewardInputStore {
   @computed
   get isNFT() {
     return (
-      (this.tokenType === TokenType.ERC1155 ||
-        this.tokenType === TokenType.ERC721) &&
+      (this.tokenType === CurrencyType.ERC1155 ||
+        this.tokenType === CurrencyType.ERC721) &&
       this.tokenType !== null
     );
   }

@@ -39,7 +39,7 @@ export interface Reward {
   currency: Currency;
 }
 
-export enum TokenType {
+export enum CurrencyType {
   ERC1155 = "ERC1155",
   ERC721 = "ERC721",
   ERC20 = "ERC20",
@@ -47,7 +47,7 @@ export enum TokenType {
 }
 
 export interface Currency {
-  type: TokenType;
+  type: CurrencyType;
   contractAddress: string;
   decimals: number;
   symbol: string;
@@ -58,7 +58,7 @@ export interface Currency {
 export interface RewardBody {
   competitionRank: number;
   currency: {
-    type: TokenType;
+    type: CurrencyType;
     contractAddress: string;
     tokenId: string;
     amount: string;
@@ -231,4 +231,9 @@ export interface Search {
   memes: Array<Meme>;
   competitions: Array<Competition>;
   users: Array<User>;
+}
+
+export interface CompetitionVoteReason {
+  canVote: boolean;
+  currency: Currency;
 }

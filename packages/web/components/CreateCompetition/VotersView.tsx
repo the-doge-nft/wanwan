@@ -9,7 +9,7 @@ import {
   getEtherscanURL,
   getLooksRareCollectionURL,
 } from "../../helpers/strings";
-import { TokenType } from "../../interfaces";
+import { CurrencyType } from "../../interfaces";
 import CreateCompetitionStore from "../../store/CreateCompetition/CreateCompetition.store";
 import VoteInputStore, {
   VoteInputView,
@@ -148,17 +148,17 @@ const VotingItem = observer(
                 voteInputStore.setInput(
                   address,
                   type === NftTokenType.ERC1155
-                    ? TokenType.ERC1155
-                    : TokenType.ERC721,
+                    ? CurrencyType.ERC1155
+                    : CurrencyType.ERC721,
                   nfts?.[0].contract.name
                 );
               }}
               onEthSelected={() =>
-                voteInputStore.setInput("eth", TokenType.ETH, "ETH")
+                voteInputStore.setInput("eth", CurrencyType.ETH, "ETH")
               }
               onERC20AddressSelected={({ address, balance }) => {
                 const name = balance[0]?.metadata?.name;
-                voteInputStore.setInput(address, TokenType.ERC20, name);
+                voteInputStore.setInput(address, CurrencyType.ERC20, name);
               }}
               renderNftSelection={({ address, nfts }) => {
                 const contract = nfts?.[0].contract;
@@ -297,7 +297,7 @@ const VotingItem = observer(
 
 interface ContractInfoProps {
   address?: string;
-  tokenType?: TokenType | NftTokenType;
+  tokenType?: CurrencyType | NftTokenType;
   supply?: number | string;
   holdersCount?: number;
   isHoldersLoading?: boolean;
