@@ -100,7 +100,6 @@ const ColumnItem = observer(({ meme, onLikeClick }: ColumnItemProps) => {
           meme={meme}
           likes={meme.likes}
           onClickLike={() => onLikeClick(meme.id)}
-          canLike={AppStore.auth.isLoggedIn}
           isLiked={AppStore.auth.memeIdsLiked.includes(meme.id)}
         />
       </div>

@@ -147,7 +147,6 @@ const MemeById = observer(({ meme }: MemeByIdProps) => {
                 meme={store.meme}
                 likes={store.likes}
                 isLiked={store.isMemeLiked}
-                canLike={AppStore.auth.isLoggedIn}
                 onClickLike={() => store.toggleLike()}
               />
             </div>

@@ -6,12 +6,12 @@ import { TITLE, getBaseUrl } from "../../environment/vars";
 import { css } from "../../helpers/css";
 import { getBingReverseImageSearchURL } from "../../helpers/strings";
 import { Meme } from "../../interfaces";
+import AppStore from "../../store/App.store";
 import Link, { LinkType } from "../DSL/Link/Link";
 import Text, { TextSize, TextType } from "../DSL/Text/Text";
 
 interface MemeShareIconsProps {
   onClickLike: () => void;
-  canLike: boolean;
   isLiked: boolean;
   meme: Meme;
   likes: number;
@@ -19,14 +19,7 @@ interface MemeShareIconsProps {
 }
 
 const MemeShareIcons = observer(
-  ({
-    meme,
-    onClickLike,
-    canLike,
-    isLiked,
-    likes,
-    size = "lg",
-  }: MemeShareIconsProps) => {
+  ({ meme, onClickLike, isLiked, likes, size = "lg" }: MemeShareIconsProps) => {
     const title = meme.name ? `${meme.name} on wanwan.me` : TITLE;
     const url = getBaseUrl() + "/meme/" + meme.id;
     return (
@@ -41,10 +34,7 @@ const MemeShareIcons = observer(
             {likes}
           </Text>
           <button
-            onClick={() => onClickLike()}
-            className={css({
-              "cursor-default": !canLike,
-            })}
+            onClick={() => AppStore.auth.runOrAuthPrompt(() => onClickLike())}
           >
             <span
               className={css({
