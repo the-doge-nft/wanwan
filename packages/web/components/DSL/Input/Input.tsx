@@ -49,7 +49,8 @@ export const textFieldBaseStyles = css(
 export const textFieldBorderStyles = css(
   "border-[1px]",
   "border-black",
-  "dark:border-neutral-600"
+  "dark:border-neutral-600",
+  "!rounded-none"
 );
 
 const disabledStyles = css(

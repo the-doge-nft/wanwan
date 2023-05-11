@@ -144,6 +144,7 @@ h2 {
 }
 
 /* don't round inputs on safari mobile */
-input {
-    -webkit-appearance: none;
-}
+/* input {
+    -webkit-appearance: none!important;
+    border-radius: 0px!important;
+} */

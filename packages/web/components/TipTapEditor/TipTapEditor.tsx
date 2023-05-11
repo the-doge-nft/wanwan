@@ -69,7 +69,7 @@ export const getTipTapEditorExtensions = () => [
   Image.configure({
     inline: true,
     HTMLAttributes: {
-      class: "max-w-[150px] w-full mx-auto inline-block",
+      class: "max-w-[150px] w-full mx-auto inline-block p-1",
     },
   }),
   Italic.configure({
@@ -153,7 +153,7 @@ const TipTapEditor = ({
 
   return (
     <div>
-      <EditorContent editor={editor} />
+      <EditorContent editor={editor} className={css("break-all")} />
       <div className={css("mt-1")}>
         {!readonly && (
           <div className={css("flex", "justify-end")}>
