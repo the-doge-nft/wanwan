@@ -8,24 +8,32 @@ import { objectKeys } from "../../helpers/arrays";
 import { css } from "../../helpers/css";
 import { bytesToSize } from "../../helpers/numberFormatter";
 import AppStore from "../../store/App.store";
-import CreateMemeStore, { MemeStore } from "../../store/CreateMeme.store";
+import CreateMemeStore from "../../store/CreateMeme/CreateMeme.store";
+import MemeStore from "../../store/CreateMeme/Meme.store";
 import Button, { ButtonSize, ButtonType } from "../DSL/Button/Button";
 import Form from "../DSL/Form/Form";
 import { FormLabel } from "../DSL/Form/FormControl";
 import TextInput from "../DSL/Form/TextInput";
 import Pane from "../DSL/Pane/Pane";
-import Spinner, { SpinnerSize } from "../DSL/Spinner/Spinner";
 import Text, { TextSize, TextType } from "../DSL/Text/Text";
 import { errorToast } from "../DSL/Toast/Toast";
 import TipTapEditor from "../TipTapEditor/TipTapEditor";
 
-const CreateMeme: React.FC<{
+interface CreateMemeProps {
   store: CreateMemeStore;
-}> = observer(({ store }) => {
+  max?: number;
+  label?: string;
+}
+
+const CreateMeme = observer(({ store, max, label }: CreateMemeProps) => {
   return (
     <div className={css("flex", "flex-col", "gap-4")}>
       {store.hasMemes && (
-        <div className={css("grid", "grid-cols-1", "md:grid-cols-2", "gap-4")}>
+        <div
+          className={css("grid", "grid-cols-1", "gap-4", {
+            "md:grid-cols-2": store.memes.length > 1,
+          })}
+        >
           {store.memes.map((memeStore, index) => (
             <MemeDetails
               key={`meme-form-input-${index}`}
@@ -36,16 +44,23 @@ const CreateMeme: React.FC<{
         </div>
       )}
       {AppStore.settings.mimeTypeToExtension && (
-        <MemeInput
-          store={store}
-          maxSizeBytes={AppStore.settings.maxSizeBytes}
-          acceptedMimeToExtension={AppStore.settings.mimeTypeToExtension}
-          title={store.hasMemes ? "+ Add more" : "Drop memes"}
-        />
+        <div className={css({ hidden: max === 1 && store.memes.length > 0 })}>
+          <MemeInput
+            maxFiles={max}
+            store={store}
+            maxSizeBytes={AppStore.settings.maxSizeBytes}
+            acceptedMimeToExtension={AppStore.settings.mimeTypeToExtension}
+            title={
+              store.hasMemes
+                ? "+ Add more"
+                : `Drop meme${!max || max > 1 ? "s" : ""}`
+            }
+          />
+        </div>
       )}
       {store.hasMemes && (
         <Button onClick={() => store.submit()} isLoading={store.isLoading}>
-          Upload
+          {label || "Submit"}
         </Button>
       )}
     </div>
@@ -87,16 +102,16 @@ const MemeDetails = observer(({ store, onRemove }: MemeDetailsProps) => {
           src={store.file.preview}
           className={css("object-contain")}
         />
-        {store.isLoading && (
+        {/* {store.isLoading && (
           <div className={css("z-10")}>
             <Spinner size={SpinnerSize.lg} />
           </div>
-        )}
-        {store.isSubmited && (
+        )} */}
+        {/* {store.isSubmited && (
           <div>
             <Text type={TextType.Grey}>{"( ͡⏿ ͜ʖ ͡⏿)"}</Text>
           </div>
-        )}
+        )} */}
       </div>
       <Form
         onSubmit={async () => {}}
@@ -191,6 +206,7 @@ interface MemeInputProps {
   maxSizeBytes: number;
   acceptedMimeToExtension: { [key: string]: string[] };
   title: string;
+  maxFiles?: number;
 }
 
 const MemeInput = observer(
@@ -199,6 +215,7 @@ const MemeInput = observer(
     maxSizeBytes: maxSizeBytes,
     acceptedMimeToExtension,
     title,
+    maxFiles,
   }: MemeInputProps) => {
     const onDropRejected = useCallback((fileRejections: FileRejection[]) => {
       fileRejections.forEach((file) => {
@@ -216,9 +233,9 @@ const MemeInput = observer(
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
       onDropAccepted: (files) => store.onDropAccepted(files),
-      multiple: true,
+      multiple: maxFiles !== 1,
       maxSize: maxSizeBytes,
-      maxFiles: 100,
+      maxFiles: maxFiles || 50,
       onDropRejected,
       accept: acceptedMimeToExtension,
     });

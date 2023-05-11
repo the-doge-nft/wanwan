@@ -26,6 +26,7 @@ import CompetitionSubmit from "../../components/CompetitionById/CompetitionSubmi
 import CurateModal from "../../components/CompetitionById/CurateModal";
 import Link from "../../components/DSL/Link/Link";
 import Text, { TextType } from "../../components/DSL/Text/Text";
+import CreateMemeModal from "../../components/Modals/CreateMemeModal";
 import InvalidVoteReasonModal from "../../components/Modals/InvalidVoteReasonModal";
 import TipTapEditor from "../../components/TipTapEditor/TipTapEditor";
 import { abbreviate, getEtherscanURL } from "../../helpers/strings";
@@ -158,6 +159,14 @@ const CompetitionById: React.FC<CompetitionByIdProps> = observer(
             reason={store.invalidVoteReason}
             isOpen={store.isInvalidVoteRuleModalOpen}
             onChange={(isOpen) => (store.isInvalidVoteRuleModalOpen = isOpen)}
+          />
+        )}
+        {store.isSubmitMemeModalOpen && (
+          <CreateMemeModal
+            isOpen={store.isSubmitMemeModalOpen}
+            onChange={(isOpen) => (store.isSubmitMemeModalOpen = isOpen)}
+            onSuccess={(memes) => store.onMemesCreatedSuccess(memes)}
+            max={store.competition.maxUserSubmissions}
           />
         )}
       </AppLayout>

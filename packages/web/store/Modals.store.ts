@@ -4,9 +4,6 @@ export default class ModalsStore {
   isAuthModalOpen = false;
 
   @observable
-  isCreateMemeModalOpen = false;
-
-  @observable
   isCreateCompetitionModalOpen = false;
 
   @observable

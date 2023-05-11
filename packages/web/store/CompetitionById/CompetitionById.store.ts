@@ -4,6 +4,7 @@ import {
   Competition,
   CompetitionMeme,
   CompetitionVoteReason,
+  Meme,
   Reward,
 } from "../../interfaces";
 import { CurrencyType } from "../../interfaces/index";
@@ -52,6 +53,9 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
 
   @observable
   isInvalidVoteRuleModalOpen = false;
+
+  @observable
+  isSubmitMemeModalOpen = false;
 
   constructor(competition: Competition, memes: CompetitionMeme[]) {
     super();
@@ -339,8 +343,7 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
   @computed
   get canUserVote() {
     return (
-      AppStore.auth.isAuthed &&
-      this.userVoteReason.every((item) => item.canVote)
+      AppStore.auth.isAuthed && this.userVoteReason.some((item) => item.canVote)
     );
   }
 
@@ -356,5 +359,13 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
       this.isInvalidVoteRuleModalOpen = true;
     }
     return;
+  }
+
+  onMemesCreatedSuccess(memes: Array<Meme>) {
+    console.log("debug:::: got memes yo", memes);
+    memes.forEach((meme) => {
+      this.selectedMemeIds.push(meme.id);
+    });
+    this.onSubmit().then(() => (this.isSubmitMemeModalOpen = false));
   }
 }

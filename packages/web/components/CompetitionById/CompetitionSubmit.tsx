@@ -1,7 +1,6 @@
 import { observer } from "mobx-react-lite";
 import { AiOutlineMinus, AiOutlinePlus } from "react-icons/ai";
 import { css } from "../../helpers/css";
-import AppStore from "../../store/App.store";
 import CompetitionIdStore from "../../store/CompetitionById/CompetitionById.store";
 import AspectRatio from "../DSL/AspectRatio/AspectRatio";
 import AsyncWrap from "../DSL/AsyncWrap/AsyncWrap";
@@ -75,9 +74,7 @@ const CompetitionMemeSelector: React.FC<{ store: CompetitionIdStore }> =
                 "gap-4"
               )}
             >
-              <Button
-                onClick={() => (AppStore.modals.isCreateMemeModalOpen = true)}
-              >
+              <Button onClick={() => (store.isSubmitMemeModalOpen = true)}>
                 <div className={css("flex", "items-center", "gap-0.5")}>
                   <AiOutlinePlus size={15} />
                   Meme
