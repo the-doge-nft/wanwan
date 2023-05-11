@@ -35,6 +35,7 @@ const ReviewView = observer(({ store }: ReviewViewProps) => {
         <Pane title={"Cover"}>
           <div>
             <img
+              alt={"goodpic"}
               src={URL.createObjectURL(store.coverImageFile)}
               className={css("mx-auto")}
             />

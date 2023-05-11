@@ -128,7 +128,6 @@ export default class CreateCompetitionStore extends Navigable<
         );
       this.competitionReceipt = compReceiptWithCover;
     }
-    this.isLoading = false;
     Router.push(`/competition/${this.competitionReceipt.id}`);
   }
 
