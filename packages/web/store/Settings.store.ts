@@ -1,5 +1,6 @@
 import { computed, makeObservable, observable } from "mobx";
 import { THEME_KEY } from "../components/DSL/Theme";
+import { objectKeys } from "../helpers/arrays";
 import { MediaRequirements } from "../interfaces";
 import Http from "./../services/http";
 
@@ -92,7 +93,10 @@ export default class SettingsStore {
   }
 
   @computed
-  get acceptedMimeTypes() {
-    return this.mediaRequirements ? Object.keys(this.mediaRequirements) : [];
+  get acceptedMimeTypeString() {
+    const mimeTypeToExtension = this.mimeTypeToExtension;
+    return mimeTypeToExtension
+      ? objectKeys(mimeTypeToExtension).join(", ")
+      : "";
   }
 }

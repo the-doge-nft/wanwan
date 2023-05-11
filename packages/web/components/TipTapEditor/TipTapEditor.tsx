@@ -39,7 +39,7 @@ import TipTapEditorToolbarStore from "../../store/TipTapEditorToolbar.store";
 import { textFieldBaseStyles, textFieldBorderStyles } from "../DSL/Input/Input";
 import { LinkType, linkTypeStyles } from "../DSL/Link/Link";
 import Spinner, { SpinnerSize } from "../DSL/Spinner/Spinner";
-import Text, { TextSize } from "../DSL/Text/Text";
+import Text, { TextSize, TextType } from "../DSL/Text/Text";
 
 export const getTipTapEditorExtensions = () => [
   Document,
@@ -126,122 +126,145 @@ interface TipTapEditorProps {
   onUpdate?: (content: JSONContent) => void;
 }
 
-const TipTapEditor = ({
-  content,
-  readonly = false,
-  border = true,
-  onUpdate,
-}: TipTapEditorProps) => {
-  const editor = useTipTapEditor(
+const TipTapEditor = observer(
+  ({
     content,
-    border,
-    readonly,
-    onUpdate ? { onUpdate: ({ editor }) => onUpdate(editor.getJSON()) } : {}
-  );
-  const store = useMemo(() => new TipTapEditorToolbarStore(), []);
-  const colorInputRef = useRef<Nullable<HTMLInputElement>>(null);
+    readonly = false,
+    border = true,
+    onUpdate,
+  }: TipTapEditorProps) => {
+    const editor = useTipTapEditor(
+      content,
+      border,
+      readonly,
+      onUpdate ? { onUpdate: ({ editor }) => onUpdate(editor.getJSON()) } : {}
+    );
+    const store = useMemo(() => new TipTapEditorToolbarStore(), []);
+    const colorInputRef = useRef<Nullable<HTMLInputElement>>(null);
 
-  useEffect(() => {
-    if (readonly) {
-      editor?.setEditable(false);
+    useEffect(() => {
+      if (readonly) {
+        editor?.setEditable(false);
+      }
+    }, [editor, readonly]);
+
+    if (!editor) {
+      return null;
     }
-  }, [editor, readonly]);
 
-  if (!editor) {
-    return null;
-  }
-
-  return (
-    <div>
-      <EditorContent editor={editor} className={css("break-all")} />
-      <div className={css("mt-1")}>
-        {!readonly && (
-          <div className={css("flex", "justify-end")}>
-            <ToolbarItem onClick={() => editor.chain().focus().undo().run()}>
-              <Text>
-                <AiOutlineUndo />
-              </Text>
-            </ToolbarItem>
+    return (
+      <div>
+        <EditorContent editor={editor} className={css("break-all")} />
+        <div className={css("mt-1")}>
+          {!readonly && (
             <div
-              className={css("grid", "grid-rows-2", "grid-cols-6", "gap-[1px]")}
+              className={css("flex", {
+                "justify-end": !store.helperText,
+                "justify-between": store.helperText,
+              })}
             >
-              <ToolbarItem onClick={() => colorInputRef?.current?.click()}>
-                {store.isLoading && <Spinner size={SpinnerSize.xxs} />}
-                {!store.isLoading && (
+              {store.helperText && (
+                <Text size={TextSize.xs} type={TextType.Grey} italic>
+                  {store.helperText}
+                </Text>
+              )}
+              <div className={css("flex")}>
+                <ToolbarItem
+                  onClick={() => editor.chain().focus().undo().run()}
+                >
                   <Text>
-                    <BiImage />
+                    <AiOutlineUndo />
                   </Text>
-                )}
-                <input
-                  accept={AppStore.settings.acceptedMimeTypes.join(", ")}
-                  ref={colorInputRef}
-                  className={css("hidden")}
-                  name="file"
-                  type="file"
-                  multiple
-                  onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                    if (e.target.files) {
-                      store.onFileChange(e.target.files, (responses) => {
-                        responses.forEach(({ data }) =>
-                          editor
-                            ?.chain()
-                            .focus()
-                            .setImage({ src: data.url })
-                            .run()
-                        );
-                      });
-                    }
-                  }}
-                />
-              </ToolbarItem>
-              <input
-                type="color"
-                className={css("w-[20px]", "h-[20px]", "bg-transparent")}
-                value={editor?.getAttributes("textStyle").color}
-                onChange={(e) => {
-                  editor?.chain().focus().setColor(e.target.value).run();
-                }}
-              />
+                </ToolbarItem>
+                <div
+                  className={css(
+                    "grid",
+                    "grid-rows-2",
+                    "grid-cols-6",
+                    "gap-[1px]"
+                  )}
+                >
+                  <ToolbarItem onClick={() => colorInputRef?.current?.click()}>
+                    {store.isLoading && <Spinner size={SpinnerSize.xxs} />}
+                    {!store.isLoading && (
+                      <Text>
+                        <BiImage />
+                      </Text>
+                    )}
+                    {/* @next -- we need to abstract file input from MediaInput to be used here */}
+                    <input
+                      accept={AppStore.settings.acceptedMimeTypeString}
+                      ref={colorInputRef}
+                      className={css("hidden")}
+                      name="file"
+                      type="file"
+                      multiple
+                      onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                        const files = e.target.files;
+                        if (files) {
+                          store.onFileChange(files, (responses) => {
+                            responses.forEach(({ data }) =>
+                              editor
+                                ?.chain()
+                                .focus()
+                                .setImage({ src: data.url })
+                                .run()
+                            );
+                          });
+                        }
+                      }}
+                    />
+                  </ToolbarItem>
+                  <input
+                    type="color"
+                    className={css("w-[20px]", "h-[20px]", "bg-transparent")}
+                    value={editor?.getAttributes("textStyle").color}
+                    onChange={(e) => {
+                      editor?.chain().focus().setColor(e.target.value).run();
+                    }}
+                  />
 
-              <ToolbarItem
-                active={editor?.isActive({ textAlign: "left" })}
-                onClick={() =>
-                  editor?.chain().focus().setTextAlign("left").run()
-                }
-              >
-                <Text>
-                  <AiOutlineAlignLeft />
-                </Text>
-              </ToolbarItem>
-              <ToolbarItem
-                active={editor?.isActive({ textAlign: "center" })}
-                onClick={() =>
-                  editor?.chain().focus().setTextAlign("center").run()
-                }
-              >
-                <Text>
-                  <AiOutlineAlignCenter />
-                </Text>
-              </ToolbarItem>
-              <ToolbarItem
-                active={editor?.isActive({ textAlign: "right" })}
-                onClick={() =>
-                  editor?.chain().focus().setTextAlign("right").run()
-                }
-              >
-                <Text>
-                  <AiOutlineAlignRight />
-                </Text>
-              </ToolbarItem>
-              <ToolbarItem
-                active={editor?.isActive("bulletList")}
-                onClick={() => editor?.chain().focus().toggleBulletList().run()}
-              >
-                <Text>
-                  <AiOutlineUnorderedList />
-                </Text>
-              </ToolbarItem>
-              {/* <ToolbarItem
+                  <ToolbarItem
+                    active={editor?.isActive({ textAlign: "left" })}
+                    onClick={() =>
+                      editor?.chain().focus().setTextAlign("left").run()
+                    }
+                  >
+                    <Text>
+                      <AiOutlineAlignLeft />
+                    </Text>
+                  </ToolbarItem>
+                  <ToolbarItem
+                    active={editor?.isActive({ textAlign: "center" })}
+                    onClick={() =>
+                      editor?.chain().focus().setTextAlign("center").run()
+                    }
+                  >
+                    <Text>
+                      <AiOutlineAlignCenter />
+                    </Text>
+                  </ToolbarItem>
+                  <ToolbarItem
+                    active={editor?.isActive({ textAlign: "right" })}
+                    onClick={() =>
+                      editor?.chain().focus().setTextAlign("right").run()
+                    }
+                  >
+                    <Text>
+                      <AiOutlineAlignRight />
+                    </Text>
+                  </ToolbarItem>
+                  <ToolbarItem
+                    active={editor?.isActive("bulletList")}
+                    onClick={() =>
+                      editor?.chain().focus().toggleBulletList().run()
+                    }
+                  >
+                    <Text>
+                      <AiOutlineUnorderedList />
+                    </Text>
+                  </ToolbarItem>
+                  {/* <ToolbarItem
                 active={editor?.isActive("link")}
                 // TODO: Add link support
                 // onClick={() => editor?.chain().focus().toggleLink().run()}
@@ -251,53 +274,57 @@ const TipTapEditor = ({
                   <AiOutlineLink />
                 </Text>
               </ToolbarItem> */}
-              <ToolbarItem
-                active={editor?.isActive("heading", { level: 1 })}
-                onClick={() =>
-                  editor?.chain().focus().toggleHeading({ level: 1 }).run()
-                }
-              >
-                <Text size={TextSize.xs}>H1</Text>
-              </ToolbarItem>
-              <ToolbarItem
-                active={editor?.isActive("heading", { level: 2 })}
-                onClick={() =>
-                  editor?.chain().focus().toggleHeading({ level: 2 }).run()
-                }
-              >
-                <Text size={TextSize.xs}>H2</Text>
-              </ToolbarItem>
-              <ToolbarItem
-                active={editor?.isActive("underline")}
-                onClick={() => editor?.chain().focus().toggleUnderline().run()}
-              >
-                <Text>
-                  <AiOutlineUnderline />
-                </Text>
-              </ToolbarItem>
-              <ToolbarItem
-                active={editor.isActive("bold")}
-                onClick={() => editor?.chain().focus().toggleBold().run()}
-              >
-                <Text>
-                  <TbBold />
-                </Text>
-              </ToolbarItem>
-              <ToolbarItem
-                active={editor?.isActive("italic")}
-                onClick={() => editor?.chain().focus().toggleItalic().run()}
-              >
-                <Text>
-                  <TbItalic />
-                </Text>
-              </ToolbarItem>
+                  <ToolbarItem
+                    active={editor?.isActive("heading", { level: 1 })}
+                    onClick={() =>
+                      editor?.chain().focus().toggleHeading({ level: 1 }).run()
+                    }
+                  >
+                    <Text size={TextSize.xs}>H1</Text>
+                  </ToolbarItem>
+                  <ToolbarItem
+                    active={editor?.isActive("heading", { level: 2 })}
+                    onClick={() =>
+                      editor?.chain().focus().toggleHeading({ level: 2 }).run()
+                    }
+                  >
+                    <Text size={TextSize.xs}>H2</Text>
+                  </ToolbarItem>
+                  <ToolbarItem
+                    active={editor?.isActive("underline")}
+                    onClick={() =>
+                      editor?.chain().focus().toggleUnderline().run()
+                    }
+                  >
+                    <Text>
+                      <AiOutlineUnderline />
+                    </Text>
+                  </ToolbarItem>
+                  <ToolbarItem
+                    active={editor.isActive("bold")}
+                    onClick={() => editor?.chain().focus().toggleBold().run()}
+                  >
+                    <Text>
+                      <TbBold />
+                    </Text>
+                  </ToolbarItem>
+                  <ToolbarItem
+                    active={editor?.isActive("italic")}
+                    onClick={() => editor?.chain().focus().toggleItalic().run()}
+                  >
+                    <Text>
+                      <TbItalic />
+                    </Text>
+                  </ToolbarItem>
+                </div>
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
-    </div>
-  );
-};
+    );
+  }
+);
 
 interface ToolbarItemProps {
   onClick: () => void;
