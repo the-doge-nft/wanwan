@@ -63,9 +63,9 @@ const MemeById = observer(({ meme }: MemeByIdProps) => {
     };
     _setWindowHeight();
     // resizing not needed on mobile devices
-    if (!AppStore.rwd.isMobile) {
-      window.addEventListener("resize", _setWindowHeight);
-    }
+    // if (!AppStore.rwd.isMobile) {
+    // window.addEventListener("resize", _setWindowHeight);
+    // }
     return () => {
       return window.removeEventListener("resize", _setWindowHeight);
     };
