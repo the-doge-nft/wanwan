@@ -1,6 +1,6 @@
 import { makeObservable, observable } from "mobx";
 
-export default class RwdStore {
+export default class ResponsiveWebDesignStore {
   @observable
   isMobile = false;
 
