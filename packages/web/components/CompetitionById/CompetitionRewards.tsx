@@ -6,7 +6,7 @@ import {
   getEtherscanURL,
   getOpenSeaURL,
 } from "../../helpers/strings";
-import CompetitionByIdStore from "../../store/CompetitionId.store";
+import CompetitionByIdStore from "../../store/CompetitionById/CompetitionById.store";
 import Link from "../DSL/Link/Link";
 import Text, { TextSize, TextType } from "../DSL/Text/Text";
 import CompetitionDistributeReward from "./CompetitionDistributeReward";
@@ -23,9 +23,9 @@ const CompetitionRewards = observer(({ store }: CompetitionRewardsProps) => {
         return (
           <div
             key={`reward-${reward.id}`}
-            className={css("grid", "grid-cols-2")}
+            className={css("grid", "grid-cols-6")}
           >
-            <div className={css("flex", "items-center", "gap-2")}>
+            <div className={css("flex", "items-center", "gap-2", "col-span-4")}>
               <Link
                 href={
                   store.getIsRewardNFT(reward.id)
@@ -50,7 +50,14 @@ const CompetitionRewards = observer(({ store }: CompetitionRewardsProps) => {
                 )
               </Text>
             </div>
-            <div className={css("flex", "justify-end", "items-center")}>
+            <div
+              className={css(
+                "flex",
+                "justify-end",
+                "items-center",
+                "col-span-2"
+              )}
+            >
               {store.competition.isActive ? (
                 <>
                   {reward.txId && <Text size={TextSize.xs}>{reward.txId}</Text>}

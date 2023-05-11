@@ -6,7 +6,7 @@ import { RxArrowDown, RxArrowUp } from "react-icons/rx";
 import { css } from "../../helpers/css";
 import { abbreviate } from "../../helpers/strings";
 import AppStore from "../../store/App.store";
-import CompetitionIdStore from "../../store/CompetitionId.store";
+import CompetitionIdStore from "../../store/CompetitionById/CompetitionById.store";
 import AspectRatio from "../DSL/AspectRatio/AspectRatio";
 import AsyncWrap, { NoDataFound } from "../DSL/AsyncWrap/AsyncWrap";
 import Link, { LinkType } from "../DSL/Link/Link";

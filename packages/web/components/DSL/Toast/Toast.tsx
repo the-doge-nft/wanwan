@@ -13,7 +13,8 @@ const toastBaseStyles = css(
   "!rounded-none",
   "text-sm",
   "border-[1px]",
-  "border-black"
+  "border-black",
+  "m-2"
 );
 
 const CloseButton: React.FC<{ className?: string }> = ({

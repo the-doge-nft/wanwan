@@ -3,7 +3,11 @@ import { GetServerSideProps } from "next";
 import { useEffect, useMemo } from "react";
 import CompetitionSubmissions from "../../components/CompetitionById/CompetitionSubmissions";
 import CompetitionUserSubmissions from "../../components/CompetitionById/CompetitionUserSubmissions";
-import { CollapsablePane, PaneType } from "../../components/DSL/Pane/Pane";
+import {
+  CollapsablePane,
+  PaneType,
+  expandPane,
+} from "../../components/DSL/Pane/Pane";
 import { css } from "../../helpers/css";
 import {
   Competition,
@@ -14,7 +18,7 @@ import {
 import AppLayout from "../../layouts/App.layout";
 import Http from "../../services/http";
 import redirectTo404 from "../../services/redirect/404";
-import { default as CompetitionByIdStore } from "../../store/CompetitionId.store";
+import { default as CompetitionByIdStore } from "../../store/CompetitionById/CompetitionById.store";
 
 import CompetitionRewards from "../../components/CompetitionById/CompetitionRewards";
 import CompetitionStats from "../../components/CompetitionById/CompetitionStats";
@@ -47,8 +51,7 @@ const CompetitionById: React.FC<CompetitionByIdProps> = observer(
       <AppLayout>
         <div className={css("flex", "flex-col", "gap-2")}>
           <CollapsablePane
-            onChange={(value) => (store.showTitle = value)}
-            isExpanded={store.showTitle}
+            {...expandPane(store.showPane, "title")}
             title={store.competition.name}
           >
             {store.competition.description && (
@@ -69,8 +72,7 @@ const CompetitionById: React.FC<CompetitionByIdProps> = observer(
           <CollapsablePane
             type={PaneType.Secondary}
             title={"Stats"}
-            onChange={(val) => (store.showDetails = val)}
-            isExpanded={store.showDetails}
+            {...expandPane(store.showPane, "details")}
           >
             <CompetitionStats store={store} />
           </CollapsablePane>
@@ -78,8 +80,7 @@ const CompetitionById: React.FC<CompetitionByIdProps> = observer(
             <CollapsablePane
               type={PaneType.Secondary}
               title={"Voters"}
-              isExpanded={store.showVoters}
-              onChange={(value) => (store.showVoters = value)}
+              {...expandPane(store.showPane, "voters")}
             >
               {store.competition.votingRule.map((rule) => (
                 <VotingRuleItem
@@ -92,8 +93,7 @@ const CompetitionById: React.FC<CompetitionByIdProps> = observer(
           <CollapsablePane
             title={`Rewards`}
             type={PaneType.Secondary}
-            isExpanded={store.showRewards}
-            onChange={(val) => (store.showRewards = val)}
+            {...expandPane(store.showPane, "rewards")}
           >
             <CompetitionRewards store={store} />
           </CollapsablePane>
@@ -121,8 +121,7 @@ const CompetitionById: React.FC<CompetitionByIdProps> = observer(
                 <CollapsablePane
                   type={PaneType.Secondary}
                   title={"Enter Competition"}
-                  isExpanded={store.showSubmitContent}
-                  onChange={(value) => (store.showSubmitContent = value)}
+                  {...expandPane(store.showPane, "submitContent")}
                 >
                   <CompetitionSubmit store={store} />
                 </CollapsablePane>

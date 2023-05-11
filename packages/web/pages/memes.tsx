@@ -1,7 +1,7 @@
 import { observer } from "mobx-react-lite";
 import { GetServerSideProps } from "next";
 import Image from "next/image";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import Link, { LinkType } from "../components/DSL/Link/Link";
 import Pane, { PaneType } from "../components/DSL/Pane/Pane";
 import Text from "../components/DSL/Text/Text";
@@ -28,6 +28,9 @@ const MemePage = observer(({ memes, params, next }: MemesPageProps) => {
     () => new MemePageStore(memes, next, params),
     [memes, params, next]
   );
+  useEffect(() => {
+    store.init();
+  }, []);
   return (
     <AppLayout>
       <GridOrColumnScrollableView<Meme>

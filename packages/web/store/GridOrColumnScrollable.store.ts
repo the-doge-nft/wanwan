@@ -1,5 +1,5 @@
 import { computed, makeObservable, observable } from "mobx";
-import isClient from "../helpers/isClient";
+import LocalStorage from "../helpers/localStorage";
 import { NextString, SearchParams, SearchResponse } from "../interfaces";
 import SearchableDataProvider from "./SearchableDataProvider";
 
@@ -25,16 +25,14 @@ abstract class GridOrColumnScrollableStore<T> extends SearchableDataProvider<
   ) {
     super(cancelTokensName, intialData, next);
     makeObservable(this);
-    this.initView();
   }
 
-  private initView() {
-    if (isClient()) {
-      const view = localStorage.getItem(this.localStorageKey);
-      if (view) {
-        this.view = view as View;
-      }
-    }
+  init() {
+    this.view = LocalStorage.getItem(
+      this.localStorageKey,
+      LocalStorage.PARSE_STRING,
+      this.view ? this.view : View.Column
+    ) as View;
   }
 
   abstract query(): Promise<SearchResponse<T>>;
@@ -46,7 +44,7 @@ abstract class GridOrColumnScrollableStore<T> extends SearchableDataProvider<
 
   set view(view: View) {
     this._view = view;
-    localStorage.setItem(this.localStorageKey, view);
+    LocalStorage.setItem(this.localStorageKey, view);
   }
 
   protected getDefaultFilters() {

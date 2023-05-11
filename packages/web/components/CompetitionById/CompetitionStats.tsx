@@ -2,7 +2,7 @@ import { format } from "date-fns";
 import { observer } from "mobx-react-lite";
 import { css } from "../../helpers/css";
 import { abbreviate } from "../../helpers/strings";
-import CompetitionByIdStore from "../../store/CompetitionId.store";
+import CompetitionByIdStore from "../../store/CompetitionById/CompetitionById.store";
 import ActivePill from "../ActivePill/ActivePill";
 import Link, { LinkType } from "../DSL/Link/Link";
 import Text, { TextSize } from "../DSL/Text/Text";

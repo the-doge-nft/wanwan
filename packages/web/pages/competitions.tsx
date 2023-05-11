@@ -1,6 +1,6 @@
 import { observer } from "mobx-react-lite";
 import { GetServerSideProps } from "next";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import GridOrColumnScrollableView from "../components/GridOrColumnScrollableView/GridOrColumnScrollableView";
 import CompetitionPreviewLink from "../components/PreviewLink/CompetitionPreviewLink";
 import { Competition, NextString, SearchParams } from "../interfaces";
@@ -21,6 +21,10 @@ const CompetitionsPage = observer(
       () => new CompetitionPageStore(competitions, next, params),
       [competitions, next, params]
     );
+
+    useEffect(() => {
+      store.init();
+    }, []);
     return (
       <AppLayout>
         <GridOrColumnScrollableView<Competition>

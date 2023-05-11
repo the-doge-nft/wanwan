@@ -98,7 +98,7 @@ const Pane: React.FC<PropsWithChildren<PaneProps>> = observer(
 
 interface CollapsablePaneProps extends PaneProps {
   isExpanded: boolean;
-  onChange: (isExpanded: boolean) => void;
+  onChange: (isExpanded: boolean) => any;
 }
 
 export const CollapsablePane: React.FC<
@@ -132,5 +132,17 @@ export const CollapsablePane: React.FC<
     </Pane>
   );
 });
+
+export function expandPane<T extends Record<string, any>>(
+  obj: T,
+  key: keyof T
+) {
+  return {
+    isExpanded: obj[key] as boolean,
+    onChange: (value: boolean) => {
+      obj.set(key as string, value);
+    },
+  };
+}
 
 export default Pane;

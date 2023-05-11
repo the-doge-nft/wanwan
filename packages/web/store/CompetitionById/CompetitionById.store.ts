@@ -1,11 +1,12 @@
 import { action, computed, makeObservable, observable, toJS } from "mobx";
-import { fuzzyDeepSearch } from "../helpers/arrays";
-import { Competition, CompetitionMeme, Reward } from "../interfaces";
-import { Reactionable } from "../services/mixins/reactionable";
-import { TokenType } from "./../interfaces/index";
-import Http from "./../services/http";
-import { EmptyClass } from "./../services/mixins/index";
-import AppStore from "./App.store";
+import { fuzzyDeepSearch } from "../../helpers/arrays";
+import { Competition, CompetitionMeme, Reward } from "../../interfaces";
+import { TokenType } from "../../interfaces/index";
+import Http from "../../services/http";
+import { EmptyClass } from "../../services/mixins/index";
+import { Reactionable } from "../../services/mixins/reactionable";
+import AppStore from "../App.store";
+import CompetitionByIdPaneVisibilityStore from "./CompetitionByIdPaneVisibility.store";
 
 export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
   @observable
@@ -24,16 +25,7 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
   selectedMemeIds: number[] = [];
 
   @observable
-  showSubmitContent = true;
-
-  @observable
   showUserEntriesContent = true;
-
-  @observable
-  showRewards = true;
-
-  @observable
-  showDetails = true;
 
   @observable
   isSubmitLoading = false;
@@ -42,16 +34,13 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
   isCurateModalOpen = false;
 
   @observable
-  showTitle = true;
-
-  @observable
-  showVoters = true;
-
-  @observable
   private _memeIdToCurate?: number;
 
   @observable
   userSubmittedMemes: CompetitionMeme[] = [];
+
+  @observable
+  showPane: CompetitionByIdPaneVisibilityStore;
 
   constructor(competition: Competition, memes: CompetitionMeme[]) {
     super();
@@ -59,9 +48,11 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
     this.competition = competition;
     this._rewards = competition.rewards;
     this.memes = memes;
+    this.showPane = new CompetitionByIdPaneVisibilityStore(competition.id);
   }
 
   init() {
+    this.showPane.init();
     this.react(
       () => AppStore.auth.isAuthed,
       (isAuthed) => {
@@ -92,11 +83,6 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
   onSearchChange = (value: string) => {
     this.searchValue = value;
   };
-
-  @action
-  toggleShowSubmitContent() {
-    this.showSubmitContent = !this.showSubmitContent;
-  }
 
   @action
   onMemeSelect(id: number) {

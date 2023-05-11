@@ -2,7 +2,7 @@ import { observer } from "mobx-react-lite";
 import { AiOutlineMinus, AiOutlinePlus } from "react-icons/ai";
 import { css } from "../../helpers/css";
 import AppStore from "../../store/App.store";
-import CompetitionIdStore from "../../store/CompetitionId.store";
+import CompetitionIdStore from "../../store/CompetitionById/CompetitionById.store";
 import AspectRatio from "../DSL/AspectRatio/AspectRatio";
 import AsyncWrap from "../DSL/AsyncWrap/AsyncWrap";
 import Button from "../DSL/Button/Button";
