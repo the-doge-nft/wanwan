@@ -14,6 +14,7 @@ import { FormDisplay } from "../DSL/Form/FormControl";
 import NumberInput from "../DSL/Form/NumberInput";
 import { maxValue, minValue, required } from "../DSL/Form/validation";
 import Link from "../DSL/Link/Link";
+import Spinner from "../DSL/Spinner/Spinner";
 import Text from "../DSL/Text/Text";
 import { Buttons } from "./CreateCompetition";
 import Detail from "./Detail";
@@ -35,18 +36,24 @@ const RewardsView = observer(({ store }: RewardsViewProps) => {
       )}
       {store.rewardStore.isRewardsVisible && (
         <div className={css("flex", "flex-col", "gap-6")}>
-          {store.rewardStore.rewards.map((rewardStore, index) => {
-            return (
-              <RewardInputItem
-                key={`reward-input-item-${index}`}
-                index={index}
-                wallet={store.wallet!}
-                onRemoveClick={() => store.rewardStore.removeReward(index)}
-                rewardStore={store.rewardStore}
-                store={rewardStore}
-              />
-            );
-          })}
+          {store.wallet &&
+            store.rewardStore.rewards.map((rewardStore, index) => {
+              return (
+                <RewardInputItem
+                  key={`reward-input-item-${index}`}
+                  index={index}
+                  wallet={store.wallet!}
+                  onRemoveClick={() => store.rewardStore.removeReward(index)}
+                  rewardStore={store.rewardStore}
+                  store={rewardStore}
+                />
+              );
+            })}
+          {!store.wallet && (
+            <div className={css("text-center", "w-full")}>
+              <Spinner />
+            </div>
+          )}
         </div>
       )}
       <div className={css("flex", "items-center", "gap-2", "mt-2")}>

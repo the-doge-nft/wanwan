@@ -38,8 +38,6 @@ export class MediaService {
   }
 
   private getS3Url(media: Media) {
-    // @next CDN
-    // https://dev-meme-media.s3.us-east-2.amazonaws.com/1-0cd6cce944fddb2e285dca0acd8103c2-2023-01-06.jpeg
     return `https://${this.cdnPrefix}/${media.filename}`;
   }
 

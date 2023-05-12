@@ -136,81 +136,93 @@ const VotingItem = observer(
         </div>
         {voteInputStore.view === VoteInputView.Wallet &&
           !voteInputStore.isConfirmed && (
-            <Wallet
-              wallet={store.wallet!}
-              showAll={false}
-              selectedAddress={voteInputStore.contractAddress}
-              filterContractAddresses={store.votersStore.getAddressesToHide(
-                index
+            <>
+              {!store.wallet && (
+                <div className={css("text-center", "w-full")}>
+                  <Spinner />
+                </div>
               )}
-              onNFTAddressSelected={({ address, nfts }) => {
-                const type = nfts?.[0].contract.tokenType;
-                voteInputStore.setInput(
-                  address,
-                  type === NftTokenType.ERC1155
-                    ? CurrencyType.ERC1155
-                    : CurrencyType.ERC721,
-                  nfts?.[0].contract.name
-                );
-              }}
-              onEthSelected={() =>
-                voteInputStore.setInput("eth", CurrencyType.ETH, "ETH")
-              }
-              onERC20AddressSelected={({ address, balance }) => {
-                const name = balance[0]?.metadata?.name;
-                voteInputStore.setInput(address, CurrencyType.ERC20, name);
-              }}
-              renderNftSelection={({ address, nfts }) => {
-                const contract = nfts?.[0].contract;
-                return (
-                  <div
-                    className={css("flex", "flex-col", "items-center", "grow")}
-                  >
-                    {contract && (
-                      <>
-                        <div className={css("grow", "flex", "flex-col")}>
-                          <div className={css("text-center")}>
-                            <Text>
-                              Holders of{" "}
-                              <Link
-                                isExternal
-                                href={getLooksRareCollectionURL(
-                                  contract.address
+              {store.wallet && (
+                <Wallet
+                  wallet={store.wallet!}
+                  showAll={false}
+                  selectedAddress={voteInputStore.contractAddress}
+                  filterContractAddresses={store.votersStore.getAddressesToHide(
+                    index
+                  )}
+                  onNFTAddressSelected={({ address, nfts }) => {
+                    const type = nfts?.[0].contract.tokenType;
+                    voteInputStore.setInput(
+                      address,
+                      type === NftTokenType.ERC1155
+                        ? CurrencyType.ERC1155
+                        : CurrencyType.ERC721,
+                      nfts?.[0].contract.name
+                    );
+                  }}
+                  onEthSelected={() =>
+                    voteInputStore.setInput("eth", CurrencyType.ETH, "ETH")
+                  }
+                  onERC20AddressSelected={({ address, balance }) => {
+                    const name = balance[0]?.metadata?.name;
+                    voteInputStore.setInput(address, CurrencyType.ERC20, name);
+                  }}
+                  renderNftSelection={({ address, nfts }) => {
+                    const contract = nfts?.[0].contract;
+                    return (
+                      <div
+                        className={css(
+                          "flex",
+                          "flex-col",
+                          "items-center",
+                          "grow"
+                        )}
+                      >
+                        {contract && (
+                          <>
+                            <div className={css("grow", "flex", "flex-col")}>
+                              <div className={css("text-center")}>
+                                <Text>
+                                  Holders of{" "}
+                                  <Link
+                                    isExternal
+                                    href={getLooksRareCollectionURL(
+                                      contract.address
+                                    )}
+                                  >
+                                    {contract.name
+                                      ? contract.name
+                                      : abbreviate(contract.address)}
+                                  </Link>{" "}
+                                  will be able to vote
+                                </Text>
+                              </div>
+                              <div
+                                className={css(
+                                  "mt-4",
+                                  "flex",
+                                  "gap-1",
+                                  "grow",
+                                  "items-center",
+                                  "justify-center",
+                                  "flex-wrap"
                                 )}
                               >
-                                {contract.name
-                                  ? contract.name
-                                  : abbreviate(contract.address)}
-                              </Link>{" "}
-                              will be able to vote
-                            </Text>
-                          </div>
-                          <div
-                            className={css(
-                              "mt-4",
-                              "flex",
-                              "gap-1",
-                              "grow",
-                              "items-center",
-                              "justify-center",
-                              "flex-wrap"
-                            )}
-                          >
-                            {!voteInputStore.isLoadingNfts &&
-                              voteInputStore.nfts
-                                .slice(0, 5)
-                                .map((nft) => (
-                                  <NftPreview
-                                    key={`nft-preview-${nft.contract.address}-${nft.tokenId}`}
-                                    size={"sm"}
-                                    nft={nft}
-                                    showName={false}
-                                  />
-                                ))}
-                            {voteInputStore.isLoadingNfts && <Spinner />}
-                          </div>
-                        </div>
-                        {/* <div
+                                {!voteInputStore.isLoadingNfts &&
+                                  voteInputStore.nfts
+                                    .slice(0, 5)
+                                    .map((nft) => (
+                                      <NftPreview
+                                        key={`nft-preview-${nft.contract.address}-${nft.tokenId}`}
+                                        size={"sm"}
+                                        nft={nft}
+                                        showName={false}
+                                      />
+                                    ))}
+                                {voteInputStore.isLoadingNfts && <Spinner />}
+                              </div>
+                            </div>
+                            {/* <div
                           className={css(
                             "grow",
                             "w-full",
@@ -228,30 +240,30 @@ const VotingItem = observer(
                             isHoldersLoading={voteInputStore.isLoadingHolders}
                           />
                         </div> */}
-                      </>
-                    )}
-                  </div>
-                );
-              }}
-              renderErc20Selection={({ address, balance }) => {
-                if (balance.length === 0) return <></>;
-                return (
-                  <div className={css("flex", "flex-col", "h-full")}>
-                    <div className={css("grow", "text-center")}>
-                      <Text>
-                        Holders of{" "}
-                        <Link
-                          isExternal
-                          href={getEtherscanURL(address, "token")}
-                        >
-                          {voteInputStore.name
-                            ? voteInputStore.name
-                            : abbreviate(address)}
-                        </Link>{" "}
-                        will be able to vote
-                      </Text>
-                    </div>
-                    {/* <div className={css("grow", "flex", "items-end")}>
+                          </>
+                        )}
+                      </div>
+                    );
+                  }}
+                  renderErc20Selection={({ address, balance }) => {
+                    if (balance.length === 0) return <></>;
+                    return (
+                      <div className={css("flex", "flex-col", "h-full")}>
+                        <div className={css("grow", "text-center")}>
+                          <Text>
+                            Holders of{" "}
+                            <Link
+                              isExternal
+                              href={getEtherscanURL(address, "token")}
+                            >
+                              {voteInputStore.name
+                                ? voteInputStore.name
+                                : abbreviate(address)}
+                            </Link>{" "}
+                            will be able to vote
+                          </Text>
+                        </div>
+                        {/* <div className={css("grow", "flex", "items-end")}>
                       <ContractInfo
                         address={address}
                         tokenType={TokenType.ERC20}
@@ -259,19 +271,22 @@ const VotingItem = observer(
                         showHolders={false}
                       />
                     </div> */}
-                  </div>
-                );
-              }}
-              renderEthSelection={() => {
-                return (
-                  <div className={css("text-center")}>
-                    <Text>
-                      Users must have an <Text bold>ETH</Text> balance to vote
-                    </Text>
-                  </div>
-                );
-              }}
-            />
+                      </div>
+                    );
+                  }}
+                  renderEthSelection={() => {
+                    return (
+                      <div className={css("text-center")}>
+                        <Text>
+                          Users must have an <Text bold>ETH</Text> balance to
+                          vote
+                        </Text>
+                      </div>
+                    );
+                  }}
+                />
+              )}
+            </>
           )}
         {voteInputStore.view === VoteInputView.Manual &&
           !voteInputStore.isConfirmed && (

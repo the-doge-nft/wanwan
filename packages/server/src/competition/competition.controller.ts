@@ -58,6 +58,7 @@ export class CompetitionController {
     //     'You must hold a Doge Pixel to create a competition',
     //   );
     // }
+
     return this.competition
       .create({
         ...competition,

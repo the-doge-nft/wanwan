@@ -6,9 +6,10 @@ import Text, { TextType } from "../Text/Text";
 import { borderColorCss } from "../Theme";
 
 export enum PaneType {
-  Primary = "primary",
-  Secondary = "secondary",
+  Red = "red",
+  Blue = "secondary",
   Grey = "grey",
+  Green = "green",
 }
 
 interface PaneProps {
@@ -19,13 +20,7 @@ interface PaneProps {
 }
 
 const Pane: React.FC<PropsWithChildren<PaneProps>> = observer(
-  ({
-    children,
-    title,
-    type = PaneType.Primary,
-    rightOfTitle,
-    padding = true,
-  }) => {
+  ({ children, title, type = PaneType.Blue, rightOfTitle, padding = true }) => {
     const basePaneStyles = {
       container: css("border-[1px]", borderColorCss),
       title: css(
@@ -41,20 +36,35 @@ const Pane: React.FC<PropsWithChildren<PaneProps>> = observer(
     };
 
     const paneTypeStyles = {
-      [PaneType.Primary]: {
-        title: css("bg-slate-300", "dark:bg-slate-800"),
+      [PaneType.Blue]: {
+        title: css(
+          "bg-slate-300",
+          "dark:bg-slate-800",
+          "text-black",
+          "dark:text-white"
+        ),
         container: css("bg-slate-100", "border-[1px]"),
         body: css(),
       },
-      [PaneType.Secondary]: {
-        title: css("bg-red-800"),
+      [PaneType.Red]: {
+        title: css("bg-red-800", "text-white"),
         container: css(),
         body: css(),
       },
       [PaneType.Grey]: {
-        title: css("bg-neutral-300", "dark:bg-neutral-800"),
+        title: css(
+          "bg-neutral-300",
+          "dark:bg-neutral-800",
+          "text-black",
+          "dark:text-white"
+        ),
         container: css(),
         body: css(),
+      },
+      [PaneType.Green]: {
+        title: css("bg-green-700", "dark:bg-green-800", "text-green-800"),
+        container: css(),
+        body: css("bg-green-50"),
       },
     };
     return (
@@ -68,20 +78,12 @@ const Pane: React.FC<PropsWithChildren<PaneProps>> = observer(
             className={css(paneTypeStyles[type].title, basePaneStyles.title)}
           >
             <div
-              className={css("grow", "dark:text-white", "text-black", {
+              className={css("grow", {
                 "overflow-x-hidden text-ellipsis whitespace-nowrap":
                   typeof title === "string",
               })}
             >
-              <Text
-                type={
-                  type === PaneType.Primary || type === PaneType.Grey
-                    ? TextType.Primary
-                    : TextType.White
-                }
-              >
-                {title}
-              </Text>
+              <Text type={TextType.NoColor}>{title}</Text>
             </div>
             {rightOfTitle && rightOfTitle}
           </div>
@@ -110,19 +112,11 @@ export const CollapsablePane: React.FC<
         className={css("cursor-pointer")}
         onClick={() => onChange(!isExpanded)}
       >
-        <Text
-          type={
-            rest.type === PaneType.Primary || !rest.type
-              ? TextType.Primary
-              : TextType.White
-          }
-        >
-          {isExpanded ? (
-            <AiOutlineMinus size={16} />
-          ) : (
-            <AiOutlinePlus size={16} />
-          )}
-        </Text>
+        {isExpanded ? (
+          <AiOutlineMinus size={16} />
+        ) : (
+          <AiOutlinePlus size={16} />
+        )}
       </div>
     );
   }, [isExpanded, onChange]);

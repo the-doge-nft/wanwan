@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Prisma, TokenType } from '@prisma/client';
 import { BigNumber } from 'ethers';
-import { parseEther } from 'ethers/lib/utils';
+import { parseEther, parseUnits } from 'ethers/lib/utils';
 import { AlchemyService } from '../alchemy/alchemy.service';
 import { RewardsDto } from '../dto/competition.dto';
 import { PrismaService } from './../prisma.service';
@@ -31,7 +31,6 @@ export class RewardService {
     return (await Promise.all(promises)).every((isValid) => !!isValid);
   }
 
-  // next -- need support for decimals here
   private async getIsERC20RewardValid(
     address: string,
     reward: RewardsDto,
@@ -42,12 +41,7 @@ export class RewardService {
     ]);
     const metadata = await this.alchemy.getTokenMetadata(contractAddress);
     const balance = balances.tokenBalances[0].tokenBalance;
-    const amountAtoms = BigNumber.from(amount).mul(
-      BigNumber.from(10).pow(metadata.decimals),
-    );
-    this.logger.log(
-      `querying erc20 reward balance -- [user::${address} contract::${contractAddress} amount::${amount} decimals::${metadata.decimals}]    balance::${balance} >= atoms::${amountAtoms}`,
-    );
+    const amountAtoms = parseUnits(amount, metadata.decimals);
     return BigNumber.from(balance).gte(amountAtoms);
   }
 
@@ -57,9 +51,6 @@ export class RewardService {
       address,
       contractAddress,
       tokenId,
-    );
-    this.logger.log(
-      `querying nft reward balance -- [user::${address} contract::${contractAddress} tokenId::${tokenId}]    balance::${balance} >= amount::${reward.currency.amount}`,
     );
     return balance >= parseInt(reward.currency.amount);
   }

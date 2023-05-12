@@ -22,6 +22,9 @@ export default class CompetitionByIdPaneVisibilityStore {
   @observable
   details = true;
 
+  @observable
+  userEntries = true;
+
   constructor(private readonly id: number) {
     makeObservable(this);
   }

@@ -84,7 +84,7 @@ const Home: React.FC<HomeProps> = observer(
                 ))}
               </AsyncGrid>
             </Pane>
-            <Pane title={"Stats"}>
+            <Pane title={"Stats"} type={PaneType.Red}>
               <div
                 className={css(
                   "text-xs",

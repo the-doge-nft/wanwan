@@ -72,7 +72,7 @@ const CompetitionById: React.FC<CompetitionByIdProps> = observer(
             )}
           </CollapsablePane>
           <CollapsablePane
-            type={PaneType.Secondary}
+            type={PaneType.Red}
             title={"Stats"}
             {...expandPane(store.showPaneStore, "details")}
           >
@@ -80,7 +80,7 @@ const CompetitionById: React.FC<CompetitionByIdProps> = observer(
           </CollapsablePane>
           {store.hasVoters && (
             <CollapsablePane
-              type={PaneType.Secondary}
+              type={PaneType.Red}
               title={"Voters"}
               {...expandPane(store.showPaneStore, "voters")}
             >
@@ -94,7 +94,7 @@ const CompetitionById: React.FC<CompetitionByIdProps> = observer(
           )}
           <CollapsablePane
             title={`Rewards`}
-            type={PaneType.Secondary}
+            type={PaneType.Red}
             {...expandPane(store.showPaneStore, "rewards")}
           >
             <CompetitionRewards store={store} />
@@ -121,7 +121,7 @@ const CompetitionById: React.FC<CompetitionByIdProps> = observer(
             >
               {store.showSubmitPane && (
                 <CollapsablePane
-                  type={PaneType.Secondary}
+                  type={PaneType.Grey}
                   title={"Enter Competition"}
                   {...expandPane(store.showPaneStore, "submitContent")}
                 >
@@ -130,10 +130,9 @@ const CompetitionById: React.FC<CompetitionByIdProps> = observer(
               )}
               {store.showHasEntriesPane && (
                 <CollapsablePane
-                  type={PaneType.Secondary}
+                  type={PaneType.Grey}
                   title={`Your Entries: (${store.userEntriesCount})`}
-                  isExpanded={store.showUserEntriesContent}
-                  onChange={(value) => (store.showUserEntriesContent = value)}
+                  {...expandPane(store.showPaneStore, "userEntries")}
                 >
                   <CompetitionUserSubmissions store={store} />
                 </CollapsablePane>
