@@ -60,7 +60,7 @@ const Text: React.FC<PropsWithChildren<TextProps>> = ({
         {
           "font-bold": bold,
           italic: italic,
-          "w-full": block,
+          "block w-full": block,
           "whitespace-nowrap overflow-hidden text-ellipsis": ellipses,
         }
       )}

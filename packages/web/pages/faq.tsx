@@ -1,6 +1,6 @@
 import { observer } from "mobx-react-lite";
 import { useMemo } from "react";
-import Pane from "../components/DSL/Pane/Pane";
+import Pane, { PaneType } from "../components/DSL/Pane/Pane";
 import Text, { TextSize } from "../components/DSL/Text/Text";
 import { css } from "../helpers/css";
 import AppLayout from "../layouts/App.layout";
@@ -15,10 +15,17 @@ const FAQPage = observer(() => {
           FAQ
         </Text>
       </div>
-      <div className={css("flex", "flex-col", "gap-2")}>
-        {store.items.map((item, index) => (
-          <Item key={`${item.title}-${index}`} {...item} />
-        ))}
+      <div className={css("grid", "grid-cols-1", "sm:grid-cols-2", "gap-2")}>
+        <div className={css("hidden", "sm:block")}>
+          <Pane type={PaneType.Green} title={"Qustions"}></Pane>
+        </div>
+        <Pane title={"Basics"}>
+          <div className={css("flex", "flex-col", "gap-2")}>
+            {store.items.map((item, index) => (
+              <Item key={`${item.title}-${index}`} {...item} />
+            ))}
+          </div>
+        </Pane>
       </div>
     </AppLayout>
   );
@@ -26,9 +33,10 @@ const FAQPage = observer(() => {
 
 const Item = observer(({ ...item }: FaqItem) => {
   return (
-    <Pane title={item.title}>
-      <Text>{item.content}</Text>
-    </Pane>
+    <div>
+      <Text bold>{item.title}</Text>
+      <Text block>{item.content}</Text>
+    </div>
   );
 });
 

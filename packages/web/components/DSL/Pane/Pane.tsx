@@ -62,7 +62,7 @@ const Pane: React.FC<PropsWithChildren<PaneProps>> = observer(
         body: css(),
       },
       [PaneType.Green]: {
-        title: css("bg-green-700", "dark:bg-green-800", "text-green-800"),
+        title: css("bg-green-600", "dark:bg-green-800", "text-green-900"),
         container: css(),
         body: css("bg-green-50"),
       },
