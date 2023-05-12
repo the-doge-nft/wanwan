@@ -10,13 +10,16 @@ export default class FaqPageStore {
   items: FaqItem[] = [
     {
       title: "What is wanwan?",
-      content:
-        "Wanwan is a platform for meme competitions on Ethereum. Competition creators can define their own rules for the competition, which users can curate the competition (hide NSFW or offensive content), what rewards are available for 1st place, 2nd place, etc.",
+      content: "wanwan is a platform for p2p meme competitions on Ethereum.",
     },
     {
-      title: "How much of this is on chain?",
+      title: "What is a p2p meme competition?",
       content:
-        "Currently only distributing rewards is on-chain. We currently are focused on keeping things as free and open as possible. If you have any ideas on how to move voting or competitions on chain without forcing users to pay gas please contact us!",
+        "Our take on p2p in this context is a competition in which the community is able to vote on their favorite memes.",
+    },
+    {
+      title: "What do I need to submit to a meme competition?",
+      content: "An Ethereum wallet and your imagination.",
     },
   ];
 

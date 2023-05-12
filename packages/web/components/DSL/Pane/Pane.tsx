@@ -7,7 +7,7 @@ import { borderColorCss } from "../Theme";
 
 export enum PaneType {
   Red = "red",
-  Blue = "secondary",
+  Blue = "blue",
   Grey = "grey",
   Green = "green",
 }
@@ -22,7 +22,7 @@ interface PaneProps {
 const Pane: React.FC<PropsWithChildren<PaneProps>> = observer(
   ({ children, title, type = PaneType.Blue, rightOfTitle, padding = true }) => {
     const basePaneStyles = {
-      container: css("border-[1px]", borderColorCss),
+      container: css("border-[1px]"),
       title: css(
         "px-2",
         "py-1",
@@ -43,12 +43,12 @@ const Pane: React.FC<PropsWithChildren<PaneProps>> = observer(
           "text-black",
           "dark:text-white"
         ),
-        container: css("bg-slate-100", "border-[1px]"),
+        container: css(borderColorCss),
         body: css(),
       },
       [PaneType.Red]: {
         title: css("bg-red-800", "text-white"),
-        container: css(),
+        container: css(borderColorCss),
         body: css(),
       },
       [PaneType.Grey]: {
@@ -58,20 +58,26 @@ const Pane: React.FC<PropsWithChildren<PaneProps>> = observer(
           "text-black",
           "dark:text-white"
         ),
-        container: css(),
+        container: css(borderColorCss),
         body: css(),
       },
       [PaneType.Green]: {
-        title: css("bg-green-600", "dark:bg-green-800", "text-green-900"),
-        container: css(),
-        body: css("bg-green-50"),
+        title: css(
+          "bg-lime-500",
+          "dark:bg-lime-800",
+          "text-lime-900",
+          "dark:text-lime-300"
+        ),
+        container: css("border-lime-600", "dark:border-lime-900"),
+        body: css("bg-lime-50"),
       },
     };
     return (
       <div
-        className={
-          (css(paneTypeStyles[type].container), basePaneStyles.container)
-        }
+        className={css(
+          paneTypeStyles[type].container,
+          basePaneStyles.container
+        )}
       >
         {(title || rightOfTitle) && (
           <div
