@@ -109,13 +109,19 @@ export class RewardService {
       );
     }
 
-    /*  decode the logs based on the type of token transfer the reward is supposed to be
-    
+    /*  
+      decode the logs based on the type of token transfer the reward is supposed to be
     
       1: ERC1155 Transfer(address,address,uint256)
       2: ERC721 Transfer(address,address,uint256)
       3: ERC20 Transfer(address,address,uint256)
       4: ETH
+
+      1155 SEND
+      https://goerli.etherscan.io/tx/0x0ab51ce3ee869584ae37c4337cbcdc7f8b7dac50d3ffea4240971c1f62682444
+    
+      ETH SEND
+      https://goerli.etherscan.io/tx/0x3bf296e5b03a952776bef2e8d41ea204cece97effb9e0b73612a1e18f12ac005
     */
 
     switch (reward.currency.type) {
