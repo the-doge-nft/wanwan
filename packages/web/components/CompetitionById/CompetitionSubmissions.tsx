@@ -30,7 +30,10 @@ const CompetitionSubmissions: React.FC<{ store: CompetitionIdStore }> =
                 "right-[5px]",
                 "top-[5xp]",
                 "text-black",
-                "dark:text-white"
+                "dark:text-white",
+                "border-[1px]",
+                "border-black",
+                "outline-none"
               )}
             >
               <IoCloseOutline size={18} />
@@ -84,7 +87,8 @@ const CompetitionSubmissions: React.FC<{ store: CompetitionIdStore }> =
                         "dark:text-white",
                         "items-center",
                         "flex",
-                        "justify-between"
+                        "justify-between",
+                        { "pr-5": store.isUserCurator }
                       )}
                     >
                       <div>
