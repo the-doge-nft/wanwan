@@ -98,7 +98,7 @@ class _Http {
     return this.http.get<Competition>(`/competition/${id}`);
   }
 
-  getCompetitionMemes(id: number | string) {
+  getCompetitionRankedMemes(id: number | string) {
     return this.http.get<CompetitionMeme[]>(`/competition/${id}/meme/ranked`);
   }
 

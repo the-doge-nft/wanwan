@@ -157,20 +157,28 @@ enum TokenType {
   ETH
 }
 
+enum RewardStatus {
+  CONFIRMING
+  SETTLED
+  FAILED
+  INVALID
+}
+
 model Reward {
-  id                  Int         @id @default(autoincrement())
-  txId                String?     @unique
+  id                  Int           @id @default(autoincrement())
+  txId                String?       @unique
   competitionId       Int
-  competition         Competition @relation(fields: [competitionId], references: [id])
+  competition         Competition   @relation(fields: [competitionId], references: [id])
   receivedById        Int?
-  recevier            User?       @relation(fields: [receivedById], references: [id])
+  recevier            User?         @relation(fields: [receivedById], references: [id])
   currencyId          Int
-  currency            Currency    @relation(fields: [currencyId], references: [id])
+  currency            Currency      @relation(fields: [currencyId], references: [id])
   competitionRank     Int
   currencyTokenId     String?
   currencyAmountAtoms String
-  createdAt           DateTime    @default(now())
-  updatedAt           DateTime    @default(now())
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @default(now())
+  status              RewardStatus?
 
   @@unique([competitionId, competitionRank])
 }

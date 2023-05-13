@@ -1,6 +1,7 @@
 import { ethers } from "ethers";
 import { observer } from "mobx-react-lite";
 import { css } from "../../helpers/css";
+import { formatWithThousandsSeparators } from "../../helpers/numberFormatter";
 import {
   abbreviate,
   getEtherscanURL,
@@ -19,6 +20,7 @@ const CompetitionRewards = observer(({ store }: CompetitionRewardsProps) => {
   return (
     <div className={css("flex", "flex-col", "gap-1")}>
       {store.rewards.map((reward, index) => {
+        // @next -- winners should not be selected based on order here, address should be in Reward interface
         const winnerAddress = store.memes?.[index]?.user?.address;
         return (
           <div
@@ -33,6 +35,8 @@ const CompetitionRewards = observer(({ store }: CompetitionRewardsProps) => {
                         reward.currency.contractAddress,
                         reward.currencyTokenId
                       )
+                    : reward.currency.type === "ETH"
+                    ? "https://ethereum.org"
                     : getEtherscanURL(reward.currency.contractAddress, "token")
                 }
                 isExternal
@@ -41,12 +45,14 @@ const CompetitionRewards = observer(({ store }: CompetitionRewardsProps) => {
               <Text size={TextSize.sm}>
                 {reward.currency.name ? reward.currency.name : "no name found"}{" "}
                 (
-                {Number(
-                  ethers.utils.formatUnits(
-                    reward.currencyAmountAtoms,
-                    reward.currency.decimals
+                {formatWithThousandsSeparators(
+                  Number(
+                    ethers.utils.formatUnits(
+                      reward.currencyAmountAtoms,
+                      reward.currency.decimals
+                    )
                   )
-                ).toString()}
+                )}
                 )
               </Text>
             </div>

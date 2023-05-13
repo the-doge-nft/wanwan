@@ -201,7 +201,7 @@ export const getServerSideProps: GetServerSideProps<
   try {
     const [{ data: competition }, { data: memes }] = await Promise.all([
       Http.getCompetition(id as string),
-      Http.getCompetitionMemes(id as string),
+      Http.getCompetitionRankedMemes(id as string),
     ]);
     return {
       props: {

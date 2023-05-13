@@ -215,7 +215,12 @@ export class CompetitionController {
       throw new BadRequestException('Reward not found');
     }
 
-    //@next -- run validation on the txId
+    try {
+      await this.reward.getIsRewardTxValid(reward.id, txId);
+    } catch (e) {
+      throw new BadRequestException(e.message);
+    }
+
     return this.reward.update({ where: { id: id }, data: { txId } });
   }
 }
