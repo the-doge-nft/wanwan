@@ -14,17 +14,24 @@ const FAQPage = observer(() => {
       <div className={css("grid", "grid-cols-1", "sm:grid-cols-2", "gap-2")}>
         <div className={css("hidden", "sm:block")}>
           <Pane type={PaneType.Green} title={"Questions"}>
-            <div className={css("flex", "flex-col", "gap-1")}>
+            <ol
+              className={css(
+                "flex",
+                "flex-col",
+                "gap-1",
+                "list-disc",
+                "pl-3",
+                "text-red-800"
+              )}
+            >
               {store.items.map((item, index) => (
-                <Link
-                  className={css("!block")}
-                  href={`#${item.id}`}
-                  key={`link-${item.id}-${index}}`}
-                >
-                  {item.title}
-                </Link>
+                <li key={`link-${item.id}-${index}}`}>
+                  <Link className={css("!block")} href={`#${item.id}`}>
+                    {item.title}
+                  </Link>
+                </li>
               ))}
-            </div>
+            </ol>
           </Pane>
         </div>
         <Pane title={"FAQ"}>

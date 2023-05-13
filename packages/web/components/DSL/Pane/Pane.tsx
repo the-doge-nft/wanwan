@@ -69,7 +69,7 @@ const Pane: React.FC<PropsWithChildren<PaneProps>> = observer(
           "dark:text-lime-300"
         ),
         container: css("border-lime-600", "dark:border-lime-900"),
-        body: css("bg-lime-50"),
+        body: css("bg-lime-50", "dark:bg-transparent"),
       },
     };
     return (
