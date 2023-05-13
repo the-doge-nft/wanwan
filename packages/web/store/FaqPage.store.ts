@@ -34,13 +34,13 @@ export default class FaqPageStore {
       content:
         "We guide competition creators in our interface to send the correct rewards to the winners.",
     },
-    {
-      id: "rug",
-      title:
-        "What happens if competition creators don't distribute the rewards?",
-      content:
-        "Competition creators will not be able to create more competitions until they have distributed all rewards from previous competitions. Additionally they will receive a bad actor stamp on their profile if they do not distribute rewards within 7 days of the competition ending.",
-    },
+    // {
+    //   id: "rug",
+    //   title:
+    //     "What happens if competition creators don't distribute the rewards?",
+    //   content:
+    //     "Competition creators will not be able to create more competitions until they have distributed all rewards from previous competitions. Additionally they will receive a bad actor stamp on their profile if they do not distribute rewards within 7 days of the competition ending.",
+    // },
     {
       id: "winners",
       title: "How are winners of the competition determined?",
