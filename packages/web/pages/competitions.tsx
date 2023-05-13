@@ -1,8 +1,10 @@
 import { observer } from "mobx-react-lite";
 import { GetServerSideProps } from "next";
+import Head from "next/head";
 import { useEffect, useMemo } from "react";
 import GridOrColumnScrollableView from "../components/GridOrColumnScrollableView/GridOrColumnScrollableView";
 import CompetitionPreviewLink from "../components/PreviewLink/CompetitionPreviewLink";
+import env from "../environment";
 import { Competition, NextString, SearchParams } from "../interfaces";
 import AppLayout from "../layouts/App.layout";
 import Http from "../services/http";
@@ -26,18 +28,23 @@ const CompetitionsPage = observer(
       store.init();
     }, []);
     return (
-      <AppLayout>
-        <GridOrColumnScrollableView<Competition>
-          title={"Competitions"}
-          store={store}
-          renderColumnItem={(comp) => (
-            <CompetitionPreviewLink competition={comp} />
-          )}
-          renderGridItem={(comp) => (
-            <CompetitionPreviewLink competition={comp} />
-          )}
-        />
-      </AppLayout>
+      <>
+        <Head>
+          <title>Competitions - {env.app.name}</title>
+        </Head>
+        <AppLayout>
+          <GridOrColumnScrollableView<Competition>
+            title={"Competitions"}
+            store={store}
+            renderColumnItem={(comp) => (
+              <CompetitionPreviewLink competition={comp} />
+            )}
+            renderGridItem={(comp) => (
+              <CompetitionPreviewLink competition={comp} />
+            )}
+          />
+        </AppLayout>
+      </>
     );
   }
 );

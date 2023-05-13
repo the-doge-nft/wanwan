@@ -74,7 +74,9 @@ const MemeById = observer(({ meme }: MemeByIdProps) => {
   return (
     <>
       <Head>
-        <title>{env.app.name}</title>
+        <title>
+          {meme.name ? `${meme.name} - ${env.app.name}` : env.app.name}
+        </title>
         <meta name="description" content={DESCRIPTION} key="desc" />
         <meta property="og:site_name" content={title} />
         <meta property="og:title" content={title} />

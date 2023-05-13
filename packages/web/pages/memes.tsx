@@ -1,5 +1,6 @@
 import { observer } from "mobx-react-lite";
 import { GetServerSideProps } from "next";
+import Head from "next/head";
 import Image from "next/image";
 import { useEffect, useMemo } from "react";
 import Link, { LinkType } from "../components/DSL/Link/Link";
@@ -8,6 +9,7 @@ import Text from "../components/DSL/Text/Text";
 import GridOrColumnScrollableView from "../components/GridOrColumnScrollableView/GridOrColumnScrollableView";
 import MemeShareIcons from "../components/MemeShareIcons/MemeShareIcons";
 import MemePreviewLink from "../components/PreviewLink/MemePreviewLink";
+import env from "../environment";
 import { css } from "../helpers/css";
 import { abbreviate } from "../helpers/strings";
 import { Meme, NextString, SearchParams } from "../interfaces";
@@ -32,22 +34,27 @@ const MemePage = observer(({ memes, params, next }: MemesPageProps) => {
     store.init();
   }, []);
   return (
-    <AppLayout>
-      <GridOrColumnScrollableView<Meme>
-        title={"Memes"}
-        store={store}
-        renderColumnItem={(meme) => (
-          <ColumnItem
-            key={`meme-preview-${meme.id}`}
-            meme={meme}
-            onLikeClick={() => store.toggleLike(meme.id)}
-          />
-        )}
-        renderGridItem={(meme) => (
-          <MemePreviewLink key={`meme-preview-${meme.id}`} meme={meme} />
-        )}
-      />
-    </AppLayout>
+    <>
+      <Head>
+        <title>Memes - {env.app.name}</title>
+      </Head>
+      <AppLayout>
+        <GridOrColumnScrollableView<Meme>
+          title={"Memes"}
+          store={store}
+          renderColumnItem={(meme) => (
+            <ColumnItem
+              key={`meme-preview-${meme.id}`}
+              meme={meme}
+              onLikeClick={() => store.toggleLike(meme.id)}
+            />
+          )}
+          renderGridItem={(meme) => (
+            <MemePreviewLink key={`meme-preview-${meme.id}`} meme={meme} />
+          )}
+        />
+      </AppLayout>
+    </>
   );
 });
 interface ColumnItemProps {
