@@ -172,7 +172,7 @@ export class AppService implements OnModuleInit {
   }
 
   // @note -- this might be a bit of a burden on the DB but leaving for now
-  @Cron(CronExpression.EVERY_5_SECONDS, {
+  @Cron(CronExpression.EVERY_10_SECONDS, {
     name: CronJobs.VALIDATE_CONFIRMING_REWARDS,
   })
   async updateConfirmingTxs() {

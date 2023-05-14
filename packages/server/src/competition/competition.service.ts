@@ -66,7 +66,9 @@ export class CompetitionService {
       user: await this.user.addExtra(competition.user),
       isActive: new Date(competition.endsAt) > new Date(),
       coverMedia: this.media.addExtra(competition.coverMedia),
-      reward: competition.rewards.map((reward) => this.reward.addExtra(reward)),
+      rewards: competition.rewards.map((reward) =>
+        this.reward.addExtra(reward),
+      ),
     };
   }
 

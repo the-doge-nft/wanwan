@@ -1,10 +1,11 @@
 import { Inject, Injectable, Logger, forwardRef } from '@nestjs/common';
-import { Prisma, Reward, TokenType } from '@prisma/client';
+import { Prisma, RewardStatus, TokenType } from '@prisma/client';
 import { BigNumber, ethers } from 'ethers';
 import { parseEther, parseUnits } from 'ethers/lib/utils';
 import erc1155Abi from 'src/abis/erc1155';
 import erc20Abi from 'src/abis/erc20';
 import erc721Abi from 'src/abis/erc721';
+import { RewardWithDefaultInclude } from 'src/interface';
 import { AlchemyService } from '../alchemy/alchemy.service';
 import { CompetitionService } from '../competition/competition.service';
 import { RewardsDto } from '../dto/competition.dto';
@@ -17,19 +18,25 @@ import { PrismaService } from './../prisma.service';
 export class RewardService {
   private readonly logger = new Logger(RewardService.name);
 
-  private get defaultInclude() {
+  private get defaultInclude(): { currency: true } {
     return {
       currency: true,
     };
   }
 
-  addExtra(reward: Reward) {
+  addExtra(reward: RewardWithDefaultInclude): RewardWithDefaultInclude {
+    if (!reward) {
+      return reward;
+    }
     return {
       ...reward,
+      txId: reward.status === RewardStatus.FAILED ? null : reward.txId,
     };
   }
 
-  addExtras(reward: Array<Reward>) {
+  addExtras(
+    reward: Array<RewardWithDefaultInclude>,
+  ): Array<RewardWithDefaultInclude> {
     return reward.map((reward) => this.addExtra(reward));
   }
 
@@ -236,17 +243,21 @@ export class RewardService {
   update(args: Prisma.RewardUpdateArgs) {
     return this.prisma.reward.update(args);
   }
-  findFirst(args: Prisma.RewardFindFirstArgs) {
-    return this.prisma.reward.findFirst({
-      include: { ...this.defaultInclude, ...args?.include },
-      ...args,
-    });
+  async findFirst(args: Prisma.RewardFindFirstArgs) {
+    return this.addExtra(
+      await this.prisma.reward.findFirst({
+        ...args,
+        include: this.defaultInclude,
+      }),
+    );
   }
-  findMany(args: Prisma.RewardFindManyArgs) {
-    return this.prisma.reward.findMany({
-      include: { ...this.defaultInclude, ...args?.include },
-      ...args,
-    });
+  async findMany(args: Prisma.RewardFindManyArgs) {
+    return this.addExtras(
+      await this.prisma.reward.findMany({
+        ...args,
+        include: this.defaultInclude,
+      }),
+    );
   }
 }
 

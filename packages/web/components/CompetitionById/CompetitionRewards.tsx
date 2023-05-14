@@ -7,6 +7,7 @@ import {
   getEtherscanURL,
   getOpenSeaURL,
 } from "../../helpers/strings";
+import { RewardStatus } from "../../interfaces";
 import CompetitionByIdStore from "../../store/CompetitionById/CompetitionById.store";
 import Link from "../DSL/Link/Link";
 import Text, { TextSize, TextType } from "../DSL/Text/Text";
@@ -70,12 +71,20 @@ const CompetitionRewards = observer(({ store }: CompetitionRewardsProps) => {
                 </>
               ) : (
                 <>
-                  {store.isCreator && winnerAddress && !reward.txId && (
-                    <CompetitionDistributeReward
-                      reward={reward}
-                      toAddress={winnerAddress}
-                      onSuccess={() => store.getCompetition()}
-                    />
+                  {store.isCreator &&
+                    winnerAddress &&
+                    !reward.txId &&
+                    reward.status !== RewardStatus.Failed && (
+                      <CompetitionDistributeReward
+                        reward={reward}
+                        toAddress={winnerAddress}
+                        onSuccess={() => store.getCompetition()}
+                      />
+                    )}
+                  {reward.status === RewardStatus.Failed && (
+                    <Text type={TextType.Error}>
+                      could not validate reward sent
+                    </Text>
                   )}
                   {!store.isCreator && !reward.txId && winnerAddress && (
                     <Text size={TextSize.xs} type={TextType.Grey}>
