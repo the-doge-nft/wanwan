@@ -4,13 +4,23 @@ import {
   Controller,
   Get,
   Logger,
+  MaxFileSizeValidator,
   Param,
+  ParseFilePipe,
   Post,
   Query,
   Req,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { SchedulerRegistry } from '@nestjs/schedule';
+import { RewardStatus } from '@prisma/client';
 import { Request } from 'express';
+import { CronJobs } from 'src/app.service';
+import { MediaService } from 'src/media/media.service';
+import MemeMediaFileValidator from 'src/validator/meme-media-file.validator';
 import { AlchemyService } from '../alchemy/alchemy.service';
 import { AuthGuard } from '../auth/auth.guard';
 import { CompetitionDto } from '../dto/competition.dto';
@@ -36,6 +46,7 @@ export class CompetitionController {
     private readonly alchemy: AlchemyService,
     private readonly search: CompetitionSearchService,
     private readonly reward: RewardService,
+    private readonly scheduler: SchedulerRegistry,
   ) {}
 
   @Post('/')
@@ -44,13 +55,6 @@ export class CompetitionController {
     @Body() competition: CompetitionDto,
     @Req() { user }: AuthenticatedRequest,
   ) {
-    // @next -- cache
-    // const isPixelHolder = await this.alchemy.getIsPixelHolder(user.address);
-    // if (!isPixelHolder) {
-    //   throw new BadRequestException(
-    //     'You must hold a Doge Pixel to create a competition',
-    //   );
-    // }
     return this.competition
       .create({
         ...competition,
@@ -59,6 +63,31 @@ export class CompetitionController {
       .catch((e) => {
         throw new BadRequestException(e.message);
       });
+  }
+
+  @Post('/:id/cover')
+  @UseGuards(AuthGuard)
+  @UseInterceptors(
+    FileInterceptor(MediaService.FILE_NAME, {
+      dest: MediaService.FILE_UPLOAD_PATH,
+    }),
+  )
+  async postCoverImage(
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MemeMediaFileValidator(),
+          new MaxFileSizeValidator({
+            maxSize: MediaService.MAX_SIZE_MEDIA_BYTES,
+          }),
+        ],
+      }),
+    )
+    file: Express.Multer.File,
+    @Req() { user }: AuthenticatedRequest,
+    @Param() { id }: IdDto,
+  ) {
+    return this.competition.updateCoverImage(file, id, user);
   }
 
   @Get('/')
@@ -89,6 +118,15 @@ export class CompetitionController {
     return this.meme.getByCompetitionId(id);
   }
 
+  @Get(':id/voteReason')
+  @UseGuards(AuthGuard)
+  async getUserVoteReason(
+    @Param() { id }: IdDto,
+    @Req() { user }: AuthenticatedRequest,
+  ) {
+    return this.competition.getVoteReason(user.address, id);
+  }
+
   @Post(':id/vote')
   @UseGuards(AuthGuard)
   async postVote(
@@ -100,8 +138,8 @@ export class CompetitionController {
       throw new BadRequestException('Competition has ended');
     }
 
-    if (!(await this.alchemy.getIsPixelHolder(user.address))) {
-      throw new BadRequestException('You must hold a Doge Pixel to vote');
+    if (!(await this.competition.getCanUserVote(user.address, competitionId))) {
+      throw new BadRequestException('You cannot vote for this competition');
     }
 
     return this.vote.vote({
@@ -143,21 +181,61 @@ export class CompetitionController {
         'You are not a curator of this competition',
       );
     }
-
-    console.log('hiding', id, memeId);
-
     return this.competition.hideMemeSubmission(id, memeId);
   }
 
-  @Post('/reward/:id')
+  @Post('/reward/:id/confirmed')
   @UseGuards(AuthGuard)
   async updateReward(
     @Body() { txId }: UpdateReward,
     @Param() { id }: IdDto,
     @Req() { user }: AuthenticatedRequest,
   ) {
+    const reward = await this.getRewardForActiveCompetition({
+      createdById: user.id,
+      rewardId: id,
+    });
+
+    try {
+      await this.reward.getIsRewardTxValid(reward.id, txId);
+    } catch (e) {
+      throw new BadRequestException(e.message);
+    }
+
+    const updateReward = await this.reward.update({
+      where: { id: id },
+      data: { txId, status: RewardStatus.CONFIRMED },
+    });
+    return this.reward.findFirst({ where: { id: updateReward.id } });
+  }
+
+  @Post('/reward/:id/confirming')
+  @UseGuards(AuthGuard)
+  async updateRewardConfirming(
+    @Body() { txId }: UpdateReward,
+    @Param() { id }: IdDto,
+    @Req() { user }: AuthenticatedRequest,
+  ) {
+    const reward = await this.getRewardForActiveCompetition({
+      createdById: user.id,
+      rewardId: id,
+    });
+
+    const updatedReward = await this.reward.update({
+      where: { id: reward.id },
+      data: { status: RewardStatus.CONFIRMING, txId },
+    });
+
+    const job = await this.scheduler.getCronJob(
+      CronJobs.VALIDATE_CONFIRMING_REWARDS,
+    );
+    job.start();
+    return this.reward.findFirst({ where: { id: updatedReward.id } });
+  }
+
+  private async getRewardForActiveCompetition({ createdById, rewardId }: any) {
     const competition = await this.competition.findFirst({
-      where: { rewards: { some: { id: id } }, createdById: user.id },
+      where: { rewards: { some: { id: rewardId } }, createdById: createdById },
     });
     if (!competition) {
       throw new BadRequestException('Competition not found');
@@ -170,13 +248,11 @@ export class CompetitionController {
     }
 
     const reward = await this.reward.findFirst({
-      where: { id: id, competitionId: competition.id },
+      where: { id: rewardId, competitionId: competition.id },
     });
     if (!reward) {
       throw new BadRequestException('Reward not found');
     }
-
-    //@next -- run validation on the txId
-    return this.reward.update({ where: { id: id }, data: { txId } });
+    return reward;
   }
 }

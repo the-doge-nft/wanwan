@@ -3,7 +3,7 @@ import { computed, makeObservable, observable } from "mobx";
 import { arrayMerge } from "../helpers/arrays";
 import sleep from "../helpers/sleep";
 import { jsonify } from "../helpers/strings";
-import { NextString } from "../interfaces";
+import { NextString, SearchResponse } from "../interfaces";
 import Http from "../services/http";
 import { EmptyClass } from "../services/mixins";
 import { CancelableTokens } from "../services/mixins/cancel-tokens";
@@ -108,7 +108,7 @@ abstract class SearchableDataProvider<T, K> extends Loadable(
     return [...sorts, ...this.getDefaultSorts()];
   }
 
-  protected abstract query(): Promise<{ data: T[]; next?: string | null }>;
+  protected abstract query(): Promise<SearchResponse<T>>;
 
   public fresh() {
     return this.query().then((res) => {
@@ -169,7 +169,7 @@ abstract class SearchableDataProvider<T, K> extends Loadable(
   }
 
   protected getFilterByKey(key: K) {
-    return this.filters.filter((filter) => filter.key === key)[0];
+    return this.filters.filter((filter) => filter.key === key)?.[0];
   }
 
   protected getFilterIndexByKey(key: K) {

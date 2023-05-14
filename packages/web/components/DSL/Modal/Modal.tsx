@@ -36,7 +36,7 @@ const Modal: React.FC<PropsWithChildren<ModalProps>> = ({
           )}
         />
         <RadixDialog.Content
-          style={{ transform: "translate(-50%, -50%)", maxWidth: "390px" }}
+          style={{ transform: "translate(-50%, -50%)", maxWidth: "420px" }}
           className={css(
             bgColorCss,
             "rounded-none",
@@ -57,12 +57,13 @@ const Modal: React.FC<PropsWithChildren<ModalProps>> = ({
         >
           {onChange && (
             <RadixDialog.Close
-              style={{ right: "5px", top: "5px" }}
+              style={{ right: "5px", top: "4px" }}
               className={css(
                 "absolute",
                 "text-white",
                 "border-[1px]",
-                "border-white"
+                "border-white",
+                "outline-none"
               )}
             >
               <IoCloseOutline size={18} />
@@ -70,7 +71,7 @@ const Modal: React.FC<PropsWithChildren<ModalProps>> = ({
           )}
           <div className={css()}>
             <RadixDialog.Title
-              className={css("text-left", "bg-red-800", "p-1")}
+              className={css("text-left", "bg-red-800", "p-1", "flex")}
             >
               <Text bold type={TextType.White}>
                 {title}

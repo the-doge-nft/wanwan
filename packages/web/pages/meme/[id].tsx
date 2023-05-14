@@ -1,3 +1,4 @@
+import { JSONContent } from "@tiptap/react";
 import {
   differenceInDays,
   differenceInHours,
@@ -11,13 +12,14 @@ import Head from "next/head";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
-import { BsDot, BsReddit, BsTwitter } from "react-icons/bs";
-import { RedditShareButton, TwitterShareButton } from "react-share";
+import { BsDot } from "react-icons/bs";
 import Button, { Submit } from "../../components/DSL/Button/Button";
 import Form from "../../components/DSL/Form/Form";
 import TextInput from "../../components/DSL/Form/TextInput";
 import Link, { LinkType } from "../../components/DSL/Link/Link";
 import Text, { TextSize, TextType } from "../../components/DSL/Text/Text";
+import MemeShareIcons from "../../components/MemeShareIcons/MemeShareIcons";
+import TipTapEditor from "../../components/TipTapEditor/TipTapEditor";
 import env from "../../environment";
 import {
   DESCRIPTION,
@@ -42,128 +44,143 @@ const MemeById = observer(({ meme }: MemeByIdProps) => {
   const {
     query: { id },
   } = useRouter();
-  const store = useMemo(() => new MemeIdStore(id as string), [id]);
-  useEffect(() => {
-    store.init();
-  }, [store]);
-
   const title = meme.name ? `${meme.name} on wanwan.me` : TITLE;
-  const description = meme.description ? meme.description : DESCRIPTION;
   const socialCardUrl = meme.media.url;
   let url = getBaseUrl() + `/meme/` + meme.id;
   const extension = meme.media.url.split(".").pop();
 
+  const store = useMemo(() => new MemeIdStore(id as string, meme), [id, meme]);
+  useEffect(() => {
+    store.init();
+  }, [store]);
+
+  const headerOffset = 51;
+  const descriptionOffset = 110;
+  const [windowHeight, setWindowHeight] = useState<null | number>(null);
+  useEffect(() => {
+    const _setWindowHeight = () => {
+      setWindowHeight(window.innerHeight);
+    };
+    _setWindowHeight();
+    // resizing not needed on mobile devices
+    if (!AppStore.rwd.isMobile) {
+      window.addEventListener("resize", _setWindowHeight);
+    }
+    return () => {
+      return window.removeEventListener("resize", _setWindowHeight);
+    };
+  }, []);
+  const documentTitle = meme.name
+    ? `${meme.name} - ${env.app.name}`
+    : env.app.name;
+
   return (
     <>
       <Head>
-        <title>{env.app.name}</title>
-        <meta
-          name="description"
-          content={meme.description ? meme.description : ""}
-          key="desc"
-        />
+        <title>{documentTitle}</title>
+        <meta name="description" content={DESCRIPTION} key="desc" />
         <meta property="og:site_name" content={title} />
         <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
+        <meta property="og:description" content={DESCRIPTION} />
         <meta property="og:image" content={socialCardUrl} />
         <meta property="og:url" content={url} />
         <meta name="twitter:title" content={title} />
-        <meta name="twitter:description" content={description} />
+        <meta name="twitter:description" content={DESCRIPTION} />
         <meta name="twitter:image" content={socialCardUrl} />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:site" content={TWITTER_USERNAME} />
       </Head>
       <AppLayout>
-        <div className={css("mt-4")}>
-          <div className={css("relative")}>
+        <div>
+          <div
+            className={css("relative")}
+            style={{
+              height: windowHeight
+                ? windowHeight - headerOffset - descriptionOffset
+                : 500,
+            }}
+          >
             <Image
-              width={meme.media.width}
-              height={meme.media.height}
-              src={meme.media.url}
-              alt={meme.media.url}
-              className={css("m-auto", "w-full")}
+              fill
+              src={store.meme.media.url}
+              alt={store.meme.media.url}
+              className={css("m-auto", "w-full", "object-contain")}
               unoptimized={extension?.toLocaleLowerCase() === "gif"}
             />
           </div>
-          <div
-            className={css(
-              "grid",
-              "grid-cols-1",
-              "md:grid-cols-12",
-              "md:grid-rows-1",
-              "text-sm",
-              "mt-8",
-              "w-full"
-            )}
-          >
-            <div className={css("md:col-span-8", "flex", "flex-col")}>
-              {meme.name && <Text bold>{meme.name}</Text>}
-              {meme.description && (
-                <Text size={TextSize.sm}>{meme.description}</Text>
+          <div className={css("mt-8", "w-full", "grid", "grid-cols-12")}>
+            <div className={css("col-span-10")}>
+              {store.meme.name && (
+                <Text bold block>
+                  {store.meme.name}
+                </Text>
+              )}
+              {store.meme.description && !store.isDescriptionRichText && (
+                <div>
+                  <Text size={TextSize.sm}>
+                    {store.meme.description as string}
+                  </Text>
+                </div>
+              )}
+              {store.meme.description && store.isDescriptionRichText && (
+                <TipTapEditor
+                  content={store.description as JSONContent}
+                  border={false}
+                  readonly
+                />
               )}
             </div>
             <div
               className={css(
-                "md:col-span-4",
+                "col-span-2",
                 "flex",
-                "justify-end",
+                "justify-start",
                 "items-end",
                 "flex-col"
               )}
             >
-              <Link href={`/profile/${meme.user.address}/meme`}>
-                <Text type={TextType.NoColor} size={TextSize.sm}>
-                  {meme.user.ens
-                    ? meme.user.ens
-                    : abbreviate(meme.user.address)}
+              <Link
+                href={`/profile/${store.meme.user.address}/meme`}
+                className={css("text-ellipsis", "overflow-auto")}
+              >
+                <Text type={TextType.NoColor} size={TextSize.sm} ellipses>
+                  {store.meme.user.ens
+                    ? store.meme.user.ens
+                    : abbreviate(store.meme.user.address)}
                 </Text>
               </Link>
-              <div className={css("flex", "items-center", "gap-1", "mt-0.5")}>
-                <TwitterShareButton
-                  url={url}
-                  title={title}
-                  className={css("mt-0.5")}
-                >
-                  <Text type={TextType.Grey}>
-                    <BsTwitter size={16} />
-                  </Text>
-                </TwitterShareButton>
-                <RedditShareButton
-                  url={url}
-                  title={title}
-                  className={css("mt-0.5")}
-                >
-                  <Text type={TextType.Grey}>
-                    <BsReddit size={16} />
-                  </Text>
-                </RedditShareButton>
-              </div>
+              <MemeShareIcons
+                meme={store.meme}
+                likes={store.likes}
+                isLiked={store.isMemeLiked}
+                onClickLike={() => store.toggleLike()}
+              />
             </div>
           </div>
-          <Text size={TextSize.xs} type={TextType.Grey}>
-            {format(new Date(meme.createdAt), "Pp")}
-          </Text>
-          <div className={css("mt-8")}>
-            <CommentForm
-              onSubmit={({ body }: { body: string }) =>
-                store.onCommentSubmit(body)
-              }
-            />
-            <div className={css("flex", "flex-col", "gap-3", "mt-8")}>
-              {store.comments
-                .filter((comment) => !comment.parentCommentId)
-                .map((comment) => (
-                  <MemeComment
-                    isRootNode={true}
-                    store={store}
-                    key={`meme-comment-${comment.id}`}
-                    comment={comment}
-                    onCommentSubmit={(body) =>
-                      store.onParentCommentSubmit(body, comment.id)
-                    }
-                  />
-                ))}
-            </div>
+        </div>
+        <Text size={TextSize.xs} type={TextType.Grey}>
+          {format(new Date(store.meme.createdAt), "Pp")}
+        </Text>
+        <div className={css("mt-8")}>
+          <CommentForm
+            onSubmit={({ body }: { body: string }) =>
+              store.onCommentSubmit(body)
+            }
+          />
+          <div className={css("flex", "flex-col", "gap-3", "mt-8")}>
+            {store.comments
+              .filter((comment) => !comment.parentCommentId)
+              .map((comment) => (
+                <MemeComment
+                  isRootNode={true}
+                  store={store}
+                  key={`meme-comment-${comment.id}`}
+                  comment={comment}
+                  onCommentSubmit={(body) =>
+                    store.onParentCommentSubmit(body, comment.id)
+                  }
+                />
+              ))}
           </div>
         </div>
       </AppLayout>
@@ -187,7 +204,6 @@ const CommentForm: React.FC<{
         type={"textarea"}
         name={"body"}
         placeholder={"What are your thoughts?"}
-        // validate={required}
         label={
           isReply ? undefined : (
             <>
@@ -199,8 +215,8 @@ const CommentForm: React.FC<{
                     type={LinkType.Secondary}
                   >
                     <Text type={TextType.NoColor} size={TextSize.sm}>
-                      {AppStore.auth.profile?.ens
-                        ? AppStore.auth.profile.ens
+                      {AppStore.auth.user?.ens
+                        ? AppStore.auth.user?.ens
                         : abbreviate(AppStore.auth.address)}
                     </Text>
                   </Link>
@@ -269,7 +285,7 @@ const MemeComment: React.FC<{
         }
       )}
     >
-      <div className={css("grow")}>
+      <div className={css("grow", { "pr-2": commentReply.length === 0 })}>
         <div className={css("flex", "items-center")}>
           <Link
             type={LinkType.Secondary}

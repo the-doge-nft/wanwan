@@ -1,7 +1,7 @@
 import * as RadixSelect from "@radix-ui/react-select";
 import { BsChevronDown } from "react-icons/bs";
 import { css } from "../../../helpers/css";
-import { textFieldBaseStyles } from "../Input/Input";
+import { textFieldBaseStyles, textFieldBorderStyles } from "../Input/Input";
 import { bgColorCss, borderColorCss } from "../Theme";
 
 export type SelectItem = { name: string; id: string };
@@ -27,11 +27,14 @@ const Select = ({
     <RadixSelect.Root
       onValueChange={(value) => onChange(value)}
       value={value}
-      defaultValue={defaultValue ? defaultValue : items[0].id}
+      defaultValue={
+        defaultValue ? defaultValue : items?.[0].id ? items[0].id : ""
+      }
     >
       <RadixSelect.Trigger
         className={css(
           textFieldBaseStyles,
+          textFieldBorderStyles,
           "inline-flex",
           "items-center",
           "justify-between",

@@ -31,6 +31,22 @@ export const getOpenSeaURL = (address: string, tokenId: string | number) => {
   return link;
 };
 
+export const getOpenSeaCollectionURL = (address: string) => {
+  let link = `https://opensea.io/collection/${address}`;
+  if (isDev() || isStaging()) {
+    link = `https://testnets.opensea.io/collection/${address}`;
+  }
+  return link;
+};
+
+export const getLooksRareCollectionURL = (address: string) => {
+  let link = `https://looksrare.org/collections/${address}`;
+  if (isDev() || isStaging()) {
+    link = `https://goerli.looksrare.org/collections/${address}`;
+  }
+  return link;
+};
+
 export const jsonify = (toString: any) => JSON.stringify(toString);
 
 export const isValidHttpUrl = (value: string) => {
@@ -61,4 +77,13 @@ export function decodeBase64(value: string) {
 
 export function encodeBase64(obj: object) {
   return Buffer.from(JSON.stringify(obj)).toString("base64");
+}
+
+export function getBingReverseImageSearchURL(url: string) {
+  return `https://www.bing.com/images/search?q=imgurl:${url}
+                            &view=detailv2&selectedindex=0&iss=sbi&id=${url}&ccid=zUFO%2BkX6&mediaurl=${url}&exph=511&expw=498&vt=2&sim=11`;
+}
+
+export function capitalizeFirstLetter(string: string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
 }

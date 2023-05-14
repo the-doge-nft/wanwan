@@ -17,19 +17,26 @@ export class MemeService {
     return {
       media: true,
       user: true,
+      MemeLikes: true,
     };
   }
 
-  async addExtra(item: MemeWithDefaultInclude): Promise<MemeWithExtras> {
+  async addExtra({
+    MemeLikes,
+    ...item
+  }: MemeWithDefaultInclude): Promise<MemeWithExtras> {
     if (item === null) return null;
     return {
       ...item,
       media: this.media.addExtra(item.media),
       user: await this.user.addExtra(item.user),
+      likes: MemeLikes?.reduce((acc, cur) => acc + cur.score, 0),
     };
   }
 
-  async addExtras(memes: Array<MemeWithDefaultInclude>) {
+  async addExtras(
+    memes: Array<MemeWithDefaultInclude>,
+  ): Promise<Array<MemeWithExtras>> {
     const memesWithExtras = [];
     for (const meme of memes) {
       memesWithExtras.push(await this.addExtra(meme));
@@ -129,6 +136,7 @@ export class MemeService {
         votes: { include: { user: true }, where: { competitionId } },
         comments: true,
         submissions: { where: { competitionId } },
+        MemeLikes: true,
       },
     });
 
@@ -164,6 +172,7 @@ export class MemeService {
         votes: { include: { user: true }, where: { competitionId } },
         comments: true,
         submissions: { where: { competitionId } },
+        MemeLikes: true,
       },
     });
     const memesWithScore = memes.map((meme) => {
@@ -171,5 +180,34 @@ export class MemeService {
       return { ...meme, score };
     });
     return this.addExtras(memesWithScore);
+  }
+
+  likeMeme(memeId: number, createdById: number) {
+    return this.prisma.memeLikes.upsert({
+      where: { createdById_memeId: { memeId, createdById } },
+      update: { score: 1 },
+      create: { score: 1, memeId, createdById },
+    });
+  }
+
+  unlikeMeme(memeId: number, createdById: number) {
+    return this.prisma.memeLikes.upsert({
+      where: { createdById_memeId: { memeId, createdById } },
+      update: { score: 0 },
+      create: { score: 0, memeId, createdById },
+    });
+  }
+
+  async getLikesForAddress(address: string) {
+    const data = await this.prisma.memeLikes.findMany({
+      where: { user: { address }, score: { gt: 0 } },
+      select: { memeId: true },
+    });
+    const ids = data.map((item) => item.memeId);
+    return this.findMany({
+      where: {
+        id: { in: ids },
+      },
+    });
   }
 }

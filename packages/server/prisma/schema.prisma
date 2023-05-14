@@ -22,6 +22,7 @@ model User {
   lastAuthedAt        DateTime
   deletedAt           DateTime?
   isSuperAdmin        Boolean             @default(false)
+  ens                 String?
   memes               Meme[]
   media               Media[]
   competitions        Competition[]
@@ -30,6 +31,7 @@ model User {
   Reward              Reward[]
   Comment             Comment[]
   Submission          Submission[]
+  MemeLikes           MemeLikes[]
 }
 
 model Meme {
@@ -47,21 +49,36 @@ model Meme {
   votes            Vote[]
   comments         Comment[]
   SocialMemeShares SocialMemeShares[]
+  MemeLikes        MemeLikes[]
 }
 
 model Competition {
-  id                 Int                 @id @default(autoincrement())
+  id                 Int                     @id @default(autoincrement())
   name               String
   description        String?
   maxUserSubmissions Int
   endsAt             DateTime
-  createdAt          DateTime            @default(now())
-  updatedAt          DateTime            @default(now())
+  createdAt          DateTime                @default(now())
+  updatedAt          DateTime                @default(now())
   createdById        Int
-  user               User                @relation(fields: [createdById], references: [id])
+  coverMediaId       Int?
+  coverMedia         Media?                  @relation(fields: [coverMediaId], references: [id])
+  user               User                    @relation(fields: [createdById], references: [id])
   submissions        Submission[]
   rewards            Reward[]
   curators           CompeitionCurator[]
+  votingRule         CompetitionVotingRule[]
+}
+
+model CompetitionVotingRule {
+  id            Int         @id @default(autoincrement())
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @default(now())
+  deletedAt     DateTime?
+  competitionId Int
+  competition   Competition @relation(fields: [competitionId], references: [id])
+  currencyId    Int
+  currency      Currency    @relation(fields: [currencyId], references: [id])
 }
 
 model CompeitionCurator {
@@ -77,16 +94,17 @@ model CompeitionCurator {
 }
 
 model Media {
-  id           Int      @id @default(autoincrement())
+  id           Int           @id @default(autoincrement())
   width        Int
   height       Int
   filename     String
   filesize     Int
   s3BucketName String
   createdById  Int
-  createdAt    DateTime @default(now())
-  user         User     @relation(fields: [createdById], references: [id])
+  createdAt    DateTime      @default(now())
+  user         User          @relation(fields: [createdById], references: [id])
   meme         Meme?
+  Competition  Competition[]
 }
 
 model Submission {
@@ -136,34 +154,44 @@ enum TokenType {
   ERC721
   ERC1155
   ERC20
+  ETH
+}
+
+enum RewardStatus {
+  CONFIRMING
+  CONFIRMED
+  FAILED
+  INVALID
 }
 
 model Reward {
-  id                  Int         @id @default(autoincrement())
-  txId                String?     @unique
+  id                  Int           @id @default(autoincrement())
+  txId                String?       @unique
   competitionId       Int
-  competition         Competition @relation(fields: [competitionId], references: [id])
+  competition         Competition   @relation(fields: [competitionId], references: [id])
   receivedById        Int?
-  recevier            User?       @relation(fields: [receivedById], references: [id])
+  recevier            User?         @relation(fields: [receivedById], references: [id])
   currencyId          Int
-  currency            Currency    @relation(fields: [currencyId], references: [id])
+  currency            Currency      @relation(fields: [currencyId], references: [id])
   competitionRank     Int
   currencyTokenId     String?
   currencyAmountAtoms String
-  createdAt           DateTime    @default(now())
-  updatedAt           DateTime    @default(now())
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @default(now())
+  status              RewardStatus?
 
   @@unique([competitionId, competitionRank])
 }
 
 model Currency {
-  id              Int       @id @default(autoincrement())
-  type            TokenType
-  contractAddress String    @unique
-  decimals        Int
-  symbol          String?
-  name            String?
-  Reward          Reward[]
+  id                    Int                     @id @default(autoincrement())
+  type                  TokenType
+  contractAddress       String?                 @unique
+  decimals              Int
+  symbol                String?
+  name                  String?
+  Reward                Reward[]
+  CompetitionVotingRule CompetitionVotingRule[]
 }
 
 enum SocialPlatform {
@@ -177,4 +205,16 @@ model SocialMemeShares {
   memeId    Int
   meme      Meme           @relation(fields: [memeId], references: [id])
   createdAt DateTime       @default(now())
+}
+
+model MemeLikes {
+  id          Int      @id @default(autoincrement())
+  createdAt   DateTime @default(now())
+  score       Int      @default(0)
+  memeId      Int
+  meme        Meme     @relation(fields: [memeId], references: [id])
+  createdById Int
+  user        User     @relation(fields: [createdById], references: [id])
+
+  @@unique([createdById, memeId])
 }

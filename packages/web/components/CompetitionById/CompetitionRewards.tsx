@@ -1,12 +1,14 @@
 import { ethers } from "ethers";
 import { observer } from "mobx-react-lite";
 import { css } from "../../helpers/css";
+import { formatWithThousandsSeparators } from "../../helpers/numberFormatter";
 import {
   abbreviate,
   getEtherscanURL,
   getOpenSeaURL,
 } from "../../helpers/strings";
-import CompetitionByIdStore from "../../store/CompetitionId.store";
+import { RewardStatus } from "../../interfaces";
+import CompetitionByIdStore from "../../store/CompetitionById/CompetitionById.store";
 import Link from "../DSL/Link/Link";
 import Text, { TextSize, TextType } from "../DSL/Text/Text";
 import CompetitionDistributeReward from "./CompetitionDistributeReward";
@@ -19,13 +21,14 @@ const CompetitionRewards = observer(({ store }: CompetitionRewardsProps) => {
   return (
     <div className={css("flex", "flex-col", "gap-1")}>
       {store.rewards.map((reward, index) => {
+        // @next -- winners should not be selected based on order here, address should be in Reward interface
         const winnerAddress = store.memes?.[index]?.user?.address;
         return (
           <div
             key={`reward-${reward.id}`}
-            className={css("grid", "grid-cols-2")}
+            className={css("grid", "grid-cols-6")}
           >
-            <div className={css("flex", "items-center", "gap-2")}>
+            <div className={css("flex", "items-center", "gap-2", "col-span-4")}>
               <Link
                 href={
                   store.getIsRewardNFT(reward.id)
@@ -33,6 +36,8 @@ const CompetitionRewards = observer(({ store }: CompetitionRewardsProps) => {
                         reward.currency.contractAddress,
                         reward.currencyTokenId
                       )
+                    : reward.currency.type === "ETH"
+                    ? "https://ethereum.org"
                     : getEtherscanURL(reward.currency.contractAddress, "token")
                 }
                 isExternal
@@ -41,42 +46,60 @@ const CompetitionRewards = observer(({ store }: CompetitionRewardsProps) => {
               <Text size={TextSize.sm}>
                 {reward.currency.name ? reward.currency.name : "no name found"}{" "}
                 (
-                {Number(
-                  ethers.utils.formatUnits(
-                    reward.currencyAmountAtoms,
-                    reward.currency.decimals
+                {formatWithThousandsSeparators(
+                  Number(
+                    ethers.utils.formatUnits(
+                      reward.currencyAmountAtoms,
+                      reward.currency.decimals
+                    )
                   )
-                ).toLocaleString()}
+                )}
                 )
               </Text>
             </div>
-            <div className={css("flex", "justify-end", "items-center")}>
+            <div
+              className={css(
+                "flex",
+                "justify-end",
+                "items-center",
+                "col-span-2"
+              )}
+            >
               {store.competition.isActive ? (
                 <>
                   {reward.txId && <Text size={TextSize.xs}>{reward.txId}</Text>}
                 </>
               ) : (
                 <>
-                  {store.isCreator && (
-                    <>
-                      {winnerAddress && !reward.txId && (
-                        <CompetitionDistributeReward
-                          reward={reward}
-                          toAddress={winnerAddress}
-                          onSuccess={() => store.getCompetition()}
-                        />
-                      )}
-                      {!winnerAddress && (
-                        <Text type={TextType.Grey}>no winner</Text>
-                      )}
-                    </>
+                  {store.isCreator &&
+                    winnerAddress &&
+                    !reward.txId &&
+                    reward.status !== RewardStatus.Failed && (
+                      <CompetitionDistributeReward
+                        reward={reward}
+                        toAddress={winnerAddress}
+                        onSuccess={() => store.getCompetition()}
+                      />
+                    )}
+                  {reward.status === RewardStatus.Failed && (
+                    <Text type={TextType.Error} size={TextSize.xs}>
+                      could not validate reward sent
+                    </Text>
                   )}
-                  {!store.isCreator && !reward.txId && (
+                  {reward.status === RewardStatus.Confirming && (
+                    <Text size={TextSize.xs} type={TextType.Grey}>
+                      reward is confirming
+                    </Text>
+                  )}
+                  {!store.isCreator && !reward.txId && winnerAddress && (
                     <Text size={TextSize.xs} type={TextType.Grey}>
                       waiting on distribution
                     </Text>
                   )}
-                  {reward.txId && (
+                  {!winnerAddress && (
+                    <Text type={TextType.Grey}>no winner</Text>
+                  )}
+                  {reward.txId && reward.status === RewardStatus.Confirmed && (
                     <Link isExternal href={getEtherscanURL(reward.txId, "tx")}>
                       <Text type={TextType.NoColor}>
                         {abbreviate(reward.txId)}

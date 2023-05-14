@@ -1,9 +1,9 @@
 import { AuthenticationStatus } from "@rainbow-me/rainbowkit";
-import { computed, makeObservable, observable } from "mobx";
+import { action, computed, makeObservable, observable } from "mobx";
 import { Address } from "wagmi";
 import { Reactionable } from "../services/mixins/reactionable";
 import { abbreviate } from "./../helpers/strings";
-import { Meme, Profile } from "./../interfaces/index";
+import { Meme, User } from "./../interfaces/index";
 import Http from "./../services/http";
 import { EmptyClass } from "./../services/mixins/index";
 import AppStore from "./App.store";
@@ -17,16 +17,19 @@ export default class AuthStore extends Reactionable(EmptyClass) {
   address: Address | null = null;
 
   @observable
-  profile: Profile | null = null;
+  user: User | null = null;
 
   @observable
   memes: Array<Meme> = [];
 
   @observable
-  hasLoggedIn = false;
+  isLoggedIn = false;
 
   @observable
   isAdmin = false;
+
+  @observable
+  memeIdsLiked: Array<number> = [];
 
   constructor() {
     super();
@@ -47,14 +50,15 @@ export default class AuthStore extends Reactionable(EmptyClass) {
     );
     return (
       this.react(
-        () => this.address,
+        () => [this.address, this.isAuthed],
         () => {
-          if (this.address) {
+          if (this.address && this.isAuthed) {
             this.getProfile();
             this.getUserMemes();
             this.getIsAdmin();
+            this.getLikedMemeIds();
           } else {
-            this.profile = null;
+            this.user = null;
             this.memes = [];
           }
         }
@@ -63,8 +67,8 @@ export default class AuthStore extends Reactionable(EmptyClass) {
     );
   }
 
-  updateProfile(data: Profile) {
-    this.profile = data;
+  updateProfile(data: User) {
+    this.user = data;
   }
 
   getStatus({
@@ -79,7 +83,6 @@ export default class AuthStore extends Reactionable(EmptyClass) {
         this.status = isLoggedIn ? "authenticated" : "unauthenticated";
         if (this.status === "authenticated") {
           onAuthed && onAuthed();
-          this.getIsAdmin();
         } else if (this.status === "unauthenticated") {
           onUnauthed && onUnauthed();
         }
@@ -96,7 +99,7 @@ export default class AuthStore extends Reactionable(EmptyClass) {
       throw new Error("Address not available");
     }
     return Http.getProfile(this.address).then(({ data }) => {
-      this.profile = data;
+      this.user = data;
       return data;
     });
   }
@@ -123,25 +126,33 @@ export default class AuthStore extends Reactionable(EmptyClass) {
     }).then(({ data }) => (this.memes = data.data));
   }
 
-  runOrAuthPrompt(fn: () => void) {
+  @action
+  getLikedMemeIds() {
+    return Http.getAddressLikes(this.address!).then(
+      ({ data }) => (this.memeIdsLiked = data.map((meme) => meme.id))
+    );
+  }
+
+  runOrAuthPrompt(fn: () => any) {
     if (this.status === "authenticated") {
       fn();
     } else {
       AppStore.modals.isAuthModalOpen = true;
+      return;
     }
   }
 
   onLoginSuccess(address: string) {
     this.address = address as Address;
-    this.hasLoggedIn = true;
+    this.isLoggedIn = true;
     this.getStatus();
     AppStore.events.publish(AppStore.events.events.LOGIN);
   }
 
   onLogoutSuccess() {
     this.address = null;
+    this.isLoggedIn = false;
     this.getStatus();
-    this.getIsAdmin();
     AppStore.events.publish(AppStore.events.events.LOGOUT);
   }
 
@@ -166,15 +177,15 @@ export default class AuthStore extends Reactionable(EmptyClass) {
 
   @computed
   get displayName() {
-    if (!this.profile?.address) {
+    if (!this.user?.address) {
       if (this.address) {
         return abbreviate(this.address);
       }
       return undefined;
     }
-    if (this.profile?.ens) {
-      return this.profile.ens;
+    if (this.user?.ens) {
+      return this.user.ens;
     }
-    return abbreviate(this.profile.address);
+    return abbreviate(this.user.address);
   }
 }

@@ -1,20 +1,16 @@
 import { ConnectButton as RainbowConnectButton } from "@rainbow-me/rainbowkit";
 import { observer } from "mobx-react-lite";
-import { PropsWithChildren, useState } from "react";
+import { PropsWithChildren } from "react";
 import { useFormState } from "react-final-form";
-import { AiOutlinePlus } from "react-icons/ai";
-import { BsFillMoonFill, BsFillSunFill } from "react-icons/bs";
-import { useDisconnect } from "wagmi";
 import { css } from "../../../helpers/css";
-import AppStore from "../../../store/App.store";
-import Dropdown, { DropdownItem } from "../Dropdown/Dropdown";
-import Link from "../Link/Link";
+import { ConnectedButton } from "../../Button/ConnectedButton";
 import Spinner, { SpinnerSize } from "../Spinner/Spinner";
 import Text, { TextSize, TextType } from "../Text/Text";
 import { borderColorCss } from "../Theme";
 
-enum ButtonType {
+export enum ButtonType {
   Primary = "primary",
+  Grey = "grey",
 }
 
 export enum ButtonSize {
@@ -23,7 +19,7 @@ export enum ButtonSize {
   lg = "lg",
 }
 
-interface ButtonProps {
+export interface ButtonProps {
   onClick?: () => void;
   type?: ButtonType;
   size?: ButtonSize;
@@ -31,6 +27,8 @@ interface ButtonProps {
   disabled?: boolean;
   isLoading?: boolean;
   block?: boolean;
+  round?: boolean;
+  stretch?: boolean;
 }
 
 const buttonTypeStyles = {
@@ -54,12 +52,25 @@ const buttonTypeStyles = {
     "justify-center",
     borderColorCss
   ),
+  [ButtonType.Grey]: css(
+    "hover:text-black",
+    "text-neutral-400",
+    "dark:text-neutral-600",
+    "dark:hover:text-white",
+    "bg-neutral-200",
+    "border-[1px]",
+    "border-neutral-400",
+    "hover:border-black",
+    "dark:bg-neutral-800",
+    "dark:border-neutral-700",
+    "dark:hover:border-white"
+  ),
 };
 
 const buttonSizeStyles = {
-  [ButtonSize.xs]: css("px-0.5", "rounded-sm"),
-  [ButtonSize.sm]: css("py-0.5", "px-1", "rounded-sm", "text-xs"),
-  [ButtonSize.lg]: css("px-1", "py-0.5", "rounded-sm"),
+  [ButtonSize.xs]: css("px-0.5"),
+  [ButtonSize.sm]: css("py-0.5", "px-1", "text-xs"),
+  [ButtonSize.lg]: css("px-1", "py-0.5"),
 };
 
 const buttonSizeToTypeSize = {
@@ -77,6 +88,8 @@ const Button: React.FC<PropsWithChildren<ButtonProps>> = ({
   disabled = false,
   isLoading = false,
   block,
+  round,
+  stretch,
 }) => {
   return (
     <button
@@ -88,7 +101,12 @@ const Button: React.FC<PropsWithChildren<ButtonProps>> = ({
         buttonSizeStyles[size],
         "relative",
         "outline-0",
-        { "w-full": block }
+        {
+          "w-full": block,
+          "rounded-full": round,
+          "rounded-sm": !round,
+          "h-full": stretch,
+        }
       )}
     >
       <Text type={TextType.NoColor} size={buttonSizeToTypeSize[size]}>
@@ -125,8 +143,10 @@ export const Submit: React.FC<PropsWithChildren<ButtonProps>> = ({
   return (
     <Button
       {...rest}
-      isLoading={state.submitting}
-      disabled={!state.dirty || !state.valid}
+      isLoading={state.submitting || rest.isLoading}
+      disabled={
+        (!state.pristine && !state.dirty) || !state.valid || rest.disabled
+      }
       submit
     >
       {children ? children : "Submit"}
@@ -207,7 +227,7 @@ export const ConnectButton: React.FC<
 
                   return (
                     <div>
-                      <ConnectDropdown
+                      <ConnectedButton
                         chain={chain}
                         account={account}
                         type={type}
@@ -224,169 +244,5 @@ export const ConnectButton: React.FC<
     );
   }
 );
-
-interface ConnectDropdownProps extends Pick<ButtonProps, "size" | "type"> {
-  chain: {
-    hasIcon: boolean;
-    iconUrl?: string;
-    iconBackground?: string;
-    id: number;
-    name?: string;
-    unsupported?: boolean;
-  };
-  account: {
-    address: string;
-    balanceDecimals?: number;
-    balanceFormatted?: string;
-    balanceSymbol?: string;
-    displayBalance?: string;
-    displayName: string;
-    ensAvatar?: string;
-    ensName?: string;
-    hasPendingTransactions: boolean;
-  };
-}
-
-export const ConnectDropdown = observer(
-  ({ account, type, size, chain }: ConnectDropdownProps) => {
-    const { disconnect } = useDisconnect();
-    const [isDropDownOpen, setIsDropDownOpen] = useState(false);
-    return (
-      <Dropdown
-        open={isDropDownOpen}
-        onOpenChange={setIsDropDownOpen}
-        trigger={
-          <Button type={type} size={size}>
-            {AppStore.auth.displayName}
-          </Button>
-        }
-      >
-        <DropdownItem>
-          <Link href={`/profile/${account.address}/meme`}>
-            <Text type={TextType.NoColor}>Profile</Text>
-          </Link>
-        </DropdownItem>
-        <DropdownItem>
-          <span
-            onClick={() => {
-              AppStore.modals.isSettingsModalOpen = true;
-            }}
-            className={css("text-red-800", "hover:underline", "cursor-pointer")}
-          >
-            <Text type={TextType.NoColor}>Settings</Text>
-          </span>
-        </DropdownItem>
-        {AppStore.auth.isAdmin && (
-          <DropdownItem>
-            <span
-              onClick={() => {
-                AppStore.modals.isAdminModalOpen = true;
-              }}
-              className={css(
-                "text-red-800",
-                "hover:underline",
-                "cursor-pointer"
-              )}
-            >
-              <Text type={TextType.NoColor}>Admin</Text>
-            </span>
-          </DropdownItem>
-        )}
-        {AppStore.auth.isAuthed && (
-          <div className={css("mt-4", "mb-2")}>
-            <DropdownItem className={css("mt-2")}>
-              <div className={css("flex", "justify-end", "w-full", "gap-2")}>
-                <Button
-                  disabled={AppStore.settings.isLightMode}
-                  onClick={() => AppStore.settings.setColorMode("light")}
-                >
-                  <div className={css("py-0.5")}>
-                    <BsFillSunFill size={12} />
-                  </div>
-                </Button>
-                <Button
-                  disabled={!AppStore.settings.isLightMode}
-                  onClick={() => AppStore.settings.setColorMode("dark")}
-                >
-                  <div className={css("py-0.5")}>
-                    <BsFillMoonFill size={12} />
-                  </div>
-                </Button>
-              </div>
-            </DropdownItem>
-          </div>
-        )}
-        <DropdownItem className={css("mt-2")}>
-          <div className={css("flex", "justify-between", "text-xs", "w-full")}>
-            <button
-              className={css("hover:underline")}
-              onClick={() => disconnect()}
-            >
-              <Text size={TextSize.sm}>Disconnect</Text>
-            </button>
-            <div
-              className={css(
-                "flex",
-                "items-center",
-                "space-x-1",
-                "justify-between"
-              )}
-            >
-              <Text type={TextType.Grey} size={TextSize.xs}>
-                net:
-              </Text>
-              <Text type={TextType.Grey} size={TextSize.xs}>
-                {chain.name}
-              </Text>
-            </div>
-          </div>
-        </DropdownItem>
-      </Dropdown>
-    );
-  }
-);
-
-export const CreateButton = () => {
-  return (
-    <Dropdown
-      trigger={
-        <Button>
-          <div className={css("flex", "items-center", "gap-0.5")}>
-            <AiOutlinePlus size={15} />
-            Create
-          </div>
-        </Button>
-      }
-      align={"center"}
-    >
-      <div className={css("py-2")}>
-        <DropdownItem>
-          <Button
-            onClick={() => (AppStore.modals.isCreateMemeModalOpen = true)}
-            block
-          >
-            <div className={css("flex", "items-center", "gap-0.5")}>
-              <AiOutlinePlus size={15} />
-              Meme
-            </div>
-          </Button>
-        </DropdownItem>
-        <DropdownItem className={css("mt-2")}>
-          <Button
-            onClick={() =>
-              (AppStore.modals.isCreateCompetitionModalOpen = true)
-            }
-            block
-          >
-            <div className={css("flex", "items-center", "gap-0.5")}>
-              <AiOutlinePlus size={15} />
-              Competition
-            </div>
-          </Button>
-        </DropdownItem>
-      </div>
-    </Dropdown>
-  );
-};
 
 export default Button;

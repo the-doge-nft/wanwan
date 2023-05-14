@@ -11,6 +11,8 @@ export interface BaseFormInputProps {
   label?: React.ReactNode;
   validate?: ValidatorFunction[] | ValidatorFunction;
   description?: string;
+  rightOfInput?: React.ReactNode;
+  leftOfInput?: React.ReactNode;
 }
 
 export const BaseInvalidInputStyle = css("border-[1px]", "!border-red-800");
@@ -18,8 +20,10 @@ const errorTextCss = css("text-red-800");
 export interface FormControlProps
   extends Pick<BaseFormInputProps, "label" | "name" | "description"> {
   children: any;
-  isRequired: boolean;
+  isRequired?: boolean;
   disabled?: boolean;
+  rightOfInput?: React.ReactNode;
+  leftOfInput?: React.ReactNode;
 }
 
 const FormControl = ({
@@ -29,6 +33,8 @@ const FormControl = ({
   isRequired,
   description,
   disabled = false,
+  rightOfInput,
+  leftOfInput,
 }: FormControlProps) => {
   const { meta } = useField(name, {
     subscription: { touched: true, error: true, pristine: true, visited: true },
@@ -36,6 +42,43 @@ const FormControl = ({
   const isInvalid = meta.error && meta.touched;
   return (
     <div className={css("w-full")}>
+      <FormDisplay
+        isInvalid={isInvalid}
+        label={label}
+        description={description}
+        isRequired={isRequired}
+        disabled={disabled}
+      />
+      <div
+        className={css({
+          "flex items-center gap-2": !!rightOfInput || !!leftOfInput,
+        })}
+      >
+        {leftOfInput && leftOfInput}
+        {children}
+        {rightOfInput && rightOfInput}
+      </div>
+      {isInvalid && (
+        <div className={css(errorTextCss, "text-xs", "mt-0.5")}>
+          {meta.error}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export const FormDisplay = ({
+  label,
+  description,
+  isRequired,
+  isInvalid,
+  disabled,
+}: Pick<FormControlProps, "label" | "description" | "isRequired"> & {
+  isInvalid?: boolean;
+  disabled?: boolean;
+}) => {
+  return (
+    <>
       {label && (
         <FormLabel
           mb={!description}
@@ -49,13 +92,7 @@ const FormControl = ({
       {description && (
         <FormDescription isInvalid={isInvalid}>{description}</FormDescription>
       )}
-      {children}
-      {isInvalid && (
-        <div className={css(errorTextCss, "text-xs", "mt-0.5")}>
-          {meta.error}
-        </div>
-      )}
-    </div>
+    </>
   );
 };
 
@@ -63,7 +100,7 @@ interface FormLabelProps {
   isInvalid?: boolean;
   isRequired?: boolean;
   mb?: boolean;
-  isDisabled: boolean;
+  isDisabled?: boolean;
 }
 
 export const FormLabel: React.FC<PropsWithChildren<FormLabelProps>> = ({
@@ -82,9 +119,11 @@ export const FormLabel: React.FC<PropsWithChildren<FormLabelProps>> = ({
         "mb-0.5": mb,
       })}
     >
-      <Text size={TextSize.sm}>
-        {isRequired && "*"}
-        {children}
+      <Text size={TextSize.sm} block>
+        <div className={css("inline-flex", "w-full")}>
+          {isRequired && "*"}
+          {children}
+        </div>
       </Text>
     </div>
   );
@@ -95,7 +134,7 @@ export const FormDescription: React.FC<
 > = ({ children, isInvalid }) => {
   return (
     <div
-      className={css("mb-0.5", "italic", {
+      className={css("mb-0.5", "italic", "flex", {
         "text-red-900": isInvalid,
         "text-neutral-800": !isInvalid,
       })}

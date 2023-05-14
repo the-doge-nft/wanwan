@@ -2,6 +2,7 @@ import { PropsWithChildren } from "react";
 import { css } from "../../../helpers/css";
 
 export enum TextSize {
+  xxs = "xxs",
   xs = "xs",
   sm = "sm",
   lg = "lg",
@@ -14,6 +15,7 @@ export enum TextType {
   Grey = "grey",
   White = "white",
   NoColor = "noColor",
+  Error = "error",
 }
 
 interface TextProps {
@@ -21,9 +23,12 @@ interface TextProps {
   type?: TextType;
   bold?: boolean;
   italic?: boolean;
+  block?: boolean;
+  ellipses?: boolean;
 }
 
 const textSizeStyles = {
+  [TextSize.xxs]: css("text-xxs"),
   [TextSize.xs]: css("text-xs"),
   [TextSize.sm]: css("text-sm"),
   [TextSize.lg]: css("text-base"),
@@ -36,6 +41,7 @@ const textTypeStyles = {
   [TextType.Grey]: css("text-neutral-400", "dark:text-neutral-600"),
   [TextType.White]: css("text-white"),
   [TextType.NoColor]: css(),
+  [TextType.Error]: css("text-red-500"),
 };
 
 const Text: React.FC<PropsWithChildren<TextProps>> = ({
@@ -44,6 +50,8 @@ const Text: React.FC<PropsWithChildren<TextProps>> = ({
   bold = false,
   italic = false,
   children,
+  block = false,
+  ellipses = false,
 }) => {
   return (
     <span
@@ -54,6 +62,8 @@ const Text: React.FC<PropsWithChildren<TextProps>> = ({
         {
           "font-bold": bold,
           italic: italic,
+          "block w-full": block,
+          "whitespace-nowrap overflow-hidden text-ellipsis": ellipses,
         }
       )}
     >

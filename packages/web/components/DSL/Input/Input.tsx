@@ -37,15 +37,20 @@ export const textFieldBaseStyles = css(
   "py-1",
   "px-2",
   "appearance-none",
-  "placeholder-neutral-600",
+  "placeholder-neutral-400",
+  "dark:placeholder-neutral-600",
   "text-sm",
   "focus:outline-none",
-  "border-[1px]",
-  "border-black",
-  "dark:border-neutral-600",
   "text-black",
   "dark:text-white",
   bgColorCss
+);
+
+export const textFieldBorderStyles = css(
+  "border-[1px]",
+  "border-black",
+  "dark:border-neutral-600",
+  "!rounded-none"
 );
 
 const disabledStyles = css(
@@ -84,7 +89,7 @@ const Input = ({
         onChange={(e) => {
           onChange && onChange(e.target.value);
         }}
-        className={css(textFieldBaseStyles, className, {
+        className={css(textFieldBaseStyles, textFieldBorderStyles, className, {
           "w-full": block,
           [disabledStyles]: disabled,
         })}

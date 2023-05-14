@@ -9,20 +9,25 @@ export type CompetitionWithDefaultInclude = Prisma.CompetitionGetPayload<{
     curators: { include: { user: true } };
     rewards: { include: { currency: true } };
     user: true;
-    submissions: {
-      include: { meme: { include: { media: true } } };
-      orderBy: { createdAt: 'asc' };
-      take: 1;
+    coverMedia: true;
+    votingRule: {
+      include: {
+        currency: true;
+      };
     };
   };
 }>;
 
 export type MemeWithDefaultInclude = Prisma.MemeGetPayload<{
-  include: { media: true; user: true };
+  include: { media: true; user: true; MemeLikes: true };
 }>;
 
 export type CommentWithDefaultInclude = Prisma.CommentGetPayload<{
   include: { user: true };
+}>;
+
+export type RewardWithDefaultInclude = Prisma.RewardGetPayload<{
+  include: { currency: true };
 }>;
 
 export interface MediaWithExtras extends Media {
@@ -30,10 +35,12 @@ export interface MediaWithExtras extends Media {
 }
 
 export interface UserWithExtras extends User {
-  ens: string | null;
+  avatar: string | null;
+  wan: number;
 }
 
 export interface MemeWithExtras extends Meme {
   media: MediaWithExtras;
   user: UserWithExtras;
+  likes: number;
 }

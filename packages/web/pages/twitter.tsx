@@ -23,9 +23,9 @@ const Twitter = observer(() => {
         oauth_verifier: router.query.oauth_verifier as string,
       })
         .then(({ data }) => {
-          AppStore.auth.profile = data;
+          AppStore.auth.user = data;
           debugToast(
-            `Twitter user ${AppStore.auth.profile.user.twitterUsername} linked`
+            `Twitter user ${AppStore.auth.user?.twitterUsername} linked`
           );
         })
         .catch((e) => {

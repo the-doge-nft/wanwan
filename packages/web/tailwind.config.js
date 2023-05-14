@@ -1,5 +1,8 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  future: {
+    hoverOnlyWhenSupported: true,
+  },
   darkMode: "class",
   content: [
     "./pages/**/*.{js,ts,jsx,tsx}",
@@ -10,7 +13,7 @@ module.exports = {
     extend: {
       colors: {},
       fontSize: {
-        xxs: "0.65rem",
+        xxs: ["0.65rem", "1rem"],
       },
     },
   },

@@ -15,12 +15,12 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Request } from 'express';
-import SearchDto from 'src/dto/search.dto';
 import { AuthGuard } from '../auth/auth.guard';
 import { CommentService } from '../comment/comment.service';
 import CommentDto from '../dto/comment.dto';
 import IdDto from '../dto/id.dto';
 import { MemeDto } from '../dto/meme.dto';
+import SearchDto from '../dto/search.dto';
 import { AuthenticatedRequest } from '../interface';
 import { MediaService } from '../media/media.service';
 import MemeMediaFileValidator from '../validator/meme-media-file.validator';
@@ -38,8 +38,8 @@ export class MemeController {
   @Post('/')
   @UseGuards(AuthGuard)
   @UseInterceptors(
-    FileInterceptor('file', {
-      dest: 'uploads/',
+    FileInterceptor(MediaService.FILE_NAME, {
+      dest: MediaService.FILE_UPLOAD_PATH,
     }),
   )
   uploadFile(
@@ -96,5 +96,17 @@ export class MemeController {
   @Get(':id/comment')
   getComment(@Param() { id }: IdDto) {
     return this.comment.getByMemeId(id);
+  }
+
+  @Get(':id/like')
+  @UseGuards(AuthGuard)
+  likeMeme(@Param() { id }: IdDto, @Req() { user }: AuthenticatedRequest) {
+    return this.meme.likeMeme(id, user.id);
+  }
+
+  @Get(':id/unlike')
+  @UseGuards(AuthGuard)
+  unlikeMeme(@Param() { id }: IdDto, @Req() { user }: AuthenticatedRequest) {
+    return this.meme.unlikeMeme(id, user.id);
   }
 }

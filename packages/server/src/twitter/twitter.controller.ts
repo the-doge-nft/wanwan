@@ -14,7 +14,6 @@ import { InjectSentry, SentryService } from '@travelerdev/nestjs-sentry';
 import { SessionType } from 'src/auth/auth.controller';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { AuthenticatedRequest } from './../interface/index';
-import { ProfileService } from './../profile/profile.service';
 import { UserService } from './../user/user.service';
 import { TwitterService } from './twitter.service';
 
@@ -25,7 +24,6 @@ export class TwitterController {
   constructor(
     private readonly twitter: TwitterService,
     private readonly user: UserService,
-    private readonly profile: ProfileService,
     @InjectSentry() private readonly sentryClient: SentryService,
   ) {}
 
@@ -64,7 +62,7 @@ export class TwitterController {
     }
 
     session.oauth_token_secret = undefined;
-    return this.profile.get(user.address);
+    return this.user.findFirst({ where: { address: user.address } });
   }
 
   @UseGuards(AuthGuard)
@@ -85,6 +83,6 @@ export class TwitterController {
         twitterUsername: null,
       },
     });
-    return this.profile.get(user.address);
+    return this.user.findFirst({ where: { address: user.address } });
   }
 }

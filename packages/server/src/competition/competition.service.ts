@@ -1,11 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { Competition, Prisma, User } from '@prisma/client';
-import { TokenMetadataResponse } from 'alchemy-sdk';
-import { BigNumber } from 'ethers';
-import { MediaService } from 'src/media/media.service';
+import { Competition, Currency, Prisma, TokenType, User } from '@prisma/client';
+import { InjectSentry, SentryService } from '@travelerdev/nestjs-sentry';
+import { BigNumber, TokenMetadataResponse } from 'alchemy-sdk';
+import { parseEther, parseUnits } from 'ethers/lib/utils';
+import { CompetitionVotingRuleService } from '../competition-voting-rule/competition-voting-rule.service';
 import { CurrencyService } from '../currency/currency.service';
 import { CompetitionDto, RewardsDto } from '../dto/competition.dto';
 import { CompetitionWithDefaultInclude } from '../interface';
+import { MediaService } from '../media/media.service';
 import { AlchemyService } from './../alchemy/alchemy.service';
 import { CompetitionCuratorService } from './../competition-curator/competition-curator.service';
 import { PrismaService } from './../prisma.service';
@@ -28,6 +30,8 @@ export class CompetitionService {
     private readonly media: MediaService,
     private readonly alchemy: AlchemyService,
     private readonly user: UserService,
+    private readonly votingRule: CompetitionVotingRuleService,
+    @InjectSentry() private readonly sentryClient: SentryService,
   ) {}
 
   private get defaultInclude(): Prisma.CompetitionInclude {
@@ -43,13 +47,12 @@ export class CompetitionService {
         },
       },
       user: true,
-      // grab the first submission for the cover image for the competiiton
-      submissions: {
-        where: { deletedAt: null },
-        include: { meme: { include: { media: true } } },
-        orderBy: { createdAt: 'desc' },
-        take: 1,
+      votingRule: {
+        include: {
+          currency: true,
+        },
       },
+      coverMedia: true,
     };
   }
 
@@ -57,14 +60,15 @@ export class CompetitionService {
     if (competition === null) {
       return null;
     }
-    const media = competition?.submissions[0]?.meme?.media;
     return {
       ...competition,
       curators: competition?.curators.map((item) => item.user),
       user: await this.user.addExtra(competition.user),
-      media: media ? this.media.addExtra(media) : undefined,
-      submissions: undefined,
       isActive: new Date(competition.endsAt) > new Date(),
+      coverMedia: this.media.addExtra(competition.coverMedia),
+      rewards: competition.rewards.map((reward) =>
+        this.reward.addExtra(reward),
+      ),
     };
   }
 
@@ -84,6 +88,7 @@ export class CompetitionService {
     curators,
     creator,
     rewards,
+    voters,
     ...competition
   }: CompetitionDto & { creator: User }) {
     const isRewardsValid = await this.reward.getIsAddressCustodyingRewards(
@@ -99,53 +104,75 @@ export class CompetitionService {
         data: { ...competition, createdById: creator.id },
         include: this.defaultInclude,
       });
-      await this.competitionCurator.upsert(
-        comp.id,
-        Array.from(new Set([...curators, creator.address])),
-      );
-      await this.upsertRewards(comp, rewards);
-      return this.findFirst({ where: { id: comp.id } });
+      try {
+        for (const voter of voters) {
+          const currency = await this.getCurrencyOrCreate(
+            voter.contractAddress,
+            voter.type,
+          );
+
+          await this.votingRule.create({
+            data: {
+              competitionId: comp.id,
+              currencyId: currency.id,
+            },
+          });
+        }
+
+        await this.competitionCurator.upsert(
+          comp.id,
+          Array.from(new Set([...curators, creator.address])),
+        );
+        await this.upsertRewards(comp, rewards);
+        return this.findFirst({ where: { id: comp.id } });
+      } catch (e) {
+        console.error(e);
+        this.sentryClient.instance().captureException(e);
+        // clean up competition details
+        await this.prisma.compeitionCurator.deleteMany({
+          where: { competitionId: comp.id },
+        });
+        await this.prisma.reward.deleteMany({
+          where: { competitionId: comp.id },
+        });
+        await this.prisma.competitionVotingRule.deleteMany({
+          where: { competitionId: comp.id },
+        });
+        await this.prisma.competition.delete({ where: { id: comp.id } });
+        this.sentryClient.instance().captureException(e);
+        throw new Error('Could not create your competition');
+      }
     } catch (e) {
-      console.error(e);
-      console.log('BIG ERROR');
-      // since we rely on external apis in upsertRewards -- we delete the comp if it doesnt work here???
-      throw new Error('TODO HOW SHOULD WE HANDLE HERE');
+      throw new Error('Could not create your competition');
     }
+  }
+
+  async updateCoverImage(file: Express.Multer.File, id: number, creator: User) {
+    const media = await this.media.create(file, creator.id);
+    const comp = await this.prisma.competition.update({
+      where: { id },
+      data: { coverMediaId: media.id },
+    });
+    return this.findFirst({ where: { id: comp.id } });
   }
 
   private async upsertRewards(competition: Competition, rewards: RewardsDto[]) {
     for (const reward of rewards) {
-      const { contractAddress, type } = reward.currency;
-      let currency = await this.currency.findFirst({
-        where: {
-          contractAddress,
-          type,
-        },
-      });
-      if (!currency) {
-        const metadata =
-          type === 'ERC20'
-            ? await this.alchemy.getERC20Metadata(contractAddress)
-            : await this.alchemy.getNftContractMetadata(contractAddress);
-        const decimals =
-          type === 'ERC20' ? (metadata as TokenMetadataResponse).decimals : 0;
-        currency = await this.currency.create({
-          data: {
-            type: reward.currency.type,
-            contractAddress: reward.currency.contractAddress,
-            symbol: metadata.symbol,
-            name: metadata.name,
-            decimals,
-          },
-        });
+      const currency = await this.getCurrencyOrCreate(
+        reward.currency.contractAddress,
+        reward.currency.type,
+      );
+      // We only support single NFT transfers for now
+      let currencyAmountAtoms = '1';
+      if (reward.currency.type === TokenType.ETH) {
+        currencyAmountAtoms = parseEther(reward.currency.amount).toString();
+      } else {
+        currencyAmountAtoms = parseUnits(
+          reward.currency.amount,
+          currency.decimals,
+        ).toString();
       }
-      // next -- need support for decimals here
-      const currencyAmountAtoms =
-        type === 'ERC20'
-          ? BigNumber.from(reward.currency.amount)
-              .mul(BigNumber.from(10).pow(currency.decimals))
-              .toString()
-          : reward.currency.amount;
+
       await this.reward.create({
         data: {
           competitionId: competition.id,
@@ -156,6 +183,52 @@ export class CompetitionService {
         },
       });
     }
+  }
+
+  private async getCurrencyOrCreate(
+    contractAddress: string | null,
+    type: TokenType,
+  ) {
+    let currency = await this.currency.findFirst({
+      where: { contractAddress, type },
+    });
+    if (currency) {
+      return currency;
+    }
+
+    if (type !== TokenType.ETH) {
+      // NFTs don't have decimal amounts
+      let metadata;
+      let decimals;
+      if (type === TokenType.ERC20) {
+        metadata = await this.alchemy.getTokenMetadata(contractAddress);
+        decimals = (metadata as TokenMetadataResponse).decimals;
+      } else {
+        metadata = await this.alchemy.getNftContractMetadata(contractAddress);
+        decimals = 0;
+      }
+
+      currency = await this.currency.create({
+        data: {
+          type,
+          contractAddress,
+          symbol: metadata.symbol,
+          name: metadata.name,
+          decimals,
+        },
+      });
+    } else if (type === TokenType.ETH) {
+      currency = await this.currency.create({
+        data: {
+          type,
+          contractAddress: null,
+          symbol: 'ETH',
+          name: 'Ethereum',
+          decimals: 18,
+        },
+      });
+    }
+    return currency;
   }
 
   async findMany(args?: Prisma.CompetitionFindManyArgs) {
@@ -217,5 +290,48 @@ export class CompetitionService {
       where: { memeId_competitionId: { memeId, competitionId } },
       data: { deletedAt: new Date() },
     });
+  }
+
+  async getCanUserVote(userAddress: string, competitionId: number) {
+    const reason = await this.getVoteReason(userAddress, competitionId);
+    return reason.some((item) => item.canVote) || reason.length === 0;
+  }
+
+  async getVoteReason(userAddress: string, competitionId: number) {
+    const votingRules = await this.votingRule.findMany({
+      where: {
+        competitionId,
+      },
+    });
+
+    const canVote: Array<{ canVote: boolean; currency: Currency }> = [];
+
+    for (const rule of votingRules) {
+      const { currency } = rule;
+
+      if (
+        currency.type === TokenType.ERC721 ||
+        currency.type === TokenType.ERC1155
+      ) {
+        const isValid = await this.alchemy.verifyNftOwnership(
+          userAddress,
+          currency.contractAddress,
+        );
+        canVote.push({ currency, canVote: isValid });
+      } else if (currency.type === TokenType.ERC20) {
+        const balances = await this.alchemy.getERC20Balances(userAddress, [
+          currency.contractAddress,
+        ]);
+        const balance = balances.tokenBalances?.[0];
+        canVote.push({
+          currency,
+          canVote: BigNumber.from(balance?.tokenBalance).gt(0),
+        });
+      } else if (currency.type === TokenType.ETH) {
+        const balance = await this.alchemy.getEthBalance(userAddress);
+        canVote.push({ currency, canVote: BigNumber.from(balance).gt(0) });
+      }
+    }
+    return canVote;
   }
 }

@@ -1,5 +1,5 @@
 import { css } from "../../helpers/css";
-import CompetitionIdStore from "../../store/CompetitionId.store";
+import CompetitionIdStore from "../../store/CompetitionById/CompetitionById.store";
 import AspectRatio from "../DSL/AspectRatio/AspectRatio";
 import AsyncWrap, { NoDataFound } from "../DSL/AsyncWrap/AsyncWrap";
 import PreviewLink from "../PreviewLink/PreviewLink";

@@ -12,15 +12,14 @@ import {
   IsString,
   Max,
   Min,
-  registerDecorator,
   Validate,
   ValidateNested,
   ValidationArguments,
   ValidationOptions,
   ValidatorConstraint,
   ValidatorConstraintInterface,
+  registerDecorator,
 } from 'class-validator';
-import { BigNumber } from 'ethers';
 import {
   formatEthereumAddress,
   isValidEthereumAddress,
@@ -81,10 +80,7 @@ function IsNumberStringGreaterThan(
       options: validationOptions,
       validator: {
         validate(value: any, { constraints }: ValidationArguments) {
-          return (
-            typeof value === 'string' &&
-            BigNumber.from(value).gte(constraints[0])
-          );
+          return Number(value) > constraints[0];
         },
         defaultMessage() {
           return `Must be a string and greater than ${minValue}`;
@@ -94,22 +90,32 @@ function IsNumberStringGreaterThan(
   };
 }
 
+class VoterDto {
+  @IsNotEmpty()
+  @IsEnum(TokenType)
+  type: TokenType;
+
+  @IsString()
+  contractAddress: string;
+}
+
 class CurrencyDto {
   @IsNotEmpty()
   @IsEnum(TokenType)
   type: TokenType;
 
-  @IsNotEmpty()
+  // @next -- needs to be updated to handle ETH rewards
+  @IsOptional()
   @IsString()
   contractAddress: string;
 
   @IsOptional()
-  @IsNumberStringGreaterThan(0)
+  @IsNumberStringGreaterThan(-1)
   @Validate(NftTokensTokenIdRequired)
   tokenId?: string;
 
   @IsNotEmpty()
-  @IsNumberStringGreaterThan(1)
+  @IsNumberStringGreaterThan(0)
   amount: string;
 }
 
@@ -118,7 +124,7 @@ export class RewardsDto {
   @IsNotEmpty()
   @IsInt()
   @Min(1)
-  @Max(3)
+  @Max(10)
   competitionRank: number;
 
   @IsNotEmptyObject()
@@ -162,4 +168,10 @@ export class CompetitionDto {
   @Validate(UniqueCompetitionRank)
   @Type(() => RewardsDto)
   rewards: RewardsDto[];
+
+  @IsNotEmpty()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => VoterDto)
+  voters: VoterDto[];
 }

@@ -26,6 +26,7 @@ export class MemeSearchService extends Search<Meme, Prisma.MemeFindManyArgs> {
     builder.where('deletedAt', { equals: null });
     builder.include('user', true);
     builder.include('media', true);
+    builder.include('MemeLikes', true);
   }
 
   onCustomKeyFilter(

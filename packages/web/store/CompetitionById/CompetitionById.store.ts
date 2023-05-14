@@ -1,11 +1,18 @@
 import { action, computed, makeObservable, observable, toJS } from "mobx";
-import { fuzzyDeepSearch } from "../helpers/arrays";
-import { Competition, CompetitionMeme, Reward } from "../interfaces";
-import { Reactionable } from "../services/mixins/reactionable";
-import { TokenType } from "./../interfaces/index";
-import Http from "./../services/http";
-import { EmptyClass } from "./../services/mixins/index";
-import AppStore from "./App.store";
+import { fuzzyDeepSearch } from "../../helpers/arrays";
+import {
+  Competition,
+  CompetitionMeme,
+  CompetitionVoteReason,
+  Meme,
+  Reward,
+} from "../../interfaces";
+import { CurrencyType } from "../../interfaces/index";
+import Http from "../../services/http";
+import { EmptyClass } from "../../services/mixins/index";
+import { Reactionable } from "../../services/mixins/reactionable";
+import AppStore from "../App.store";
+import CompetitionByIdPaneVisibilityStore from "./CompetitionByIdPaneVisibility.store";
 
 export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
   @observable
@@ -24,18 +31,6 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
   selectedMemeIds: number[] = [];
 
   @observable
-  showSubmitContent = true;
-
-  @observable
-  showUserEntriesContent = true;
-
-  @observable
-  showRewards = true;
-
-  @observable
-  showDetails = true;
-
-  @observable
   isSubmitLoading = false;
 
   @observable
@@ -47,24 +42,49 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
   @observable
   userSubmittedMemes: CompetitionMeme[] = [];
 
+  @observable
+  showPaneStore: CompetitionByIdPaneVisibilityStore;
+
+  @observable
+  private userVoteReason: Array<CompetitionVoteReason> = [];
+
+  @observable
+  isInvalidVoteRuleModalOpen = false;
+
+  @observable
+  isSubmitMemeModalOpen = false;
+
   constructor(competition: Competition, memes: CompetitionMeme[]) {
     super();
     makeObservable(this);
     this.competition = competition;
     this._rewards = competition.rewards;
     this.memes = memes;
+    this.showPaneStore = new CompetitionByIdPaneVisibilityStore(competition.id);
   }
 
   init() {
+    this.showPaneStore.init();
     this.react(
       () => AppStore.auth.isAuthed,
       (isAuthed) => {
         if (isAuthed) {
           this.getUserSubmittedMemes();
+          this.getCanUserVoteReason();
+        } else {
+          this.isInvalidVoteRuleModalOpen = false;
+          this.userVoteReason = [];
         }
       },
       { fireImmediately: true }
     );
+  }
+
+  getCanUserVoteReason() {
+    return Http.getCanUserVoteReason(this.competition.id).then(({ data }) => {
+      this.userVoteReason = data;
+      return data;
+    });
   }
 
   @action
@@ -77,7 +97,7 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
 
   @action
   getRankedMemes() {
-    return Http.getCompetitionMemes(this.competition.id).then(
+    return Http.getCompetitionRankedMemes(this.competition.id).then(
       ({ data }) => (this.memes = data)
     );
   }
@@ -86,11 +106,6 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
   onSearchChange = (value: string) => {
     this.searchValue = value;
   };
-
-  @action
-  toggleShowSubmitContent() {
-    this.showSubmitContent = !this.showSubmitContent;
-  }
 
   @action
   onMemeSelect(id: number) {
@@ -172,8 +187,8 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
       AppStore.auth.isAuthed &&
       this.canUserSelectMemes &&
       this.competition.isActive &&
-      !!AppStore.auth.profile &&
-      AppStore.auth.profile?.user.id !== this.competition.createdById
+      !!AppStore.auth.user &&
+      AppStore.auth?.user?.id !== this.competition.createdById
     );
   }
 
@@ -266,7 +281,7 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
   get isCreator() {
     return (
       AppStore.auth.isAuthed &&
-      AppStore.auth.profile?.user?.id === this.competition.createdById
+      AppStore.auth.user?.id === this.competition.createdById
     );
   }
 
@@ -275,20 +290,22 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
     if (!reward) {
       throw new Error("Could not find reward");
     }
-    return [TokenType.ERC1155, TokenType.ERC721].includes(reward.currency.type);
+    return [CurrencyType.ERC1155, CurrencyType.ERC721].includes(
+      reward.currency.type
+    );
   }
 
-  runThenRefreshMemes(runIt: () => Promise<any>) {
+  runThenRefreshMemes(runIt: () => Promise<any | void>) {
     return runIt().then(() => this.getRankedMemes());
   }
 
   @computed
   get isUserCurator() {
     return (
-      AppStore.auth?.profile?.user?.id &&
+      AppStore.auth?.user?.id &&
       this.competition.curators
         .map((user) => user.id)
-        .includes(AppStore.auth.profile.user.id)
+        .includes(AppStore.auth.user.id)
     );
   }
 
@@ -313,5 +330,40 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
       competitionId: this.competition.id,
       memeId: this._memeIdToCurate!,
     });
+  }
+
+  @computed
+  get hasVoters() {
+    return this.competition.votingRule.length > 0;
+  }
+
+  @computed
+  get canUserVote() {
+    return (
+      AppStore.auth.isAuthed &&
+      (this.userVoteReason.some((item) => item.canVote) ||
+        this.userVoteReason.length === 0)
+    );
+  }
+
+  @computed
+  get invalidVoteReason() {
+    return this.userVoteReason.filter((item) => !item.canVote);
+  }
+
+  runIfCanVote(callback: () => void) {
+    if (this.canUserVote) {
+      return callback();
+    } else {
+      this.isInvalidVoteRuleModalOpen = true;
+    }
+    return;
+  }
+
+  onMemesCreatedSuccess(memes: Array<Meme>) {
+    memes.forEach((meme) => {
+      this.selectedMemeIds.push(meme.id);
+    });
+    this.onSubmit().then(() => (this.isSubmitMemeModalOpen = false));
   }
 }

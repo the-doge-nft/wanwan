@@ -1,58 +1,51 @@
-import { computed, makeObservable, observable } from "mobx";
+import { computed, makeObservable } from "mobx";
 import { Meme, NextString, SearchParams } from "../interfaces";
 import Http from "../services/http";
-import SearchableDataProvider from "./SearchableDataProvider";
+import AppStore from "./App.store";
+import GridOrColumnScrollableStore from "./GridOrColumnScrollable.store";
 
-export enum View {
-  Column = "column",
-  Grid = "grid",
-}
+class MemePageStore extends GridOrColumnScrollableStore<Meme> {
+  localStorageKey = "meme-view";
 
-const LOCAL_STORAGE_KEY = "meme-view";
-class MemePageStore extends SearchableDataProvider<Meme, {}[]> {
-  @observable
-  _view = View.Column;
-
-  constructor(
-    memes: Meme[],
-    private readonly params: SearchParams,
-    _next: NextString
-  ) {
-    super("memes-page", memes, _next);
+  constructor(memes: Meme[], next: NextString, params: SearchParams) {
+    super("memes-page", memes, next, params);
     makeObservable(this);
-
-    if (typeof window !== "undefined") {
-      const storageView = localStorage.getItem(LOCAL_STORAGE_KEY);
-      if (storageView) {
-        this.view = storageView as View;
-      } else {
-        this.view = View.Column;
-      }
-    }
   }
 
-  protected getDefaultFilters(): any[] {
-    return this.params.filters;
-  }
-
-  protected getDefaultSorts(): any[] {
-    return this.params.sorts;
-  }
-
-  protected query() {
+  query() {
     return Http.searchMeme(this.getQueryConfig().params).then(
       ({ data }) => data
     );
   }
 
-  @computed
-  get view() {
-    return this._view;
+  async toggleLike(memeId: number) {
+    const isLiked = AppStore.auth.memeIdsLiked.includes(memeId);
+    if (isLiked) {
+      await Http.getUnlikeMeme(memeId);
+    } else {
+      await Http.getLikeMeme(memeId);
+    }
+    AppStore.auth.getLikedMemeIds();
+
+    // update the likes in place to avoid refreshing all data causing a scroll jump
+    const meme = this.data.find((meme) => meme.id === memeId)!;
+    const index = this.data.indexOf(meme!);
+    this.data.splice(index, 1, {
+      ...meme,
+      likes: meme.likes + (isLiked ? -1 : 1),
+    });
   }
 
-  set view(view: View) {
-    this._view = view;
-    localStorage.setItem(LOCAL_STORAGE_KEY, view);
+  getLikesForId(memeId: number) {
+    const meme = this.data.find((meme) => meme.id === memeId);
+    return meme?.likes || 0;
+  }
+
+  @computed
+  get likedMemeIds() {
+    return this.data
+      .filter((meme) => meme.likes > 0)
+      .map((meme) => ({ id: meme.id, likes: meme.likes }));
   }
 }
 

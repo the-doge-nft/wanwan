@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma, User } from '@prisma/client';
+import { EthersService } from '../ethers/ethers.service';
 import { UserWithExtras } from '../interface';
-import { EthersService } from './../ethers/ethers.service';
 import { PrismaService } from './../prisma.service';
 
 @Injectable()
@@ -12,16 +12,20 @@ export class UserService {
   ) {}
 
   async addExtra(user: User): Promise<UserWithExtras> {
-    const ens = await this.ethers.getCachedEnsName(user.address);
-    return { ...user, ens };
+    if (user === null) {
+      return null;
+    }
+    const avatar = await this.ethers.getCachedAvatar(user.address);
+    const wan = await this.getWanScore(user.address);
+    return { ...user, avatar, wan };
   }
 
   async addExtras(users: User[]): Promise<UserWithExtras[]> {
-    const ret = [];
+    const usersWithExtras = [];
     for (const user of users) {
-      users.push(await this.addExtra(user));
+      usersWithExtras.push(await this.addExtra(user));
     }
-    return ret;
+    return usersWithExtras;
   }
 
   count(args?: Prisma.UserCountArgs) {
@@ -33,7 +37,8 @@ export class UserService {
   }
 
   async findMany(args?: Prisma.UserFindManyArgs) {
-    return this.addExtras(await this.prisma.user.findMany(args));
+    const many = await this.prisma.user.findMany(args);
+    return this.addExtras(many);
   }
 
   async findFirst(args?: Prisma.UserFindFirstArgs) {
@@ -62,5 +67,27 @@ export class UserService {
     const wan =
       memes / memeFactor + votes / voteFactor + submissions / submissionFactor;
     return wan;
+  }
+
+  async getLeaderboard() {
+    const users = await this.findMany();
+    const usersWithWan = [];
+    for (const user of users) {
+      const wan = await this.getWanScore(user.address);
+      usersWithWan.push({ wan, ...user });
+    }
+    usersWithWan.sort((a, b) => b.wan - a.wan);
+    return usersWithWan;
+  }
+
+  findByAddressOrEns(addressOrEns: string) {
+    return this.findFirst({
+      where: {
+        OR: [
+          { address: { contains: addressOrEns, mode: 'insensitive' } },
+          { ens: { contains: addressOrEns, mode: 'insensitive' } },
+        ],
+      },
+    });
   }
 }

@@ -1,7 +1,7 @@
 import { ethers } from "ethers";
 import { computed, makeObservable, observable } from "mobx";
 import { Address } from "wagmi";
-import { Reward, TokenType } from "../interfaces";
+import { CurrencyType, Reward } from "../interfaces";
 import erc1155Abi from "../services/abis/erc1155";
 import erc20Abi from "../services/abis/erc20";
 import erc721Abi from "../services/abis/erc721";
@@ -24,7 +24,7 @@ export default class RewardStore {
   @computed
   private get tokenTypeToContract() {
     return {
-      [TokenType.ERC1155]: {
+      [CurrencyType.ERC1155]: {
         abi: erc1155Abi,
         method: "safeTransferFrom",
         args: [
@@ -40,7 +40,7 @@ export default class RewardStore {
           [],
         ],
       },
-      [TokenType.ERC721]: {
+      [CurrencyType.ERC721]: {
         abi: erc721Abi,
         method: "transferFrom",
         args: [
@@ -49,7 +49,7 @@ export default class RewardStore {
           this.reward.currencyTokenId,
         ],
       },
-      [TokenType.ERC20]: {
+      [CurrencyType.ERC20]: {
         abi: erc20Abi,
         method: "transfer",
         args: [this.toAddress, this.reward.currencyAmountAtoms],
@@ -59,16 +59,22 @@ export default class RewardStore {
 
   @computed
   get contractWriteConfig() {
+    if (this.reward.currency.type === CurrencyType.ETH) {
+      return null;
+    }
     return {
       address: this.reward.currency.contractAddress as Address,
-      abi: this.contractInfo.abi,
-      functionName: this.contractInfo.method,
-      args: this.contractInfo.args,
+      abi: this.contractInfo!.abi,
+      functionName: this.contractInfo!.method,
+      args: this.contractInfo!.args,
     };
   }
 
   @computed
   get contractInfo() {
+    if (this.reward.currency.type === CurrencyType.ETH) {
+      return null;
+    }
     return this.tokenTypeToContract[this.reward.currency.type];
   }
 
@@ -77,9 +83,25 @@ export default class RewardStore {
   }
 
   private updateReward({ txId }: { txId: string }) {
-    return Http.updateReward({
+    return Http.postRewardSettled({
       txId,
       rewardId: this.reward.id,
+    }).then(({ data }) => {
+      this.reward = data;
     });
+  }
+
+  updateRewardStatusConfirming(txId: string) {
+    return Http.postRewardConfirming({
+      rewardId: this.reward.id,
+      txId,
+    }).then(({ data }) => {
+      this.reward = data;
+    });
+  }
+
+  @computed
+  get tokenType() {
+    return this.reward.currency.type;
   }
 }

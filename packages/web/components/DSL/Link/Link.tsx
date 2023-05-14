@@ -15,7 +15,7 @@ const baseLinkStyles = css(
   "max-w-full"
 );
 
-const linkTypeStyles = {
+export const linkTypeStyles = {
   [LinkType.Primary]: css("text-red-800", "hover:underline"),
   [LinkType.Secondary]: css(
     "text-black",
@@ -24,7 +24,12 @@ const linkTypeStyles = {
     "hover:text-red-800",
     "dark:hover:text-red-800"
   ),
-  [LinkType.Tertiary]: css("text-neutral-800", "hover:text-neutral-400"),
+  [LinkType.Tertiary]: css(
+    "text-neutral-500",
+    "hover:text-neutral-800",
+    "dark:text-neutral-500",
+    "dark:hover:text-white"
+  ),
 };
 
 interface LinkProps {
@@ -65,11 +70,18 @@ const Link: React.FC<LinkProps> = ({
         >
           {children && children}
           {isExternal && !hideExternalIcon && (
-            <BsArrowUpRight size={14} className={css("ml-0.5")} />
+            <BsArrowUpRight
+              size={14}
+              className={css({ "ml-0.5": !!children })}
+            />
           )}
         </a>
       ) : (
-        <NextLink href={href} className={css(styles)} onClick={onClick}>
+        <NextLink
+          href={href}
+          className={css(styles, "inline")}
+          onClick={onClick}
+        >
           {children}
         </NextLink>
       )}

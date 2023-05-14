@@ -12,6 +12,7 @@ import { AuthModule } from './auth/auth.module';
 import { CacheService } from './cache/cache.service';
 import { CommentService } from './comment/comment.service';
 import { CompetitionCuratorService } from './competition-curator/competition-curator.service';
+import { CompetitionVotingRuleService } from './competition-voting-rule/competition-voting-rule.service';
 import { CompetitionSearchService } from './competition/competition-search.service';
 import { CompetitionController } from './competition/competition.controller';
 import { CompetitionService } from './competition/competition.service';
@@ -23,7 +24,6 @@ import { MemeSearchService } from './meme/meme-search.service';
 import { MemeController } from './meme/meme.controller';
 import { MemeService } from './meme/meme.service';
 import { PrismaService } from './prisma.service';
-import { ProfileService } from './profile/profile.service';
 import { RewardService } from './reward/reward.service';
 import { S3Service } from './s3/s3.service';
 import { StatsService } from './stats/stats.service';
@@ -89,7 +89,6 @@ import { VoteService } from './vote/vote.service';
     RewardService,
     CurrencyService,
     CompetitionCuratorService,
-    ProfileService,
     EthersService,
     CompetitionSearchService,
     MemeSearchService,
@@ -97,6 +96,7 @@ import { VoteService } from './vote/vote.service';
     CacheService,
     AppService,
     TwitterService,
+    CompetitionVotingRuleService,
   ],
 })
 export class AppModule {}

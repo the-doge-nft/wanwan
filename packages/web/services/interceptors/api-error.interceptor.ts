@@ -24,7 +24,9 @@ const ApiErrorInterceptor = (error: AxiosError) => {
       errorToast("400 error");
     }
   } else if (error.request) {
-    errorToast("Network error");
+    if (error.code !== "ERR_CANCELED") {
+      errorToast("Network error");
+    }
   }
   throw error;
 };

@@ -3,7 +3,7 @@ import { css } from "../../../helpers/css";
 import AsyncWrap, { AsyncWrapProps, NoDataFound } from "../AsyncWrap/AsyncWrap";
 
 interface AsyncGridProps extends Pick<AsyncWrapProps, "isLoading"> {
-  data: object[];
+  data: any[];
   noDataLabel?: string;
 }
 
@@ -14,9 +14,7 @@ const AsyncGrid: React.FC<PropsWithChildren<AsyncGridProps>> = ({
   data,
 }) => {
   const renderNoData = useCallback(
-    () => (
-      <NoDataFound>{noDataLabel ? noDataLabel : "No data found"}</NoDataFound>
-    ),
+    () => <NoDataFound>{noDataLabel ? noDataLabel : "None found"}</NoDataFound>,
     [noDataLabel]
   );
 

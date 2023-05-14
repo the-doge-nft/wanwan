@@ -1,3 +1,4 @@
+import { Nft } from "alchemy-sdk";
 import axios, { AxiosInstance } from "axios";
 import { SiweMessage } from "siwe";
 import env from "../environment";
@@ -6,17 +7,21 @@ import {
   Comment,
   Competition,
   CompetitionMeme,
+  CompetitionVoteReason,
+  Leaderboard,
+  Media,
   MediaRequirements,
   Meme,
-  Profile,
   ProfileDto,
   Reward,
+  Search,
   SearchParams,
   SearchResponse,
   Stats,
   Submission,
   Tweet,
   TweetReply,
+  User,
 } from "../interfaces";
 import AppStore from "../store/App.store";
 import ApiErrorInterceptor from "./interceptors/api-error.interceptor";
@@ -65,6 +70,16 @@ class _Http {
     });
   }
 
+  updateCompetitionCoverPhoto(id: number, file: File) {
+    const formData = new FormData();
+    formData.append("file", file);
+    return this.http.post<Competition>(`/competition/${id}/cover`, formData);
+  }
+
+  postMedia(formData: FormData) {
+    return this.http.post<Media>("/media", formData);
+  }
+
   postSubmission({
     memeId,
     competitionId,
@@ -83,15 +98,25 @@ class _Http {
     return this.http.get<Competition>(`/competition/${id}`);
   }
 
-  getCompetitionMemes(id: number | string) {
+  getCompetitionRankedMemes(id: number | string) {
     return this.http.get<CompetitionMeme[]>(`/competition/${id}/meme/ranked`);
   }
 
-  updateReward({ rewardId, txId }: { rewardId: number; txId: string }) {
-    return this.http.post<Reward>(`/competition/reward/${rewardId}`, {
+  postRewardSettled({ rewardId, txId }: { rewardId: number; txId: string }) {
+    return this.http.post<Reward>(`/competition/reward/${rewardId}/confirmed`, {
       rewardId,
       txId,
     });
+  }
+
+  postRewardConfirming({ rewardId, txId }: { rewardId: number; txId: string }) {
+    return this.http.post<Reward>(
+      `/competition/reward/${rewardId}/confirming`,
+      {
+        rewardId,
+        txId,
+      }
+    );
   }
 
   logout() {
@@ -133,11 +158,11 @@ class _Http {
   }
 
   deleteTwitterUsername() {
-    return this.http.post<Profile>("/twitter/delete");
+    return this.http.post<User>("/twitter/delete");
   }
 
   postTwitterAuth(body: { oauth_token: string; oauth_verifier: string }) {
-    return this.http.post<Profile>("/twitter/callback", body);
+    return this.http.post<User>("/twitter/callback", body);
   }
 
   getTwitterLoginUrl() {
@@ -198,6 +223,58 @@ class _Http {
   getAdminTweet() {
     return this.http.get<{ meme: Meme; tweet: Tweet; reply: TweetReply }>(
       "/admin/tweet"
+    );
+  }
+
+  postEnsForAddress(ens: string) {
+    return this.http.post("/ens/resolveEns", { ens });
+  }
+
+  postAddressForEns(address: string) {
+    return this.http.post("/ens/resolveName", { address });
+  }
+
+  getWallet() {
+    return this.http.get("/wallet");
+  }
+
+  getNftContractHolders(contractAddress: string) {
+    return this.http.get<{ owners: Array<string> }>(
+      `/nft/${contractAddress}/holders`
+    );
+  }
+
+  getNftsForContract(contractAddress: string) {
+    return this.http.get<{ nfts: Nft[] }>(`/nft/${contractAddress}`);
+  }
+
+  getTokenType(contractAddress: string) {
+    return this.http.get(`/contract/${contractAddress}`);
+  }
+
+  getLikeMeme(id: number | string) {
+    return this.http.get(`/meme/${id}/like`);
+  }
+
+  getUnlikeMeme(id: number | string) {
+    return this.http.get(`/meme/${id}/unlike`);
+  }
+
+  getAddressLikes(address: string) {
+    return this.http.get<Array<Meme>>(`/profile/${address}/likes`);
+  }
+
+  getLeaderboard() {
+    return this.http.get<Array<Leaderboard>>("/leaderboard");
+  }
+
+  postSearch(search: string, signal?: AbortSignal) {
+    return this.http.post<Search>("/search", { search }, { signal });
+  }
+
+  getCanUserVoteReason(competitionId: number) {
+    return this.http.get<Array<CompetitionVoteReason>>(
+      `/competition/${competitionId}/voteReason`
     );
   }
 

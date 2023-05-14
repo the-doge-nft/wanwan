@@ -103,7 +103,9 @@ const ERC20Form: React.FC<DevAssetsFormProps> = observer(({ store }) => {
             onChange={(value) => (store.erc20Amount = value)}
             block
           />
-          <Submit block isLoading={isLoading || isTxLoading} />
+          <Submit block isLoading={isLoading || isTxLoading}>
+            Mint
+          </Submit>
         </div>
       </Form>
     </Pane>
@@ -131,7 +133,7 @@ const ERC721Form: React.FC<DevAssetsFormProps> = observer(({ store }) => {
           onClick={() => write && write()}
           isLoading={isLoading || isTxLoading}
         >
-          Submit
+          Mint
         </Button>
       </div>
     </Pane>
@@ -200,7 +202,9 @@ const ERC1155Form: React.FC<DevAssetsFormProps> = observer(({ store }) => {
               onChange={(value) => (store.erc1155Amount = value)}
             />
           </div>
-          <Submit block isLoading={isLoading || isTxLoading} />
+          <Submit block isLoading={isLoading || isTxLoading}>
+            Mint
+          </Submit>
         </div>
       </Form>
     </Pane>

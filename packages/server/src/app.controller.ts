@@ -4,24 +4,31 @@ import {
   Controller,
   Get,
   Logger,
+  MaxFileSizeValidator,
   Param,
+  ParseFilePipe,
   Post,
   Req,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { AlchemyService } from './alchemy/alchemy.service';
 import { AppService } from './app.service';
 import { ADMIN_ADDRESSES, AdminGuard } from './auth/admin.guard';
 import { AuthGuard } from './auth/auth.guard';
 import { CompetitionService } from './competition/competition.service';
 import ProfileDto from './dto/profile.dto';
 import SubmissionDto from './dto/submission.dto';
+import { EthersService } from './ethers/ethers.service';
 import { AuthenticatedRequest } from './interface';
 import { MediaService } from './media/media.service';
 import { MemeService } from './meme/meme.service';
-import { ProfileService } from './profile/profile.service';
 import { StatsService } from './stats/stats.service';
 import { SubmissionService } from './submission/submission.service';
 import { UserService } from './user/user.service';
+import MemeMediaFileValidator from './validator/meme-media-file.validator';
 
 @Controller()
 export class AppController {
@@ -31,9 +38,11 @@ export class AppController {
     private readonly meme: MemeService,
     private readonly competition: CompetitionService,
     private readonly submission: SubmissionService,
-    private readonly profile: ProfileService,
     private readonly stats: StatsService,
     private readonly users: UserService,
+    private readonly media: MediaService,
+    private readonly alchemy: AlchemyService,
+    private readonly ethers: EthersService,
   ) {}
 
   @Get()
@@ -45,6 +54,31 @@ export class AppController {
   @Get('user')
   getUser(@Req() { user }: AuthenticatedRequest) {
     return user;
+  }
+
+  @Post('media')
+  @UseGuards(AuthGuard)
+  @UseInterceptors(
+    FileInterceptor(MediaService.FILE_NAME, {
+      dest: MediaService.FILE_UPLOAD_PATH,
+    }),
+  )
+  async uploadFile(
+    @Req() { user }: AuthenticatedRequest,
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MemeMediaFileValidator(),
+          new MaxFileSizeValidator({
+            maxSize: MediaService.MAX_SIZE_MEDIA_BYTES,
+          }),
+        ],
+      }),
+    )
+    file: Express.Multer.File,
+  ) {
+    const media = await this.media.create(file, user.id);
+    return this.media.findFirst({ where: { id: media.id } });
   }
 
   @Get('media/requirements')
@@ -112,7 +146,12 @@ export class AppController {
 
   @Get('profile/:addressOrEns')
   async getProfile(@Param() { addressOrEns }: { addressOrEns: string }) {
-    return this.profile.get(addressOrEns);
+    return this.users.findByAddressOrEns(addressOrEns);
+  }
+
+  @Get('profile/:address/likes')
+  async getProfileLikes(@Param() { address }: { address: string }) {
+    return this.meme.getLikesForAddress(address);
   }
 
   @UseGuards(AuthGuard)
@@ -122,12 +161,76 @@ export class AppController {
     @Body() profile: ProfileDto,
   ) {
     await this.users.update({ where: { id: user.id }, data: profile });
-    return this.profile.get(user.address);
+    return this.users.findFirst({ where: { id: user.id } });
   }
 
   @Get('stats')
   getStats() {
     return this.stats.get();
+  }
+
+  @UseGuards(AuthGuard)
+  @Post('/ens/resolveEns')
+  async getEnsName(@Body() { ens }: { ens: string }) {
+    const cache = await this.alchemy.resolveCachedEnsName(ens);
+    if (cache) {
+      return cache;
+    }
+    return this.alchemy.refreshResolveCachedEnsName(ens);
+  }
+
+  @UseGuards(AuthGuard)
+  @Post('/ens/resolveName')
+  async resolveName(@Body() { address }: { address: string }) {
+    const cache = await this.ethers.getCachedEnsName(address);
+    if (cache) {
+      return cache;
+    }
+    return this.ethers.refreshEnsCache(address);
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('/wallet')
+  async getWallet(@Req() { user }: AuthenticatedRequest) {
+    const nft = await this.alchemy.getNftsForOwner(user.address);
+    const erc20 = await this.alchemy.getTokenBalances(user.address);
+    const eth = await this.alchemy.getEthBalance(user.address);
+    return {
+      nft,
+      erc20,
+      eth: {
+        tokenBalance: eth.toHexString(),
+        metadata: { decimals: 18, logo: null, name: 'Ethereum', symbol: 'ETH' },
+      },
+    };
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('/nft/:address/holders')
+  getNftHolders(@Param() { address }: { address: string }) {
+    return this.alchemy.getOwnersForConract(address);
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('/nft/:address')
+  getNftForContract(@Param() { address }: { address: string }) {
+    return this.alchemy.getNftsForContract(address);
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('/contract/:address')
+  async getNftForContractAndToken(@Param() { address }: { address: string }) {
+    try {
+      const tokenType = await this.alchemy.getTokenType(address);
+      return { tokenType };
+    } catch (e) {
+      throw new BadRequestException('Not a valid token');
+    }
+  }
+
+  @Get('leaderboard')
+  getLeaderboard() {
+    return this.users.getLeaderboard();
   }
 
   @UseGuards(AdminGuard)
@@ -140,5 +243,10 @@ export class AppController {
   @UseGuards(AuthGuard)
   getIsAdmin(@Req() { user }: AuthenticatedRequest) {
     return ADMIN_ADDRESSES.includes(user.address);
+  }
+
+  @Post('/search')
+  getSearch(@Body() { search }: { search: string }) {
+    return this.app.search(search);
   }
 }

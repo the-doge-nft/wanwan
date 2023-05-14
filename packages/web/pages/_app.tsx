@@ -107,6 +107,10 @@ const App = observer(({ Component, pageProps }: AppProps) => {
         <meta name="twitter:image" content={SOCIAL_CARD_URL} />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:site" content={TWITTER_USERNAME} />
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=1"
+        />
       </Head>
       <WagmiConfig client={client}>
         <RainbowKitAuthenticationProvider
@@ -166,7 +170,7 @@ const WagmiAccountSwitchWatcher = observer(() => {
     if (
       AppStore.auth.address !== undefined &&
       AppStore.auth.address !== address &&
-      AppStore.auth.hasLoggedIn
+      AppStore.auth.isLoggedIn
     ) {
       AppStore.auth.onAccountSwitch();
     }
@@ -175,12 +179,12 @@ const WagmiAccountSwitchWatcher = observer(() => {
   useEffect(() => {
     if (
       AppStore.auth.status === "authenticated" &&
-      !AppStore.auth.hasLoggedIn &&
+      !AppStore.auth.isLoggedIn &&
       address
     ) {
       AppStore.auth.onLoginSuccess(address);
     }
-  }, [address, AppStore.auth.hasLoggedIn, AppStore.auth.status]);
+  }, [address, AppStore.auth.isLoggedIn, AppStore.auth.status]);
   return <></>;
 });
 
