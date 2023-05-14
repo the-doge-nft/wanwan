@@ -8,6 +8,8 @@ import RewardInputStore from "./RewardInput.store";
 export default class CreateCompetitionRewardsStore extends Reactionable(
   EmptyClass
 ) {
+  private MAX_COUNT_REWARDS = 10;
+
   @observable
   rewards: RewardInputStore[] = [];
 
@@ -42,7 +44,7 @@ export default class CreateCompetitionRewardsStore extends Reactionable(
 
   @computed
   get canAddReward() {
-    return this.rewards.length < 10 && this.allConfirmed;
+    return this.rewards.length < this.MAX_COUNT_REWARDS && this.allConfirmed;
   }
 
   @computed

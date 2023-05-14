@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Competition, Currency, Prisma, TokenType, User } from '@prisma/client';
+import { InjectSentry, SentryService } from '@travelerdev/nestjs-sentry';
 import { BigNumber, TokenMetadataResponse } from 'alchemy-sdk';
 import { parseEther, parseUnits } from 'ethers/lib/utils';
 import { CompetitionVotingRuleService } from '../competition-voting-rule/competition-voting-rule.service';
@@ -30,6 +31,7 @@ export class CompetitionService {
     private readonly alchemy: AlchemyService,
     private readonly user: UserService,
     private readonly votingRule: CompetitionVotingRuleService,
+    @InjectSentry() private readonly sentryClient: SentryService,
   ) {}
 
   private get defaultInclude(): Prisma.CompetitionInclude {
@@ -64,6 +66,7 @@ export class CompetitionService {
       user: await this.user.addExtra(competition.user),
       isActive: new Date(competition.endsAt) > new Date(),
       coverMedia: this.media.addExtra(competition.coverMedia),
+      reward: competition.rewards.map((reward) => this.reward.addExtra(reward)),
     };
   }
 
@@ -99,31 +102,46 @@ export class CompetitionService {
         data: { ...competition, createdById: creator.id },
         include: this.defaultInclude,
       });
+      try {
+        for (const voter of voters) {
+          const currency = await this.getCurrencyOrCreate(
+            voter.contractAddress,
+            voter.type,
+          );
 
-      for (const voter of voters) {
-        const currency = await this.getCurrencyOrCreate(
-          voter.contractAddress,
-          voter.type,
+          await this.votingRule.create({
+            data: {
+              competitionId: comp.id,
+              currencyId: currency.id,
+            },
+          });
+        }
+
+        await this.competitionCurator.upsert(
+          comp.id,
+          Array.from(new Set([...curators, creator.address])),
         );
-
-        await this.votingRule.create({
-          data: {
-            competitionId: comp.id,
-            currencyId: currency.id,
-          },
+        await this.upsertRewards(comp, rewards);
+        return this.findFirst({ where: { id: comp.id } });
+      } catch (e) {
+        console.error(e);
+        this.sentryClient.instance().captureException(e);
+        // clean up competition details
+        await this.prisma.compeitionCurator.deleteMany({
+          where: { competitionId: comp.id },
         });
+        await this.prisma.reward.deleteMany({
+          where: { competitionId: comp.id },
+        });
+        await this.prisma.competitionVotingRule.deleteMany({
+          where: { competitionId: comp.id },
+        });
+        await this.prisma.competition.delete({ where: { id: comp.id } });
+        this.sentryClient.instance().captureException(e);
+        throw new Error('Could not create your competition');
       }
-
-      await this.competitionCurator.upsert(
-        comp.id,
-        Array.from(new Set([...curators, creator.address])),
-      );
-      await this.upsertRewards(comp, rewards);
-      return this.findFirst({ where: { id: comp.id } });
     } catch (e) {
-      console.error(e);
-      // since we rely on external apis in upsertRewards -- we delete the comp if it doesnt work here???
-      throw new Error('TODO HOW SHOULD WE HANDLE HERE');
+      throw new Error('Could not create your competition');
     }
   }
 

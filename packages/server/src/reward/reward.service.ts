@@ -1,8 +1,10 @@
 import { Inject, Injectable, Logger, forwardRef } from '@nestjs/common';
-import { Prisma, TokenType } from '@prisma/client';
+import { Prisma, Reward, TokenType } from '@prisma/client';
 import { BigNumber, ethers } from 'ethers';
 import { parseEther, parseUnits } from 'ethers/lib/utils';
 import erc1155Abi from 'src/abis/erc1155';
+import erc20Abi from 'src/abis/erc20';
+import erc721Abi from 'src/abis/erc721';
 import { AlchemyService } from '../alchemy/alchemy.service';
 import { CompetitionService } from '../competition/competition.service';
 import { RewardsDto } from '../dto/competition.dto';
@@ -19,6 +21,16 @@ export class RewardService {
     return {
       currency: true,
     };
+  }
+
+  addExtra(reward: Reward) {
+    return {
+      ...reward,
+    };
+  }
+
+  addExtras(reward: Array<Reward>) {
+    return reward.map((reward) => this.addExtra(reward));
   }
 
   constructor(
@@ -76,10 +88,7 @@ export class RewardService {
   }
 
   async getIsRewardTxValid(rewardId: number, txId: string) {
-    this.logger.log(`confirming reward`);
     const tx = await this.alchemy.getTxReceipt(txId);
-    console.log('debug:: tx', tx);
-    const logs = tx.logs;
     if (!tx) {
       throw new InvalidRewardTxError('Transaction has not been mined.');
     }
@@ -123,28 +132,9 @@ export class RewardService {
       }
     }
 
-    // console.log('reward', reward);
-    // console.log('tx', tx);
-    // console.log('logs', logs);
-
-    /*  
-      decode the logs based on the type of token transfer the reward is supposed to be
-    
-      1: ERC1155 Transfer(address,address,uint256)
-      2: ERC721 Transfer(address,address,uint256)
-      3: ERC20 Transfer(address,address,uint256)
-      4: ETH
-
-      1155 SEND
-      https://goerli.etherscan.io/tx/0x0ab51ce3ee869584ae37c4337cbcdc7f8b7dac50d3ffea4240971c1f62682444
-    
-      ETH SEND
-      https://goerli.etherscan.io/tx/0x3bf296e5b03a952776bef2e8d41ea204cece97effb9e0b73612a1e18f12ac005
-    */
-
     if (reward.currency.type === TokenType.ERC1155) {
       const i = new ethers.utils.Interface(erc1155Abi);
-      const decodedLogs = logs.map((log) => i.parseLog(log));
+      const decodedLogs = tx.logs.map((log) => i.parseLog(log));
       const transferLog = decodedLogs.find(
         (log) => log.name === 'TransferSingle',
       );
@@ -172,8 +162,56 @@ export class RewardService {
       if (!value.eq(1)) {
         throw new InvalidRewardTxError('Transaction value should only be 1');
       }
+      this.logger.log(`ERC1155 REWARD VALID`);
     } else if (reward.currency.type === TokenType.ERC721) {
+      const i = new ethers.utils.Interface(erc721Abi);
+      const decodedLogs = tx.logs.map((log) => i.parseLog(log));
+      const transferLog = decodedLogs.find((log) => log.name === 'Transfer');
+      if (!transferLog) {
+        throw new InvalidRewardTxError('No Transfer log found in transaction');
+      }
+      const { from, to, id } = transferLog.args;
+      console.log(from, to, id);
+      if (!addressEqual(from, tx.from)) {
+        throw new InvalidRewardTxError(
+          "Transaction sender doesn't match TransferSingle from address",
+        );
+      }
+      if (!addressEqual(to, winningMeme.user.address)) {
+        throw new InvalidRewardTxError(
+          "Transaction receiver doesn't match winning meme creator",
+        );
+      }
+      if (id.toString() !== reward.currencyTokenId) {
+        throw new InvalidRewardTxError(
+          'Transaction tokenId does not match reward tokenId',
+        );
+      }
+      this.logger.log(`ERC721 REWARD VALID`);
     } else if (reward.currency.type === TokenType.ERC20) {
+      const i = new ethers.utils.Interface(erc20Abi);
+      const decodedLogs = tx.logs.map((log) => i.parseLog(log));
+      const transferLog = decodedLogs.find((log) => log.name === 'Transfer');
+      if (!transferLog) {
+        throw new InvalidRewardTxError('No Transfer log found in transaction');
+      }
+      const { from, to, value } = transferLog.args;
+      if (!addressEqual(from, tx.from)) {
+        throw new InvalidRewardTxError(
+          "Transaction sender doesn't match TransferSingle from address",
+        );
+      }
+      if (!addressEqual(to, winningMeme.user.address)) {
+        throw new InvalidRewardTxError(
+          "Transaction receiver doesn't match winning meme creator",
+        );
+      }
+      if (!value.eq(reward.currencyAmountAtoms)) {
+        throw new InvalidRewardTxError(
+          'Transaction value does not match reward amount',
+        );
+      }
+      this.logger.log(`ERC20 REWARD VALID`);
     } else if (reward.currency.type === TokenType.ETH) {
       const tx = await this.alchemy.getTx(txId);
       const { value } = tx;
@@ -182,28 +220,12 @@ export class RewardService {
           'Transaction value does not match reward amount',
         );
       }
+      this.logger.log(`ETH REWARD VALID`);
     } else {
       throw new InvalidRewardTxError('Invalid token type');
     }
     return true;
   }
-
-  // private get tokenTypeToContract() {
-  //   return {
-  //     [CurrencyType.ERC1155]: {
-  //       abi: erc1155Abi,
-  //       method: 'safeTransferFrom',
-  //     },
-  //     [CurrencyType.ERC721]: {
-  //       abi: erc721Abi,
-  //       method: 'transferFrom',
-  //     },
-  //     [CurrencyType.ERC20]: {
-  //       abi: erc20Abi,
-  //       method: 'transfer',
-  //     },
-  //   };
-  // }
 
   upsert(args: Prisma.RewardUpsertArgs) {
     return this.prisma.reward.upsert(args);
@@ -216,6 +238,12 @@ export class RewardService {
   }
   findFirst(args: Prisma.RewardFindFirstArgs) {
     return this.prisma.reward.findFirst({
+      include: { ...this.defaultInclude, ...args?.include },
+      ...args,
+    });
+  }
+  findMany(args: Prisma.RewardFindManyArgs) {
+    return this.prisma.reward.findMany({
       include: { ...this.defaultInclude, ...args?.include },
       ...args,
     });

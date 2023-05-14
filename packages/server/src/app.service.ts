@@ -1,8 +1,8 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Cron, CronExpression } from '@nestjs/schedule';
-import { SocialPlatform } from '@prisma/client';
+import { Cron, CronExpression, SchedulerRegistry } from '@nestjs/schedule';
+import { RewardStatus, SocialPlatform } from '@prisma/client';
 import { InjectSentry, SentryService } from '@travelerdev/nestjs-sentry';
 import { lookup } from 'mime-types';
 import { CompetitionService } from './competition/competition.service';
@@ -10,8 +10,13 @@ import { EthersService } from './ethers/ethers.service';
 import { abbreviate } from './helpers/strings';
 import { MemeService } from './meme/meme.service';
 import { PrismaService } from './prisma.service';
+import { RewardService } from './reward/reward.service';
 import { TwitterService } from './twitter/twitter.service';
 import { UserService } from './user/user.service';
+
+export enum CronJobs {
+  VALIDATE_CONFIRMING_REWARDS = 'validateConfirmingRewards',
+}
 
 @Injectable()
 export class AppService implements OnModuleInit {
@@ -27,10 +32,12 @@ export class AppService implements OnModuleInit {
     private readonly config: ConfigService,
     private readonly competition: CompetitionService,
     private readonly user: UserService,
+    private readonly reward: RewardService,
     @InjectSentry() private readonly sentryClient: SentryService,
+    private readonly scheduler: SchedulerRegistry,
   ) {}
 
-  onModuleInit() {
+  async onModuleInit() {
     this.logger.log('app service init');
     this.cacheEnsNames();
   }
@@ -162,5 +169,38 @@ export class AppService implements OnModuleInit {
       take,
     });
     return { memes, competitions, users };
+  }
+
+  // @note -- this might be a bit of a burden on the DB but leaving for now
+  @Cron(CronExpression.EVERY_5_SECONDS, {
+    name: CronJobs.VALIDATE_CONFIRMING_REWARDS,
+  })
+  async updateConfirmingTxs() {
+    this.logger.log(`validting confirming txs`);
+    const confirmingRewards = await this.reward.findMany({
+      where: { status: RewardStatus.CONFIRMING },
+    });
+    this.logger.log(`got ${confirmingRewards.length} confirming txs`);
+
+    for (const reward of confirmingRewards) {
+      if (!reward.txId) {
+        this.logger.error(`Reward ${reward.id} has no txId`);
+        continue;
+      }
+      try {
+        await this.reward.getIsRewardTxValid(reward.id, reward.txId);
+        await this.reward.update({
+          where: { id: reward.id },
+          data: { status: RewardStatus.CONFIRMED },
+        });
+      } catch (e) {
+        this.logger.error(`Error updating confirming tx ${reward.txId}`);
+        this.sentryClient.instance().captureException(e);
+        await this.reward.update({
+          where: { id: reward.id },
+          data: { status: RewardStatus.FAILED },
+        });
+      }
+    }
   }
 }

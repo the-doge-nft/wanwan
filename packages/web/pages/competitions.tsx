@@ -37,10 +37,16 @@ const CompetitionsPage = observer(
             title={"Competitions"}
             store={store}
             renderColumnItem={(comp) => (
-              <CompetitionPreviewLink competition={comp} />
+              <CompetitionPreviewLink
+                key={`comp-column-${comp.id}`}
+                competition={comp}
+              />
             )}
             renderGridItem={(comp) => (
-              <CompetitionPreviewLink competition={comp} />
+              <CompetitionPreviewLink
+                key={`grid-column-${comp.id}`}
+                competition={comp}
+              />
             )}
           />
         </AppLayout>

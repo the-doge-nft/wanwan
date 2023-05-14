@@ -15,6 +15,7 @@ export enum TextType {
   Grey = "grey",
   White = "white",
   NoColor = "noColor",
+  Error = "error",
 }
 
 interface TextProps {
@@ -40,6 +41,7 @@ const textTypeStyles = {
   [TextType.Grey]: css("text-neutral-400", "dark:text-neutral-600"),
   [TextType.White]: css("text-white"),
   [TextType.NoColor]: css(),
+  [TextType.Error]: css("text-red-500"),
 };
 
 const Text: React.FC<PropsWithChildren<TextProps>> = ({

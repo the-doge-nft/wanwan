@@ -124,7 +124,7 @@ export class RewardsDto {
   @IsNotEmpty()
   @IsInt()
   @Min(1)
-  @Max(3)
+  @Max(10)
   competitionRank: number;
 
   @IsNotEmptyObject()

@@ -70,13 +70,14 @@ const MemeById = observer(({ meme }: MemeByIdProps) => {
       return window.removeEventListener("resize", _setWindowHeight);
     };
   }, []);
+  const documentTitle = meme.name
+    ? `${meme.name} - ${env.app.name}`
+    : env.app.name;
 
   return (
     <>
       <Head>
-        <title>
-          {meme.name ? `${meme.name} - ${env.app.name}` : env.app.name}
-        </title>
+        <title>{documentTitle}</title>
         <meta name="description" content={DESCRIPTION} key="desc" />
         <meta property="og:site_name" content={title} />
         <meta property="og:title" content={title} />

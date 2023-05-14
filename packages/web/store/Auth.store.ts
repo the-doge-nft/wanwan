@@ -50,9 +50,9 @@ export default class AuthStore extends Reactionable(EmptyClass) {
     );
     return (
       this.react(
-        () => this.address,
+        () => [this.address, this.isAuthed],
         () => {
-          if (this.address) {
+          if (this.address && this.isAuthed) {
             this.getProfile();
             this.getUserMemes();
             this.getIsAdmin();
@@ -83,7 +83,6 @@ export default class AuthStore extends Reactionable(EmptyClass) {
         this.status = isLoggedIn ? "authenticated" : "unauthenticated";
         if (this.status === "authenticated") {
           onAuthed && onAuthed();
-          this.getIsAdmin();
         } else if (this.status === "unauthenticated") {
           onUnauthed && onUnauthed();
         }
@@ -154,7 +153,6 @@ export default class AuthStore extends Reactionable(EmptyClass) {
     this.address = null;
     this.isLoggedIn = false;
     this.getStatus();
-    this.getIsAdmin();
     AppStore.events.publish(AppStore.events.events.LOGOUT);
   }
 
