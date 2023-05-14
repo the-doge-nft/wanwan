@@ -44,7 +44,6 @@ const Home: React.FC<HomeProps> = observer(
       <AppLayout>
         <Head>
           <title>{env.app.name}</title>
-          <meta name="description" content="whatever" />
           <link rel="icon" href="/favicon.ico" />
         </Head>
         <main className={css()}>
