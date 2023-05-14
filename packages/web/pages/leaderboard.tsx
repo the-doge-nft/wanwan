@@ -44,7 +44,9 @@ const LeaderboardPage = observer(({ leaderboard }: LeaderboardPageProps) => {
               )}
             >
               <div className={css("flex", "items-center", "gap-3")}>
-                <Text type={TextType.Grey}>{index + 1}</Text>
+                <div className={css("w-[10px]")}>
+                  <Text type={TextType.Grey}>{index + 1}</Text>
+                </div>
                 <div
                   className={css(
                     "w-[30px]",
