@@ -177,11 +177,12 @@ export class AppService implements OnModuleInit {
     name: CronJobs.VALIDATE_CONFIRMING_REWARDS,
   })
   async updateConfirmingTxs() {
-    this.logger.log(`validting confirming txs`);
     const confirmingRewards = await this.reward.findMany({
       where: { status: RewardStatus.CONFIRMING },
     });
-    this.logger.log(`got ${confirmingRewards.length} confirming txs`);
+    if (confirmingRewards.length > 0) {
+      this.logger.log(`got ${confirmingRewards.length} confirming txs`);
+    }
 
     for (const reward of confirmingRewards) {
       if (!reward.txId) {
