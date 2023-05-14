@@ -82,8 +82,13 @@ const CompetitionRewards = observer(({ store }: CompetitionRewardsProps) => {
                       />
                     )}
                   {reward.status === RewardStatus.Failed && (
-                    <Text type={TextType.Error}>
+                    <Text type={TextType.Error} size={TextSize.xs}>
                       could not validate reward sent
+                    </Text>
+                  )}
+                  {reward.status === RewardStatus.Confirming && (
+                    <Text size={TextSize.xs} type={TextType.Grey}>
+                      reward is confirming
                     </Text>
                   )}
                   {!store.isCreator && !reward.txId && winnerAddress && (
@@ -94,7 +99,7 @@ const CompetitionRewards = observer(({ store }: CompetitionRewardsProps) => {
                   {!winnerAddress && (
                     <Text type={TextType.Grey}>no winner</Text>
                   )}
-                  {reward.txId && (
+                  {reward.txId && reward.status === RewardStatus.Confirmed && (
                     <Link isExternal href={getEtherscanURL(reward.txId, "tx")}>
                       <Text type={TextType.NoColor}>
                         {abbreviate(reward.txId)}

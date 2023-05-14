@@ -105,7 +105,7 @@ class CurrencyDto {
   type: TokenType;
 
   // @next -- needs to be updated to handle ETH rewards
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   contractAddress: string;
 

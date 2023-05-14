@@ -68,6 +68,12 @@ const DistributeEthReward = ({ store, onSuccess }: DistributeRewardProps) => {
       }).then(() => onSuccess());
     },
   });
+  useEffect(() => {
+    // update the status to confirming when tx is signed
+    if (data?.hash && !store.reward.txId) {
+      store.updateRewardStatusConfirming(data.hash);
+    }
+  }, [store, data?.hash]);
   return (
     <div className={css("text-right")}>
       <Button

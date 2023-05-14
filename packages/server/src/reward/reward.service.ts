@@ -1,10 +1,11 @@
 import { Inject, Injectable, Logger, forwardRef } from '@nestjs/common';
-import { Prisma, RewardStatus, TokenType } from '@prisma/client';
+import { Prisma, TokenType } from '@prisma/client';
 import { BigNumber, ethers } from 'ethers';
 import { parseEther, parseUnits } from 'ethers/lib/utils';
 import erc1155Abi from 'src/abis/erc1155';
 import erc20Abi from 'src/abis/erc20';
 import erc721Abi from 'src/abis/erc721';
+import TxNotMined from 'src/error/TxNotMined.error';
 import { RewardWithDefaultInclude } from 'src/interface';
 import { AlchemyService } from '../alchemy/alchemy.service';
 import { CompetitionService } from '../competition/competition.service';
@@ -30,7 +31,6 @@ export class RewardService {
     }
     return {
       ...reward,
-      txId: reward.status === RewardStatus.FAILED ? null : reward.txId,
     };
   }
 
@@ -97,7 +97,7 @@ export class RewardService {
   async getIsRewardTxValid(rewardId: number, txId: string) {
     const tx = await this.alchemy.getTxReceipt(txId);
     if (!tx) {
-      throw new InvalidRewardTxError('Transaction has not been mined.');
+      throw new TxNotMined('Transaction has not been mined.');
     }
     const reward = await this.findFirst({
       where: { id: rewardId },
@@ -177,8 +177,7 @@ export class RewardService {
       if (!transferLog) {
         throw new InvalidRewardTxError('No Transfer log found in transaction');
       }
-      const { from, to, id } = transferLog.args;
-      console.log(from, to, id);
+      const { from, to, tokenId } = transferLog.args;
       if (!addressEqual(from, tx.from)) {
         throw new InvalidRewardTxError(
           "Transaction sender doesn't match TransferSingle from address",
@@ -189,7 +188,7 @@ export class RewardService {
           "Transaction receiver doesn't match winning meme creator",
         );
       }
-      if (id.toString() !== reward.currencyTokenId) {
+      if (tokenId.toString() !== reward.currencyTokenId) {
         throw new InvalidRewardTxError(
           'Transaction tokenId does not match reward tokenId',
         );

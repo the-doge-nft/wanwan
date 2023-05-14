@@ -197,11 +197,15 @@ export class CompetitionService {
     }
 
     if (type !== TokenType.ETH) {
-      const metadata = await this.alchemy.getTokenMetadata(contractAddress);
       // NFTs don't have decimal amounts
-      let decimals = 0;
+      let metadata;
+      let decimals;
       if (type === TokenType.ERC20) {
+        metadata = await this.alchemy.getTokenMetadata(contractAddress);
         decimals = (metadata as TokenMetadataResponse).decimals;
+      } else {
+        metadata = await this.alchemy.getNftContractMetadata(contractAddress);
+        decimals = 0;
       }
 
       currency = await this.currency.create({

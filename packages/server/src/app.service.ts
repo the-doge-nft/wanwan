@@ -6,6 +6,7 @@ import { RewardStatus, SocialPlatform } from '@prisma/client';
 import { InjectSentry, SentryService } from '@travelerdev/nestjs-sentry';
 import { lookup } from 'mime-types';
 import { CompetitionService } from './competition/competition.service';
+import TxNotMined from './error/TxNotMined.error';
 import { EthersService } from './ethers/ethers.service';
 import { abbreviate } from './helpers/strings';
 import { MemeService } from './meme/meme.service';
@@ -194,12 +195,17 @@ export class AppService implements OnModuleInit {
           data: { status: RewardStatus.CONFIRMED },
         });
       } catch (e) {
-        this.logger.error(`Error updating confirming tx ${reward.txId}`);
-        this.sentryClient.instance().captureException(e);
-        await this.reward.update({
-          where: { id: reward.id },
-          data: { status: RewardStatus.FAILED },
-        });
+        if (e instanceof TxNotMined) {
+          this.logger.log(`Tx ${reward.txId} not mined yet`);
+        } else {
+          this.logger.error(e);
+          this.logger.error(`Error updating confirming tx ${reward.txId}`);
+          this.sentryClient.instance().captureException(e);
+          await this.reward.update({
+            where: { id: reward.id },
+            data: { status: RewardStatus.FAILED },
+          });
+        }
       }
     }
   }
