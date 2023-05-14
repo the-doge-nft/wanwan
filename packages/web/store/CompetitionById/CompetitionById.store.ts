@@ -97,7 +97,7 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
 
   @action
   getRankedMemes() {
-    return Http.getCompetitionMemes(this.competition.id).then(
+    return Http.getCompetitionRankedMemes(this.competition.id).then(
       ({ data }) => (this.memes = data)
     );
   }
@@ -340,7 +340,9 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
   @computed
   get canUserVote() {
     return (
-      AppStore.auth.isAuthed && this.userVoteReason.some((item) => item.canVote)
+      AppStore.auth.isAuthed &&
+      (this.userVoteReason.some((item) => item.canVote) ||
+        this.userVoteReason.length === 0)
     );
   }
 
@@ -359,7 +361,6 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
   }
 
   onMemesCreatedSuccess(memes: Array<Meme>) {
-    console.log("debug:::: got memes yo", memes);
     memes.forEach((meme) => {
       this.selectedMemeIds.push(meme.id);
     });

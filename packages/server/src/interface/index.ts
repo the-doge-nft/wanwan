@@ -26,6 +26,10 @@ export type CommentWithDefaultInclude = Prisma.CommentGetPayload<{
   include: { user: true };
 }>;
 
+export type RewardWithDefaultInclude = Prisma.RewardGetPayload<{
+  include: { currency: true };
+}>;
+
 export interface MediaWithExtras extends Media {
   url: string;
 }

@@ -98,15 +98,25 @@ class _Http {
     return this.http.get<Competition>(`/competition/${id}`);
   }
 
-  getCompetitionMemes(id: number | string) {
+  getCompetitionRankedMemes(id: number | string) {
     return this.http.get<CompetitionMeme[]>(`/competition/${id}/meme/ranked`);
   }
 
-  updateReward({ rewardId, txId }: { rewardId: number; txId: string }) {
-    return this.http.post<Reward>(`/competition/reward/${rewardId}`, {
+  postRewardSettled({ rewardId, txId }: { rewardId: number; txId: string }) {
+    return this.http.post<Reward>(`/competition/reward/${rewardId}/confirmed`, {
       rewardId,
       txId,
     });
+  }
+
+  postRewardConfirming({ rewardId, txId }: { rewardId: number; txId: string }) {
+    return this.http.post<Reward>(
+      `/competition/reward/${rewardId}/confirming`,
+      {
+        rewardId,
+        txId,
+      }
+    );
   }
 
   logout() {

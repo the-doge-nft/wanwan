@@ -83,9 +83,20 @@ export default class RewardStore {
   }
 
   private updateReward({ txId }: { txId: string }) {
-    return Http.updateReward({
+    return Http.postRewardSettled({
       txId,
       rewardId: this.reward.id,
+    }).then(({ data }) => {
+      this.reward = data;
+    });
+  }
+
+  updateRewardStatusConfirming(txId: string) {
+    return Http.postRewardConfirming({
+      rewardId: this.reward.id,
+      txId,
+    }).then(({ data }) => {
+      this.reward = data;
     });
   }
 

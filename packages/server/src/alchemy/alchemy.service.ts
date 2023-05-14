@@ -206,6 +206,14 @@ export class AlchemyService {
     );
   }
 
+  async getTxReceipt(txId: string) {
+    return this.alchemy.core.getTransactionReceipt(txId);
+  }
+
+  async getTx(txId: string) {
+    return this.alchemy.core.getTransaction(txId);
+  }
+
   async paginate<T>(
     getData: (params?: { pageKey?: string }) => Promise<
       {

@@ -34,7 +34,9 @@ export class MemeService {
     };
   }
 
-  async addExtras(memes: Array<MemeWithDefaultInclude>) {
+  async addExtras(
+    memes: Array<MemeWithDefaultInclude>,
+  ): Promise<Array<MemeWithExtras>> {
     const memesWithExtras = [];
     for (const meme of memes) {
       memesWithExtras.push(await this.addExtra(meme));

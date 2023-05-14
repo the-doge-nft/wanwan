@@ -25,6 +25,13 @@ export interface User {
   wan: number;
 }
 
+export enum RewardStatus {
+  Confirming = "CONFIRMING",
+  Confirmed = "CONFIRMED",
+  Failed = "FAILED",
+  Invalid = "INVALID",
+}
+
 export interface Reward {
   id: number;
   txId: string;
@@ -34,6 +41,7 @@ export interface Reward {
   competitionRank: number;
   currencyTokenId: string;
   currencyAmountAtoms: string;
+  status: Nullable<RewardStatus>;
   createdAt: DatetimeString;
   updatedAt: DatetimeString;
   currency: Currency;

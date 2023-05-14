@@ -15,7 +15,10 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { SchedulerRegistry } from '@nestjs/schedule';
+import { RewardStatus } from '@prisma/client';
 import { Request } from 'express';
+import { CronJobs } from 'src/app.service';
 import { MediaService } from 'src/media/media.service';
 import MemeMediaFileValidator from 'src/validator/meme-media-file.validator';
 import { AlchemyService } from '../alchemy/alchemy.service';
@@ -43,6 +46,7 @@ export class CompetitionController {
     private readonly alchemy: AlchemyService,
     private readonly search: CompetitionSearchService,
     private readonly reward: RewardService,
+    private readonly scheduler: SchedulerRegistry,
   ) {}
 
   @Post('/')
@@ -51,14 +55,6 @@ export class CompetitionController {
     @Body() competition: CompetitionDto,
     @Req() { user }: AuthenticatedRequest,
   ) {
-    // @next -- cache
-    // const isPixelHolder = await this.alchemy.getIsPixelHolder(user.address);
-    // if (!isPixelHolder) {
-    //   throw new BadRequestException(
-    //     'You must hold a Doge Pixel to create a competition',
-    //   );
-    // }
-
     return this.competition
       .create({
         ...competition,
@@ -188,15 +184,58 @@ export class CompetitionController {
     return this.competition.hideMemeSubmission(id, memeId);
   }
 
-  @Post('/reward/:id')
+  @Post('/reward/:id/confirmed')
   @UseGuards(AuthGuard)
   async updateReward(
     @Body() { txId }: UpdateReward,
     @Param() { id }: IdDto,
     @Req() { user }: AuthenticatedRequest,
   ) {
+    const reward = await this.getRewardForActiveCompetition({
+      createdById: user.id,
+      rewardId: id,
+    });
+
+    try {
+      await this.reward.getIsRewardTxValid(reward.id, txId);
+    } catch (e) {
+      throw new BadRequestException(e.message);
+    }
+
+    const updateReward = await this.reward.update({
+      where: { id: id },
+      data: { txId, status: RewardStatus.CONFIRMED },
+    });
+    return this.reward.findFirst({ where: { id: updateReward.id } });
+  }
+
+  @Post('/reward/:id/confirming')
+  @UseGuards(AuthGuard)
+  async updateRewardConfirming(
+    @Body() { txId }: UpdateReward,
+    @Param() { id }: IdDto,
+    @Req() { user }: AuthenticatedRequest,
+  ) {
+    const reward = await this.getRewardForActiveCompetition({
+      createdById: user.id,
+      rewardId: id,
+    });
+
+    const updatedReward = await this.reward.update({
+      where: { id: reward.id },
+      data: { status: RewardStatus.CONFIRMING, txId },
+    });
+
+    const job = await this.scheduler.getCronJob(
+      CronJobs.VALIDATE_CONFIRMING_REWARDS,
+    );
+    job.start();
+    return this.reward.findFirst({ where: { id: updatedReward.id } });
+  }
+
+  private async getRewardForActiveCompetition({ createdById, rewardId }: any) {
     const competition = await this.competition.findFirst({
-      where: { rewards: { some: { id: id } }, createdById: user.id },
+      where: { rewards: { some: { id: rewardId } }, createdById: createdById },
     });
     if (!competition) {
       throw new BadRequestException('Competition not found');
@@ -209,13 +248,11 @@ export class CompetitionController {
     }
 
     const reward = await this.reward.findFirst({
-      where: { id: id, competitionId: competition.id },
+      where: { id: rewardId, competitionId: competition.id },
     });
     if (!reward) {
       throw new BadRequestException('Reward not found');
     }
-
-    //@next -- run validation on the txId
-    return this.reward.update({ where: { id: id }, data: { txId } });
+    return reward;
   }
 }

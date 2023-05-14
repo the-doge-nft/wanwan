@@ -1,11 +1,13 @@
 import { ethers } from "ethers";
 import { observer } from "mobx-react-lite";
 import { css } from "../../helpers/css";
+import { formatWithThousandsSeparators } from "../../helpers/numberFormatter";
 import {
   abbreviate,
   getEtherscanURL,
   getOpenSeaURL,
 } from "../../helpers/strings";
+import { RewardStatus } from "../../interfaces";
 import CompetitionByIdStore from "../../store/CompetitionById/CompetitionById.store";
 import Link from "../DSL/Link/Link";
 import Text, { TextSize, TextType } from "../DSL/Text/Text";
@@ -19,6 +21,7 @@ const CompetitionRewards = observer(({ store }: CompetitionRewardsProps) => {
   return (
     <div className={css("flex", "flex-col", "gap-1")}>
       {store.rewards.map((reward, index) => {
+        // @next -- winners should not be selected based on order here, address should be in Reward interface
         const winnerAddress = store.memes?.[index]?.user?.address;
         return (
           <div
@@ -33,6 +36,8 @@ const CompetitionRewards = observer(({ store }: CompetitionRewardsProps) => {
                         reward.currency.contractAddress,
                         reward.currencyTokenId
                       )
+                    : reward.currency.type === "ETH"
+                    ? "https://ethereum.org"
                     : getEtherscanURL(reward.currency.contractAddress, "token")
                 }
                 isExternal
@@ -41,12 +46,14 @@ const CompetitionRewards = observer(({ store }: CompetitionRewardsProps) => {
               <Text size={TextSize.sm}>
                 {reward.currency.name ? reward.currency.name : "no name found"}{" "}
                 (
-                {Number(
-                  ethers.utils.formatUnits(
-                    reward.currencyAmountAtoms,
-                    reward.currency.decimals
+                {formatWithThousandsSeparators(
+                  Number(
+                    ethers.utils.formatUnits(
+                      reward.currencyAmountAtoms,
+                      reward.currency.decimals
+                    )
                   )
-                ).toString()}
+                )}
                 )
               </Text>
             </div>
@@ -64,12 +71,25 @@ const CompetitionRewards = observer(({ store }: CompetitionRewardsProps) => {
                 </>
               ) : (
                 <>
-                  {store.isCreator && winnerAddress && !reward.txId && (
-                    <CompetitionDistributeReward
-                      reward={reward}
-                      toAddress={winnerAddress}
-                      onSuccess={() => store.getCompetition()}
-                    />
+                  {store.isCreator &&
+                    winnerAddress &&
+                    !reward.txId &&
+                    reward.status !== RewardStatus.Failed && (
+                      <CompetitionDistributeReward
+                        reward={reward}
+                        toAddress={winnerAddress}
+                        onSuccess={() => store.getCompetition()}
+                      />
+                    )}
+                  {reward.status === RewardStatus.Failed && (
+                    <Text type={TextType.Error} size={TextSize.xs}>
+                      could not validate reward sent
+                    </Text>
+                  )}
+                  {reward.status === RewardStatus.Confirming && (
+                    <Text size={TextSize.xs} type={TextType.Grey}>
+                      reward is confirming
+                    </Text>
                   )}
                   {!store.isCreator && !reward.txId && winnerAddress && (
                     <Text size={TextSize.xs} type={TextType.Grey}>
@@ -79,7 +99,7 @@ const CompetitionRewards = observer(({ store }: CompetitionRewardsProps) => {
                   {!winnerAddress && (
                     <Text type={TextType.Grey}>no winner</Text>
                   )}
-                  {reward.txId && (
+                  {reward.txId && reward.status === RewardStatus.Confirmed && (
                     <Link isExternal href={getEtherscanURL(reward.txId, "tx")}>
                       <Text type={TextType.NoColor}>
                         {abbreviate(reward.txId)}
