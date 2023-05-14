@@ -64,7 +64,7 @@ const CompetitionById: React.FC<CompetitionByIdProps> = observer(
       : SOCIAL_CARD_URL;
     let url = getBaseUrl() + `/competition/` + competition.id;
     const description =
-      "Submit memes to win prizes in the meme competition on wanwan.me";
+      "Submit memes to win prizes in this meme competition on wanwan.me";
     return (
       <>
         <Head>
