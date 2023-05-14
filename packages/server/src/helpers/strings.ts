@@ -18,3 +18,7 @@ export const abbreviate = (input: string, spaces = 4) => {
     input.length,
   )}`;
 };
+
+export const addressEqual = (a: string, b: string) => {
+  return formatEthereumAddress(a) === formatEthereumAddress(b);
+};

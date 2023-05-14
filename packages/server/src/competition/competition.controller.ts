@@ -221,6 +221,8 @@ export class CompetitionController {
       throw new BadRequestException(e.message);
     }
 
-    return this.reward.update({ where: { id: id }, data: { txId } });
+    return { success: true };
+
+    // return this.reward.update({ where: { id: id }, data: { txId } });
   }
 }

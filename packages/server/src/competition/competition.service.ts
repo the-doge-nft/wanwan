@@ -269,9 +269,8 @@ export class CompetitionService {
   }
 
   async getCanUserVote(userAddress: string, competitionId: number) {
-    return (await this.getVoteReason(userAddress, competitionId)).some(
-      (item) => item.canVote,
-    );
+    const reason = await this.getVoteReason(userAddress, competitionId);
+    return reason.some((item) => item.canVote) || reason.length === 0;
   }
 
   async getVoteReason(userAddress: string, competitionId: number) {

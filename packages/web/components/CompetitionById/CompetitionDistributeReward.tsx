@@ -28,6 +28,19 @@ const CompetitionDistributeReward: React.FC<{
     return <DistributeEthReward store={store} onSuccess={() => onSuccess()} />;
   }
 
+  return (
+    <Button
+      onClick={() =>
+        Http.updateReward({
+          txId: "0x51a672f8f81d822981eadc5680470aa743665190e851ab288a3371f6e139ede6",
+          rewardId: 2,
+        })
+      }
+    >
+      TEST
+    </Button>
+  );
+
   return <DistributeNonEthReward store={store} onSuccess={() => onSuccess()} />;
 });
 
@@ -82,10 +95,11 @@ const DistributeNonEthReward = ({
   const { isLoading } = useWaitForTransaction({
     hash: data?.hash,
     onSuccess: (params) => {
-      Http.updateReward({
-        txId: params.transactionHash,
-        rewardId: store.reward.id,
-      }).then(() => onSuccess());
+      console.log("debug:: params", params, store.reward.id);
+      // Http.updateReward({
+      //   txId: params.transactionHash,
+      //   rewardId: store.reward.id,
+      // }).then(() => onSuccess());
     },
   });
   return (

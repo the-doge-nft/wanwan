@@ -1,12 +1,14 @@
 import { Inject, Injectable, Logger, forwardRef } from '@nestjs/common';
 import { Prisma, TokenType } from '@prisma/client';
-import { BigNumber } from 'ethers';
+import { BigNumber, ethers } from 'ethers';
 import { parseEther, parseUnits } from 'ethers/lib/utils';
-import InvalidRewardTxError from 'src/error/InvalidRewardTx.error';
-import { MemeService } from 'src/meme/meme.service';
+import erc1155Abi from 'src/abis/erc1155';
 import { AlchemyService } from '../alchemy/alchemy.service';
 import { CompetitionService } from '../competition/competition.service';
 import { RewardsDto } from '../dto/competition.dto';
+import InvalidRewardTxError from '../error/InvalidRewardTx.error';
+import { addressEqual } from '../helpers/strings';
+import { MemeService } from '../meme/meme.service';
 import { PrismaService } from './../prisma.service';
 
 @Injectable()
@@ -76,6 +78,8 @@ export class RewardService {
   async getIsRewardTxValid(rewardId: number, txId: string) {
     this.logger.log(`confirming reward`);
     const tx = await this.alchemy.getTxReceipt(txId);
+    console.log('debug:: tx', tx);
+    const logs = tx.logs;
     if (!tx) {
       throw new InvalidRewardTxError('Transaction has not been mined.');
     }
@@ -89,25 +93,39 @@ export class RewardService {
         },
       },
     });
+
     const rankedMemes = await this.meme.getRankedMemesByCompetitionId(
       competition.id,
     );
 
-    const winningMeme = rankedMemes?.[reward.competitionRank + 1];
+    const winningMeme = rankedMemes?.[reward.competitionRank - 1];
     if (!winningMeme) {
       throw new InvalidRewardTxError('No winning meme found for this reward');
     }
 
-    if (competition.user.address !== tx.from) {
+    if (!addressEqual(competition.user.address, tx.from)) {
       throw new InvalidRewardTxError(
         "Transaction sender doesn't match competition creator",
       );
     }
-    if (winningMeme.user.address !== tx.to) {
-      throw new InvalidRewardTxError(
-        "Transaction receiver doesn't match winning meme creator",
-      );
+
+    if (reward.currency.type === TokenType.ETH) {
+      if (!addressEqual(winningMeme.user.address, tx.to)) {
+        throw new InvalidRewardTxError(
+          "Transaction receiver doesn't match winning meme creator",
+        );
+      }
+    } else {
+      if (!addressEqual(reward.currency.contractAddress, tx.to)) {
+        throw new InvalidRewardTxError(
+          "Transaction receiver doesn't match reward contract address",
+        );
+      }
     }
+
+    // console.log('reward', reward);
+    // console.log('tx', tx);
+    // console.log('logs', logs);
 
     /*  
       decode the logs based on the type of token transfer the reward is supposed to be
@@ -124,28 +142,49 @@ export class RewardService {
       https://goerli.etherscan.io/tx/0x3bf296e5b03a952776bef2e8d41ea204cece97effb9e0b73612a1e18f12ac005
     */
 
-    switch (reward.currency.type) {
-      case TokenType.ERC1155:
-        break;
-      case TokenType.ERC721:
-        break;
-      case TokenType.ERC20:
-        break;
-      case TokenType.ETH:
-        const tx = await this.alchemy.getTx(txId);
-        const { value } = tx;
-        if (!value.eq(reward.currencyAmountAtoms)) {
-          throw new InvalidRewardTxError(
-            'Transaction value does not match reward amount',
-          );
-        }
-        break;
+    if (reward.currency.type === TokenType.ERC1155) {
+      const i = new ethers.utils.Interface(erc1155Abi);
+      const decodedLogs = logs.map((log) => i.parseLog(log));
+      const transferLog = decodedLogs.find(
+        (log) => log.name === 'TransferSingle',
+      );
+      if (!transferLog) {
+        throw new InvalidRewardTxError(
+          'No TransferSingle log found in transaction',
+        );
+      }
+      const { from, to, id, value } = transferLog.args;
+      if (!addressEqual(from, tx.from)) {
+        throw new InvalidRewardTxError(
+          "Transaction sender doesn't match TransferSingle from address",
+        );
+      }
+      if (!addressEqual(to, winningMeme.user.address)) {
+        throw new InvalidRewardTxError(
+          "Transaction receiver doesn't match winning meme creator",
+        );
+      }
+      if (id.toString() !== reward.currencyTokenId) {
+        throw new InvalidRewardTxError(
+          'Transaction tokenId does not match reward tokenId',
+        );
+      }
+      if (!value.eq(1)) {
+        throw new InvalidRewardTxError('Transaction value should only be 1');
+      }
+    } else if (reward.currency.type === TokenType.ERC721) {
+    } else if (reward.currency.type === TokenType.ERC20) {
+    } else if (reward.currency.type === TokenType.ETH) {
+      const tx = await this.alchemy.getTx(txId);
+      const { value } = tx;
+      if (!value.eq(reward.currencyAmountAtoms)) {
+        throw new InvalidRewardTxError(
+          'Transaction value does not match reward amount',
+        );
+      }
+    } else {
+      throw new InvalidRewardTxError('Invalid token type');
     }
-
-    this.logger.log(`got reward: ${JSON.stringify(reward)}`);
-    this.logger.log(`got tx: ${JSON.stringify(tx)}`);
-    this.logger.log(`got logs: ${JSON.stringify(tx.logs)}`);
-
     return true;
   }
 

@@ -138,8 +138,11 @@ const MemeById = observer(({ meme }: MemeByIdProps) => {
                 "flex-col"
               )}
             >
-              <Link href={`/profile/${store.meme.user.address}/meme`}>
-                <Text type={TextType.NoColor} size={TextSize.sm}>
+              <Link
+                href={`/profile/${store.meme.user.address}/meme`}
+                className={css("text-ellipsis", "overflow-auto")}
+              >
+                <Text type={TextType.NoColor} size={TextSize.sm} ellipses>
                   {store.meme.user.ens
                     ? store.meme.user.ens
                     : abbreviate(store.meme.user.address)}
