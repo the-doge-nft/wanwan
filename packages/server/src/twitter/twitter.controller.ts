@@ -69,9 +69,15 @@ export class TwitterController {
   @Get('login')
   @Redirect('')
   async getLogin(@Session() session: SessionType) {
-    const authLink = await this.twitter.getAuthLink();
-    session.oauth_token_secret = authLink.oauth_token_secret;
-    return { url: authLink.url };
+    try {
+      const authLink = await this.twitter.getAuthLink();
+      session.oauth_token_secret = authLink.oauth_token_secret;
+      return { url: authLink.url };
+    } catch (e) {
+      this.logger.error(e);
+      this.sentryClient.instance().captureException(e);
+      throw new BadRequestException('Could not get auth link');
+    }
   }
 
   @UseGuards(AuthGuard)

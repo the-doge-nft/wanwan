@@ -90,7 +90,9 @@ const ProfileSettingsModal = observer(({}: SettingsModalProps) => {
         </div>
         <div>
           <div className={css("mb-0.5")}>
-            <Text size={TextSize.sm}>Twitter</Text>
+            <Text block size={TextSize.sm}>
+              Twitter
+            </Text>
           </div>
           {AppStore.auth.user?.twitterUsername && (
             <div

@@ -1,8 +1,4 @@
 import { objectKeys } from "../helpers/arrays";
-const commitHash = require("child_process")
-  .execSync('git log --pretty=format:"%h" -n1')
-  .toString()
-  .trim();
 
 enum AppEnv {
   Production = "PRODUCTION",
@@ -23,7 +19,7 @@ export const vars: Vars = {
   NodeEnv: process.env.NODE_ENV as NodeEnv,
   AppEnv: process.env.NEXT_PUBLIC_APP_ENV as AppEnv,
   AlchemyKey: process.env.NEXT_PUBLIC_ALCHEMY_KEY as string,
-  BuildHash: commitHash,
+  BuildHash: process.env.NEXT_PUBLIC_SHA as string,
 };
 
 const assertVars = () => {
