@@ -6,7 +6,7 @@ import {
   BsFillSunFill,
   BsTwitter,
 } from "react-icons/bs";
-import { isDev, vars } from "../../environment/vars";
+import { isDev } from "../../environment/vars";
 import { css } from "../../helpers/css";
 import AppStore from "../../store/App.store";
 import Button from "../DSL/Button/Button";
@@ -105,7 +105,7 @@ const EllipsesButton = observer(() => {
               <BsDiscord size={15} />
             </Link>
           </div>
-          <div>
+          {/* <div>
             <Link
               isExternal
               type={LinkType.Tertiary}
@@ -115,7 +115,7 @@ const EllipsesButton = observer(() => {
                 {vars.BuildHash.slice(0, 8)}
               </Text>
             </Link>
-          </div>
+          </div> */}
         </div>
       </DropdownItem>
     </Dropdown>
