@@ -122,9 +122,7 @@ const CompetitionRewards = observer(({ store }: CompetitionRewardsProps) => {
             "py-4"
           )}
         >
-          <Text size={TextSize.sm} type={TextType.Grey}>
-            No rewards
-          </Text>
+          <Text type={TextType.Grey}>No rewards</Text>
         </div>
       )}
     </div>
