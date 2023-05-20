@@ -12,6 +12,13 @@ import CompetitionPreviewLink from "../components/PreviewLink/CompetitionPreview
 import MemePreviewLink from "../components/PreviewLink/MemePreviewLink";
 import SearchBar from "../components/SearchBar/SearchBar";
 import env from "../environment";
+import {
+  DESCRIPTION,
+  SOCIAL_CARD_URL,
+  TITLE,
+  TWITTER_USERNAME,
+  getBaseUrl,
+} from "../environment/vars";
 import { css } from "../helpers/css";
 import { Competition, Meme, SearchParams, Stats } from "../interfaces";
 import AppLayout from "../layouts/App.layout";
@@ -44,6 +51,17 @@ const Home: React.FC<HomeProps> = observer(
       <AppLayout>
         <Head>
           <title>{env.app.name}</title>
+          <meta name="description" content={DESCRIPTION} key="desc" />
+          <meta property="og:site_name" content={TITLE} />
+          <meta property="og:title" content={TITLE} />
+          <meta property="og:description" content={DESCRIPTION} />
+          <meta property="og:image" content={SOCIAL_CARD_URL} />
+          <meta property="og:url" content={getBaseUrl()} />
+          <meta name="twitter:title" content={TITLE} />
+          <meta name="twitter:description" content={DESCRIPTION} />
+          <meta name="twitter:image" content={SOCIAL_CARD_URL} />
+          <meta name="twitter:card" content="summary_large_image" />
+          <meta name="twitter:site" content={TWITTER_USERNAME} />
           <link rel="icon" href="/favicon.ico" />
         </Head>
         <main className={css()}>

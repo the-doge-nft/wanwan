@@ -20,13 +20,6 @@ import { colors } from "../components/DSL/Theme";
 import { toastTransition } from "../components/DSL/Toast/Toast";
 import Modals from "../components/Modals/Modals";
 import env from "../environment";
-import {
-  DESCRIPTION,
-  getBaseUrl,
-  SOCIAL_CARD_URL,
-  TITLE,
-  TWITTER_USERNAME,
-} from "../environment/vars";
 import { css } from "../helpers/css";
 import { chains, client, createRainbowAuthAdapter } from "../services/wagmi";
 import AppStore from "../store/App.store";
@@ -96,17 +89,6 @@ const App = observer(({ Component, pageProps }: AppProps) => {
     <>
       <Head>
         <title>{env.app.name}</title>
-        <meta name="description" content={DESCRIPTION} key="desc" />
-        <meta property="og:site_name" content={TITLE} />
-        <meta property="og:title" content={TITLE} />
-        <meta property="og:description" content={DESCRIPTION} />
-        <meta property="og:image" content={SOCIAL_CARD_URL} />
-        <meta property="og:url" content={getBaseUrl()} />
-        <meta name="twitter:title" content={TITLE} />
-        <meta name="twitter:description" content={DESCRIPTION} />
-        <meta name="twitter:image" content={SOCIAL_CARD_URL} />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:site" content={TWITTER_USERNAME} />
         <meta
           name="viewport"
           content="width=device-width, initial-scale=1, maximum-scale=1"
