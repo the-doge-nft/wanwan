@@ -45,7 +45,7 @@ const MemeById = observer(({ meme }: MemeByIdProps) => {
     query: { id },
   } = useRouter();
   const title = meme.name ? `${meme.name} on wanwan.me` : TITLE;
-  const socialCardUrl = meme.media.url;
+  const socialCardUrl = `${meme.media.url}?`;
   let url = getBaseUrl() + `/meme/` + meme.id;
   const extension = meme.media.url.split(".").pop();
 
