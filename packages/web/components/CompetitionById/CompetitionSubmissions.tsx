@@ -18,7 +18,7 @@ const CompetitionSubmissions: React.FC<{ store: CompetitionIdStore }> =
   observer(({ store }) => {
     const renderRightOfTitle = useCallback(
       (memeId: number) => {
-        if (store.isUserCurator) {
+        if (store.isUserCurator && store.isActive) {
           return (
             <button
               onClick={() => {
@@ -33,7 +33,8 @@ const CompetitionSubmissions: React.FC<{ store: CompetitionIdStore }> =
                 "dark:text-white",
                 "border-[1px]",
                 "border-black",
-                "outline-none"
+                "outline-none",
+                "dark:border-white"
               )}
             >
               <IoCloseOutline size={18} />
