@@ -235,7 +235,7 @@ const MemeInput = observer(
       onDropAccepted: (files) => store.onDropAccepted(files),
       multiple: maxFiles !== 1,
       maxSize: maxSizeBytes,
-      maxFiles: maxFiles || 50,
+      maxFiles: maxFiles || 1000,
       onDropRejected,
       accept: acceptedMimeToExtension,
     });
