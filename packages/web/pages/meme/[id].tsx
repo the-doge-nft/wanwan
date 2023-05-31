@@ -141,7 +141,7 @@ const MemeById = observer(({ meme }: MemeByIdProps) => {
             >
               <Link
                 href={`/profile/${store.meme.user.address}/meme`}
-                className={css("text-ellipsis", "overflow-auto")}
+                className={css("text-ellipsis", "overflow-x-auto")}
               >
                 <Text type={TextType.NoColor} size={TextSize.sm} ellipses>
                   {store.meme.user.ens
