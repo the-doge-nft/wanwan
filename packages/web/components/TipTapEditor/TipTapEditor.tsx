@@ -154,7 +154,7 @@ const TipTapEditor = observer(
 
     return (
       <div>
-        <EditorContent editor={editor} className={css("break-all")} />
+        <EditorContent editor={editor} className={css("break-words")} />
         <div className={css("mt-1")}>
           {!readonly && (
             <div

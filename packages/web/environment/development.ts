@@ -5,7 +5,7 @@ let proxyUrl = null;
 
 const env: Env = {
   app: { name: "wanwan" },
-  api: { baseUrl: "https://api.test.wanwan.me" },
+  api: { baseUrl: "https://api.wanwan.me" },
 };
 
 if (proxyUrl) {
