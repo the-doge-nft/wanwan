@@ -125,6 +125,7 @@ body {
     min-height: min-content;
     max-height: 52em;
     overflow-y: auto;
+    overflow-wrap: anywhere!important;
     /* resize: vertical; */
 }
 

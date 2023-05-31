@@ -107,7 +107,7 @@ export const useTipTapEditor = (
     extensions: getTipTapEditorExtensions(),
     editorProps: {
       attributes: {
-        class: css(textFieldBaseStyles, {
+        class: css(textFieldBaseStyles, "break-words", {
           [textFieldBorderStyles]: border,
           "resize-y": border,
           "!px-0 !py-0": readonly,
