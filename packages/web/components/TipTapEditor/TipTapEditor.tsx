@@ -69,7 +69,7 @@ export const getTipTapEditorExtensions = () => [
   Image.configure({
     inline: true,
     HTMLAttributes: {
-      class: "max-w-[250px] w-full mx-auto inline-block p-1",
+      class: "max-w-[250px] w-full mx-auto p-1 block md:inline-block",
     },
   }),
   Italic.configure({
