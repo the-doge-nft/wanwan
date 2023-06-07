@@ -81,12 +81,15 @@ const Pane: React.FC<PropsWithChildren<PaneProps>> = observer(
       >
         {(title || rightOfTitle) && (
           <div
-            className={css(paneTypeStyles[type].title, basePaneStyles.title)}
+            className={css(
+              paneTypeStyles[type].title,
+              basePaneStyles.title,
+              "gap-2"
+            )}
           >
             <div
               className={css("grow", {
-                "overflow-x-hidden text-ellipsis whitespace-nowrap":
-                  typeof title === "string",
+                "overflow-x-hidden text-ellipsis": typeof title === "string",
               })}
             >
               <Text type={TextType.NoColor}>{title}</Text>
