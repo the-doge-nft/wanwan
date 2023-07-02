@@ -21,7 +21,11 @@ import { toastTransition } from "../components/DSL/Toast/Toast";
 import Modals from "../components/Modals/Modals";
 import env from "../environment";
 import { css } from "../helpers/css";
-import { chains, client, createRainbowAuthAdapter } from "../services/wagmi";
+import {
+  chains,
+  createRainbowAuthAdapter,
+  wagmiConfig,
+} from "../services/wagmi";
 import AppStore from "../store/App.store";
 import "../styles/globals.css";
 
@@ -94,7 +98,7 @@ const App = observer(({ Component, pageProps }: AppProps) => {
           content="width=device-width, initial-scale=1, maximum-scale=1"
         />
       </Head>
-      <WagmiConfig client={client}>
+      <WagmiConfig config={wagmiConfig}>
         <RainbowKitAuthenticationProvider
           status={AppStore.auth.status}
           adapter={createRainbowAuthAdapter({

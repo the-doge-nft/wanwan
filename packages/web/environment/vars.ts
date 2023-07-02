@@ -13,6 +13,7 @@ interface Vars {
   AppEnv: AppEnv;
   AlchemyKey: string;
   BuildHash: string;
+  WalletConnectId: string;
 }
 
 export const vars: Vars = {
@@ -20,6 +21,7 @@ export const vars: Vars = {
   AppEnv: process.env.NEXT_PUBLIC_APP_ENV as AppEnv,
   AlchemyKey: process.env.NEXT_PUBLIC_ALCHEMY_KEY as string,
   BuildHash: process.env.NEXT_PUBLIC_SHA as string,
+  WalletConnectId: process.env.NEXT_PUBLIC_WALLET_CONNECT_ID as string,
 };
 
 const assertVars = () => {

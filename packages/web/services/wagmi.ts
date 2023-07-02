@@ -1,12 +1,10 @@
 import {
-  connectorsForWallets,
   createAuthenticationAdapter,
   getDefaultWallets,
-  Wallet,
 } from "@rainbow-me/rainbowkit";
 import { SiweMessage } from "siwe";
-import { Chain, configureChains, createClient, goerli, mainnet } from "wagmi";
-import { SafeConnector, SafeConnectorOptions } from "wagmi/connectors/safe";
+import { configureChains, createConfig } from "wagmi";
+import { goerli, mainnet } from "wagmi/chains";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
 import env from "../environment";
@@ -15,43 +13,22 @@ import Http from "./http";
 
 const targetNetwork = isProd() ? mainnet : goerli;
 
-export const { chains, provider, webSocketProvider } = configureChains(
+export const { chains, publicClient, webSocketPublicClient } = configureChains(
   [targetNetwork],
   [alchemyProvider({ apiKey: vars.AlchemyKey }), publicProvider()]
 );
 
-// See the official integration guide for auto-connecting
-// https://github.com/safe-global/safe-apps-sdk/tree/main/packages/safe-apps-wagmi#integration-steps
-export const safeWallet = ({
+const { connectors } = getDefaultWallets({
+  appName: env.app.name,
+  projectId: vars.WalletConnectId,
   chains,
-  options = {},
-}: {
-  chains: Chain[];
-  options?: SafeConnectorOptions;
-}): Wallet => ({
-  id: "SAFE",
-  name: "Safe",
-  iconUrl: "/images/twitter-card.png",
-  hidden: () => false,
-  iconBackground: "#000",
-  createConnector: () => ({
-    connector: new SafeConnector({ chains, options }),
-  }),
 });
 
-const { wallets } = getDefaultWallets({ appName: env.app.name, chains });
-const connectors = connectorsForWallets([
-  ...wallets,
-  {
-    groupName: "Other",
-    wallets: [safeWallet({ chains })],
-  },
-]);
-export const client = createClient({
+export const wagmiConfig = createConfig({
   autoConnect: true,
   connectors,
-  provider,
-  webSocketProvider,
+  publicClient,
+  webSocketPublicClient,
 });
 
 interface CreateRainbowAdapterProps {
@@ -69,15 +46,16 @@ export const createRainbowAuthAdapter = ({
       return data.nonce;
     },
     createMessage: ({ nonce, address, chainId }) => {
-      return new SiweMessage({
+      const message = new SiweMessage({
         domain: window.location.host,
-        address,
         statement: "Sign in to wanwan",
         uri: window.location.origin,
         version: "1",
+        address,
         chainId,
         nonce,
       });
+      return message;
     },
     getMessageBody: ({ message }: { message: SiweMessage }) => {
       return message.prepareMessage();
