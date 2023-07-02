@@ -1,4 +1,3 @@
-import { BigNumber } from "ethers";
 import { observer } from "mobx-react-lite";
 import { useEffect, useMemo } from "react";
 import {
@@ -47,10 +46,8 @@ interface DistributeRewardProps {
 
 const DistributeEthReward = ({ store, onSuccess }: DistributeRewardProps) => {
   const { config } = usePrepareSendTransaction({
-    request: {
-      to: store.toAddress,
-      value: BigNumber.from(store.reward.currencyAmountAtoms),
-    },
+    to: store.toAddress,
+    value: BigInt(store.reward.currencyAmountAtoms),
   });
   const {
     data,
