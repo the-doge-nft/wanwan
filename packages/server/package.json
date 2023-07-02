@@ -5,6 +5,9 @@
   "author": "@gainormather",
   "private": true,
   "license": "UNLICENSED",
+  "engines": {
+    "node": "16.x"
+  },
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
@@ -23,7 +26,7 @@
     "prisma:push": "npx prisma db push",
     "prisma:seed": "npx prisma db seed",
     "prisma:migrate:dev": "npx prisma migrate dev",
-    "start:migrate:prod": "npx prisma migrate deploy && npm run start:prod",
+    "start:migrate:prod": "npm run prisma:generate && npx prisma migrate deploy && npm run start:prod",
     "start:prod": "node /app/dist/src/main.js"
   },
   "dependencies": {

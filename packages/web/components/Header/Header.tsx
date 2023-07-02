@@ -27,10 +27,7 @@ const Header = observer(() => {
           <Logo />
         </Link>
       </div>
-      {/* <div className={css("grow")}>
-        <SearchBar />
-      </div> */}
-      <div className={css("z-10", "flex", "gap-2", "items-stretch")}>
+      <div className={css("z-10", "flex", "gap-2")}>
         {AppStore.auth.isAuthed && <CreateButton />}
         <ConnectButton size={ButtonSize.lg} />
         <EllipsesButton />
