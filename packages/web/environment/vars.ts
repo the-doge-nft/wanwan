@@ -12,7 +12,6 @@ interface Vars {
   NodeEnv: NodeEnv;
   AppEnv: AppEnv;
   AlchemyKey: string;
-  BuildHash: string;
   WalletConnectId: string;
 }
 
@@ -20,7 +19,6 @@ export const vars: Vars = {
   NodeEnv: process.env.NODE_ENV as NodeEnv,
   AppEnv: process.env.NEXT_PUBLIC_APP_ENV as AppEnv,
   AlchemyKey: process.env.NEXT_PUBLIC_ALCHEMY_KEY as string,
-  BuildHash: process.env.NEXT_PUBLIC_SHA as string,
   WalletConnectId: process.env.NEXT_PUBLIC_WALLET_CONNECT_ID as string,
 };
 
