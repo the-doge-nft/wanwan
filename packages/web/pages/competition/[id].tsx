@@ -26,7 +26,7 @@ import CompetitionStats from "../../components/CompetitionById/CompetitionStats"
 import CompetitionSubmit from "../../components/CompetitionById/CompetitionSubmit";
 import CurateModal from "../../components/CompetitionById/CurateModal";
 import Link from "../../components/DSL/Link/Link";
-import Text, { TextType } from "../../components/DSL/Text/Text";
+import Text, { TextSize, TextType } from "../../components/DSL/Text/Text";
 import CreateMemeModal from "../../components/Modals/CreateMemeModal";
 import InvalidVoteReasonModal from "../../components/Modals/InvalidVoteReasonModal";
 import TipTapEditor from "../../components/TipTapEditor/TipTapEditor";
@@ -87,16 +87,21 @@ const CompetitionById: React.FC<CompetitionByIdProps> = observer(
               {...expandPane(store.showPaneStore, "title")}
               title={store.competition.name}
             >
-              {store.competition.description && (
+              {store.description && store.isDescriptionRichText && (
                 <div className={css("grow")}>
                   <TipTapEditor
                     border={false}
                     readonly
-                    content={JSON.parse(store.competition.description)}
+                    content={store.description}
                   />
                 </div>
               )}
-              {!store.competition.description && (
+              {store.description && !store.isDescriptionRichText && (
+                <div>
+                  <Text size={TextSize.sm}>{store.description as string}</Text>
+                </div>
+              )}
+              {!store.description && (
                 <div className={css("text-center", "p-4")}>
                   <Text type={TextType.Grey}>No description</Text>
                 </div>

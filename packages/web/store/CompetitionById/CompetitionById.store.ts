@@ -1,3 +1,4 @@
+import { JSONContent } from "@tiptap/react";
 import { action, computed, makeObservable, observable, toJS } from "mobx";
 import { fuzzyDeepSearch } from "../../helpers/arrays";
 import {
@@ -54,6 +55,12 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
   @observable
   isSubmitMemeModalOpen = false;
 
+  @observable
+  isDescriptionRichText = false;
+
+  @observable
+  description?: JSONContent | string = undefined;
+
   constructor(competition: Competition, memes: CompetitionMeme[]) {
     super();
     makeObservable(this);
@@ -61,6 +68,16 @@ export default class CompetitionByIdStore extends Reactionable(EmptyClass) {
     this._rewards = competition.rewards;
     this.memes = memes;
     this.showPaneStore = new CompetitionByIdPaneVisibilityStore(competition.id);
+    if (this.competition.description) {
+      try {
+        const json = JSON.parse(this.competition.description as string);
+        this.description = json;
+        this.isDescriptionRichText = true;
+      } catch (e) {
+        this.description = this.competition.description;
+        this.isDescriptionRichText = false;
+      }
+    }
   }
 
   init() {
